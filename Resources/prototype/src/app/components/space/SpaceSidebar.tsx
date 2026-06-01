@@ -24,6 +24,8 @@ interface SpaceSidebarProps {
   spaceSlug: string;
   /** Controls which sections render below the info block */
   variant?: "home" | "community" | "workspaces" | "knowledge";
+  /** Description of the currently active tab */
+  activeTabDescription?: string;
 }
 
 const SUBSPACE_COLORS = [
@@ -60,7 +62,7 @@ const COMMUNITY_GUIDELINES = [
   "Protect the privacy of community members.",
 ];
 
-export function SpaceSidebar({ spaceSlug, variant = "home" }: SpaceSidebarProps) {
+export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription }: SpaceSidebarProps) {
   const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
@@ -69,7 +71,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home" }: SpaceSidebarProps)
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Info Block (shared across all variants) ── */}
-      <InfoBlock onAboutClick={() => setAboutOpen(true)} />
+      <InfoBlock onAboutClick={() => setAboutOpen(true)} tabDescription={activeTabDescription} />
       <AboutThisSpaceDialog open={aboutOpen} onOpenChange={setAboutOpen} spaceSlug={spaceSlug} />
 
       {/* ── Community Members ── */}
@@ -122,7 +124,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home" }: SpaceSidebarProps)
 
 /* ─── Sub-components ─────────────────────────────────────────── */
 
-function InfoBlock({ onAboutClick }: { onAboutClick: () => void }) {
+function InfoBlock({ onAboutClick, tabDescription }: { onAboutClick: () => void; tabDescription?: string }) {
   return (
     <div
       className="p-5"
@@ -143,9 +145,7 @@ function InfoBlock({ onAboutClick }: { onAboutClick: () => void }) {
           toggleColor="var(--primary-foreground)"
           toggleOpacity={0.8}
         >
-          Collaborating on the future of sustainable energy solutions and urban
-          transformation. Join our community of innovators working to solve
-          real-world challenges.
+          {tabDescription || "About this space"}
         </ReadMoreText>
       </div>
 

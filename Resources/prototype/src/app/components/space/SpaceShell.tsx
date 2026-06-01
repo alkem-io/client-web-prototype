@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { useParams, useLocation, useSearchParams, Outlet, Link } from "react-router";
 import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
@@ -16,6 +17,11 @@ export function SpaceShell() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const variant = (parseInt(searchParams.get("v") || "1") || 1) as 1 | 2 | 3 | 4 | 5;
+  const [activeTabDescription, setActiveTabDescription] = useState("Activity and updates from members of this space.");
+
+  const handleActiveTabChange = useCallback((description: string) => {
+    setActiveTabDescription(description);
+  }, []);
 
   // Determine sidebar variant from current route
   const getSidebarVariant = () => {
@@ -129,12 +135,12 @@ export function SpaceShell() {
                 WebkitBackdropFilter: "blur(8px)",
               }}
             >
-              <SpaceNavigationTabs spaceSlug={slug} actionButton={getActionButtons()} />
+              <SpaceNavigationTabs spaceSlug={slug} actionButton={getActionButtons()} onActiveTabChange={handleActiveTabChange} />
             </div>
 
             {/* Left panel — scoped to the active tab */}
             <div className={`hidden lg:block col-span-2 sticky top-24 self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
-              <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} />
+              <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} />
             </div>
 
             {/* Right panel — pure content */}
