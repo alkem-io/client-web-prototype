@@ -3,8 +3,7 @@ import { useParams, useLocation, useSearchParams, Outlet, Link } from "react-rou
 import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { SpaceSidebar } from "./SpaceSidebar";
-import { Button } from "@/app/components/ui/button";
-import { Plus, UserPlus, Activity, Video, FileText, Share2, Settings } from "lucide-react";
+import { Activity, Video, FileText, Share2, Settings } from "lucide-react";
 
 /**
  * SpaceShell wraps the tab pages (Home, Community, Workspaces, Knowledge)
@@ -68,50 +67,8 @@ export function SpaceShell() {
     </div>
   );
 
-  // Route-aware action buttons for the sticky tab bar
-  const getActionButtons = () => {
-    const path = location.pathname;
-    if (path.includes("/community")) {
-      return (
-        <div className="flex items-center gap-2">
-          {actionIcons}
-          <Button variant="outline" size="sm" className="shrink-0 gap-2">
-            <UserPlus className="w-4 h-4" />
-            Invite
-          </Button>
-          <Button size="sm" className="shrink-0 gap-2">
-            <Plus className="w-4 h-4" />
-            Add Post
-          </Button>
-        </div>
-      );
-    }
-    if (path.includes("/subspaces")) {
-      return (
-        <div className="flex items-center gap-2">
-          {actionIcons}
-          <Button variant="outline" size="sm" className="shrink-0 gap-2">
-            <Plus className="w-4 h-4" />
-            Create Subspace
-          </Button>
-          <Button size="sm" className="shrink-0 gap-2">
-            <Plus className="w-4 h-4" />
-            Add Post
-          </Button>
-        </div>
-      );
-    }
-    // Home & Knowledge Base both use Add Post
-    return (
-      <div className="flex items-center gap-2">
-        {actionIcons}
-        <Button size="sm" className="shrink-0 gap-2">
-          <Plus className="w-4 h-4" />
-          Add Post
-        </Button>
-      </div>
-    );
-  };
+  // Action toolbar — icon buttons only; primary CTAs live in the left panel
+  const getActionButtons = () => actionIcons;
 
   // V2+ use a max-width container so content scales into margins on zoom
   const usesScaling = variant !== 1;
