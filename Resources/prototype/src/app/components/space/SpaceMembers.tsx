@@ -12,6 +12,7 @@ import {
 } from "@/app/components/ui/dropdown-menu";
 import { Link } from "react-router";
 import { cn } from "@/lib/utils";
+import { useSpaceFilters } from "@/app/components/space/FilterContext";
 
 // ── Types ──
 interface MemberEntry {
@@ -24,6 +25,7 @@ interface MemberEntry {
   avatar: string | null;
   initials: string;
   bio: string;
+  tags: string[];
 }
 
 interface OrgEntry {
@@ -36,6 +38,7 @@ interface OrgEntry {
   initials: string;
   members: number;
   website: string;
+  tags: string[];
 }
 
 type CommunityEntry = MemberEntry | OrgEntry;
@@ -51,6 +54,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     avatar: "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGdsYXNzZXMlMjBibGFjayUyMGFuZCUyMHdoaXRlJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzY5NDQyNTM3fDA&ixlib=rb-4.1.0&q=80&w=256",
     initials: "EM",
     bio: "Community Host. Driving sustainable innovation in urban planning.",
+    tags: ["Leads", "Members", "Active"]
   },
   {
     id: "u2",
@@ -61,6 +65,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     avatar: "https://images.unsplash.com/photo-1757347398206-7425300ef990?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHNtaWxpbmclMjBkYXJrJTIwaGFpciUyMHBvcnRyYWl0fGVufDF8fHx8MTc2OTQ0MjUzN3ww&ixlib=rb-4.1.0&q=80&w=256",
     initials: "SC",
     bio: "Energy systems analyst with a passion for green tech.",
+    tags: ["Leads", "Members", "Active"]
   },
   {
     id: "u3",
@@ -71,6 +76,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     avatar: "https://images.unsplash.com/photo-1589332911105-a6b59f2e4c4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHNtaWxpbmclMjBkYXJrJTIwaGFpciUyMHBvcnRyYWl0fGVufDF8fHx8MTc2OTQ0MjUzN3ww&ixlib=rb-4.1.0&q=80&w=256",
     initials: "MR",
     bio: "Focusing on community engagement and policy.",
+    tags: ["Leads", "Active", "Members"]
   },
   {
     id: "u4",
@@ -81,6 +87,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     avatar: "https://images.unsplash.com/photo-1651634099348-e4c38cfaa6d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBiZWFyZCUyMHN1bnNldCUyMHBvcnRyYWl0fGVufDF8fHx8MTc2OTQ0MjUzN3ww&ixlib=rb-4.1.0&q=80&w=256",
     initials: "DK",
     bio: "",
+    tags: ["Members", "Active"]
   },
   {
     id: "u5",
@@ -91,6 +98,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     avatar: "https://images.unsplash.com/photo-1651097681268-851acda33b18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvbGRlciUyMG1hbiUyMHdoaXRlJTIwYmVhcmQlMjBnbGFzc2VzJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzY5NDQyNTM3fDA&ixlib=rb-4.1.0&q=80&w=256",
     initials: "RF",
     bio: "",
+    tags: ["Members"]
   },
   ...Array.from({ length: 24 }).map((_, i) => ({
     id: `m${i + 6}`,
@@ -113,6 +121,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
         "BS", "EG", "JB", "VA",
       ][i] || `M${i + 6}`,
     bio: i % 3 === 0 ? "" : "Passionate about contributing to the community space.",
+    tags: i < 3 ? ["Leads", "Active", "Members"] : (i < 8 ? ["Members", "Active"] : ["Members"]),
   })),
 ];
 
@@ -129,6 +138,7 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
     initials: "GF",
     members: 12,
     website: "https://greenfuturelabs.org",
+    tags: ["Members", "Active"]
   },
   {
     id: "org2",
@@ -139,6 +149,7 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
     initials: "CA",
     members: 8,
     website: "https://amsterdam.nl",
+    tags: ["Members", "Active"]
   },
   {
     id: "org3",
@@ -149,6 +160,7 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
     initials: "UU",
     members: 5,
     website: "https://uu.nl",
+    tags: ["Members", "Active"]
   },
   {
     id: "org4",
@@ -159,6 +171,7 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
     initials: "SC",
     members: 3,
     website: "https://sustainablecitiesfund.eu",
+    tags: ["Members", "Active"]
   },
 ];
 
@@ -172,7 +185,7 @@ const FILTERS = ["All", "Host", "Admin", "Lead", "Member", "Organization"];
 
 // ── Component ──
 export function SpaceMembers() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const { searchValue, activeTag } = useSpaceFilters();
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
@@ -182,12 +195,16 @@ export function SpaceMembers() {
 
   const filteredEntries = ALL_ENTRIES.filter((entry) => {
     // Search match
-    const nameMatch = entry.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const nameMatch = entry.name.toLowerCase().includes(searchValue.toLowerCase());
     const extraMatch =
       entry.kind === "user"
-        ? entry.role.toLowerCase().includes(searchQuery.toLowerCase())
-        : entry.type.toLowerCase().includes(searchQuery.toLowerCase());
+        ? entry.role.toLowerCase().includes(searchValue.toLowerCase())
+        : entry.type.toLowerCase().includes(searchValue.toLowerCase());
     if (!nameMatch && !extraMatch) return false;
+
+    // Tag match - check if entry has the active tag
+    const tagMatch = !activeTag || entry.tags.includes(activeTag);
+    if (!tagMatch) return false;
 
     // Filter match
     if (selectedFilter === "All") return true;
@@ -205,10 +222,6 @@ export function SpaceMembers() {
   // Reset to page 1 when filters/search change
   const handleFilterChange = (filter: string) => {
     setSelectedFilter(filter);
-    setCurrentPage(1);
-  };
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
     setCurrentPage(1);
   };
 
@@ -243,9 +256,9 @@ export function SpaceMembers() {
           <input
             type="text"
             placeholder="Search members or organizations..."
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full h-10 pl-9 pr-4 transition-all text-body"
+            value={searchValue}
+            readOnly
+            className="w-full h-10 pl-9 pr-4 transition-all text-body cursor-default"
             style={{
               fontFamily: "'Inter', sans-serif",
               borderRadius: "var(--radius)",
@@ -253,14 +266,6 @@ export function SpaceMembers() {
               background: "var(--input-background)",
               color: "var(--foreground)",
               outline: "none",
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "var(--primary)";
-              e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = "var(--border)";
-              e.currentTarget.style.boxShadow = "none";
             }}
           />
         </div>
@@ -366,7 +371,6 @@ export function SpaceMembers() {
           <Button
             variant="link"
             onClick={() => {
-              setSearchQuery("");
               setSelectedFilter("All");
               setCurrentPage(1);
             }}

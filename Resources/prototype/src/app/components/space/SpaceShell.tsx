@@ -3,6 +3,7 @@ import { useParams, useLocation, useSearchParams, Outlet, Link } from "react-rou
 import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { SpaceSidebar } from "./SpaceSidebar";
+import { FilterProvider } from "./FilterContext";
 import { Activity, Video, FileText, Share2, Settings } from "lucide-react";
 
 /**
@@ -75,38 +76,40 @@ export function SpaceShell() {
   const scaledContainer = { maxWidth: 1536, margin: "0 auto", width: "100%" };
 
   return (
-    <div className="flex flex-col bg-background">
-      <SpaceHeader spaceSlug={slug} variant={variant} />
+    <FilterProvider>
+      <div className="flex flex-col bg-background">
+        <SpaceHeader spaceSlug={slug} variant={variant} />
 
-      {/* Content area */}
-      <div className="w-full px-4 pt-0 pb-8" style={!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : undefined}>
-        <div style={usesScaling ? scaledContainer : undefined}>
-          <div className="grid grid-cols-12 gap-6 items-start">
-            {/* Sticky tab bar — full-width across both panels, parent of the layout below */}
-            <div
-              className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} sticky top-16 z-10 pt-4 pb-3`}
-              style={{
-                background:
-                  "color-mix(in srgb, var(--background) 95%, transparent)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-              }}
-            >
-              <SpaceNavigationTabs spaceSlug={slug} actionButton={getActionButtons()} onActiveTabChange={handleActiveTabChange} />
-            </div>
+        {/* Content area */}
+        <div className="w-full px-4 pt-0 pb-8" style={!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : undefined}>
+          <div style={usesScaling ? scaledContainer : undefined}>
+            <div className="grid grid-cols-12 gap-6 items-start">
+              {/* Sticky tab bar — full-width across both panels, parent of the layout below */}
+              <div
+                className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} sticky top-16 z-10 pt-4 pb-3`}
+                style={{
+                  background:
+                    "color-mix(in srgb, var(--background) 95%, transparent)",
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
+                }}
+              >
+                <SpaceNavigationTabs spaceSlug={slug} actionButton={getActionButtons()} onActiveTabChange={handleActiveTabChange} />
+              </div>
 
-            {/* Left panel — scoped to the active tab */}
-            <div className={`hidden lg:block col-span-2 sticky top-24 self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
-              <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} />
-            </div>
+              {/* Left panel — scoped to the active tab */}
+              <div className={`hidden lg:block col-span-2 sticky top-24 self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
+                <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} />
+              </div>
 
-            {/* Right panel — pure content */}
-            <div className={`col-span-12 ${usesScaling ? "lg:col-span-10" : "lg:col-span-8"} min-w-0`}>
-              <Outlet />
+              {/* Right panel — pure content */}
+              <div className={`col-span-12 ${usesScaling ? "lg:col-span-10" : "lg:col-span-8"} min-w-0`}>
+                <Outlet />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </FilterProvider>
   );
 }

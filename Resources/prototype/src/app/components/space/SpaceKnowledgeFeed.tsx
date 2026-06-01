@@ -4,18 +4,25 @@ import { Plus } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
+import { useSpaceFilters } from "@/app/components/space/FilterContext";
 
 // Whiteboard / visual preview images
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
 
+interface PostWithTags extends PostProps {
+  tags: string[];
+}
+
 export function SpaceKnowledgeFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
+  const { searchValue, activeTag } = useSpaceFilters();
 
-  const posts: PostProps[] = [
+  const posts: PostWithTags[] = [
     {
       id: "kb-1",
       type: "collection",
+      tags: ["Reports", "Policy"],
       author: {
         name: "Elena Rodriguez",
         role: "Policy Expert",
@@ -37,6 +44,7 @@ export function SpaceKnowledgeFeed() {
     {
       id: "kb-2",
       type: "collection",
+      tags: ["Reports", "Data"],
       author: {
         name: "Sarah Chen",
         role: "Facilitator",
@@ -57,6 +65,7 @@ export function SpaceKnowledgeFeed() {
     {
       id: "kb-3",
       type: "text",
+      tags: ["Research", "Community"],
       author: {
         name: "James Wilson",
         role: "Community Lead",
@@ -70,6 +79,7 @@ export function SpaceKnowledgeFeed() {
     {
       id: "kb-4",
       type: "collection",
+      tags: ["Reports", "Research"],
       author: {
         name: "David Miller",
         role: "Energy Analyst",
@@ -91,6 +101,7 @@ export function SpaceKnowledgeFeed() {
     {
       id: "kb-5",
       type: "text",
+      tags: ["Policy", "Data"],
       author: {
         name: "Alex Contributor",
         role: "City Planner",
@@ -104,6 +115,7 @@ export function SpaceKnowledgeFeed() {
     {
       id: "kb-6",
       type: "collection",
+      tags: ["Reports", "Policy"],
       author: {
         name: "Michael Chang",
         role: "Researcher",
@@ -123,10 +135,22 @@ export function SpaceKnowledgeFeed() {
     }
   ];
 
+  // Filter posts based on search and tag filters
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch = !searchValue || 
+      post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+      post.snippet.toLowerCase().includes(searchValue.toLowerCase()) ||
+      post.author.name.toLowerCase().includes(searchValue.toLowerCase());
+    
+    const matchesTag = !activeTag || post.tags.includes(activeTag);
+    
+    return matchesSearch && matchesTag;
+  });
+
   return (
     <div className="w-full">
       <div className="space-y-6">
-        {posts.map((post) => (
+        {filteredPosts.map((post) => (
           <div key={post.id} id={post.id}>
             <PostCard
               post={{

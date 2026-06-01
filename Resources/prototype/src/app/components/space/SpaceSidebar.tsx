@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AboutThisSpaceDialog } from "@/app/components/space/AboutThisSpaceDialog";
+import { useSpaceFilters } from "@/app/components/space/FilterContext";
 
 interface SpaceSidebarProps {
   spaceSlug: string;
@@ -67,8 +68,9 @@ const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: str
 export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription }: SpaceSidebarProps) {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [indexOpen, setIndexOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  
+  // Use filter context
+  const { searchValue, activeTag, setSearchValue, setActiveTag } = useSpaceFilters();
 
   const tags = TAB_TAGS[variant] ?? TAB_TAGS.home;
   const allIndexItems = TAB_INDEX[variant] ?? TAB_INDEX.home;

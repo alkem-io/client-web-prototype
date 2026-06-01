@@ -5,6 +5,7 @@ import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
+import { useSpaceFilters } from "@/app/components/space/FilterContext";
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
@@ -12,16 +13,22 @@ const wb2 = "https://images.unsplash.com/photo-1574359219611-a3031f074b2c?auto=f
 const wb3 = "https://images.unsplash.com/photo-1578401058525-35aaec0b4658?auto=format&fit=crop&q=80&w=1080";
 const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=format&fit=crop&q=80&w=1080";
 
+interface PostWithTags extends PostProps {
+  tags: string[];
+}
+
 export function SpaceFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
   const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
+  const { searchValue, activeTag } = useSpaceFilters();
 
-  const posts: PostProps[] = [
+  const posts: PostWithTags[] = [
     {
       id: "1",
       type: "text",
+      tags: ["Updates", "Announcements"],
       author: {
         name: "Sarah Chen",
         role: "Lead",
@@ -35,6 +42,7 @@ export function SpaceFeed() {
     {
       id: "4",
       type: "call-for-whiteboards",
+      tags: ["Ideas", "Updates"],
       author: {
         name: "Alex Contributor",
         role: "Member",
@@ -58,6 +66,7 @@ export function SpaceFeed() {
     {
       id: "2",
       type: "document",
+      tags: ["Updates", "Events"],
       author: {
         name: "David Miller",
         role: "Member",
@@ -77,6 +86,7 @@ export function SpaceFeed() {
     {
       id: "5",
       type: "whiteboard",
+      tags: ["Ideas", "Updates"],
       author: {
         name: "David Miller",
         role: "Member",
@@ -93,6 +103,7 @@ export function SpaceFeed() {
     {
       id: "3",
       type: "document",
+      tags: ["Announcements", "Events"],
       author: {
         name: "Elena Rodriguez",
         role: "Lead",
@@ -114,6 +125,7 @@ export function SpaceFeed() {
     {
       id: "6",
       type: "collection",
+      tags: ["Updates", "Ideas"],
       author: {
         name: "Elena Rodriguez",
         role: "Lead",
@@ -134,10 +146,22 @@ export function SpaceFeed() {
     }
   ];
 
+  // Filter posts based on search and tag filters
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch = !searchValue || 
+      post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+      post.snippet.toLowerCase().includes(searchValue.toLowerCase()) ||
+      post.author.name.toLowerCase().includes(searchValue.toLowerCase());
+    
+    const matchesTag = !activeTag || post.tags.includes(activeTag);
+    
+    return matchesSearch && matchesTag;
+  });
+
   return (
     <div className="w-full">
       <div className="space-y-6">
-        {posts.map((post) => (
+        {filteredPosts.map((post) => (
           <PostCard 
             key={post.id} 
             post={{
