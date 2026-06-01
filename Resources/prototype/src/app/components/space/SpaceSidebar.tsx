@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import { Button } from "@/app/components/ui/button";
+import { Input } from "@/app/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
   Dialog,
@@ -140,7 +141,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
             key={tag}
             onClick={() => setActiveTag(activeTag === tag ? null : tag)}
             className={cn(
-              "px-2.5 py-1 rounded-full text-xs font-medium border transition-colors",
+              "px-2.5 py-1 rounded-full text-badge border transition-colors",
               activeTag === tag
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
