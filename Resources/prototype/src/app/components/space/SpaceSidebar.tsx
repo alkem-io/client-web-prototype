@@ -67,7 +67,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
 
   return (
     <div
-      className="space-y-6 w-full"
+      className="space-y-3 w-full"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Info Block (shared across all variants) ── */}
