@@ -19,6 +19,7 @@ import {
   Search,
   List,
   FileText,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AboutThisSpaceDialog } from "@/app/components/space/AboutThisSpaceDialog";
@@ -88,6 +89,9 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
     return matchesSearch && matchesTag;
   });
 
+  const hasFilters = searchValue !== "" || activeTag !== null;
+  const matchCount = filteredIndexItems.length;
+
   return (
     <div
       className="flex flex-col gap-3 w-full"
@@ -129,6 +133,42 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         ))}
       </div>
 
+      {/* Filter feedback */}
+      {hasFilters && (
+        <div
+          className="flex items-center justify-between gap-2 p-2.5 rounded-md text-xs"
+          style={{
+            background: "color-mix(in srgb, var(--primary) 10%, transparent)",
+            color: "var(--primary)",
+          }}
+        >
+          <span>
+            <strong>{matchCount}</strong> item{matchCount !== 1 ? 's' : ''} match
+            {activeTag && (
+              <>
+                {" "}tagged <strong>"{activeTag}"</strong>
+              </>
+            )}
+            {activeTag && searchValue && " and "}
+            {searchValue && (
+              <>
+                {" "}search for <strong>"{searchValue}"</strong>
+              </>
+            )}
+          </span>
+          <button
+            onClick={() => {
+              setSearchValue("");
+              setActiveTag(null);
+            }}
+            className="flex items-center justify-center w-5 h-5 rounded hover:bg-primary/20 transition-colors"
+            title="Clear filters"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      )}
+
       {/* Index Button */}
       <div className="pt-1">
         <Button
@@ -138,7 +178,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           onClick={() => setIndexOpen(true)}
         >
           <List className="w-4 h-4" />
-          Index
+          Index {hasFilters && `(${matchCount})`}
         </Button>
       </div>
 
