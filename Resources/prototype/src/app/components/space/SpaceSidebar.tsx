@@ -38,28 +38,28 @@ const TAB_TAGS: Record<string, string[]> = {
   knowledge:  ["Reports", "Policy", "Research", "Data"],
 };
 
-const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: string }>> = {
+const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: string; tags: string[] }>> = {
   home: [
-    { title: "Kickoff: Municipal Transition Strategy", type: "Post", author: "Sarah Chen" },
-    { title: "Q1 Community Update", type: "Post", author: "Elena Martinez" },
-    { title: "Call for Ideas: Community Solar Projects", type: "Call", author: "Alex Torres" },
-    { title: "Welcome to the Space", type: "Post", author: "Elena Martinez" },
+    { title: "Kickoff: Municipal Transition Strategy", type: "Post", author: "Sarah Chen", tags: ["Updates", "Announcements"] },
+    { title: "Q1 Community Update", type: "Post", author: "Elena Martinez", tags: ["Updates"] },
+    { title: "Call for Ideas: Community Solar Projects", type: "Call", author: "Alex Torres", tags: ["Ideas", "Events"] },
+    { title: "Welcome to the Space", type: "Post", author: "Elena Martinez", tags: ["Announcements"] },
   ],
   community: [
-    { title: "Member Directory", type: "Collection", author: "Elena Martinez" },
-    { title: "Onboarding Guide for New Members", type: "Post", author: "Sarah Chen" },
-    { title: "Community Roles & Responsibilities", type: "Post", author: "Elena Martinez" },
+    { title: "Member Directory", type: "Collection", author: "Elena Martinez", tags: ["Members"] },
+    { title: "Onboarding Guide for New Members", type: "Post", author: "Sarah Chen", tags: ["Active"] },
+    { title: "Community Roles & Responsibilities", type: "Post", author: "Elena Martinez", tags: ["Leads"] },
   ],
   workspaces: [
-    { title: "Renewable Energy Initiative", type: "Subspace", author: "David Kim" },
-    { title: "Urban Planning Taskforce", type: "Subspace", author: "Emily Davis" },
-    { title: "Transportation Working Group", type: "Subspace", author: "Marc Johnson" },
+    { title: "Renewable Energy Initiative", type: "Subspace", author: "David Kim", tags: ["Active"] },
+    { title: "Urban Planning Taskforce", type: "Subspace", author: "Emily Davis", tags: ["Planning"] },
+    { title: "Transportation Working Group", type: "Subspace", author: "Marc Johnson", tags: ["Research"] },
   ],
   knowledge: [
-    { title: "Transition Case Studies & Policy Docs", type: "Collection", author: "Elena Martinez" },
-    { title: "Q1 Sustainability Report", type: "Document", author: "Sarah Chen" },
-    { title: "Grid Modernisation Reference Materials", type: "Collection", author: "David Kim" },
-    { title: "Funding Opportunities for Municipal Energy Projects", type: "Document", author: "Emily Davis" },
+    { title: "Transition Case Studies & Policy Docs", type: "Collection", author: "Elena Martinez", tags: ["Policy", "Research"] },
+    { title: "Q1 Sustainability Report", type: "Document", author: "Sarah Chen", tags: ["Reports"] },
+    { title: "Grid Modernisation Reference Materials", type: "Collection", author: "David Kim", tags: ["Policy", "Data"] },
+    { title: "Funding Opportunities for Municipal Energy Projects", type: "Document", author: "Emily Davis", tags: ["Reports", "Data"] },
   ],
 };
 
@@ -70,12 +70,23 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
   const tags = TAB_TAGS[variant] ?? TAB_TAGS.home;
-  const indexItems = TAB_INDEX[variant] ?? TAB_INDEX.home;
+  const allIndexItems = TAB_INDEX[variant] ?? TAB_INDEX.home;
   const searchPlaceholder =
     variant === "workspaces" ? "Search subspaces…"
     : variant === "knowledge" ? "Search knowledge base…"
     : variant === "community" ? "Search community…"
     : "Search posts…";
+
+  // Filter index items by search and tag
+  const filteredIndexItems = allIndexItems.filter((item) => {
+    const matchesSearch = searchValue === "" || 
+      item.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+      item.author.toLowerCase().includes(searchValue.toLowerCase());
+    
+    const matchesTag = activeTag === null || item.tags.includes(activeTag);
+    
+    return matchesSearch && matchesTag;
+  });
 
   return (
     <div
@@ -140,28 +151,91 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
               Index
             </DialogTitle>
             <DialogDescription>
-              All content in this space's{" "}
-              {variant === "workspaces" ? "subspaces" : variant === "knowledge" ? "knowledge base" : variant} view.
+              {activeTag || searchValue ? (
+                <>
+                  {filteredIndexItems.length} item{filteredIndexItems.length !== 1 ? 's' : ''} 
+                  {activeTag && ` tagged "${activeTag}"`}
+                  {activeTag && searchValue && " and "}
+                  {searchValue && `matching "${searchValue}"`}
+                </>
+              ) : (
+                <>All content in this space's {variant === "workspaces" ? "subspaces" : variant === "knowledge" ? "knowledge base" : variant} view.</>
+              )}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-1 mt-2">
-            {indexItems.map((item, i) => (
-              <button
-                key={i}
-                className="flex items-start gap-3 w-full text-left px-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
-              >
-                <FileText className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
-                <div className="flex-1 min-w-0">
-                  <p className="truncate" style={{ fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--foreground)" }}>
-                    {item.title}
-                  </p>
-                  <p style={{ fontSize: "12px", color: "var(--muted-foreground)" }}>
-                    {item.type} · {item.author}
-                  </p>
-                </div>
-              </button>
-            ))}
+          
+          {/* Search and filter in dialog */}
+          <div className="flex flex-col gap-2 py-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                placeholder={searchPlaceholder}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                className="pl-9 h-9 text-sm"
+              />
+            </div>
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {tags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                    className={cn(
+                      "px-2 py-1 rounded text-xs font-medium border transition-colors",
+                      activeTag === tag
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+                    )}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* Results */}
+          {filteredIndexItems.length > 0 ? (
+            <div className="space-y-1 mt-2">
+              {filteredIndexItems.map((item, i) => (
+                <button
+                  key={i}
+                  className="flex items-start gap-3 w-full text-left px-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
+                >
+                  <FileText className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="truncate" style={{ fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--foreground)" }}>
+                      {item.title}
+                    </p>
+                    <p style={{ fontSize: "12px", color: "var(--muted-foreground)" }}>
+                      {item.type} · {item.author}
+                    </p>
+                    {item.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {item.tags.map((t) => (
+                          <span
+                            key={t}
+                            className="px-1.5 py-0.5 rounded text-xs"
+                            style={{
+                              background: "color-mix(in srgb, var(--primary) 10%, transparent)",
+                              color: "var(--primary)",
+                            }}
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div style={{ padding: "24px", textAlign: "center", color: "var(--muted-foreground)" }}>
+              <p style={{ fontSize: "var(--text-sm)" }}>No items match your search{activeTag && ` or tag "${activeTag}"`}.</p>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
@@ -212,7 +286,7 @@ function TabCTAButtons({ variant }: { variant: string }) {
   );
 }
 
-/* ─── Sub-components ─────────────────────────────────────────── */
+/* ─── InfoBlock ─────────────────────────────────────────── */
 
 function InfoBlock({ onAboutClick, tabDescription }: { onAboutClick: () => void; tabDescription?: string }) {
   return (
@@ -316,4 +390,3 @@ function InfoBlock({ onAboutClick, tabDescription }: { onAboutClick: () => void;
     </div>
   );
 }
-
