@@ -119,26 +119,26 @@ export function SpaceShell() {
       <div className="w-full px-4 pt-0 pb-8" style={!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : undefined}>
         <div style={usesScaling ? scaledContainer : undefined}>
           <div className="grid grid-cols-12 gap-6 items-start">
+            {/* Sticky tab bar — full-width across both panels, parent of the layout below */}
+            <div
+              className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} sticky top-16 z-10 pt-4 pb-3`}
+              style={{
+                background:
+                  "color-mix(in srgb, var(--background) 95%, transparent)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+              }}
+            >
+              <SpaceNavigationTabs spaceSlug={slug} actionButton={getActionButtons()} />
+            </div>
+
+            {/* Left panel — scoped to the active tab */}
             <div className={`hidden lg:block col-span-2 sticky top-24 self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
               <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} />
             </div>
+
+            {/* Right panel — pure content */}
             <div className={`col-span-12 ${usesScaling ? "lg:col-span-10" : "lg:col-span-8"} min-w-0`}>
-              {/* Sticky tab bar */}
-              <div
-                className="sticky top-16 z-10 pt-4 pb-3 mb-4"
-                style={{
-                  background:
-                    "color-mix(in srgb, var(--background) 95%, transparent)",
-                  backdropFilter: "blur(8px)",
-                  WebkitBackdropFilter: "blur(8px)",
-                  paddingLeft: 10,
-                  paddingRight: 10,
-                  marginLeft: -10,
-                  marginRight: -10,
-                }}
-              >
-                <SpaceNavigationTabs spaceSlug={slug} actionButton={getActionButtons()} />
-              </div>
               <Outlet />
             </div>
           </div>
