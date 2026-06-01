@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
   Dialog,
@@ -108,12 +107,29 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
 
       {/* Search bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-        <Input
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
           placeholder={searchPlaceholder}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
-          className="pl-9 h-9 text-sm"
+          className="w-full h-10 pl-9 pr-4 transition-all text-body"
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            borderRadius: "var(--radius)",
+            border: "1px solid var(--border)",
+            background: "var(--input-background)",
+            color: "var(--foreground)",
+            outline: "none",
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "var(--primary)";
+            e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = "var(--border)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
         />
       </div>
 
