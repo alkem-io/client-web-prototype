@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Button } from "@/app/components/ui/button";
@@ -34,6 +34,12 @@ export interface PostProps {
   };
   /** Searchable comment/response text snippets */
   commentTexts?: string[];
+  /** Whether this post should render in collapsed mode */
+  collapsed?: boolean;
+  /** Where the image/content preview sits relative to text: 'before' or 'after' (default) */
+  imagePosition?: 'before' | 'after';
+  /** User-embedded images in the post body (plain images, no interactive overlay) */
+  embeddedImages?: Array<{ url: string; alt?: string; position?: 'before' | 'after' }>;
   onClick?: () => void;
   onDocumentClick?: (doc: { title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string }) => void;
 }
@@ -41,6 +47,21 @@ export interface PostProps {
 export function PostCard({ post }: { post: PostProps }) {
   const [activeDocIndex, setActiveDocIndex] = useState(0);
   const [activeDocPage, setActiveDocPage] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [needsCollapse, setNeedsCollapse] = useState(false);
+  const snippetRef = useRef<HTMLDivElement>(null);
+
+  // Determine if the description container overflows the ~3 line height
+  useEffect(() => {
+    if (post.collapsed && snippetRef.current) {
+      setNeedsCollapse(snippetRef.current.scrollHeight > snippetRef.current.clientHeight + 2);
+    }
+  }, [post.collapsed, post.snippet, post.embeddedImages]);
+
+  // Whether the post is in collapsed state right now
+  const isCollapsed = post.collapsed && !isExpanded;
+  // Show collapse affordance when the container overflows
+  const shouldShowCollapseAffordance = isCollapsed && needsCollapse;
   const getDocIcon = (docType: 'word' | 'spreadsheet' | 'presentation') => {
     switch (docType) {
       case 'word': return <FileText className="w-5 h-5 text-blue-600" />;
@@ -78,8 +99,8 @@ export function PostCard({ post }: { post: PostProps }) {
   };
 
   return (
-    <Card className="group hover:shadow-md transition-all duration-300 border-border/60">
-      <CardHeader className="flex flex-row items-start justify-between pb-3 pt-5 px-6 space-y-0">
+    <Card className="group hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border-border/60">
+      <CardHeader className="flex flex-row items-start justify-between pb-0 pt-5 px-6 space-y-0">
         <div className="flex gap-3">
           <ProfileHoverCard
             user={{
@@ -128,18 +149,66 @@ export function PostCard({ post }: { post: PostProps }) {
         </div>
       </CardHeader>
       
-      <CardContent className="px-6 pb-3">
+      <CardContent className="px-6 pb-0">
         <h3
           className="text-subsection-title font-bold mb-2 text-foreground group-hover:text-primary transition-colors cursor-pointer"
           onClick={post.onClick}
         >
           {post.title}
         </h3>
-        <p className="text-muted-foreground text-body line-clamp-3 mb-4">
-          {post.snippet}
-        </p>
 
-        {post.type === "whiteboard" && post.contentPreview?.imageUrl && (
+        {/* Description container — fixed height when collapsed, clips everything */}
+        <div
+          ref={snippetRef}
+          className={cn(
+            isCollapsed && "max-h-[4.5em] overflow-hidden"
+          )}
+        >
+          {/* Embedded images before text */}
+          {post.embeddedImages?.filter(img => img.position === 'before').map((img, idx) => (
+            <div key={idx} className="rounded-lg overflow-hidden mb-3">
+              <img
+                src={img.url}
+                alt={img.alt || ""}
+                className="w-full rounded-lg"
+              />
+            </div>
+          ))}
+
+          <p className="text-muted-foreground text-body">
+            {post.snippet}
+          </p>
+
+          {/* Embedded images after text */}
+          {post.embeddedImages?.filter(img => img.position !== 'before').map((img, idx) => (
+            <div key={idx} className="rounded-lg overflow-hidden mt-3">
+              <img
+                src={img.url}
+                alt={img.alt || ""}
+                className="w-full rounded-lg"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Read more / Show less affordance */}
+        {(shouldShowCollapseAffordance || (post.collapsed && isExpanded)) && (
+          <div className="flex justify-start mt-3">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isExpanded) setIsExpanded(false);
+                else setIsExpanded(true);
+              }}
+              className="text-caption uppercase text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              {isExpanded ? "Read less" : "Read more"}
+            </button>
+          </div>
+        )}
+
+        {/* Image AFTER text (default position) — whiteboard type */}
+        {post.imagePosition !== 'before' && post.type === "whiteboard" && post.contentPreview?.imageUrl && (
           <div className="rounded-lg overflow-hidden border border-border bg-muted/30 relative aspect-video">
             <ImageWithFallback 
               src={post.contentPreview.imageUrl} 
@@ -349,8 +418,8 @@ export function PostCard({ post }: { post: PostProps }) {
         )}
       </CardContent>
 
-      <CardFooter className="px-6 py-3 border-t bg-muted/5 flex items-center gap-4">
-        <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground pl-0 hover:bg-transparent">
+      <CardFooter className="!p-0 flex-col items-stretch gap-0 border-t bg-muted/5">
+        <Button variant="ghost" size="sm" className="h-auto gap-2 text-muted-foreground hover:text-foreground hover:bg-transparent justify-start rounded-none px-6 py-3">
           <MessageSquare className="w-4 h-4" />
           <span className="text-caption">{post.stats.comments} Comments</span>
         </Button>

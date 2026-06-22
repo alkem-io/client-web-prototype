@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
-import { Plus, Pin } from "lucide-react";
+import { Plus, Pin, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
@@ -24,9 +24,103 @@ export function SpaceFeed() {
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
   const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
+  const [collapseEnabled, setCollapseEnabled] = useState(true);
   const { searchValue, activeTags, viewMode } = useSpaceFilters();
 
   const posts: PostWithTags[] = [
+    {
+      id: "7",
+      type: "text",
+      tags: ["Updates", "Discussion"],
+      author: {
+        name: "Simone Rietmeijer",
+        role: "Lead",
+        avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Utrecht, NL",
+        skills: ["Design Thinking", "UX Strategy", "Facilitation"],
+      },
+      title: "Why Alkemio looks the way it does",
+      snippet: "So much collaboration today is fleeting. A meeting ends, a chat thread scrolls away, and the momentum quietly disappears. Alkemio is designed around a simple belief: collaboration deserves a home. That belief shapes every design choice you'll encounter.\n\nWe chose card-based layouts because they mirror how people naturally organize ideas — discrete, moveable, stackable. The persistent navigation structure ensures you always know where you are within a space. And the emphasis on visible contributors isn't vanity — it's accountability. When you can see who's involved, trust follows.\n\nThe color palette is intentionally muted. We want the content — your content — to be the loudest thing on screen. The UI should feel like a well-organized desk, not a billboard. Every pixel of chrome we add is a pixel that competes with your work.\n\nThis extends to our typography choices: we use a limited type scale with clear hierarchy so scanning is effortless. Headers tell you what a section is about, body text stays readable at length, and metadata (timestamps, roles) recedes into the background.\n\nWe'd love to hear your thoughts on this direction. Does it feel right? What would you change?",
+      timestamp: "2w geleden",
+      stats: { comments: 14 },
+      commentTexts: ["Love the philosophy behind this!", "The muted palette really does make content pop.", "I'd love to see more personality in the empty states."]
+    },
+    {
+      id: "10",
+      type: "text",
+      tags: ["Updates", "Discussion"],
+      author: {
+        name: "Elena Rodriguez",
+        role: "Lead",
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Valencia, ES",
+        skills: ["Strategy", "Stakeholder Relations", "Policy"],
+      },
+      title: "Site visit photos: North District solar installation",
+      snippet: "Here are the photos from last week's site visit to the North District pilot installation. The panels are now fully operational and feeding into the local grid. The installation team did an excellent job integrating the panels into the existing roofline — you can barely tell they're there from street level. We're already seeing 15% above projected output for this time of year, which bodes well for the budget model.",
+      timestamp: "1 day ago",
+      embeddedImages: [
+        { url: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80&w=1080", alt: "Solar panels on rooftop", position: "before" as const }
+      ],
+      stats: { comments: 4 },
+      commentTexts: ["The integration looks seamless!", "Great output numbers — let's share this with the council."]
+    },
+    {
+      id: "11",
+      type: "text",
+      tags: ["Updates", "Events"],
+      author: {
+        name: "David Miller",
+        role: "Member",
+        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Seoul, KR",
+        skills: ["Software Development", "Grid Systems", "Infrastructure"],
+      },
+      title: "Grid monitoring dashboard — first look",
+      snippet: "Short update — here's a screenshot of the new real-time monitoring dashboard we've been building for the municipal grid.",
+      timestamp: "5 hours ago",
+      embeddedImages: [
+        { url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1080", alt: "Dashboard screenshot", position: "after" as const }
+      ],
+      stats: { comments: 2 },
+      commentTexts: ["Looks great — can we get real-time alerts added?"]
+    },
+    {
+      id: "8",
+      type: "whiteboard",
+      tags: ["Events", "Announcements"],
+      author: {
+        name: "Simone Rietmeijer",
+        role: "Lead",
+        avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Utrecht, NL",
+        skills: ["Design Thinking", "UX Strategy", "Facilitation"],
+      },
+      title: "Join the call!",
+      snippet: "Our monthly community sync is happening this Friday at 14:00 CET. We'll be covering the Q3 roadmap, collecting feedback on the new space settings, and doing a live demo of the updated knowledge base. Everyone is welcome — drop in for as long as you can.",
+      timestamp: "24-6-2025",
+      contentPreview: {
+        imageUrl: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?auto=format&fit=crop&q=80&w=1080"
+      },
+      stats: { comments: 0 },
+    },
+    {
+      id: "9",
+      type: "text",
+      tags: ["Discussion", "Strategy"],
+      author: {
+        name: "Thomas Berg",
+        role: "Member",
+        avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Berlin, DE",
+        skills: ["Policy Analysis", "Municipal Governance", "Stakeholder Engagement", "Public Finance"],
+      },
+      title: "Lessons from the Freiburg Solar Settlement — and what we can adapt",
+      snippet: "I recently visited the Freiburg solar settlement (Solarsiedlung) in Germany, and I wanted to share some observations that are directly relevant to our municipal transition plan.\n\nFirst, the numbers: the settlement produces more energy than it consumes. Every building is oriented to maximize solar gain, and the PV systems on the roofs are tilted at the optimal angle for the latitude. But what struck me most wasn't the engineering — it was the governance model. The residents formed a cooperative that collectively manages the energy production, maintenance, and surplus selling. This created a financial incentive loop that kept the community invested (literally and figuratively) in the system's performance.\n\nSecond, the urban planning integration was seamless. The settlement doesn't look like a 'solar project' — it looks like a neighborhood. The architects (Rolf Disch) designed the buildings to be desirable as homes first, energy-positive second. This matters because the biggest barrier to municipal renewable adoption isn't technology — it's public acceptance.\n\nThird, the regulatory framework in Baden-Württemberg was specifically designed to enable projects like this. Feed-in tariffs, streamlined permitting for solar installations, and municipal co-investment all played a role. We should study whether similar regulatory enablers exist in our context, or whether we need to advocate for them.\n\nI've attached a detailed comparison table and some photos from my visit. Happy to present this at the next strategy session if there's interest.",
+      timestamp: "3 days ago",
+      stats: { comments: 7 },
+      commentTexts: ["This is incredibly valuable — thanks for the deep dive, Thomas.", "The cooperative governance model is exactly what we should be exploring.", "Can you share the comparison table as a document?"]
+    },
     {
       id: "1",
       type: "text",
@@ -188,12 +282,27 @@ export function SpaceFeed() {
       {/* Lead Update — pinned announcement */}
       <LeadUpdate />
 
+      {/* Collapse toggle — space admin setting preview */}
+      <div className="flex items-center justify-end mb-4">
+        <button
+          onClick={() => setCollapseEnabled(!collapseEnabled)}
+          className="flex items-center gap-1.5 text-caption font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+        >
+          {collapseEnabled ? (
+            <><ChevronsUpDown className="w-3.5 h-3.5" /> Expand all posts</>
+          ) : (
+            <><ChevronsDownUp className="w-3.5 h-3.5" /> Collapse posts</>
+          )}
+        </button>
+      </div>
+
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
         {filteredPosts.map((post) => (
           <PostCard 
             key={post.id} 
             post={{
-              ...post, 
+              ...post,
+              collapsed: collapseEnabled,
               onClick: () => setSelectedPost(post),
               onDocumentClick: (doc) => { setSelectedDocument(doc); setSelectedDocAuthor(post.author); }
             }} 
