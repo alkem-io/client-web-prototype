@@ -75,7 +75,14 @@ export default function UserAccountPage() {
   ];
 
   // Mock Data: Custom Homepages
-  const customHomepages = []; // Empty state example
+  const customHomepages = [
+    {
+      id: 1,
+      name: "VNG Innovation Hub",
+      slug: "vng-innovation-hub",
+      description: "Open innovatiehub voor samenwerking tussen en voor de gemeentes.",
+    },
+  ];
 
   // Account capacity limits
   const capacity = {
@@ -309,16 +316,24 @@ export default function UserAccountPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {customHomepages.length > 0 ? (
                 customHomepages.map((page: any) => (
-                  <Card key={page.id} className="group overflow-hidden flex flex-col h-full hover:border-primary/50 transition-colors">
+                  <Link key={page.id} to={`/innovation-hub/${page.slug}`}>
+                  <Card className="group overflow-hidden flex flex-col h-full hover:border-primary/50 transition-colors">
                     <CardHeader className="p-5 pb-2 flex flex-row items-start gap-4">
                       <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                        <Layout className="w-5 h-5" />
+                        <Home className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-subheader font-semibold group-hover:text-primary transition-colors truncate">{page.name}</h3>
+                        <p className="text-caption text-muted-foreground mt-1">{page.description}</p>
                       </div>
+                      <Button size="sm" variant="ghost" className="shrink-0" asChild onClick={(e) => e.stopPropagation()}>
+                        <Link to={`/innovation-hub/${page.slug}/settings`}>
+                          <Settings className="w-4 h-4" />
+                        </Link>
+                      </Button>
                     </CardHeader>
                   </Card>
+                  </Link>
                 ))
               ) : null}
               

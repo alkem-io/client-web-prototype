@@ -539,21 +539,13 @@ export default function InnovationHubPage() {
       {/* ── Description Block ── */}
       <div>
         <div
-          className="rounded-xl p-5"
+          className="text-caption"
           style={{
-            background: "var(--card)",
-            border: "1px solid var(--border)",
+            color: "var(--muted-foreground)",
+            lineHeight: 1.6,
           }}
-        >
-          <div
-            className="text-caption"
-            style={{
-              color: "var(--muted-foreground)",
-              lineHeight: 1.6,
-            }}
-            dangerouslySetInnerHTML={{ __html: hubData.description }}
-          />
-        </div>
+          dangerouslySetInnerHTML={{ __html: hubData.description }}
+        />
       </div>
 
       {/* ── Spaces Section ── */}
@@ -752,9 +744,9 @@ export default function InnovationHubPage() {
         {displayedSpaces.length > 0 ? (
           <>
             <div
-              className="grid gap-5"
+              className="grid gap-4"
               style={{
-                gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
               }}
             >
               {displayedSpaces.map((space) => (

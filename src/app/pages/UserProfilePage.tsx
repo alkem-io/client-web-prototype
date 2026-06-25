@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useParams, Link } from "react-router";
 import { UserProfileHeader } from "@/app/components/user/UserProfileHeader";
 import { OrganizationCard } from "@/app/components/user/OrganizationCard";
+import { OrgHoverCard } from "@/app/components/user/OrgHoverCard";
+import { VCHoverCard } from "@/app/components/user/VCHoverCard";
 import { SpaceGridCard } from "@/app/components/user/SpaceGridCard";
 import { Badge } from "@/app/components/ui/badge";
 import { Bot, Sparkles } from "lucide-react";
@@ -71,13 +73,23 @@ Always looking for collaborators on open source climate data projects. Feel free
               <h2 className="text-section-title font-bold mb-4 flex items-center gap-2">Organizations</h2>
               <div className="flex flex-col gap-3">
                 {organizations.map(org => (
-                  <OrganizationCard 
+                  <OrgHoverCard
                     key={org.id}
-                    name={org.name}
-                    role={org.role}
-                    memberCount={org.memberCount}
-                    imageUrl={org.imageUrl}
-                  />
+                    org={{
+                      name: org.name,
+                      avatarUrl: org.imageUrl,
+                      memberCount: org.memberCount,
+                    }}
+                  >
+                    <div>
+                      <OrganizationCard 
+                        name={org.name}
+                        role={org.role}
+                        memberCount={org.memberCount}
+                        imageUrl={org.imageUrl}
+                      />
+                    </div>
+                  </OrgHoverCard>
                 ))}
               </div>
             </section>
@@ -149,16 +161,25 @@ Always looking for collaborators on open source climate data projects. Feel free
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {virtualContributors.map(vc => (
-                        <Link key={vc.id} to={`/vc/${vc.slug}`} className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:shadow-sm hover:border-primary/30 transition-all">
-                          <div className="p-2 bg-primary/10 rounded-md text-primary">
-                            <Sparkles className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-foreground">{vc.name}</h4>
-                            <p className="text-body text-muted-foreground mb-2">{vc.description}</p>
-                            <Badge variant="secondary" className="text-[10px] h-5">{vc.type}</Badge>
-                          </div>
-                        </Link>
+                        <VCHoverCard
+                          key={vc.id}
+                          vc={{
+                            name: vc.name,
+                            description: vc.description,
+                            profileUrl: `/vc/${vc.slug}`,
+                          }}
+                        >
+                          <Link to={`/vc/${vc.slug}`} className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:shadow-sm hover:border-primary/30 transition-all">
+                            <div className="p-2 bg-primary/10 rounded-md text-primary">
+                              <Sparkles className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-foreground">{vc.name}</h4>
+                              <p className="text-body text-muted-foreground mb-2">{vc.description}</p>
+                              <Badge variant="secondary" className="text-[10px] h-5">{vc.type}</Badge>
+                            </div>
+                          </Link>
+                        </VCHoverCard>
                       ))}
                     </div>
                   </div>

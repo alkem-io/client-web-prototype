@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
+import { VCHoverCard } from "@/app/components/user/VCHoverCard";
 import { cn } from "@/lib/utils";
 
 interface SubspaceSidebarProps {
@@ -407,23 +408,34 @@ export function SubspaceSidebar({
             </p>
           </div>
           <div className="flex items-start gap-3">
-            <Avatar className="w-8 h-8 shrink-0">
-              <AvatarImage
-                src={VIRTUAL_CONTRIBUTOR.avatar}
-                alt={VIRTUAL_CONTRIBUTOR.name}
-              />
-              <AvatarFallback
-                style={{
-                  background:
-                    "color-mix(in srgb, var(--info) 15%, transparent)",
-                  color: "var(--info)",
-                  fontSize: "9px",
-                  fontWeight: 700,
-                }}
-              >
-                DA
-              </AvatarFallback>
-            </Avatar>
+            <VCHoverCard
+              vc={{
+                name: VIRTUAL_CONTRIBUTOR.name,
+                avatarUrl: VIRTUAL_CONTRIBUTOR.avatar,
+                description: VIRTUAL_CONTRIBUTOR.description,
+                initials: "DA",
+              }}
+            >
+              <button className="shrink-0 focus:outline-none">
+                <Avatar className="w-8 h-8 shrink-0">
+                  <AvatarImage
+                    src={VIRTUAL_CONTRIBUTOR.avatar}
+                    alt={VIRTUAL_CONTRIBUTOR.name}
+                  />
+                  <AvatarFallback
+                    style={{
+                      background:
+                        "color-mix(in srgb, var(--info) 15%, transparent)",
+                      color: "var(--info)",
+                      fontSize: "9px",
+                      fontWeight: 700,
+                    }}
+                  >
+                    DA
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            </VCHoverCard>
             <div className="min-w-0">
               <p
                 style={{

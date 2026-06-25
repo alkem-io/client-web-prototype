@@ -15,7 +15,10 @@ import {
   Share2,
   Calendar,
   Shield,
-  Layout
+  Layout,
+  PanelLeftClose,
+  SidebarClose,
+  Columns2
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -66,6 +69,7 @@ export function SpaceSettingsSettings() {
     alkemioSupport: true
   });
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [sidebarDisplay, setSidebarDisplay] = useState("full"); // "full" | "rail" | "hidden"
 
   const handleActionToggle = (key: keyof typeof allowedActions) => {
     setAllowedActions(prev => ({ ...prev, [key]: !prev[key] }));
@@ -88,7 +92,7 @@ export function SpaceSettingsSettings() {
 
       <Separator />
 
-      <Accordion type="multiple" defaultValue={["visibility", "membership", "organizations", "actions"]} className="w-full space-y-4">
+      <Accordion type="multiple" defaultValue={["visibility", "membership", "organizations", "sidebar-display", "actions"]} className="w-full space-y-4">
         
         {/* 2. Visibility Section */}
         <AccordionItem value="visibility" className="border rounded-lg bg-card px-6">
@@ -249,6 +253,65 @@ export function SpaceSettingsSettings() {
         </AccordionItem>
 
         {/* 5. Allowed Actions Section */}
+        <AccordionItem value="sidebar-display" className="border rounded-lg bg-card px-6">
+          <AccordionTrigger className="hover:no-underline py-6">
+            <div className="flex flex-col items-start gap-1">
+              <h3 className="text-subsection-title flex items-center gap-2">
+                Sidebar Panel Display
+              </h3>
+              <p className="text-body text-muted-foreground font-normal text-left">
+                Control how the left sidebar panel appears for all visitors of this space
+              </p>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="pb-6 pt-0">
+            <RadioGroup value={sidebarDisplay} onValueChange={setSidebarDisplay} className="space-y-4">
+              <div className="flex items-start space-x-3 p-4 rounded-md border bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer" onClick={() => setSidebarDisplay("full")}>
+                <RadioGroupItem value="full" id="sidebar-full" className="mt-1" />
+                <div className="space-y-1">
+                  <Label htmlFor="sidebar-full" className="text-subheader flex items-center gap-2 cursor-pointer">
+                    <Columns2 className="w-4 h-4 text-info" />
+                    Full Sidebar
+                  </Label>
+                  <p className="text-body text-muted-foreground">
+                    The sidebar panel is fully visible with search, filters, tags, subspace links, and action buttons. This is the default layout.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3 p-4 rounded-md border bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer" onClick={() => setSidebarDisplay("rail")}>
+                <RadioGroupItem value="rail" id="sidebar-rail" className="mt-1" />
+                <div className="space-y-1">
+                  <Label htmlFor="sidebar-rail" className="text-subheader flex items-center gap-2 cursor-pointer">
+                    <SidebarClose className="w-4 h-4 text-primary" />
+                    Icon Rail
+                  </Label>
+                  <p className="text-body text-muted-foreground">
+                    A slim icon strip replaces the full sidebar. Visitors can click icons to access Search, Tags, Post, and Subspaces in a popover overlay.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3 p-4 rounded-md border bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer" onClick={() => setSidebarDisplay("hidden")}>
+                <RadioGroupItem value="hidden" id="sidebar-hidden" className="mt-1" />
+                <div className="space-y-1">
+                  <Label htmlFor="sidebar-hidden" className="text-subheader flex items-center gap-2 cursor-pointer">
+                    <PanelLeftClose className="w-4 h-4 text-warning" />
+                    Hidden
+                  </Label>
+                  <p className="text-body text-muted-foreground">
+                    The sidebar panel is completely hidden. The content area expands to full width for a clean "one-pager" experience. No sidebar actions are available.
+                  </p>
+                </div>
+              </div>
+            </RadioGroup>
+            <div className="mt-4 p-3 rounded-md bg-muted/30 border border-border">
+              <p className="text-caption text-muted-foreground">
+                <strong>Preview:</strong> Add <code className="text-xs bg-muted px-1 py-0.5 rounded">?panel=hidden</code> or <code className="text-xs bg-muted px-1 py-0.5 rounded">?panel=rail</code> to any space page URL to preview this setting.
+              </p>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* 6. Allowed Actions Section */}
         <AccordionItem value="actions" className="border rounded-lg bg-card px-6">
           <AccordionTrigger className="hover:no-underline py-6">
             <div className="flex flex-col items-start gap-1">

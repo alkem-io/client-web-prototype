@@ -14,6 +14,7 @@ import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
+import { OrgHoverCard } from "@/app/components/user/OrgHoverCard";
 
 // ── Types ──
 interface MemberEntry {
@@ -462,16 +463,27 @@ function UserCard({
 
 // ── Organization Card ──
 function OrgCard({ org }: { org: OrgEntry }) {
+  const orgHoverData = {
+    name: org.name,
+    avatarUrl: org.avatar,
+    initials: org.initials,
+    type: org.type,
+    description: org.description,
+    memberCount: org.members,
+    website: org.website,
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
       <CardContent className="p-0">
         <div className="p-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <Link
-              to={`/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`}
-              className="transition-opacity hover:opacity-80"
-            >
-              <Avatar
+            <OrgHoverCard org={orgHoverData}>
+              <Link
+                to={`/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`}
+                className="transition-opacity hover:opacity-80"
+              >
+                <Avatar
                 className="w-12 h-12"
                 style={{
                   borderRadius: "var(--radius)",
@@ -495,7 +507,8 @@ function OrgCard({ org }: { org: OrgEntry }) {
                   {org.initials}
                 </AvatarFallback>
               </Avatar>
-            </Link>
+              </Link>
+            </OrgHoverCard>
             <div>
               <Link
                 to={`/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`}

@@ -3,8 +3,8 @@ import { useParams, useLocation, useSearchParams, Outlet, Link } from "react-rou
 import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { SpaceSidebar } from "./SpaceSidebar";
-import { FilterProvider } from "./FilterContext";
-import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, Search, Plus, MessageCircle, Calendar, CalendarDays } from "lucide-react";
+import { FilterProvider, useSpaceFilters } from "./FilterContext";
+import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, Search, Plus, MessageCircle, Calendar, CalendarDays, Tag, LayoutGrid } from "lucide-react";
 import { AboutThisSpaceDialog } from "./AboutThisSpaceDialog";
 import { WelcomeSpaceDialog } from "@/app/components/dialogs/WelcomeSpaceDialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/components/ui/sheet";
@@ -29,6 +29,8 @@ export function SpaceShell() {
   const [welcomeOpen, setWelcomeOpen] = useState(searchParams.get("welcome") === "true");
   // Mobile responsive strategy: ?m=1..5 (0 = default/hidden)
   const mobileStrategy = Math.max(0, Math.min(5, parseInt(searchParams.get("m") || "0") || 0)) as 0 | 1 | 2 | 3 | 4 | 5;
+  // Sidebar panel display mode: ?panel=full|rail|hidden (admin setting)
+  const panelMode = (searchParams.get("panel") || "full") as "full" | "rail" | "hidden";
 
   const handleActiveTabChange = useCallback((description: string) => {
     setActiveTabDescription(description);
@@ -64,10 +66,10 @@ export function SpaceShell() {
           <Icon className="w-3.5 h-3.5" />
         </button>
       ))}
-      {/* Calendar with event count badge */}
+      {/* Calendar with upcoming events chip */}
       <button
         onClick={() => setEventsOpen(true)}
-        className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors relative"
+        className="h-7 px-2.5 rounded-lg flex items-center gap-1.5 transition-colors"
         style={{
           background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
           color: "var(--muted-foreground)",
@@ -75,8 +77,8 @@ export function SpaceShell() {
         title="Upcoming Events"
       >
         <Calendar className="w-3.5 h-3.5" />
-        <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
-          3
+        <span className="text-[11px] font-medium whitespace-nowrap">
+          3 this week
         </span>
       </button>
       <Link to={`/space/${slug}/settings`}>
@@ -149,7 +151,7 @@ export function SpaceShell() {
               )}
 
               {/* ═══ DEFAULT (m=0): Original behavior — sidebar hidden on mobile ═══ */}
-              {mobileStrategy === 0 && (
+              {mobileStrategy === 0 && panelMode === "full" && (
                 <>
                   <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
                     <aside>
@@ -160,6 +162,20 @@ export function SpaceShell() {
                     <Outlet />
                   </div>
                 </>
+              )}
+
+              {/* ═══ PANEL HIDDEN: Full-width one-pager layout ═══ */}
+              {mobileStrategy === 0 && panelMode === "hidden" && (
+                <div className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} min-w-0`}>
+                  <Outlet />
+                </div>
+              )}
+
+              {/* ═══ PANEL RAIL: Slim icon rail + expanded content ═══ */}
+              {mobileStrategy === 0 && panelMode === "rail" && (
+                <div className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} min-w-0`}>
+                  <SidebarIconRail slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} />
+                </div>
               )}
             </div>
           </div>
@@ -231,6 +247,12 @@ export function SpaceShell() {
       {mobileStrategy > 0 && (
         <div className="fixed top-20 right-4 z-[100] bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-lg">
           Mobile Option {mobileStrategy} · ?m=1…5
+        </div>
+      )}
+      {/* Panel mode indicator badge */}
+      {panelMode !== "full" && (
+        <div className="fixed top-20 right-4 z-[100] bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-lg">
+          Panel: {panelMode} · ?panel=rail|hidden
         </div>
       )}
     </FilterProvider>
@@ -645,6 +667,227 @@ function MobileBottomNavFAB({ slug, sidebarVariant, activeTabDescription, usesSc
         </div>
       </div>
     </>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SIDEBAR ICON RAIL: Slim vertical icon strip with popover overlays
+// Replaces full sidebar when admin sets panel=rail
+// ═══════════════════════════════════════════════════════════════════
+
+function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScaling }: MobileStrategyProps) {
+  const [activePopover, setActivePopover] = useState<string | null>(null);
+  const { searchValue, setSearchValue, activeTags, toggleTag, clearTags } = useSpaceFilters();
+
+  const TAB_TAGS: Record<string, string[]> = {
+    home: ["Updates", "Announcements", "Events", "Ideas", "Questions", "Partnerships", "Research", "Progress"],
+    community: ["Active", "Leads", "New Members", "Organizations", "Mentors"],
+    workspaces: ["Energy", "Strategy", "Transport", "Urban", "Policy", "Community", "Digital"],
+    knowledge: ["Reports", "Research", "Policy", "Technical", "Templates", "Community", "Data", "Funding"],
+  };
+
+  const SUBSPACE_LINKS = [
+    { name: "Energy Transition", href: `/space/${slug}/subspaces` },
+    { name: "Mobility Hub", href: `/space/${slug}/subspaces` },
+    { name: "Circular Economy", href: `/space/${slug}/subspaces` },
+  ];
+
+  const tags = TAB_TAGS[sidebarVariant] || TAB_TAGS.home;
+
+  const togglePopover = (id: string) => {
+    setActivePopover(activePopover === id ? null : id);
+  };
+
+  return (
+    <div className="flex relative">
+      {/* Slim icon rail */}
+      <div className="hidden lg:flex flex-col items-center gap-0 shrink-0 sticky top-[8.5rem] self-start">
+        {/* Search */}
+        <button
+          onClick={() => togglePopover("search")}
+          className={cn(
+            "w-9 h-9 rounded-lg flex items-center justify-center transition-colors relative",
+            activePopover === "search"
+              ? "bg-primary/10 text-primary border border-primary/30"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+          )}
+          title="Search"
+        >
+          <Search className="w-4 h-4" />
+        </button>
+
+        {/* Tags/Filter */}
+        <button
+          onClick={() => togglePopover("tags")}
+          className={cn(
+            "w-9 h-9 rounded-lg flex items-center justify-center transition-colors relative",
+            activePopover === "tags"
+              ? "bg-primary/10 text-primary border border-primary/30"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+          )}
+          title="Filter by Tags"
+        >
+          <Tag className="w-4 h-4" />
+          {activeTags.length > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
+              {activeTags.length}
+            </span>
+          )}
+        </button>
+
+        {/* Post/Contribute */}
+        <button
+          onClick={() => togglePopover("post")}
+          className={cn(
+            "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
+            activePopover === "post"
+              ? "bg-primary/10 text-primary border border-primary/30"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+          )}
+          title="Post"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+
+        {/* Subspaces */}
+        <button
+          onClick={() => togglePopover("subspaces")}
+          className={cn(
+            "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
+            activePopover === "subspaces"
+              ? "bg-primary/10 text-primary border border-primary/30"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+          )}
+          title="Subspaces"
+        >
+          <LayoutGrid className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Popover overlays — floating on top of content */}
+      {activePopover && (
+        <div className="hidden lg:block absolute left-10 top-0 w-64 z-20">
+          <div className="relative rounded-xl border border-border bg-card shadow-lg p-4 animate-in slide-in-from-left-2 duration-200">
+            {/* Close button */}
+            <button
+              onClick={() => setActivePopover(null)}
+              className="absolute top-2 right-2 w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Search popover */}
+            {activePopover === "search" && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">Search</h4>
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search posts, comments, documents…"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    className="w-full h-9 pl-8 pr-3 text-sm rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+                    autoFocus
+                  />
+                </div>
+                {searchValue && (
+                  <p className="text-xs text-muted-foreground">
+                    Filtering by: <span className="font-medium text-foreground">"{searchValue}"</span>
+                    <button onClick={() => setSearchValue("")} className="ml-2 text-primary hover:underline">Clear</button>
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Tags popover */}
+            {activePopover === "tags" && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-semibold">Filter by Tags</h4>
+                  {activeTags.length > 0 && (
+                    <button onClick={clearTags} className="text-xs text-primary hover:underline">
+                      Clear all
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => toggleTag(tag)}
+                      className={cn(
+                        "px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
+                        activeTags.includes(tag)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                      )}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Post popover */}
+            {activePopover === "post" && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">Contribute</h4>
+                <div className="space-y-2">
+                  <Button size="sm" className="w-full justify-start gap-2">
+                    <Plus className="w-3.5 h-3.5" />
+                    New Post
+                  </Button>
+                  {sidebarVariant === "community" && (
+                    <>
+                      <Button size="sm" variant="outline" className="w-full justify-start gap-2">
+                        <Users className="w-3.5 h-3.5" />
+                        Add User
+                      </Button>
+                      <Button size="sm" variant="outline" className="w-full justify-start gap-2">
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        Contact Leads
+                      </Button>
+                    </>
+                  )}
+                  {sidebarVariant === "workspaces" && (
+                    <Button size="sm" variant="outline" className="w-full justify-start gap-2">
+                      <Layers className="w-3.5 h-3.5" />
+                      Create Subspace
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Subspaces popover */}
+            {activePopover === "subspaces" && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold">Subspaces</h4>
+                <div className="space-y-1">
+                  {SUBSPACE_LINKS.map((sub) => (
+                    <Link
+                      key={sub.name}
+                      to={sub.href}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      {sub.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Main content — always full width */}
+      <div className="flex-1 min-w-0 ml-3">
+        <Outlet />
+      </div>
+    </div>
   );
 }
 
