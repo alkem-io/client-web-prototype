@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#167EC4"/>
+      <stop offset="40%" stop-color="#2FA2D8"/>
+      <stop offset="70%" stop-color="#64C6DA"/>
+      <stop offset="91%" stop-color="#A8E2D9"/>
+      <stop offset="100%" stop-color="#EDE9BF"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q77,44 187,29 T436,69 V0 Z" fill="rgba(19,92,172,0.45)"/>
+  <path d="M-20,0 Q106,64 216,47 T436,94 V0 Z" fill="rgba(26,122,196,0.30)"/>
+  <path d="M-20,20 Q100,74 210,57 T436,103 V0 Z" fill="rgba(42,155,212,0.20)"/>
+  <path d="M-20,256 Q60,188 170,204 T326,170 T436,186 V256 Z" fill="rgba(85,195,215,0.20)"/>
+  <path d="M-20,256 Q87,211 197,224 T351,197 T436,212 V256 Z" fill="rgba(124,214,205,0.13)"/>
+  <path d="M163,256 Q246,218 336,228 T436,198 V256 Z" fill="rgba(206,226,176,0.11)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="22" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Waardescanner</text>
+</svg>

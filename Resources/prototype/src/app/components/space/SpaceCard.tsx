@@ -38,9 +38,10 @@ export interface SpaceCardData {
 interface SpaceCardProps {
   space: SpaceCardData;
   className?: string;
+  compact?: boolean;
 }
 
-export function SpaceCard({ space, className }: SpaceCardProps) {
+export function SpaceCard({ space, className, compact = false }: SpaceCardProps) {
   const href = space.parent
     ? `/space/${space.parent.slug}/subspaces/${space.slug}`
     : `/space/${space.slug}`;
@@ -50,6 +51,60 @@ export function SpaceCard({ space, className }: SpaceCardProps) {
   const overflowCount = space.leads.length - maxVisibleLeads;
 
   const { t } = useLanguage();
+
+  if (compact) {
+    return (
+      <Link to={href} className={cn("group block outline-none", className)}>
+        <div
+          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
+          style={{
+            background: "var(--card)",
+            border: "1px solid var(--border)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = "var(--elevation-sm)";
+            e.currentTarget.style.borderColor = "color-mix(in srgb, var(--primary) 30%, var(--border))";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = "none";
+            e.currentTarget.style.borderColor = "var(--border)";
+          }}
+        >
+          {/* Avatar */}
+          <Avatar className="w-10 h-10 shrink-0 rounded-lg">
+            {space.avatar ? (
+              <AvatarImage src={space.avatar} alt={space.name} className="object-cover" />
+            ) : null}
+            <AvatarFallback
+              className="rounded-lg text-xs font-semibold text-white"
+              style={{ background: space.avatarColor }}
+            >
+              {space.initials}
+            </AvatarFallback>
+          </Avatar>
+
+          {/* Info */}
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+              {space.name}
+            </h3>
+            <p className="text-xs text-muted-foreground truncate mt-0.5">
+              {space.description}
+            </p>
+          </div>
+
+          {/* Meta */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Users className="w-3.5 h-3.5" />
+              <span>{space.memberCount}</span>
+            </div>
+            {space.isPrivate && <Lock className="w-3.5 h-3.5 text-muted-foreground" />}
+          </div>
+        </div>
+      </Link>
+    );
+  }
 
   return (
     <Link to={href} className={cn("group block h-full outline-none", className)}>
@@ -114,84 +169,11 @@ export function SpaceCard({ space, className }: SpaceCardProps) {
             </div>
           </div>
 
-          {/* Space avatar — overlaps banner and card body */}
-          <div className="absolute left-4" style={{ bottom: -18, zIndex: 10 }}>
-            {space.parent ? (
-              /* Stacked avatars for subspace: parent behind, subspace in front */
-              <div className="relative" style={{ width: 44, height: 44 }}>
-                {/* Parent avatar (behind) — derived from banner */}
-                <div
-                  className="absolute top-0 left-0 overflow-hidden flex items-center justify-center"
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "var(--radius)",
-                    border: "2px solid var(--card)",
-                    background: space.parent.bannerImage ? undefined : space.parent.avatarColor,
-                    zIndex: 1,
-                  }}
-                >
-                  {space.parent.bannerImage ? (
-                    <img src={space.parent.bannerImage} alt={space.parent.name} className="w-full h-full object-cover" />
-                  ) : space.parent.avatar ? (
-                    <img src={space.parent.avatar} alt={space.parent.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span style={{ fontSize: "9px", fontWeight: 700, color: "var(--primary-foreground)" }}>
-                      {space.parent.initials}
-                    </span>
-                  )}
-                </div>
-                {/* Subspace avatar (in front) */}
-                <div
-                  className="absolute bottom-0 right-0 overflow-hidden flex items-center justify-center"
-                  style={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: "var(--radius)",
-                    border: "2.5px solid var(--card)",
-                    background: space.avatarColor,
-                    zIndex: 2,
-                    boxShadow: "var(--elevation-sm)",
-                  }}
-                >
-                  {space.avatar ? (
-                    <img src={space.avatar} alt={space.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span style={{ fontSize: "10px", fontWeight: 700, color: "var(--primary-foreground)" }}>
-                      {space.initials}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ) : (
-              /* Single avatar for top-level space — derived from banner */
-              <div
-                className="overflow-hidden flex items-center justify-center"
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "var(--radius)",
-                  border: "2.5px solid var(--card)",
-                  background: space.bannerImage ? undefined : space.avatarColor,
-                  boxShadow: "var(--elevation-sm)",
-                }}
-              >
-                {space.bannerImage ? (
-                  <img src={space.bannerImage} alt={space.name} className="w-full h-full object-cover" />
-                ) : space.avatar ? (
-                  <img src={space.avatar} alt={space.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--primary-foreground)" }}>
-                    {space.initials}
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
+
         </div>
 
         {/* Card Body */}
-        <div className="flex flex-col flex-1" style={{ padding: "24px 16px 0" }}>
+        <div className="flex flex-col flex-1" style={{ padding: "16px 16px 0" }}>
           {/* Name */}
           <h3
             className="truncate transition-colors duration-200 text-card-title"
@@ -334,16 +316,7 @@ export function SpaceCard({ space, className }: SpaceCardProps) {
             </div>
           </div>
 
-          {/* Member Count */}
-          <div
-            className="flex items-center gap-1.5 text-caption"
-            style={{
-              color: "var(--muted-foreground)",
-            }}
-          >
-            <Users style={{ width: 12, height: 12 }} />
-            <span>{space.memberCount}</span>
-          </div>
+
         </div>
       </div>
     </Link>

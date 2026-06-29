@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="5%" x2="100%" y2="95%">
+      <stop offset="0%" stop-color="#117EC6"/>
+      <stop offset="37%" stop-color="#289CD2"/>
+      <stop offset="67%" stop-color="#54BED6"/>
+      <stop offset="89%" stop-color="#98D8D0"/>
+      <stop offset="100%" stop-color="#E3DFB2"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q90,50 200,34 T436,78 V0 Z" fill="rgba(15,82,160,0.48)"/>
+  <path d="M-20,0 Q118,70 228,52 T436,102 V0 Z" fill="rgba(22,112,188,0.32)"/>
+  <path d="M-20,26 Q108,82 218,65 T436,115 V0 Z" fill="rgba(37,146,206,0.22)"/>
+  <path d="M-20,256 Q65,192 175,208 T335,174 T436,190 V256 Z" fill="rgba(78,188,210,0.21)"/>
+  <path d="M-20,256 Q92,215 202,228 T358,200 T436,215 V256 Z" fill="rgba(115,205,198,0.14)"/>
+  <path d="M170,256 Q255,222 345,232 T436,202 V256 Z" fill="rgba(195,215,162,0.10)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="19" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Maatschappelijke Pas</text>
+</svg>

@@ -112,6 +112,8 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
   // Normalize pathname: remove trailing slash
   const path = pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
 
+  const homeSegment: BreadcrumbSegment = { label: "Home", href: "/", isCurrentPage: false, icon: logoIcon() };
+
   // ── Dashboard ── (logo in Header is already the Home link; no extra segments)
   if (path === "/" || path === "/dashboard") {
     return [];

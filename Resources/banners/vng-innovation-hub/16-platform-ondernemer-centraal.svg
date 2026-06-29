@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1274BC"/>
+      <stop offset="38%" stop-color="#2A98D2"/>
+      <stop offset="68%" stop-color="#58C0D6"/>
+      <stop offset="90%" stop-color="#9CDAD2"/>
+      <stop offset="100%" stop-color="#E6E2B6"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q72,52 182,35 T436,78 V0 Z" fill="rgba(16,84,162,0.47)"/>
+  <path d="M-20,0 Q102,72 212,55 T436,105 V0 Z" fill="rgba(22,114,188,0.31)"/>
+  <path d="M-20,27 Q108,82 218,66 T436,115 V0 Z" fill="rgba(38,148,208,0.22)"/>
+  <path d="M-20,256 Q66,195 176,210 T338,176 T436,192 V256 Z" fill="rgba(78,188,210,0.21)"/>
+  <path d="M-20,256 Q94,218 204,230 T362,202 T436,218 V256 Z" fill="rgba(115,205,198,0.15)"/>
+  <path d="M175,256 Q260,224 350,234 T436,204 V256 Z" fill="rgba(198,218,168,0.10)"/>
+  <text x="208" y="128" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="18" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Platform</text>
+  <text x="208" y="150" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="18" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Ondernemer Centraal</text>
+</svg>

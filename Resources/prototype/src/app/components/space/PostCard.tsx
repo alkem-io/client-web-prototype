@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
 import { cn } from "@/lib/utils";
 import { MessageSquare, MoreHorizontal, LayoutGrid, FileText, Presentation, Maximize2, FileSpreadsheet, FileImage } from "lucide-react";
+import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 
 export type PostType = "text" | "whiteboard" | "collection" | "call-for-whiteboards" | "document";
 
@@ -16,6 +16,8 @@ export interface PostProps {
     name: string;
     avatarUrl?: string;
     role: string;
+    location?: string;
+    skills?: string[];
   };
   title: string;
   snippet: string;
@@ -30,6 +32,12 @@ export interface PostProps {
   stats: {
     comments: number;
   };
+  /** Searchable comment/response text snippets */
+  commentTexts?: string[];
+  /** Whether this post should render in collapsed mode */
+  collapsed?: boolean;
+  /** User-embedded images in the post body (plain images, no interactive overlay) */
+  embeddedImages?: Array<{ url: string; alt?: string; position?: 'before' | 'after' }>;
   onClick?: () => void;
   onDocumentClick?: (doc: { title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string }) => void;
 }
@@ -37,6 +45,24 @@ export interface PostProps {
 export function PostCard({ post }: { post: PostProps }) {
   const [activeDocIndex, setActiveDocIndex] = useState(0);
   const [activeDocPage, setActiveDocPage] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [needsCollapse, setNeedsCollapse] = useState(false);
+  const snippetRef = useRef<HTMLDivElement>(null);
+
+  // Check if description container overflows the fixed height
+  const checkOverflow = useCallback(() => {
+    if (post.collapsed && snippetRef.current) {
+      setNeedsCollapse(snippetRef.current.scrollHeight > snippetRef.current.clientHeight + 2);
+    }
+  }, [post.collapsed]);
+
+  // Run overflow check on mount and when content changes
+  useEffect(() => {
+    checkOverflow();
+  }, [checkOverflow, post.snippet, post.embeddedImages]);
+
+  const isCollapsed = post.collapsed && !isExpanded;
+  const shouldShowCollapseAffordance = isCollapsed && needsCollapse;
   const getDocIcon = (docType: 'word' | 'spreadsheet' | 'presentation') => {
     switch (docType) {
       case 'word': return <FileText className="w-5 h-5 text-blue-600" />;
@@ -74,22 +100,31 @@ export function PostCard({ post }: { post: PostProps }) {
   };
 
   return (
-    <Card className="group hover:shadow-md transition-all duration-300 border-border/60">
-      <CardHeader className="flex flex-row items-start justify-between pb-3 pt-5 px-6 space-y-0">
+    <Card className="group hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border-border/60">
+      <CardHeader className="flex flex-row items-start justify-between pb-0 pt-5 px-6 space-y-0">
         <div className="flex gap-3">
-          <Avatar className="w-10 h-10 border border-border">
-            <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
-            <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <ProfileHoverCard
+            user={{
+              name: post.author.name,
+              avatarUrl: post.author.avatarUrl,
+              initials: post.author.name.charAt(0),
+              location: post.author.location,
+              tags: post.author.skills,
+            }}
+          >
+            <button type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full">
+              <Avatar className="w-10 h-10 border border-border">
+                <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
+                <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+            </button>
+          </ProfileHoverCard>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-card-title text-foreground">{post.author.name}</span>
               <span className="text-caption text-muted-foreground">• {post.timestamp}</span>
             </div>
             <div className="flex items-center gap-2 mt-0.5">
-              <Badge variant="secondary" className="text-badge font-normal h-5 px-1.5">
-                {post.author.role}
-              </Badge>
               <span className="text-caption text-muted-foreground flex items-center gap-1">
                 {getIcon()} {getLabel()}
               </span>
@@ -115,16 +150,65 @@ export function PostCard({ post }: { post: PostProps }) {
         </div>
       </CardHeader>
       
-      <CardContent className="px-6 pb-3">
+      <CardContent className="px-6 pb-0">
         <h3
           className="text-subsection-title font-bold mb-2 text-foreground group-hover:text-primary transition-colors cursor-pointer"
           onClick={post.onClick}
         >
           {post.title}
         </h3>
-        <p className="text-muted-foreground text-body line-clamp-3 mb-4">
-          {post.snippet}
-        </p>
+
+        {/* Description container — fixed height when collapsed, clips everything */}
+        <div
+          ref={snippetRef}
+          className={cn(
+            isCollapsed && "max-h-[4.5em] overflow-hidden"
+          )}
+        >
+          {/* Embedded images before text */}
+          {post.embeddedImages?.filter(img => img.position === 'before').map((img, idx) => (
+            <div key={idx} className="rounded-lg overflow-hidden mb-3">
+              <img
+                src={img.url}
+                alt={img.alt || ""}
+                className="w-full rounded-lg"
+                onLoad={checkOverflow}
+              />
+            </div>
+          ))}
+
+          <p className="text-muted-foreground text-body">
+            {post.snippet}
+          </p>
+
+          {/* Embedded images after text */}
+          {post.embeddedImages?.filter(img => img.position !== 'before').map((img, idx) => (
+            <div key={idx} className="rounded-lg overflow-hidden mt-3">
+              <img
+                src={img.url}
+                alt={img.alt || ""}
+                className="w-full rounded-lg"
+                onLoad={checkOverflow}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Read more / Show less affordance */}
+        {(shouldShowCollapseAffordance || (post.collapsed && isExpanded)) && (
+          <div className="flex justify-start mt-3">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isExpanded) setIsExpanded(false);
+                else setIsExpanded(true);
+              }}
+              className="text-caption uppercase text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              {isExpanded ? "Read less" : "Read more"}
+            </button>
+          </div>
+        )}
 
         {post.type === "whiteboard" && post.contentPreview?.imageUrl && (
           <div className="rounded-lg overflow-hidden border border-border bg-muted/30 relative aspect-video">
@@ -336,8 +420,8 @@ export function PostCard({ post }: { post: PostProps }) {
         )}
       </CardContent>
 
-      <CardFooter className="px-6 py-3 border-t bg-muted/5 flex items-center gap-4">
-        <Button variant="ghost" size="sm" className="h-8 gap-2 text-muted-foreground hover:text-foreground pl-0 hover:bg-transparent">
+      <CardFooter className="!p-0 flex-col items-stretch gap-0 border-t bg-muted/5">
+        <Button variant="ghost" size="sm" className="h-auto gap-2 text-muted-foreground hover:text-foreground hover:bg-transparent justify-start rounded-none px-6 py-3">
           <MessageSquare className="w-4 h-4" />
           <span className="text-caption">{post.stats.comments} Comments</span>
         </Button>

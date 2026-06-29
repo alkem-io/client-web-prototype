@@ -35,14 +35,29 @@ import {
   Mail,
   Briefcase,
   ChevronDown,
-  MoreHorizontal,
+  MoreVertical,
   ArrowRight,
   Eye,
+  EyeOff,
   XCircle,
+  Plus,
+  Trash2,
+  PanelLeft,
+  PanelLeftClose,
+  EyeOff as PanelLeftOff,
+  AlignLeft,
+  Tag,
+  Layers as LayersIcon,
+  ListOrdered,
+  FileEdit,
+  UserPlus,
+  MessageSquarePlus,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
+import { Switch } from "@/app/components/ui/switch";
+import { Label } from "@/app/components/ui/label";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -59,6 +74,10 @@ import {
   DropdownMenuSeparator,
 } from "@/app/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
+import { SaveBar } from "@/app/components/shared/SaveBar";
+import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
+import { SettingsSection } from "@/app/components/shared/SettingsSection";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type TabId = "home" | "community" | "subspaces" | "knowledge";
@@ -285,13 +304,12 @@ const PostCard = ({
             className="w-6 h-6 shrink-0 opacity-0 group-hover/post:opacity-100 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
-            <MoreHorizontal className="w-3.5 h-3.5" />
+            <MoreVertical className="w-3.5 h-3.5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <ArrowRight className="w-4 h-4 mr-2" />
               Move to
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -312,14 +330,6 @@ const PostCard = ({
           <DropdownMenuItem>
             <Eye className="w-4 h-4 mr-2" />
             View Post
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="text-destructive focus:text-destructive"
-            onClick={() => onRemove(post.id, tabId)}
-          >
-            <XCircle className="w-4 h-4 mr-2" />
-            Remove from Tab
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -373,24 +383,8 @@ const KanbanColumn = ({
 }: KanbanColumnProps) => {
   const autoExpandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [showIconPicker, setShowIconPicker] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const descInputRef = useRef<HTMLInputElement>(null);
-  const iconPickerRef = useRef<HTMLDivElement>(null);
-  const Icon = tab.icon;
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        iconPickerRef.current &&
-        !iconPickerRef.current.contains(event.target as Node)
-      ) {
-        setShowIconPicker(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   useEffect(() => {
     if (isEditing && inputRef.current) inputRef.current.focus();
@@ -462,42 +456,7 @@ const KanbanColumn = ({
       >
         <div className="px-3 py-3 bg-muted/30 space-y-2">
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowIconPicker(!showIconPicker);
-                }}
-                className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-secondary/80 transition-colors"
-                title="Change Icon"
-              >
-                <Icon className="w-4 h-4" />
-              </button>
-              {showIconPicker && (
-                <div
-                  ref={iconPickerRef}
-                  className="absolute left-0 top-9 z-50 w-64 bg-popover text-popover-foreground rounded-lg border border-border shadow-md p-2 grid grid-cols-6 gap-1"
-                >
-                  {AVAILABLE_ICONS.map((item, i) => (
-                    <button
-                      key={i}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onIconChange(tab.id, item.icon);
-                        setShowIconPicker(false);
-                      }}
-                      className={cn(
-                        "p-1.5 rounded-md hover:bg-accent hover:text-accent-foreground flex items-center justify-center",
-                        tab.icon === item.icon && "bg-accent text-accent-foreground"
-                      )}
-                      title={item.label}
-                    >
-                      <item.icon className="w-4 h-4" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <GripVertical className="w-4 h-4 text-muted-foreground/40 shrink-0 cursor-grab active:cursor-grabbing" />
 
             <div className="flex-1 min-w-0 flex items-center gap-1.5 group/header">
               {isEditing ? (
@@ -531,6 +490,46 @@ const KanbanColumn = ({
             <Badge variant="secondary" className="text-caption tabular-nums shrink-0">
               {posts.length}
             </Badge>
+
+            {/* Column overflow menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="p-1 rounded hover:bg-muted/50 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreVertical className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuItem disabled>
+                  <Check className="w-3.5 h-3.5 mr-2" />
+                  Set as Active Phase
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setEditingId(tab.id)}>
+                  <Pencil className="w-3.5 h-3.5 mr-2" />
+                  Edit Details
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  Set Default Post Template
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  Clear Default Template
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <EyeOff className="w-3.5 h-3.5 mr-2" />
+                  Hide Tab
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                  <Trash2 className="w-3.5 h-3.5 mr-2" />
+                  Delete Tab
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <CollapsibleTrigger asChild>
               <button className="p-0.5 rounded hover:bg-muted/50 transition-colors">
@@ -711,6 +710,65 @@ export function SpaceSettingsLayout() {
     knowledge: true,
   });
 
+  const [postDescCollapsed, setPostDescCollapsed] = useState(() => {
+    const stored = localStorage.getItem('alkemio-collapse-posts');
+    return stored !== null ? stored === 'true' : true;
+  });
+  const [savedPostDescCollapsed, setSavedPostDescCollapsed] = useState(() => {
+    const stored = localStorage.getItem('alkemio-collapse-posts');
+    return stored !== null ? stored === 'true' : true;
+  });
+  const [sidebarMode, setSidebarMode] = useState<'expanded' | 'railed' | 'hidden'>('expanded');
+  const [savedSidebarMode, setSavedSidebarMode] = useState<'expanded' | 'railed' | 'hidden'>('expanded');
+
+  // Sidebar default collapsed state (expanded or railed)
+  const [sidebarDefaultCollapsed, setSidebarDefaultCollapsed] = useState(() => {
+    return localStorage.getItem('alkemio-sidebar-default') === 'railed';
+  });
+  const [savedSidebarDefaultCollapsed, setSavedSidebarDefaultCollapsed] = useState(() => {
+    return localStorage.getItem('alkemio-sidebar-default') === 'railed';
+  });
+
+  // Sidebar feature toggles — per tab
+  type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
+  const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
+  type PerTabFeatures = Record<TabId, SidebarFeatureSet>;
+  const defaultPerTabFeatures: PerTabFeatures = {
+    home: { ...defaultFeatureSet },
+    community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
+    subspaces: { ...defaultFeatureSet, addUser: false },
+    knowledge: { ...defaultFeatureSet, addUser: false, createSubspace: false, subspaceLinks: false },
+  };
+  const [sidebarFeatures, setSidebarFeatures] = useState<PerTabFeatures>(() => {
+    try {
+      const stored = localStorage.getItem('alkemio-sidebar-features');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Merge with defaults for each tab
+        const merged: PerTabFeatures = { ...defaultPerTabFeatures };
+        for (const tabId of Object.keys(defaultPerTabFeatures) as TabId[]) {
+          if (parsed[tabId]) merged[tabId] = { ...defaultPerTabFeatures[tabId], ...parsed[tabId] };
+        }
+        return merged;
+      }
+      return defaultPerTabFeatures;
+    } catch { return defaultPerTabFeatures; }
+  });
+  const [savedSidebarFeatures, setSavedSidebarFeatures] = useState<PerTabFeatures>(() => {
+    try {
+      const stored = localStorage.getItem('alkemio-sidebar-features');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const merged: PerTabFeatures = { ...defaultPerTabFeatures };
+        for (const tabId of Object.keys(defaultPerTabFeatures) as TabId[]) {
+          if (parsed[tabId]) merged[tabId] = { ...defaultPerTabFeatures[tabId], ...parsed[tabId] };
+        }
+        return merged;
+      }
+      return defaultPerTabFeatures;
+    } catch { return defaultPerTabFeatures; }
+  });
+
   // ─── Change detection (tabs + posts) ───────────────────────────────────────
   const hasChanges = useMemo(() => {
     const tabsChanged = tabs.some((tab, i) => {
@@ -728,8 +786,14 @@ export function SpaceSettingsLayout() {
       if (cur.length !== orig.length) return true;
       if (cur.some((p, i) => p.id !== orig[i]?.id)) return true;
     }
+
+    if (postDescCollapsed !== savedPostDescCollapsed) return true;
+    if (sidebarMode !== savedSidebarMode) return true;
+    if (sidebarDefaultCollapsed !== savedSidebarDefaultCollapsed) return true;
+    if (JSON.stringify(sidebarFeatures) !== JSON.stringify(savedSidebarFeatures)) return true;
+
     return false;
-  }, [tabs, tabPosts, savedTabs, savedTabPosts]);
+  }, [tabs, tabPosts, savedTabs, savedTabPosts, postDescCollapsed, savedPostDescCollapsed, sidebarMode, savedSidebarMode, sidebarDefaultCollapsed, savedSidebarDefaultCollapsed, sidebarFeatures, savedSidebarFeatures]);
 
   // ─── Tab reorder ───────────────────────────────────────────────────────────
   const moveTab = useCallback(
@@ -838,6 +902,13 @@ export function SpaceSettingsLayout() {
       setIsSaving(false);
       setSavedTabs([...tabs]);
       setSavedTabPosts({ ...tabPosts });
+      setSavedPostDescCollapsed(postDescCollapsed);
+      localStorage.setItem('alkemio-collapse-posts', String(postDescCollapsed));
+      setSavedSidebarMode(sidebarMode);
+      setSavedSidebarDefaultCollapsed(sidebarDefaultCollapsed);
+      localStorage.setItem('alkemio-sidebar-default', sidebarDefaultCollapsed ? 'railed' : 'expanded');
+      setSavedSidebarFeatures({ ...sidebarFeatures });
+      localStorage.setItem('alkemio-sidebar-features', JSON.stringify(sidebarFeatures));
       setLastSaved(new Date());
     }, 1000);
   };
@@ -845,6 +916,10 @@ export function SpaceSettingsLayout() {
   const handleDiscard = () => {
     setTabs([...savedTabs]);
     setTabPosts({ ...savedTabPosts });
+    setPostDescCollapsed(savedPostDescCollapsed);
+    setSidebarMode(savedSidebarMode);
+    setSidebarDefaultCollapsed(savedSidebarDefaultCollapsed);
+    setSidebarFeatures({ ...savedSidebarFeatures });
     setExpandedCols({
       home: true,
       community: true,
@@ -863,14 +938,22 @@ export function SpaceSettingsLayout() {
   }, []);
 
   return (
+    <>
+    <UnsavedChangesGuard isDirty={hasChanges} onSave={handleSave} />
     <DndProvider backend={HTML5Backend}>
-      <div className="w-full h-full">
+      <div className="w-full h-full pb-20">
         <div className="flex flex-col h-full">
-          <div className="mb-6">
-            <h2 className="text-page-title text-foreground">Layout</h2>
-            <p className="text-muted-foreground mt-2">
-              Customize your Space's navigation tabs. Rename, reorder, and manage post assignments.
-            </p>
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-page-title text-foreground">Layout</h2>
+              <p className="text-muted-foreground mt-2">
+                Customize your Space's navigation tabs. Rename, reorder, and manage post assignments.
+              </p>
+            </div>
+            <Button variant="outline" size="sm" className="gap-2 shrink-0">
+              <Plus className="w-4 h-4" />
+              Add Tab
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-start">
@@ -902,39 +985,211 @@ export function SpaceSettingsLayout() {
             ))}
           </div>
 
-          <div className="mt-10 flex items-center justify-end gap-3">
-            {lastSaved && (
-              <span className="text-body text-muted-foreground flex items-center gap-1.5 mr-auto">
-                <Check className="w-4 h-4 text-success" /> Saved
-              </span>
+          {/* Post Description Display toggle */}
+          <SettingsSection
+            title="Post Description Display"
+            icon={<AlignLeft className="w-4 h-4" />}
+            iconColor="amber"
+            collapsible={false}
+            className="mt-8"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-body text-muted-foreground">
+                Collapse post descriptions by default. When enabled, descriptions show a "Read more" link instead of the full text.
+              </p>
+              <Switch
+                checked={postDescCollapsed}
+                onCheckedChange={setPostDescCollapsed}
+                aria-label="Collapse post descriptions"
+              />
+            </div>
+          </SettingsSection>
+
+          {/* Sidebar Panel Mode */}
+          <SettingsSection
+            title="Sidebar Panel"
+            icon={<PanelLeft className="w-4 h-4" />}
+            iconColor="purple"
+            collapsible={false}
+            className="mt-4"
+          >
+            <p className="text-body text-muted-foreground mb-4">
+              Choose how the left navigation sidebar appears for members visiting this space.
+            </p>
+            <RadioGroup
+              value={sidebarMode}
+              onValueChange={(v) => setSidebarMode(v as 'expanded' | 'railed' | 'hidden')}
+              className="space-y-3"
+            >
+              <label
+                htmlFor="panel-expanded"
+                className={cn(
+                  "flex items-start space-x-3 p-4 rounded-lg border bg-muted/20 hover:bg-muted/40 cursor-pointer transition-colors",
+                  sidebarMode === 'expanded' && "border-primary/40 bg-primary/5"
+                )}
+              >
+                <RadioGroupItem value="expanded" id="panel-expanded" className="mt-0.5" />
+                <div className="flex-1 space-y-1">
+                  <span className="text-body-emphasis flex items-center gap-2">
+                    <PanelLeft className="size-4 text-primary" />
+                    Expanded
+                  </span>
+                  <p className="text-body text-muted-foreground">
+                    Full sidebar with labels, descriptions, and quick actions always visible.
+                  </p>
+                </div>
+              </label>
+              <label
+                htmlFor="panel-railed"
+                className={cn(
+                  "flex items-start space-x-3 p-4 rounded-lg border bg-muted/20 hover:bg-muted/40 cursor-pointer transition-colors",
+                  sidebarMode === 'railed' && "border-primary/40 bg-primary/5"
+                )}
+              >
+                <RadioGroupItem value="railed" id="panel-railed" className="mt-0.5" />
+                <div className="flex-1 space-y-1">
+                  <span className="text-body-emphasis flex items-center gap-2">
+                    <PanelLeftClose className="size-4 text-primary" />
+                    Railed
+                  </span>
+                  <p className="text-body text-muted-foreground">
+                    Compact icon-only rail. Expands on hover to show labels.
+                  </p>
+                </div>
+              </label>
+              <label
+                htmlFor="panel-hidden"
+                className={cn(
+                  "flex items-start space-x-3 p-4 rounded-lg border bg-muted/20 hover:bg-muted/40 cursor-pointer transition-colors",
+                  sidebarMode === 'hidden' && "border-primary/40 bg-primary/5"
+                )}
+              >
+                <RadioGroupItem value="hidden" id="panel-hidden" className="mt-0.5" />
+                <div className="flex-1 space-y-1">
+                  <span className="text-body-emphasis flex items-center gap-2">
+                    <PanelLeftOff className="size-4 text-muted-foreground" />
+                    Hidden
+                  </span>
+                  <p className="text-body text-muted-foreground">
+                    No sidebar. Content takes the full width of the page.
+                  </p>
+                </div>
+              </label>
+            </RadioGroup>
+
+            {/* Default state for users (only when sidebar is visible) */}
+            {sidebarMode !== 'hidden' && (
+              <div className="mt-6 pt-5 border-t">
+                <h4 className="text-body-emphasis mb-1">Default State for Members</h4>
+                <p className="text-body text-muted-foreground mb-3">
+                  Members can always toggle between expanded and collapsed. This sets the default they see on first visit.
+                </p>
+                <div className="flex items-center justify-between gap-4 p-3 rounded-lg border bg-muted/20">
+                  <div className="flex items-center gap-2">
+                    <PanelLeftClose className="size-4 text-muted-foreground" />
+                    <span className="text-body">Start collapsed (railed)</span>
+                  </div>
+                  <Switch
+                    checked={sidebarDefaultCollapsed}
+                    onCheckedChange={setSidebarDefaultCollapsed}
+                    aria-label="Default sidebar collapsed"
+                  />
+                </div>
+              </div>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleDiscard}
-              disabled={!hasChanges}
-              className="text-muted-foreground hover:text-destructive"
-            >
-              <Undo2 className="w-3.5 h-3.5 mr-1.5" /> Discard Changes
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleSave}
-              disabled={!hasChanges || isSaving}
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-3.5 h-3.5 mr-1.5" /> Save Changes
-                </>
-              )}
-            </Button>
-          </div>
+
+            {/* Sidebar feature toggles — per tab (only when sidebar is visible) */}
+            {sidebarMode !== 'hidden' && (
+              <div className="mt-6 pt-5 border-t">
+                <h4 className="text-body-emphasis mb-1">Sidebar Features</h4>
+                <p className="text-body text-muted-foreground mb-4">
+                  Configure which sidebar features are available per tab. Disabled features won't appear for members.
+                </p>
+                <div className="space-y-3">
+                  {tabs.map((tab) => {
+                    const TabIcon = tab.icon;
+                    const tabFeatures = sidebarFeatures[tab.id];
+                    const enabledCount = Object.values(tabFeatures).filter(Boolean).length;
+                    const totalCount = Object.keys(tabFeatures).length;
+
+                    const FEATURE_DEFS: Array<{ key: keyof SidebarFeatureSet; icon: React.ElementType; label: string; description: string }> = [
+                      { key: 'search', icon: Search, label: 'Search', description: 'Search bar to filter content' },
+                      { key: 'tags', icon: Tag, label: 'Tags & Filters', description: 'Tag cloud for filtering by category' },
+                      { key: 'post', icon: MessageSquarePlus, label: 'Post', description: 'Create a new post in this tab' },
+                      { key: 'addUser', icon: UserPlus, label: 'Add User', description: 'Invite or add members' },
+                      { key: 'createSubspace', icon: Layers, label: 'Create Subspace', description: 'Create a new child subspace' },
+                      { key: 'subspaceLinks', icon: Layers, label: 'Subspace Links', description: 'Quick links to child subspaces' },
+                      { key: 'index', icon: ListOrdered, label: 'Index', description: 'Full content index with type and author' },
+                    ];
+
+                    return (
+                      <Collapsible key={tab.id} defaultOpen={tab.id === 'home'}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg border bg-muted/20 hover:bg-muted/30 transition-colors group">
+                          <div className="flex items-center gap-2.5">
+                            <div
+                              className="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
+                              style={{ background: "color-mix(in srgb, var(--primary) 10%, transparent)" }}
+                            >
+                              <TabIcon className="w-3.5 h-3.5" style={{ color: "var(--primary)" }} />
+                            </div>
+                            <span className="text-body-emphasis">{tab.label}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-caption text-muted-foreground">
+                              {enabledCount}/{totalCount}
+                            </span>
+                            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                          </div>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <div className="space-y-1 pt-2 pl-2">
+                            {FEATURE_DEFS.map(({ key, icon: FeatureIcon, label, description }) => (
+                              <div
+                                key={key}
+                                className={cn(
+                                  "flex items-center justify-between gap-3 px-3 py-2 rounded-md transition-colors",
+                                  tabFeatures[key]
+                                    ? "hover:bg-muted/30"
+                                    : "opacity-50"
+                                )}
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <FeatureIcon className="w-4 h-4 shrink-0 text-muted-foreground" />
+                                  <div className="min-w-0">
+                                    <span className="text-body block">{label}</span>
+                                    <span className="text-caption text-muted-foreground block">{description}</span>
+                                  </div>
+                                </div>
+                                <Switch
+                                  checked={tabFeatures[key]}
+                                  onCheckedChange={(checked) =>
+                                    setSidebarFeatures((prev) => ({
+                                      ...prev,
+                                      [tab.id]: { ...prev[tab.id], [key]: checked },
+                                    }))
+                                  }
+                                  aria-label={`Enable ${label} for ${tab.label}`}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </SettingsSection>
         </div>
       </div>
     </DndProvider>
+    <SaveBar
+      isDirty={hasChanges}
+      isSaving={isSaving}
+      onSave={handleSave}
+      onDiscard={handleDiscard}
+    />
+    </>
   );
 }

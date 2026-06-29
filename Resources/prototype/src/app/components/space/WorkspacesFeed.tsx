@@ -26,6 +26,7 @@ const WORKSPACES_POSTS: PostWithTags[] = [
       "Quick recap of where each subspace stands heading into March. The Mobility Hub has finalized its stakeholder interviews, Circular Economy is preparing their pilot proposal, and the Energy Transition subspace just onboarded three new contributors. Please check in with your respective leads if you have deliverables due this sprint.",
     timestamp: "5 hours ago",
     stats: { likes: 24, comments: 9 },
+    commentTexts: ["Mobility Hub is on track — stakeholder report due Friday.", "Circular Economy pilot needs budget approval first.", "Welcome to the three new Energy Transition contributors!", "Can we get a Gantt chart for all subspace timelines?", "Sprint deliverables should include the Q2 milestone check."],
   },
   {
     id: "ws-2",
@@ -58,24 +59,30 @@ const WORKSPACES_POSTS: PostWithTags[] = [
       ],
     },
     stats: { likes: 37, comments: 16 },
+    commentTexts: ["Great idea — open data platforms are a big gap right now.", "I'd be happy to co-lead this with someone from the tech side.", "We should align with the EU interoperability framework.", "Smart-city APIs are essential for our monitoring dashboard.", "Let's not make scope too broad — focus on municipal data first."],
   },
 ];
 
 export function WorkspacesFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
-  const { searchValue, activeTag } = useSpaceFilters();
+  const { searchValue, activeTags } = useSpaceFilters();
 
   // Filter posts based on search and tag filters
   const filteredPosts = WORKSPACES_POSTS.filter((post) => {
+    const q = searchValue.toLowerCase();
     const matchesSearch = !searchValue || 
-      post.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-      post.snippet.toLowerCase().includes(searchValue.toLowerCase()) ||
-      post.author.name.toLowerCase().includes(searchValue.toLowerCase());
+      post.title.toLowerCase().includes(q) ||
+      post.snippet.toLowerCase().includes(q) ||
+      post.author.name.toLowerCase().includes(q) ||
+      (post.commentTexts && post.commentTexts.some((c: string) => c.toLowerCase().includes(q))) ||
+      (post.contentPreview?.documents && post.contentPreview.documents.some((d) => d.title.toLowerCase().includes(q))) ||
+      (post.contentPreview?.items && post.contentPreview.items.some((i) => i.title.toLowerCase().includes(q))) ||
+      (post.contentPreview?.whiteboards && post.contentPreview.whiteboards.some((w) => w.title.toLowerCase().includes(q)));
     
-    const matchesTag = !activeTag || post.tags.includes(activeTag);
+    const matchesTags = activeTags.length === 0 || activeTags.every((tag) => post.tags.includes(tag));
     
-    return matchesSearch && matchesTag;
+    return matchesSearch && matchesTags;
   });
 
   return (
@@ -91,14 +98,6 @@ export function WorkspacesFeed() {
         >
           Workspace Posts
         </h2>
-        <Button
-          size="sm"
-          className="gap-2 shadow-sm"
-          onClick={() => setIsPostModalOpen(true)}
-        >
-          <Plus className="w-4 h-4" />
-          Add Post
-        </Button>
       </div>
 
       {/* Posts */}

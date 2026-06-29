@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="5%" y1="0%" x2="95%" y2="100%">
+      <stop offset="0%" stop-color="#1475BF"/>
+      <stop offset="42%" stop-color="#2C9CD6"/>
+      <stop offset="72%" stop-color="#5CC0D8"/>
+      <stop offset="90%" stop-color="#9EDCD4"/>
+      <stop offset="100%" stop-color="#E5E1B5"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q85,48 195,32 T436,75 V0 Z" fill="rgba(17,88,168,0.46)"/>
+  <path d="M-20,0 Q115,68 225,50 T436,98 V0 Z" fill="rgba(24,118,192,0.30)"/>
+  <path d="M-20,22 Q105,80 215,62 T436,112 V0 Z" fill="rgba(40,152,210,0.21)"/>
+  <path d="M-20,256 Q62,192 172,206 T332,172 T436,188 V256 Z" fill="rgba(82,192,212,0.20)"/>
+  <path d="M-20,256 Q90,215 200,228 T358,200 T436,215 V256 Z" fill="rgba(118,208,200,0.14)"/>
+  <path d="M165,256 Q252,222 342,232 T436,202 V256 Z" fill="rgba(198,218,168,0.11)"/>
+  <text x="208" y="128" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="18" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Digitale Assistent MAI</text>
+  <text x="208" y="150" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="12" font-weight="400" fill="rgba(255,255,255,0.8)" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25))">(morfologisch)</text>
+</svg>

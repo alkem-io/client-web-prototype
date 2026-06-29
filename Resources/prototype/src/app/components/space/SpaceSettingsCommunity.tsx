@@ -1,40 +1,34 @@
 import { useState } from "react";
-import { 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  Check, 
-  X, 
-  ChevronDown, 
-  ChevronUp, 
-  Plus, 
-  FileText, 
-  Shield, 
-  Building, 
-  Bot, 
-  Users, 
-  Clock, 
-  Mail,
+import {
+  Search,
+  MoreHorizontal,
+  Check,
+  X,
+  Plus,
+  FileText,
+  Shield,
+  Building,
+  Bot,
+  Users,
+  Clock,
   Trash2,
   ExternalLink,
-  AlertCircle,
   UserPlus,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown
+  Eye,
+  ArrowUpDown
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from "@/app/components/ui/table";
 import {
   DropdownMenu,
@@ -43,14 +37,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from "@/app/components/ui/dropdown-menu";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/app/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/app/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { SettingsSection } from "@/app/components/shared/SettingsSection";
+import { VCHoverCard } from "@/app/components/user/VCHoverCard";
+import { Link } from "react-router";
 
 // --- Mock Data ---
 
@@ -61,7 +52,7 @@ interface CommunityMember {
   id: string;
   name: string;
   email: string;
-  date: string; // ISO date or joined string
+  date: string;
   status: MemberStatus;
   role: MemberRole;
   avatar: string | null;
@@ -69,119 +60,69 @@ interface CommunityMember {
 }
 
 const MOCK_MEMBERS: CommunityMember[] = [
-  // 5 Key Users (Matching SpaceMembers.tsx)
   {
-    id: 'u1',
-    name: "Elena Martinez",
-    email: "elena@alkemio.org",
-    date: "2023-10-15",
-    status: "Active",
-    role: "Host",
-    avatar: "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGdsYXNzZXMlMjBibGFjayUyMGFuZCUyMHdoaXRlJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzY5NDQyNTM3fDA&ixlib=rb-4.1.0&q=80&w=256",
+    id: 'u1', name: "Elena Martinez", email: "elena@alkemio.org", date: "2023-10-15",
+    status: "Active", role: "Host",
+    avatar: "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
     initials: "EM"
   },
   {
-    id: 'u2',
-    name: "Sarah Chen",
-    email: "sarah.chen@example.com",
-    date: "2023-11-02",
-    status: "Active",
-    role: "Admin",
-    avatar: "https://images.unsplash.com/photo-1757347398206-7425300ef990?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHNtaWxpbmclMjBkYXJrJTIwaGFpciUyMHBvcnRyYWl0fGVufDF8fHx8MTc2OTQ0MjUzN3ww&ixlib=rb-4.1.0&q=80&w=256",
+    id: 'u2', name: "Sarah Chen", email: "sarah.chen@example.com", date: "2023-11-02",
+    status: "Active", role: "Admin",
+    avatar: "https://images.unsplash.com/photo-1757347398206-7425300ef990?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
     initials: "SC"
   },
   {
-    id: 'u3',
-    name: "Maya Ross",
-    email: "maya.r@example.com",
-    date: "2023-12-10",
-    status: "Active",
-    role: "Lead",
-    avatar: "https://images.unsplash.com/photo-1589332911105-a6b59f2e4c4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHNtaWxpbmclMjBkYXJrJTIwaGFpciUyMHBvcnRyYWl0fGVufDF8fHx8MTc2OTQ0MjUzN3ww&ixlib=rb-4.1.0&q=80&w=256",
+    id: 'u3', name: "Maya Ross", email: "maya.r@example.com", date: "2023-12-10",
+    status: "Active", role: "Lead",
+    avatar: "https://images.unsplash.com/photo-1589332911105-a6b59f2e4c4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
     initials: "MR"
   },
   {
-    id: 'u4',
-    name: "David Kim",
-    email: "dkim@design.co",
-    date: "2024-01-05",
-    status: "Active",
-    role: "Member",
-    avatar: "https://images.unsplash.com/photo-1651634099348-e4c38cfaa6d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBiZWFyZCUyMHN1bnNldCUyMHBvcnRyYWl0fGVufDF8fHx8MTc2OTQ0MjUzN3ww&ixlib=rb-4.1.0&q=80&w=256",
+    id: 'u4', name: "David Kim", email: "dkim@design.co", date: "2024-01-05",
+    status: "Active", role: "Member",
+    avatar: "https://images.unsplash.com/photo-1651634099348-e4c38cfaa6d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
     initials: "DK"
   },
   {
-    id: 'u5',
-    name: "Robert Fox",
-    email: "robert.fox@example.com",
-    date: "2024-01-12",
-    status: "Active",
-    role: "Member",
-    avatar: "https://images.unsplash.com/photo-1651097681268-851acda33b18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvbGRlciUyMG1hbiUyMHdoaXRlJTIwYmVhcmQlMjBnbGFzc2VzJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzY5NDQyNTM3fDA&ixlib=rb-4.1.0&q=80&w=256",
+    id: 'u5', name: "Robert Fox", email: "robert.fox@example.com", date: "2024-01-12",
+    status: "Active", role: "Member",
+    avatar: "https://images.unsplash.com/photo-1651097681268-851acda33b18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
     initials: "RF"
   },
-  // Pending Members (Requested to join)
   {
-    id: 'p1',
-    name: "Michael Chen",
-    email: "m.chen@university.edu",
-    date: "2024-02-20",
-    status: "Pending",
-    role: "Member",
-    avatar: null,
-    initials: "MC"
+    id: 'p1', name: "Michael Chen", email: "m.chen@university.edu", date: "2024-02-20",
+    status: "Pending", role: "Member", avatar: null, initials: "MC"
   },
   {
-    id: 'p2',
-    name: "Jessica Alverez",
-    email: "jess.alverez@studio.com",
-    date: "2024-02-21",
-    status: "Pending",
-    role: "Member",
-    avatar: null,
-    initials: "JA"
-  },
-  // Invited Members (No response yet)
-  {
-    id: 'i1',
-    name: "Thomas Wright",
-    email: "tom.wright@construction.com",
-    date: "2024-02-18",
-    status: "Invited",
-    role: "Member",
-    avatar: null,
-    initials: "TW"
+    id: 'p2', name: "Jessica Alverez", email: "jess.alverez@studio.com", date: "2024-02-21",
+    status: "Pending", role: "Member", avatar: null, initials: "JA"
   },
   {
-    id: 'i2',
-    name: "Emily Zhang",
-    email: "emily.z@tech.io",
-    date: "2024-02-19",
-    status: "Invited",
-    role: "Lead",
-    avatar: null,
-    initials: "EZ"
+    id: 'i1', name: "Thomas Wright", email: "tom.wright@construction.com", date: "2024-02-18",
+    status: "Invited", role: "Member", avatar: null, initials: "TW"
   },
-  // Generated Members (20 more)
+  {
+    id: 'i2', name: "Emily Zhang", email: "emily.z@tech.io", date: "2024-02-19",
+    status: "Invited", role: "Lead", avatar: null, initials: "EZ"
+  },
   ...Array.from({ length: 20 }).map((_, i) => ({
-    id: `m${i+6}`,
+    id: `m${i + 6}`,
     name: [
-      "James Wilson", "Emma Thompson", "Lucas Oliveira", "Sophia Li", "Oliver Smith", 
+      "James Wilson", "Emma Thompson", "Lucas Oliveira", "Sophia Li", "Oliver Smith",
       "Ava Patel", "William Chen", "Isabella Garcia", "Henry Wilson", "Mia Kim",
       "Alexander Wright", "Charlotte Davis", "Daniel Lee", "Amelia White", "Matthew Clark",
-      "Harper Lewis", "Joseph Hall", "Evelyn Young", "Samuel Allen", "Abigail King",
-      "Benjamin Scott", "Elizabeth Green", "Jack Baker", "Victoria Adams"
-    ][i] || `Member ${i+6}`,
-    email: `member${i+6}@example.com`,
+      "Harper Lewis", "Joseph Hall", "Evelyn Young", "Samuel Allen", "Abigail King"
+    ][i] || `Member ${i + 6}`,
+    email: `member${i + 6}@example.com`,
     date: "2024-02-15",
     status: "Active" as MemberStatus,
     role: (i < 3 ? "Lead" : "Member") as MemberRole,
     avatar: null,
     initials: [
       "JW", "ET", "LO", "SL", "OS", "AP", "WC", "IG", "HW", "MK",
-      "AW", "CD", "DL", "AW", "MC", "HL", "JH", "EY", "SA", "AK",
-      "BS", "EG", "JB", "VA"
-    ][i] || `M${i+6}`,
+      "AW", "CD", "DL", "AW", "MC", "HL", "JH", "EY", "SA", "AK"
+    ][i] || `M${i + 6}`,
   }))
 ];
 
@@ -200,337 +141,231 @@ const MOCK_ORGS: Organization[] = [
 interface VirtualContributor {
   id: string;
   name: string;
-  status: 'Active' | 'Inactive';
+  avatarUrl?: string | null;
+  initials?: string;
+  description?: string;
+  tags?: string[];
+  hostName?: string;
 }
 
 const MOCK_VCS: VirtualContributor[] = [
-  { id: 'vc1', name: 'Summarizer Bot', status: 'Active' },
-  { id: 'vc2', name: 'Translation Assistant', status: 'Inactive' },
+  {
+    id: 'vc1',
+    name: 'Summarizer Bot',
+    avatarUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256&q=80',
+    initials: 'SB',
+    description: 'Automatically summarizes long discussions and documents',
+    tags: ['Automation', 'Documentation', 'AI'],
+    hostName: 'Sarah Chen',
+  },
+  {
+    id: 'vc2',
+    name: 'Translation Assistant',
+    avatarUrl: 'https://images.unsplash.com/photo-1633356122544-f134324ef6db?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256&q=80',
+    initials: 'TA',
+    description: 'Translates content to 50+ languages in real-time',
+    tags: ['Translation', 'Multilingual', 'Communication'],
+    hostName: 'Elena Martinez',
+  },
 ];
 
-// --- Components ---
-
-function StatusBadge({ status }: { status: MemberStatus }) {
-  switch (status) {
-    case 'Pending':
-      return <Badge variant="outline" className="bg-muted text-muted-foreground border-border">Pending</Badge>;
-    case 'Invited':
-      return <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">Invited</Badge>;
-    case 'Active':
-      return <Badge variant="outline" className="bg-chart-1/10 text-chart-1 border-chart-1/20">Active</Badge>;
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
-}
-
-function SectionHeader({ 
-  icon: Icon, 
-  title, 
-  description, 
-  isOpen, 
-  onToggle 
-}: { 
-  icon: React.ElementType, 
-  title: string, 
-  description: string, 
-  isOpen: boolean, 
-  onToggle: () => void 
-}) {
-  return (
-    <div className="flex items-start gap-4 cursor-pointer group" onClick={onToggle}>
-      <div className="mt-1 p-2 bg-muted rounded-md group-hover:bg-muted/80 transition-colors">
-        <Icon className="w-5 h-5 text-muted-foreground" />
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <h3 className="text-subheader font-semibold flex items-center gap-2">
-            {title}
-          </h3>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-            {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </Button>
-        </div>
-        <p className="text-body text-muted-foreground mt-1 pr-8">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
-}
+// --- Component ---
 
 export function SpaceSettingsCommunity() {
   const [members, setMembers] = useState<CommunityMember[]>(MOCK_MEMBERS);
-  const [filter, setFilter] = useState<'All' | 'Active' | 'Pending' | 'Invited'>('All');
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Pagination State
   const [page, setPage] = useState(1);
+  const [pendingSort, setPendingSort] = useState<{ key: 'name' | 'date' | 'status'; dir: 'asc' | 'desc' }>({ key: 'date', dir: 'desc' });
   const pageSize = 10;
 
-  // Sort State
-  const [sortConfig, setSortConfig] = useState<{ key: keyof CommunityMember | null; direction: 'asc' | 'desc' }>({ 
-    key: null, 
-    direction: 'asc' 
-  });
-  
-  // Sections State
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    form: false,
-    guidelines: false,
-    orgs: false,
-    vcs: false,
-  });
-
-  const toggleSection = (section: string) => {
-    setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
-  };
-
-  const handleSort = (key: keyof CommunityMember) => {
-    setSortConfig(current => ({
-      key,
-      direction: current.key === key && current.direction === 'asc' ? 'desc' : 'asc',
-    }));
-  };
-
-  // Filter & Sort Logic
-  const filteredMembers = members.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          member.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filter === 'All' || member.status === filter;
-    return matchesSearch && matchesFilter;
-  }).sort((a, b) => {
-    // If a custom sort is active
-    if (sortConfig.key) {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-
-      if (aValue === null && bValue === null) return 0;
-      if (aValue === null) return 1;
-      if (bValue === null) return -1;
-
-      if (aValue! < bValue!) {
-        return sortConfig.direction === 'asc' ? -1 : 1;
-      }
-      if (aValue! > bValue!) {
-        return sortConfig.direction === 'asc' ? 1 : -1;
-      }
+  const pendingMembers = members.filter(m => m.status === 'Pending' || m.status === 'Invited')
+    .sort((a, b) => {
+      const { key, dir } = pendingSort;
+      const aVal = key === 'date' ? new Date(a.date).getTime() : a[key].toLowerCase();
+      const bVal = key === 'date' ? new Date(b.date).getTime() : b[key].toLowerCase();
+      if (aVal < bVal) return dir === 'asc' ? -1 : 1;
+      if (aVal > bVal) return dir === 'asc' ? 1 : -1;
       return 0;
-    }
+    });
+  const confirmedMembers = members.filter(m => m.status === 'Active');
 
-    // Default Priority Sort: Pending > Invited > Others
-    if (a.status === b.status) return 0;
-    if (a.status === 'Pending') return -1;
-    if (b.status === 'Pending') return 1;
-    if (a.status === 'Invited') return -1;
-    if (b.status === 'Invited') return 1;
-    return 0;
+  const filteredMembers = confirmedMembers.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
 
   const totalPages = Math.ceil(filteredMembers.length / pageSize);
   const paginatedMembers = filteredMembers.slice((page - 1) * pageSize, page * pageSize);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setPage(1); // Reset to first page on search
-  };
-
-  const handleFilterChange = (newFilter: 'All' | 'Active' | 'Pending' | 'Invited') => {
-    setFilter(newFilter);
-    setPage(1); // Reset to first page on filter change
-  };
-
   const handleRemove = (id: string) => {
     setMembers(members.filter(m => m.id !== id));
   };
 
+  const togglePendingSort = (key: 'name' | 'date' | 'status') => {
+    setPendingSort(prev => ({
+      key,
+      dir: prev.key === key && prev.dir === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      
-      {/* 1. Header */}
-      <div>
-        <h2 className="text-page-title">Community</h2>
-        <p className="text-muted-foreground mt-2">
-          Manage your space members, review applications, and configure community settings.
-        </p>
-      </div>
-
-      <Separator />
-
-      {/* 2. Members Management Table */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h3 className="text-subsection-title flex items-center gap-2">
-            Space Members
-            <Badge variant="secondary" className="rounded-full px-2 py-0.5 ml-2">
-              {filteredMembers.length}
-            </Badge>
-          </h3>
-          
-          <div className="flex items-center gap-2 flex-wrap">
-             <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                 placeholder="Search members..." 
-                 className="pl-9 h-9 w-[200px]" 
-                 value={searchQuery}
-                 onChange={handleSearchChange}
-              />
-            </div>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filter: {filter}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleFilterChange('All')}>
-                  All Members
-                  {filter === 'All' && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleFilterChange('Active')}>
-                  Active Only
-                  {filter === 'Active' && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleFilterChange('Pending')}>
-                  Pending
-                  {filter === 'Pending' && <Check className="w-4 h-4 ml-auto" />}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Button size="sm" className="h-9 gap-2">
-               <UserPlus className="w-4 h-4" />
-               Invite
-            </Button>
-          </div>
-        </div>
-
-        <div className="border rounded-lg overflow-hidden bg-card">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[300px]">
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium text-muted-foreground h-auto"
-                    onClick={() => handleSort('name')}
-                  >
-                    Name
-                    {sortConfig.key === 'name' ? (
-                      sortConfig.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                    ) : (
-                      <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium text-muted-foreground h-auto"
-                    onClick={() => handleSort('role')}
-                  >
-                    Role
-                    {sortConfig.key === 'role' ? (
-                      sortConfig.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                    ) : (
-                      <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium text-muted-foreground h-auto"
-                    onClick={() => handleSort('date')}
-                  >
-                    Joined
-                    {sortConfig.key === 'date' ? (
-                      sortConfig.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                    ) : (
-                      <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
-                <TableHead>
-                  <Button 
-                    variant="ghost" 
-                    className="p-0 hover:bg-transparent font-medium text-muted-foreground h-auto"
-                    onClick={() => handleSort('status')}
-                  >
-                    Status
-                    {sortConfig.key === 'status' ? (
-                      sortConfig.direction === 'asc' ? <ArrowUp className="ml-2 h-4 w-4" /> : <ArrowDown className="ml-2 h-4 w-4" />
-                    ) : (
-                      <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
-                    )}
-                  </Button>
-                </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredMembers.length === 0 ? (
+    <div className="space-y-5 animate-in fade-in duration-500">
+      {/* ── Pending Memberships ── */}
+      <SettingsSection
+        title="Pending Memberships"
+        icon={<Clock className="w-4 h-4" />}
+        iconColor="amber"
+      >
+        {pendingMembers.length > 0 ? (
+          <div className="border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
-                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <Users className="w-8 h-8 mb-2 opacity-20" />
-                      <p>No members found matching your criteria.</p>
-                      <Button variant="link" size="sm" className="mt-1" onClick={() => {setFilter('All'); setSearchQuery('');}}>
-                        Clear filters
-                      </Button>
-                    </div>
-                  </TableCell>
+                  <TableHead className="w-[240px]">
+                    <button className="flex items-center gap-1 hover:text-foreground transition-colors" onClick={() => togglePendingSort('name')}>
+                      Name <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>
+                    <button className="flex items-center gap-1 hover:text-foreground transition-colors" onClick={() => togglePendingSort('date')}>
+                      Date <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button className="flex items-center gap-1 hover:text-foreground transition-colors" onClick={() => togglePendingSort('status')}>
+                      Status <ArrowUpDown className="w-3 h-3" />
+                    </button>
+                  </TableHead>
+                  <TableHead className="w-[140px] text-right">Actions</TableHead>
                 </TableRow>
-              ) : (
-                paginatedMembers.map((member, index) => (
-                  <TableRow key={member.id} className={cn(index % 2 === 0 ? "bg-background" : "bg-muted/30", "hover:bg-accent/50 transition-colors")}>
+              </TableHeader>
+              <TableBody>
+                {pendingMembers.map((member) => (
+                  <TableRow key={member.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <Avatar className="w-8 h-8 border border-border">
-                           {member.avatar && <AvatarImage src={member.avatar} />}
-                           <AvatarFallback className="text-caption">{member.initials}</AvatarFallback>
+                        <Avatar className="w-8 h-8 border">
+                          {member.avatar && <AvatarImage src={member.avatar} />}
+                          <AvatarFallback className="text-caption">{member.initials}</AvatarFallback>
                         </Avatar>
-                        <div>
-                          <div className="text-body-emphasis">{member.name}</div>
-                          <div className="text-caption text-muted-foreground">{member.email}</div>
-                        </div>
+                        <span className="text-body-emphasis">{member.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <span className="text-body-emphasis text-foreground">
-                        {member.role}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-body">
-                      {new Date(member.date).toLocaleDateString()}
+                    <TableCell className="text-body text-muted-foreground">{member.email}</TableCell>
+                    <TableCell className="text-body text-muted-foreground">
+                      {new Date(member.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </TableCell>
                     <TableCell>
-                      <StatusBadge status={member.status} />
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-badge",
+                          member.status === 'Pending' && "bg-amber-500/10 text-amber-600 border-amber-500/20",
+                          member.status === 'Invited' && "bg-primary/10 text-primary border-primary/20"
+                        )}
+                      >
+                        {member.status === 'Pending' ? 'Application Received' : 'Invited'}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1">
                         {member.status === 'Pending' && (
                           <>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="h-8 w-8 p-0 text-primary border-primary/20 hover:bg-primary/10 hover:text-primary hover:border-primary/30"
-                              title="Approve Request"
-                            >
-                              <Check className="h-4 w-4" />
+                            <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-primary" title="Approve">
+                              <Check className="h-3.5 w-3.5" />
                             </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="h-8 w-8 p-0 text-destructive border-destructive/20 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
-                              title="Reject Request"
-                            >
-                              <X className="h-4 w-4" />
+                            <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-destructive" title="Reject">
+                              <X className="h-3.5 w-3.5" />
                             </Button>
                           </>
                         )}
+                        <Button variant="ghost" size="icon" className="h-7 w-7" title="View">
+                          <Eye className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" title="Delete" onClick={() => handleRemove(member.id)}>
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <div className="border-2 border-dashed rounded-lg p-8 text-center text-muted-foreground text-body">
+            No pending memberships.
+          </div>
+        )}
+      </SettingsSection>
+
+      {/* ── Members ── */}
+      <SettingsSection
+        title="Members"
+        icon={<Users className="w-4 h-4" />}
+        iconColor="blue"
+      >
+        <div className="space-y-4">
+          {/* Search + Invite */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search members..."
+                className="pl-9 h-9"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              />
+            </div>
+            <Button size="sm" className="h-9 gap-2">
+              <UserPlus className="w-4 h-4" /> Invite
+            </Button>
+          </div>
+
+          {/* Table */}
+          <div className="border rounded-lg overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[300px]">Name</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Joined</TableHead>
+                  <TableHead className="w-[80px] text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedMembers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                      <div className="flex flex-col items-center text-muted-foreground">
+                        <Users className="w-8 h-8 mb-2 opacity-20" />
+                        <p>No members found.</p>
+                        <Button variant="link" size="sm" onClick={() => setSearchQuery('')}>Clear search</Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedMembers.map((member) => (
+                    <TableRow key={member.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-8 h-8 border">
+                            {member.avatar && <AvatarImage src={member.avatar} />}
+                            <AvatarFallback className="text-caption">{member.initials}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="text-body-emphasis">{member.name}</div>
+                            <div className="text-caption text-muted-foreground truncate">{member.email}</div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-body">{member.role}</TableCell>
+                      <TableCell className="text-body text-muted-foreground">
+                        {new Date(member.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </TableCell>
+                      <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -540,255 +375,167 @@ export function SpaceSettingsCommunity() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem>View Profile</DropdownMenuItem>
                             <DropdownMenuItem>Change Role</DropdownMenuItem>
-                            {member.status === 'Pending' && (
-                               <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-success font-medium">Approve Request</DropdownMenuItem>
-                                <DropdownMenuItem className="text-destructive">Reject Request</DropdownMenuItem>
-                               </>
-                            )}
-                            {member.status === 'Invited' && (
-                               <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>Resend Invitation</DropdownMenuItem>
-                                <DropdownMenuItem className="text-destructive">Revoke Invitation</DropdownMenuItem>
-                               </>
-                            )}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="text-destructive" onClick={() => handleRemove(member.id)}>
-                              Remove from Space
+                              <Trash2 className="w-4 h-4 mr-2" /> Remove from Space
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
 
-        {/* Pagination Controls */}
-        {filteredMembers.length > pageSize && (
-          <div className="flex items-center justify-between py-2">
-            <div className="text-body text-muted-foreground">
-              Showing <span className="font-medium">{(page - 1) * pageSize + 1}</span> to{" "}
-              <span className="font-medium">
-                {Math.min(page * pageSize, filteredMembers.length)}
-              </span>{" "}
-              of <span className="font-medium">{filteredMembers.length}</span> members
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="h-8 w-8 p-0"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <div className="text-body-emphasis">
-                Page {page} of {totalPages}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="h-8 w-8 p-0"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <Separator />
-
-      {/* 3. Application Form */}
-      <Collapsible 
-        open={openSections.form} 
-        onOpenChange={() => toggleSection('form')}
-        className="bg-card border rounded-lg p-6"
-      >
-        <CollapsibleTrigger asChild>
-          <div>
-            <SectionHeader 
-              icon={FileText} 
-              title="Application Form" 
-              description="Customize the questions users must answer when applying to join this space."
-              isOpen={openSections.form}
-              onToggle={() => toggleSection('form')}
-            />
-          </div>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mt-6 pl-[52px]">
-          <div className="bg-muted/30 rounded-lg p-4 border border-border space-y-3">
-             <div className="flex items-center justify-between p-3 bg-background border rounded-md">
-                <div className="flex items-center gap-3">
-                   <div className="bg-primary/10 p-2 rounded text-primary">
-                      <span className="text-caption font-bold">Q1</span>
-                   </div>
-                   <span className="text-body-emphasis">Why do you want to join this space?</span>
-                </div>
-                <Badge variant="secondary">Required</Badge>
-             </div>
-             <div className="flex items-center justify-between p-3 bg-background border rounded-md">
-                <div className="flex items-center gap-3">
-                   <div className="bg-primary/10 p-2 rounded text-primary">
-                      <span className="text-caption font-bold">Q2</span>
-                   </div>
-                   <span className="text-body-emphasis">Link to your portfolio or LinkedIn profile</span>
-                </div>
-                <Badge variant="outline">Optional</Badge>
-             </div>
-          </div>
-          <div className="mt-4">
-             <Button variant="outline" size="sm" className="gap-2">
-                <ExternalLink className="w-4 h-4" />
-                Edit Application Form
-             </Button>
-             <p className="text-caption text-muted-foreground mt-2">
-               This form is shown to users when they apply to join.
-             </p>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-
-      {/* 4. Community Guidelines */}
-      <Collapsible 
-        open={openSections.guidelines} 
-        onOpenChange={() => toggleSection('guidelines')}
-        className="bg-card border rounded-lg p-6"
-      >
-        <CollapsibleTrigger asChild>
-           <div>
-            <SectionHeader 
-              icon={Shield} 
-              title="Community Guidelines" 
-              description="Establish rules and expectations for member behavior."
-              isOpen={openSections.guidelines}
-              onToggle={() => toggleSection('guidelines')}
-            />
-           </div>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mt-6 pl-[52px]">
-          <div className="bg-muted/30 rounded-lg p-4 border border-border">
-             <p className="text-body text-muted-foreground italic">
-                "Be respectful, share openly, and contribute constructively..."
-             </p>
-          </div>
-          <div className="mt-4">
-             <Button variant="outline" size="sm">Edit Guidelines</Button>
-             <p className="text-caption text-muted-foreground mt-2">
-               Displayed to new members upon joining.
-             </p>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-
-      {/* 5. Member Organizations */}
-      <Collapsible 
-        open={openSections.orgs} 
-        onOpenChange={() => toggleSection('orgs')}
-        className="bg-card border rounded-lg p-6"
-      >
-        <CollapsibleTrigger asChild>
-           <div>
-            <SectionHeader 
-              icon={Building} 
-              title="Member Organizations" 
-              description="Allow members from specific organizations to join automatically."
-              isOpen={openSections.orgs}
-              onToggle={() => toggleSection('orgs')}
-            />
-           </div>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mt-6 pl-[52px]">
-          <div className="space-y-3">
-            {MOCK_ORGS.map(org => (
-              <div key={org.id} className="flex items-center justify-between p-3 bg-background border rounded-md">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center font-bold text-muted-foreground">
-                    {org.logo}
-                  </div>
-                  <div>
-                    <div className="text-body-emphasis">{org.name}</div>
-                    <div className="text-caption text-muted-foreground">{org.memberCount} members in space</div>
-                  </div>
-                </div>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
-                   <X className="w-4 h-4" />
+          {/* Pagination */}
+          {filteredMembers.length > pageSize && (
+            <div className="flex items-center justify-between">
+              <p className="text-caption text-muted-foreground">
+                {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, filteredMembers.length)} of {filteredMembers.length}
+              </p>
+              <div className="flex items-center gap-1">
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-caption px-2">Page {page} of {totalPages}</span>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
-            ))}
-          </div>
-          <div className="mt-4">
-             <Button variant="outline" size="sm" className="gap-2">
-                <Plus className="w-4 h-4" /> Add Organization
-             </Button>
-             <p className="text-caption text-muted-foreground mt-2">
-               Users from these organizations can join without admin approval.
-             </p>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+            </div>
+          )}
+        </div>
+      </SettingsSection>
 
-      {/* 6. Virtual Contributors */}
-      <Collapsible 
-        open={openSections.vcs} 
-        onOpenChange={() => toggleSection('vcs')}
-        className="bg-card border rounded-lg p-6"
+      {/* ── Application Form ── */}
+      <SettingsSection
+        title="Application Form"
+        icon={<FileText className="w-4 h-4" />}
+        iconColor="purple"
+        defaultOpen={false}
       >
-        <CollapsibleTrigger asChild>
-           <div>
-            <SectionHeader 
-              icon={Bot} 
-              title="Virtual Contributors" 
-              description="Manage AI agents and bots participating in this space."
-              isOpen={openSections.vcs}
-              onToggle={() => toggleSection('vcs')}
-            />
-           </div>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mt-6 pl-[52px]">
-          <div className="space-y-3">
-            {MOCK_VCS.map(vc => (
-              <div key={vc.id} className="flex items-center justify-between p-3 bg-background border rounded-md">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-md flex items-center justify-center" style={{ background: 'color-mix(in srgb, var(--primary) 10%, transparent)', color: 'var(--primary)' }}>
-                    <Bot className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="text-body-emphasis">{vc.name}</div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                       <span className={cn(
-                         "w-1.5 h-1.5 rounded-full",
-                         vc.status === 'Active' ? "bg-primary" : "bg-muted-foreground/30"
-                       )} />
-                       <span className="text-caption text-muted-foreground">{vc.status}</span>
-                    </div>
-                  </div>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between p-3 bg-muted/30 border rounded-md">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 px-2 py-1 rounded text-primary text-caption font-bold">Q1</div>
+              <span className="text-body">Why do you want to join this space?</span>
+            </div>
+            <Badge variant="secondary">Required</Badge>
+          </div>
+          <div className="flex items-center justify-between p-3 bg-muted/30 border rounded-md">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 px-2 py-1 rounded text-primary text-caption font-bold">Q2</div>
+              <span className="text-body">Link to your portfolio or LinkedIn profile</span>
+            </div>
+            <Badge variant="outline">Optional</Badge>
+          </div>
+          <Button variant="outline" size="sm" className="gap-2 mt-2">
+            <ExternalLink className="w-4 h-4" /> Edit Application Form
+          </Button>
+        </div>
+      </SettingsSection>
+
+      {/* ── Community Guidelines ── */}
+      <SettingsSection
+        title="Community Guidelines"
+        icon={<Shield className="w-4 h-4" />}
+        iconColor="green"
+        defaultOpen={false}
+      >
+        <div className="space-y-3">
+          <div className="bg-muted/30 rounded-lg p-4 border">
+            <p className="text-body text-muted-foreground italic">
+              "Be respectful, share openly, and contribute constructively..."
+            </p>
+          </div>
+          <Button variant="outline" size="sm">Edit Guidelines</Button>
+        </div>
+      </SettingsSection>
+
+      {/* ── Member Organizations ── */}
+      <SettingsSection
+        title="Member Organizations"
+        icon={<Building className="w-4 h-4" />}
+        iconColor="orange"
+        defaultOpen={false}
+      >
+        <div className="space-y-3">
+          {MOCK_ORGS.map(org => (
+            <div key={org.id} className="flex items-center justify-between p-3 bg-muted/30 border rounded-md">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-muted rounded-md flex items-center justify-center font-bold text-muted-foreground text-caption">
+                  {org.logo}
                 </div>
-                <div className="flex items-center gap-2">
-                   <Button variant="ghost" size="sm">Edit</Button>
-                   <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
-                      <Trash2 className="w-4 h-4" />
-                   </Button>
+                <div>
+                  <div className="text-body-emphasis">{org.name}</div>
+                  <div className="text-caption text-muted-foreground">{org.memberCount} members</div>
                 </div>
               </div>
-            ))}
-          </div>
-          <div className="mt-4">
-             <Button variant="outline" size="sm" className="gap-2">
-                <Plus className="w-4 h-4" /> Add Virtual Contributor
-             </Button>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          <Button variant="outline" size="sm" className="gap-2">
+            <Plus className="w-4 h-4" /> Add Organization
+          </Button>
+        </div>
+      </SettingsSection>
+
+      {/* ── Virtual Contributors ── */}
+      <SettingsSection
+        title="Virtual Contributors"
+        icon={<Bot className="w-4 h-4" />}
+        iconColor="rose"
+        defaultOpen={false}
+      >
+        <div className="space-y-3">
+          {MOCK_VCS.map(vc => (
+            <div key={vc.id} className="flex items-center justify-between p-3 bg-muted/30 border rounded-md hover:bg-muted/50 transition-colors">
+              <VCHoverCard
+                vc={{
+                  name: vc.name,
+                  avatarUrl: vc.avatarUrl,
+                  initials: vc.initials,
+                  description: vc.description,
+                  tags: vc.tags,
+                  hostName: vc.hostName,
+                  profileUrl: `/vc/${vc.name.toLowerCase().replace(/\s+/g, '-')}`,
+                }}
+              >
+                <Link
+                  to={`/vc/${vc.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="flex items-center gap-3 flex-1 focus:outline-none"
+                >
+                  <Avatar className="w-9 h-9">
+                    {vc.avatarUrl && <AvatarImage src={vc.avatarUrl} alt={vc.name} />}
+                    <AvatarFallback className="text-caption font-bold bg-primary/10 text-primary">
+                      {vc.initials || vc.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-body-emphasis hover:text-primary transition-colors">{vc.name}</span>
+                </Link>
+              </VCHoverCard>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          <Button variant="outline" size="sm" className="gap-2">
+            <Plus className="w-4 h-4" /> Add Virtual Contributor
+          </Button>
+        </div>
+      </SettingsSection>
     </div>
   );
 }

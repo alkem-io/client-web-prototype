@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="5%" x2="100%" y2="95%">
+      <stop offset="0%" stop-color="#1884CA"/>
+      <stop offset="41%" stop-color="#32A4DC"/>
+      <stop offset="71%" stop-color="#66CADD"/>
+      <stop offset="92%" stop-color="#AAE4DA"/>
+      <stop offset="100%" stop-color="#EFE8C0"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q80,44 190,29 T436,70 V0 Z" fill="rgba(20,95,175,0.44)"/>
+  <path d="M-20,0 Q108,64 218,47 T436,94 V0 Z" fill="rgba(27,125,198,0.29)"/>
+  <path d="M-20,17 Q97,70 207,54 T436,98 V0 Z" fill="rgba(44,158,214,0.20)"/>
+  <path d="M-20,256 Q59,186 169,202 T324,168 T436,184 V256 Z" fill="rgba(88,198,218,0.19)"/>
+  <path d="M-20,256 Q86,210 196,224 T350,196 T436,212 V256 Z" fill="rgba(128,218,208,0.13)"/>
+  <path d="M160,256 Q244,216 334,226 T436,196 V256 Z" fill="rgba(208,228,178,0.11)"/>
+  <text x="208" y="128" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="18" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Registratie</text>
+  <text x="208" y="150" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="18" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Vakantie Verhuur</text>
+</svg>

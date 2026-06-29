@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A86CC"/>
+      <stop offset="42%" stop-color="#32A4DC"/>
+      <stop offset="72%" stop-color="#66CADD"/>
+      <stop offset="92%" stop-color="#AAE4DA"/>
+      <stop offset="100%" stop-color="#EFEBC2"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q84,42 194,28 T436,68 V0 Z" fill="rgba(21,98,178,0.43)"/>
+  <path d="M-20,0 Q112,62 222,46 T436,92 V0 Z" fill="rgba(28,128,200,0.28)"/>
+  <path d="M-20,14 Q92,65 202,50 T436,95 V0 Z" fill="rgba(46,160,216,0.19)"/>
+  <path d="M-20,256 Q58,182 168,198 T318,165 T436,180 V256 Z" fill="rgba(90,200,220,0.18)"/>
+  <path d="M-20,256 Q85,210 195,222 T348,195 T436,210 V256 Z" fill="rgba(130,220,210,0.12)"/>
+  <path d="M152,256 Q238,216 328,226 T436,196 V256 Z" fill="rgba(210,230,180,0.11)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="28" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">GEM</text>
+</svg>

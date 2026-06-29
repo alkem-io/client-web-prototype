@@ -38,6 +38,7 @@ import VCProfilePage from "./pages/VCProfilePage";
 import ForumPage from "./pages/ForumPage";
 import InnovationHubPage from "./pages/InnovationHubPage";
 import InnovationHubSettingsPage from "./pages/InnovationHubSettingsPage";
+import ResponsiveSidebarDemo from "./pages/ResponsiveSidebarDemo";
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +49,7 @@ export const router = createBrowserRouter([
       { path: "/design-system", Component: DesignSystemPage },
       { path: "/typography", Component: TypographySystemPage },
       { path: "/typography-decisions", Component: TypographyDecisionPage },
+      { path: "/responsive-sidebar-demo", Component: ResponsiveSidebarDemo },
       { path: "/analytics", Component: EcosystemAnalyticsPage },
       { path: "/onboarding", Component: OnboardingPage },
       { path: "/sign-in", Component: AuthPage },

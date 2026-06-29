@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1370BA"/>
+      <stop offset="37%" stop-color="#2996D0"/>
+      <stop offset="66%" stop-color="#56BCD4"/>
+      <stop offset="89%" stop-color="#9AD6D0"/>
+      <stop offset="100%" stop-color="#E4E0B4"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q84,44 194,28 T436,70 V0 Z" fill="rgba(17,88,168,0.46)"/>
+  <path d="M-20,0 Q112,64 222,47 T436,95 V0 Z" fill="rgba(24,118,192,0.30)"/>
+  <path d="M-20,20 Q102,75 212,58 T436,105 V0 Z" fill="rgba(40,152,210,0.20)"/>
+  <path d="M-20,256 Q63,192 173,207 T332,173 T436,188 V256 Z" fill="rgba(80,190,212,0.20)"/>
+  <path d="M-20,256 Q90,214 200,227 T355,199 T436,214 V256 Z" fill="rgba(118,208,200,0.14)"/>
+  <path d="M168,256 Q254,221 344,231 T436,201 V256 Z" fill="rgba(200,220,168,0.10)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="21" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Open Formulieren</text>
+</svg>

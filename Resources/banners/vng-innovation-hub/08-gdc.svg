@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#116AB2"/>
+      <stop offset="35%" stop-color="#2594CC"/>
+      <stop offset="64%" stop-color="#4CB8D2"/>
+      <stop offset="88%" stop-color="#94D4CE"/>
+      <stop offset="100%" stop-color="#DDDAAA"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q72,54 182,36 T436,82 V0 Z" fill="rgba(14,80,158,0.50)"/>
+  <path d="M-20,0 Q100,74 210,56 T436,108 V0 Z" fill="rgba(20,110,184,0.34)"/>
+  <path d="M-20,30 Q115,88 225,70 T436,120 V0 Z" fill="rgba(35,142,202,0.22)"/>
+  <path d="M-20,256 Q66,195 176,210 T342,176 T436,192 V256 Z" fill="rgba(76,186,208,0.22)"/>
+  <path d="M-20,256 Q94,218 204,230 T362,202 T436,218 V256 Z" fill="rgba(110,200,194,0.15)"/>
+  <path d="M178,256 Q262,225 352,235 T436,205 V256 Z" fill="rgba(190,208,158,0.10)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="28" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">GDC</text>
+</svg>

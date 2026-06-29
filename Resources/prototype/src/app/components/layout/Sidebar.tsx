@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { Switch } from "@/app/components/ui/switch";
 import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import { InvitationsDialog } from "@/app/components/dialogs/InvitationsDialog";
-import { CreateSpaceDialog } from "@/app/components/dialogs/CreateSpaceDialog";
+import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV3";
 import AlkemioLogo from "@/imports/AlkemioLogo";
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
 import { useLanguage } from "@/app/contexts/LanguageContext";
@@ -352,7 +352,7 @@ export function Sidebar({ className }: { className?: string }) {
         open={showInvitations}
         onOpenChange={setShowInvitations}
       />
-      <CreateSpaceDialog
+      <CreateSpaceDialogV3
         open={showCreateSpace}
         onOpenChange={setShowCreateSpace}
       />

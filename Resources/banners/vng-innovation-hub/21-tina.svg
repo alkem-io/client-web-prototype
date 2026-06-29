@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1172B8"/>
+      <stop offset="37%" stop-color="#2896D0"/>
+      <stop offset="66%" stop-color="#54BED6"/>
+      <stop offset="89%" stop-color="#98D8D0"/>
+      <stop offset="100%" stop-color="#E2DEB0"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q74,52 184,35 T436,80 V0 Z" fill="rgba(15,82,160,0.48)"/>
+  <path d="M-20,0 Q102,72 212,54 T436,105 V0 Z" fill="rgba(21,112,186,0.32)"/>
+  <path d="M-20,28 Q110,84 220,67 T436,116 V0 Z" fill="rgba(36,145,205,0.22)"/>
+  <path d="M-20,256 Q66,194 176,209 T338,175 T436,191 V256 Z" fill="rgba(78,188,210,0.21)"/>
+  <path d="M-20,256 Q93,217 203,230 T360,202 T436,217 V256 Z" fill="rgba(115,205,198,0.15)"/>
+  <path d="M173,256 Q258,223 348,233 T436,203 V256 Z" fill="rgba(195,215,162,0.10)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="28" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Tina</text>
+</svg>

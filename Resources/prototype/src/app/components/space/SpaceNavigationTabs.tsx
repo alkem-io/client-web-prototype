@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
 
@@ -33,19 +33,26 @@ export const SPACE_TABS = [
 
 export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange }: SpaceNavigationTabsProps) {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const currentPath = location.pathname;
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Preserve query params when navigating tabs
+  const queryString = searchParams.toString();
+  const suffix = queryString ? `?${queryString}` : "";
+
   const tabs = SPACE_TABS.map(tab => ({
     ...tab,
-    href: `/space/${spaceSlug}${tab.href === "/home" ? "" : tab.href}`
+    href: `/space/${spaceSlug}${tab.href === "/home" ? "" : tab.href}${suffix}`
   }));
 
   const isActive = (href: string) => {
-    if (href.endsWith(`/${spaceSlug}`)) {
-      return currentPath === href;
+    // Strip query params for comparison
+    const hrefPath = href.split("?")[0];
+    if (hrefPath.endsWith(`/${spaceSlug}`)) {
+      return currentPath === hrefPath;
     }
-    return currentPath.startsWith(href);
+    return currentPath.startsWith(hrefPath);
   };
 
   useEffect(() => {
@@ -70,10 +77,13 @@ export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange
 
   return (
     <nav className="w-full">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-end justify-between gap-4 relative">
+        {/* Bottom border line that runs the full width */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-border" />
+
         <div
           ref={scrollRef}
-          className="flex items-center gap-6 overflow-x-auto scrollbar-hide [-ms-overflow-style:none] [scrollbar-width:none] overscroll-x-contain"
+          className="flex items-end gap-0 overflow-x-auto scrollbar-hide [-ms-overflow-style:none] [scrollbar-width:none] overscroll-x-contain"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           {tabs.map((tab) => {
@@ -84,14 +94,13 @@ export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange
               to={tab.href}
               data-active={active}
               className={cn(
-                "pb-2 transition-all duration-200 whitespace-nowrap border-b-2 select-none",
+                "relative px-5 py-3 transition-all duration-200 whitespace-nowrap select-none rounded-t-lg",
                 active
-                  ? "border-primary text-primary"
-                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                  ? "bg-background text-foreground font-semibold border border-border border-b-0 z-10 -mb-px"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
               )}
               style={{
                 fontSize: 14,
-                fontWeight: active ? 600 : 500,
                 fontFamily: "'Inter', sans-serif",
                 lineHeight: "20px",
               }}
@@ -102,7 +111,7 @@ export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange
         })}
         </div>
         {actionButton && (
-          <div className="shrink-0">
+          <div className="shrink-0 pb-3 relative z-10">
             {actionButton}
           </div>
         )}

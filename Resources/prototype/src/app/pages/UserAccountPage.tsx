@@ -5,10 +5,19 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/c
 import { Badge } from "@/app/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV3";
+import { CreateVCDialogV3 } from "@/app/components/dialogs/CreateVCDialogV3";
+import { CreateTemplatePackDialogV3 } from "@/app/components/dialogs/CreateTemplatePackDialogV3";
+import { CreateInnovationHubDialogV3 } from "@/app/components/dialogs/CreateInnovationHubDialogV3";
 
 export default function UserAccountPage() {
   const { userSlug } = useParams<{ userSlug: string }>();
   const slug = userSlug || "user";
+  const [showCreateSpace, setShowCreateSpace] = useState(false);
+  const [showCreateVC, setShowCreateVC] = useState(false);
+  const [showCreateTemplatePack, setShowCreateTemplatePack] = useState(false);
+  const [showCreateHub, setShowCreateHub] = useState(false);
 
   // Navigation Tabs
   const tabs = [
@@ -66,7 +75,22 @@ export default function UserAccountPage() {
   ];
 
   // Mock Data: Custom Homepages
-  const customHomepages = []; // Empty state example
+  const customHomepages = [
+    {
+      id: 1,
+      name: "VNG Innovation Hub",
+      slug: "vng-innovation-hub",
+      description: "Open innovatiehub voor samenwerking tussen en voor de gemeentes.",
+    },
+  ];
+
+  // Account capacity limits
+  const capacity = {
+    spaces: 5,
+    virtualContributors: 3,
+    templatePacks: 3,
+    customHomepages: 2,
+  };
 
   return (
     <div className="min-h-screen bg-background pb-12">
@@ -125,10 +149,10 @@ export default function UserAccountPage() {
             <h2 className="text-section-title font-bold flex items-center gap-2">
               Hosted Spaces
               <Badge variant="secondary" className="ml-2 font-normal text-caption">
-                {hostedSpaces.length} Active
+                {hostedSpaces.length}/{capacity.spaces} Used
               </Badge>
             </h2>
-            <Button size="sm">
+            <Button size="sm" onClick={() => setShowCreateSpace(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Create Space
             </Button>
@@ -164,16 +188,15 @@ export default function UserAccountPage() {
               </Card>
             ))}
             
-            {/* Create New Space Card */}
-            <button className="flex flex-col items-center justify-center h-full min-h-[280px] rounded-xl border border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all group bg-muted/5">
-              <div className="h-12 w-12 rounded-full bg-muted group-hover:bg-background flex items-center justify-center mb-4 transition-colors shadow-sm">
-                <Plus className="w-6 h-6 text-muted-foreground group-hover:text-primary" />
-              </div>
-              <h3 className="text-subsection-title text-foreground group-hover:text-primary transition-colors">Create New Space</h3>
-              <p className="text-body text-muted-foreground mt-2 max-w-[200px] text-center">
-                Launch a new collaborative environment for your team.
-              </p>
-            </button>
+            {/* Empty slots for remaining capacity */}
+            {Array.from({ length: capacity.spaces - hostedSpaces.length }).map((_, i) => (
+              <button key={`empty-space-${i}`} onClick={() => setShowCreateSpace(true)} className="flex flex-col items-center justify-center h-full min-h-[280px] rounded-xl border border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all group bg-muted/5">
+                <div className="h-12 w-12 rounded-full bg-muted group-hover:bg-background flex items-center justify-center mb-4 transition-colors shadow-sm">
+                  <Plus className="w-6 h-6 text-muted-foreground group-hover:text-primary" />
+                </div>
+                <h3 className="text-subsection-title text-foreground group-hover:text-primary transition-colors">Create New Space</h3>
+              </button>
+            ))}
           </div>
         </section>
 
@@ -183,10 +206,10 @@ export default function UserAccountPage() {
             <h2 className="text-section-title font-bold flex items-center gap-2">
               Virtual Contributors
               <Badge variant="secondary" className="ml-2 font-normal text-caption">
-                {virtualContributors.length} Active
+                {virtualContributors.length}/{capacity.virtualContributors} Used
               </Badge>
             </h2>
-            <Button size="sm" variant="outline">
+            <Button size="sm" variant="outline" onClick={() => setShowCreateVC(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Contributor
             </Button>
@@ -216,98 +239,123 @@ export default function UserAccountPage() {
               </Card>
             ))}
             
-            {/* Create New Card (Inline option) */}
-             <button className="flex flex-col items-center justify-center h-full min-h-[160px] rounded-xl border border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all group">
-              <div className="h-10 w-10 rounded-full bg-muted group-hover:bg-background flex items-center justify-center mb-3 transition-colors">
-                <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
-              </div>
-              <span className="text-control text-muted-foreground group-hover:text-primary">Create New Contributor</span>
-            </button>
+            {/* Empty slots for remaining capacity */}
+            {Array.from({ length: capacity.virtualContributors - virtualContributors.length }).map((_, i) => (
+              <button key={`empty-vc-${i}`} onClick={() => setShowCreateVC(true)} className="flex flex-col items-center justify-center h-full min-h-[160px] rounded-xl border border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all group">
+                <div className="h-10 w-10 rounded-full bg-muted group-hover:bg-background flex items-center justify-center mb-3 transition-colors">
+                  <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+                </div>
+                <span className="text-control text-muted-foreground group-hover:text-primary">Create New Contributor</span>
+              </button>
+            ))}
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Section: Template Packs */}
-          <section className="flex flex-col h-full">
+          <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-section-title font-bold">Template Packs</h2>
-              <Button size="sm" variant="outline">
+              <h2 className="text-section-title font-bold flex items-center gap-2">
+                Template Packs
+                <Badge variant="secondary" className="ml-2 font-normal text-caption">
+                  {templatePacks.length}/{capacity.templatePacks} Used
+                </Badge>
+              </h2>
+              <Button size="sm" variant="outline" onClick={() => setShowCreateTemplatePack(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 New Pack
               </Button>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                {templatePacks.map((pack) => (
-                <Card key={pack.id} className="flex items-center p-4 gap-4 hover:border-primary/50 transition-colors group">
-                  <div className="h-12 w-12 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'color-mix(in srgb, var(--chart-2) 15%, transparent)', color: 'var(--chart-2)' }}>
-                    <FileBox className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-card-title group-hover:text-primary transition-colors">{pack.name}</h3>
-                    <p className="text-caption text-muted-foreground truncate">{pack.description}</p>
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
+                <Card key={pack.id} className="group overflow-hidden flex flex-col h-full hover:border-primary/50 transition-colors">
+                  <CardHeader className="p-5 pb-2 flex flex-row items-start gap-4">
+                    <div className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'color-mix(in srgb, var(--chart-2) 15%, transparent)', color: 'var(--chart-2)' }}>
+                      <FileBox className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-subheader font-semibold group-hover:text-primary transition-colors truncate">{pack.name}</h3>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 -mt-1 -mr-2 text-muted-foreground">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="p-5 pt-2 flex-grow">
+                    <p className="text-body text-muted-foreground">{pack.description}</p>
+                  </CardContent>
                 </Card>
                ))}
                
-               {/* Empty Slots */}
-               {Array.from({ length: Math.max(0, 3 - templatePacks.length) }).map((_, i) => (
-                 <div key={i} className="flex items-center p-4 gap-4 border border-dashed rounded-xl opacity-60">
-                    <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
-                      <Plus className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-body-emphasis text-muted-foreground">Empty Slot</p>
-                    </div>
-                 </div>
+               {/* Empty slots for remaining capacity */}
+               {Array.from({ length: capacity.templatePacks - templatePacks.length }).map((_, i) => (
+                 <button key={`empty-pack-${i}`} onClick={() => setShowCreateTemplatePack(true)} className="flex flex-col items-center justify-center h-full min-h-[160px] rounded-xl border border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all group">
+                   <div className="h-10 w-10 rounded-full bg-muted group-hover:bg-background flex items-center justify-center mb-3 transition-colors">
+                     <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
+                   </div>
+                   <span className="text-control text-muted-foreground group-hover:text-primary">Create New Pack</span>
+                 </button>
                ))}
             </div>
+          </section>
 
-            {/* Section: Custom Homepages (Now below Template Packs in same column) */}
-            <div className="mt-8 pt-8 border-t border-border">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-section-title font-bold">Custom Homepages</h2>
-                <Button size="sm" variant="outline">
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Page
-                </Button>
-              </div>
+          {/* Section: Custom Homepages */}
+          <section>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-section-title font-bold flex items-center gap-2">
+                Custom Homepages
+                <Badge variant="secondary" className="ml-2 font-normal text-caption">
+                  {customHomepages.length}/{capacity.customHomepages} Used
+                </Badge>
+              </h2>
+              <Button size="sm" variant="outline" onClick={() => setShowCreateHub(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                New Page
+              </Button>
+            </div>
 
-              <div className="space-y-4">
-                {customHomepages.length > 0 ? (
-                  customHomepages.map((page: any) => (
-                    <Card key={page.id} className="p-4">
-                      {page.name}
-                    </Card>
-                  ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-[240px] border border-dashed rounded-xl bg-muted/5 text-center p-6">
-                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                      <Layout className="w-6 h-6 text-muted-foreground" />
-                    </div>
-                    <h3 className="text-card-title mb-1">No Custom Homepages</h3>
-                    <p className="text-caption text-muted-foreground max-w-[200px] mb-4">
-                      Create a personalized landing page for your account.
-                    </p>
-                    <Button variant="outline" size="sm">
-                      <Plus className="w-3.5 h-3.5 mr-2" />
-                      Create Homepage
-                    </Button>
-                    <p className="text-[10px] text-muted-foreground mt-4">
-                      Capacity: 0/1 Used
-                    </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {customHomepages.length > 0 ? (
+                customHomepages.map((page: any) => (
+                  <Link key={page.id} to={`/innovation-hub/${page.slug}`}>
+                  <Card className="group overflow-hidden flex flex-col h-full hover:border-primary/50 transition-colors">
+                    <CardHeader className="p-5 pb-2 flex flex-row items-start gap-4">
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                        <Home className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-subheader font-semibold group-hover:text-primary transition-colors truncate">{page.name}</h3>
+                        <p className="text-caption text-muted-foreground mt-1">{page.description}</p>
+                      </div>
+                      <Button size="sm" variant="ghost" className="shrink-0" asChild onClick={(e) => e.stopPropagation()}>
+                        <Link to={`/innovation-hub/${page.slug}/settings`}>
+                          <Settings className="w-4 h-4" />
+                        </Link>
+                      </Button>
+                    </CardHeader>
+                  </Card>
+                  </Link>
+                ))
+              ) : null}
+              
+              {/* Empty slots for remaining capacity */}
+              {Array.from({ length: capacity.customHomepages - customHomepages.length }).map((_, i) => (
+                <button key={`empty-homepage-${i}`} onClick={() => setShowCreateHub(true)} className="flex flex-col items-center justify-center h-full min-h-[160px] rounded-xl border border-dashed border-border hover:border-primary hover:bg-primary/5 transition-all group">
+                  <div className="h-10 w-10 rounded-full bg-muted group-hover:bg-background flex items-center justify-center mb-3 transition-colors">
+                    <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
                   </div>
-                )}
-              </div>
+                  <span className="text-control text-muted-foreground group-hover:text-primary">Create Homepage</span>
+                </button>
+              ))}
             </div>
           </section>
-          </div>
         </div>
         </div>
       </div>
+
+      <CreateSpaceDialogV3 open={showCreateSpace} onOpenChange={setShowCreateSpace} />
+      <CreateVCDialogV3 open={showCreateVC} onOpenChange={setShowCreateVC} />
+      <CreateTemplatePackDialogV3 open={showCreateTemplatePack} onOpenChange={setShowCreateTemplatePack} />
+      <CreateInnovationHubDialogV3 open={showCreateHub} onOpenChange={setShowCreateHub} />
     </div>
   );
 }

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1476C0"/>
+      <stop offset="39%" stop-color="#2C9CD4"/>
+      <stop offset="69%" stop-color="#5EC2D8"/>
+      <stop offset="90%" stop-color="#A0DCD5"/>
+      <stop offset="100%" stop-color="#E8E4B8"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q83,47 193,31 T436,73 V0 Z" fill="rgba(17,87,166,0.46)"/>
+  <path d="M-20,0 Q111,67 221,50 T436,97 V0 Z" fill="rgba(24,117,190,0.30)"/>
+  <path d="M-20,22 Q103,77 213,60 T436,108 V0 Z" fill="rgba(40,150,208,0.21)"/>
+  <path d="M-20,256 Q62,190 172,206 T330,172 T436,188 V256 Z" fill="rgba(82,192,214,0.20)"/>
+  <path d="M-20,256 Q89,213 199,226 T354,198 T436,214 V256 Z" fill="rgba(120,210,202,0.14)"/>
+  <path d="M167,256 Q252,220 342,230 T436,200 V256 Z" fill="rgba(202,222,172,0.10)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="26" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Signalen</text>
+</svg>

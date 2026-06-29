@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1682CA"/>
+      <stop offset="40%" stop-color="#30A2DA"/>
+      <stop offset="70%" stop-color="#64C8DC"/>
+      <stop offset="91%" stop-color="#A8E2D9"/>
+      <stop offset="100%" stop-color="#EDE9BF"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q92,40 200,28 T436,68 V0 Z" fill="rgba(19,92,172,0.44)"/>
+  <path d="M-20,0 Q120,60 230,45 T436,90 V0 Z" fill="rgba(26,122,196,0.29)"/>
+  <path d="M-20,15 Q98,68 208,52 T436,98 V0 Z" fill="rgba(42,155,212,0.19)"/>
+  <path d="M-20,256 Q55,185 165,200 T320,168 T436,182 V256 Z" fill="rgba(88,198,218,0.19)"/>
+  <path d="M-20,256 Q82,210 195,222 T350,195 T436,210 V256 Z" fill="rgba(128,218,208,0.13)"/>
+  <path d="M155,256 Q242,218 332,228 T436,198 V256 Z" fill="rgba(208,228,178,0.11)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="24" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Freewheelen</text>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="5%" x2="100%" y2="95%">
+      <stop offset="0%" stop-color="#106CB5"/>
+      <stop offset="36%" stop-color="#2696CE"/>
+      <stop offset="66%" stop-color="#4EBAD4"/>
+      <stop offset="89%" stop-color="#96D6D0"/>
+      <stop offset="100%" stop-color="#DFDCAC"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q70,52 180,35 T436,80 V0 Z" fill="rgba(15,82,160,0.50)"/>
+  <path d="M-20,0 Q98,72 215,55 T436,105 V0 Z" fill="rgba(21,112,186,0.33)"/>
+  <path d="M-20,28 Q112,85 222,68 T436,118 V0 Z" fill="rgba(36,145,205,0.22)"/>
+  <path d="M-20,256 Q65,195 175,210 T338,175 T436,190 V256 Z" fill="rgba(78,188,210,0.21)"/>
+  <path d="M-20,256 Q92,218 202,230 T362,202 T436,218 V256 Z" fill="rgba(112,202,196,0.14)"/>
+  <path d="M172,256 Q258,225 348,235 T436,205 V256 Z" fill="rgba(192,212,162,0.10)"/>
+  <text x="208" y="128" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="26" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">DOCK</text>
+  <text x="208" y="152" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="400" fill="rgba(255,255,255,0.8)" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25))">Datavoorziening omgeving</text>
+</svg>

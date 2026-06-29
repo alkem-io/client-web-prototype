@@ -3,17 +3,16 @@ import {
   Search, 
   Plus, 
   MoreVertical, 
-  Lightbulb, 
-  Filter,
+  LayoutTemplate, 
   Users,
-  Calendar,
-  Archive,
-  Eye,
+  Pin,
+  PinOff,
+  Save,
   Trash2,
   Check,
-  Edit,
-  Grid,
-  List as ListIcon
+  LayoutGrid,
+  List as ListIcon,
+  ArrowDownAZ
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -37,6 +36,7 @@ import {
 import { Separator } from "@/app/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import { SettingsSection } from "@/app/components/shared/SettingsSection";
 
 // --- Mock Data ---
 
@@ -130,7 +130,6 @@ export function SpaceSettingsSubspaces() {
   const [defaultTemplateId, setDefaultTemplateId] = useState<string>('standard');
   const [subspaces, setSubspaces] = useState<Subspace[]>(MOCK_SUBSPACES);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Archived'>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
   // Modals
@@ -147,8 +146,7 @@ export function SpaceSettingsSubspaces() {
   const filteredSubspaces = subspaces.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           s.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'All' || s.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
 
   const handleCreateSubspace = () => {
@@ -181,127 +179,26 @@ export function SpaceSettingsSubspaces() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-5 animate-in fade-in duration-500">
       
-      {/* 1. Header */}
-      <div>
-        <h2 className="text-page-title">Subspaces</h2>
-        <p className="text-muted-foreground mt-2">
-          Edit the Subspaces in this Space. Configure default templates and view all existing subspaces.
-        </p>
-      </div>
+      {/* Default Template */}
+      <SettingsSection
+        title="Default Subspace Template"
+        icon={<LayoutTemplate className="w-4 h-4" />}
+        iconColor="purple"
+        collapsible={false}
+      >
+        <Button size="sm" onClick={() => setIsTemplateModalOpen(true)}>
+          Change Default Template
+        </Button>
+      </SettingsSection>
 
-      <Separator />
-
-      {/* 2. Default Subspace Template */}
-      <div className="bg-muted/30 border border-border rounded-xl p-6">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-          <div className="space-y-4 flex-1">
-             <div>
-               <h3 className="text-subsection-title flex items-center gap-2">
-                 <Lightbulb className="w-5 h-5 text-primary" />
-                 Default Subspace Template
-               </h3>
-               <p className="text-muted-foreground text-body mt-1">
-                 Choose the default settings that will apply when creating a new Subspace within this Space.
-                 Templates can be modified during the creation process or at any time.
-               </p>
-             </div>
-             
-             <div className="flex items-start gap-4 p-4 bg-background border border-border rounded-lg shadow-sm max-w-2xl">
-                <div className="w-24 h-16 rounded-md overflow-hidden shrink-0 bg-muted">
-                   <ImageWithFallback 
-                      src={currentDefaultTemplate.image} 
-                      alt={currentDefaultTemplate.name} 
-                      className="w-full h-full object-cover"
-                   />
-                </div>
-                <div>
-                   <h4 className="font-semibold text-foreground">{currentDefaultTemplate.name}</h4>
-                   <p className="text-caption text-muted-foreground mt-1 mb-2">
-                      {currentDefaultTemplate.description}
-                   </p>
-                   <div className="flex flex-wrap gap-2">
-                      {currentDefaultTemplate.features.map(f => (
-                        <Badge key={f} variant="secondary" className="text-badge px-1.5 h-5">
-                           {f}
-                        </Badge>
-                      ))}
-                   </div>
-                </div>
-             </div>
-          </div>
-
-          <div className="shrink-0">
-             <Dialog open={isTemplateModalOpen} onOpenChange={setIsTemplateModalOpen}>
-               <DialogTrigger asChild>
-                 <Button>
-                   Change Default Template
-                 </Button>
-               </DialogTrigger>
-               <DialogContent className="max-w-3xl">
-                 <DialogHeader>
-                   <DialogTitle>Select Default Template</DialogTitle>
-                   <DialogDescription>
-                     Choose a template to be used as the default for new subspaces.
-                   </DialogDescription>
-                 </DialogHeader>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
-                    {TEMPLATES.map(template => (
-                      <div 
-                        key={template.id}
-                        className={cn(
-                          "cursor-pointer border rounded-lg overflow-hidden transition-all hover:shadow-md",
-                          defaultTemplateId === template.id ? "ring-2 ring-primary border-primary" : "border-border"
-                        )}
-                        onClick={() => {
-                          setDefaultTemplateId(template.id);
-                          setIsTemplateModalOpen(false);
-                        }}
-                      >
-                         <div className="h-32 bg-muted relative">
-                           <ImageWithFallback 
-                              src={template.image} 
-                              alt={template.name}
-                              className="w-full h-full object-cover" 
-                           />
-                           {defaultTemplateId === template.id && (
-                             <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1 shadow-sm">
-                               <Check className="w-4 h-4" />
-                             </div>
-                           )}
-                         </div>
-                         <div className="p-4">
-                           <h4 className="font-semibold">{template.name}</h4>
-                           <p className="text-caption text-muted-foreground mt-1 line-clamp-2">
-                             {template.description}
-                           </p>
-                           <div className="flex flex-wrap gap-1 mt-3">
-                              {template.features.slice(0, 2).map(f => (
-                                <span key={f} className="text-badge bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
-                                  {f}
-                                </span>
-                              ))}
-                              {template.features.length > 2 && (
-                                <span className="text-badge bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
-                                  +{template.features.length - 2}
-                                </span>
-                              )}
-                           </div>
-                         </div>
-                      </div>
-                    ))}
-                 </div>
-               </DialogContent>
-             </Dialog>
-          </div>
-        </div>
-      </div>
-
-      <Separator />
-
-      {/* 3. Subspaces List */}
+      {/* Subspaces List */}
+      <SettingsSection
+        title="Subspaces"
+        icon={<Users className="w-4 h-4" />}
+        iconColor="blue"
+      >
       <div className="space-y-4">
          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <h3 className="text-subsection-title flex items-center gap-2">
@@ -312,7 +209,7 @@ export function SpaceSettingsSubspaces() {
             </h3>
             
             <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-               <div className="relative flex-1 sm:w-64">
+               <div className="relative flex-1">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input 
                     placeholder="Search subspaces..." 
@@ -321,20 +218,6 @@ export function SpaceSettingsSubspaces() {
                     onChange={(e) => setSearchQuery(e.target.value)} 
                   />
                </div>
-               
-               <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-9 gap-2">
-                       <Filter className="w-4 h-4" />
-                       Filter: {statusFilter}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                     <DropdownMenuItem onClick={() => setStatusFilter('All')}>All</DropdownMenuItem>
-                     <DropdownMenuItem onClick={() => setStatusFilter('Active')}>Active Only</DropdownMenuItem>
-                     <DropdownMenuItem onClick={() => setStatusFilter('Archived')}>Archived Only</DropdownMenuItem>
-                  </DropdownMenuContent>
-               </DropdownMenu>
 
                <div className="border rounded-md flex items-center h-9 p-0.5 bg-muted/20">
                   <Button 
@@ -343,7 +226,7 @@ export function SpaceSettingsSubspaces() {
                     className="h-8 w-8 rounded-sm"
                     onClick={() => setViewMode('grid')}
                   >
-                     <Grid className="w-4 h-4" />
+                     <LayoutGrid className="w-4 h-4" />
                   </Button>
                   <Button 
                     variant={viewMode === 'list' ? 'secondary' : 'ghost'} 
@@ -436,18 +319,13 @@ export function SpaceSettingsSubspaces() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                <DropdownMenuItem>
-                                  <Eye className="w-4 h-4 mr-2" /> View
+                                  <Pin className="w-4 h-4 mr-2" /> Pin
                                </DropdownMenuItem>
                                <DropdownMenuItem>
-                                  <Edit className="w-4 h-4 mr-2" /> Edit Details
+                                  <Save className="w-4 h-4 mr-2" /> Save as Template
                                </DropdownMenuItem>
-                               {subspace.status !== 'Archived' && (
-                                 <DropdownMenuItem onClick={() => handleArchive(subspace.id)}>
-                                    <Archive className="w-4 h-4 mr-2" /> Archive
-                                 </DropdownMenuItem>
-                               )}
                                <DropdownMenuSeparator />
-                               <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(subspace.id)}>
+                               <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(subspace.id)}>
                                   <Trash2 className="w-4 h-4 mr-2" /> Delete
                                </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -455,9 +333,7 @@ export function SpaceSettingsSubspaces() {
                       </div>
                       {subspace.status === 'Archived' && (
                         <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px] flex items-center justify-center">
-                           <Badge variant="secondary" className="gap-1">
-                              <Archive className="w-3 h-3" /> Archived
-                           </Badge>
+                           <Badge variant="secondary">Archived</Badge>
                         </div>
                       )}
                    </div>
@@ -471,17 +347,6 @@ export function SpaceSettingsSubspaces() {
                             {subspace.description}
                          </p>
                       </div>
-                      
-                      <div className="mt-4 flex items-center justify-between text-caption text-muted-foreground pt-4 border-t border-border">
-                         <div className="flex items-center gap-1.5" title={`${subspace.memberCount} members`}>
-                            <Users className="w-3.5 h-3.5" />
-                            {subspace.memberCount}
-                         </div>
-                         <div className="flex items-center gap-1.5" title="Last active">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {subspace.lastActive}
-                         </div>
-                      </div>
                    </div>
                 </div>
               ))}
@@ -494,10 +359,10 @@ export function SpaceSettingsSubspaces() {
                    </div>
                    <h3 className="text-subsection-title font-medium text-foreground">No subspaces found</h3>
                    <p className="text-body mt-1 mb-4">
-                      Try adjusting your search or filters.
+                      Try adjusting your search.
                    </p>
-                   <Button variant="outline" onClick={() => { setSearchQuery(''); setStatusFilter('All'); }}>
-                      Clear Filters
+                   <Button variant="outline" onClick={() => setSearchQuery('')}>
+                      Clear Search
                    </Button>
                 </div>
               )}
@@ -524,7 +389,7 @@ export function SpaceSettingsSubspaces() {
                      </div>
                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                           <h4 className="text-body-emphasis text-foreground truncate">{subspace.name}</h4>
+                           <h4 className="text-body-emphasis text-foreground truncate hover:underline cursor-pointer">{subspace.name}</h4>
                            {subspace.status === 'Archived' && (
                               <Badge variant="secondary" className="text-badge py-0 h-5">Archived</Badge>
                            )}
@@ -532,16 +397,6 @@ export function SpaceSettingsSubspaces() {
                         <p className="text-caption text-muted-foreground truncate max-w-md">
                            {subspace.description}
                         </p>
-                     </div>
-                     <div className="hidden sm:flex items-center gap-6 text-caption text-muted-foreground shrink-0">
-                        <div className="flex items-center gap-1.5 w-20">
-                           <Users className="w-3.5 h-3.5" />
-                           {subspace.memberCount}
-                        </div>
-                        <div className="flex items-center gap-1.5 w-24">
-                           <Calendar className="w-3.5 h-3.5" />
-                           {subspace.lastActive}
-                        </div>
                      </div>
                      <div className="shrink-0">
                         <DropdownMenu>
@@ -551,11 +406,15 @@ export function SpaceSettingsSubspaces() {
                               </Button>
                            </DropdownMenuTrigger>
                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Archive</DropdownMenuItem>
+                              <DropdownMenuItem>
+                                 <Pin className="w-4 h-4 mr-2" /> Pin
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                 <Save className="w-4 h-4 mr-2" /> Save as Template
+                              </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(subspace.id)}>
-                                 Delete
+                              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(subspace.id)}>
+                                 <Trash2 className="w-4 h-4 mr-2" /> Delete
                               </DropdownMenuItem>
                            </DropdownMenuContent>
                         </DropdownMenu>
@@ -570,6 +429,7 @@ export function SpaceSettingsSubspaces() {
             </div>
          )}
       </div>
+      </SettingsSection>
     </div>
   );
 }

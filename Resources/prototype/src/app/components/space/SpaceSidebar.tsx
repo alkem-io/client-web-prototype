@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -10,19 +9,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/app/components/ui/dialog";
-import {
-  Info,
-  Plus,
-  MapPin,
-  Mail,
-  UserPlus,
-  Search,
-  List,
-  FileText,
-  X,
-} from "lucide-react";
+import { Plus, Mail, UserPlus, Search, List, FileText, X, Calendar, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AboutThisSpaceDialog } from "@/app/components/space/AboutThisSpaceDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 
 interface SpaceSidebarProps {
@@ -31,13 +19,15 @@ interface SpaceSidebarProps {
   variant?: "home" | "community" | "workspaces" | "knowledge";
   /** Description of the currently active tab */
   activeTabDescription?: string;
+  /** Admin-controlled feature toggles */
+  enabledFeatures?: { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
 }
 
 const TAB_TAGS: Record<string, string[]> = {
-  home:       ["Updates", "Events", "Ideas", "Announcements"],
+  home:       ["Updates", "Events", "Ideas", "Announcements", "Strategy", "Discussion", "Question", "Feedback", "Milestone", "Decision", "Blocker", "Action Item", "Proposal", "Vote", "Summary", "Minutes", "Agenda", "Follow-up", "Retrospective", "Planning", "Sprint", "Release", "Bug Report", "Feature Request", "Enhancement", "Onboarding", "Welcome", "Celebration", "Recognition", "Resource", "Link", "Tutorial", "Guide", "Best Practice", "Lesson Learned", "Case Study", "Interview", "Podcast", "Webinar", "Workshop", "Hackathon", "Challenge"],
   community:  ["Members", "Active", "Leads", "New"],
-  workspaces: ["Active", "Planning", "Research", "Completed"],
-  knowledge:  ["Reports", "Policy", "Research", "Data"],
+  workspaces: ["Energy", "Strategy", "Transport", "Urban", "Green Spaces", "Policy", "Community", "Digital", "Simulation", "Regulation"],
+  knowledge:  ["Reports", "Policy", "Research", "Data", "Technical", "Funding", "Community", "Templates", "Legal", "Infrastructure", "Governance", "Environment", "Education", "Standards", "Compliance", "Audit", "Budget", "Procurement", "Contracts", "Risk Assessment", "Impact Analysis", "Benchmarks", "Case Studies", "White Papers", "Presentations", "Dashboards", "Metrics", "KPIs", "Frameworks", "Methodologies", "Tools", "Software", "Hardware", "IoT", "AI/ML", "Blockchain", "Open Data", "APIs", "Integrations", "Workflows", "Automation", "Security", "Privacy", "Accessibility", "Sustainability", "Carbon", "Circular Economy", "Social Impact", "Equity", "Innovation", "Pilots", "Prototypes"],
 };
 
 const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: string; tags: string[] }>> = {
@@ -53,24 +43,43 @@ const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: str
     { title: "Community Roles & Responsibilities", type: "Post", author: "Elena Martinez", tags: ["Leads"] },
   ],
   workspaces: [
-    { title: "Renewable Energy Initiative", type: "Subspace", author: "David Kim", tags: ["Active"] },
-    { title: "Urban Planning Taskforce", type: "Subspace", author: "Emily Davis", tags: ["Planning"] },
-    { title: "Transportation Working Group", type: "Subspace", author: "Marc Johnson", tags: ["Research"] },
+    { title: "Renewable Energy Transition", type: "Subspace", author: "Sarah Chen", tags: ["Energy", "Strategy"] },
+    { title: "Urban Mobility Lab", type: "Subspace", author: "David Kim", tags: ["Transport"] },
+    { title: "Green Infrastructure", type: "Subspace", author: "Emily Davis", tags: ["Urban", "Green Spaces"] },
+    { title: "Policy Frameworks", type: "Subspace", author: "Policy Institute", tags: ["Policy", "Regulation"] },
+    { title: "Community Engagement", type: "Subspace", author: "Anna Martinez", tags: ["Community"] },
+    { title: "Digital Twin Project", type: "Subspace", author: "Robert Fox", tags: ["Digital", "Simulation"] },
   ],
   knowledge: [
-    { title: "Transition Case Studies & Policy Docs", type: "Collection", author: "Elena Martinez", tags: ["Policy", "Research"] },
-    { title: "Q1 Sustainability Report", type: "Document", author: "Sarah Chen", tags: ["Reports"] },
-    { title: "Grid Modernisation Reference Materials", type: "Collection", author: "David Kim", tags: ["Policy", "Data"] },
-    { title: "Funding Opportunities for Municipal Energy Projects", type: "Document", author: "Emily Davis", tags: ["Reports", "Data"] },
+    { title: "Transition Case Studies & Policy Docs", type: "Collection", author: "Elena Rodriguez", tags: ["Reports", "Policy"] },
+    { title: "Q1 Sustainability Report & Supporting Data", type: "Collection", author: "Sarah Chen", tags: ["Reports", "Data"] },
+    { title: "Community Workshop Guidelines", type: "Document", author: "James Wilson", tags: ["Research", "Community"] },
+    { title: "Grid Modernisation Reference Materials", type: "Collection", author: "David Miller", tags: ["Research", "Technical"] },
+    { title: "Funding Opportunities for Municipal Energy Projects", type: "Document", author: "Alex Contributor", tags: ["Policy", "Funding"] },
+    { title: "Stakeholder Meeting Notes & Action Items", type: "Collection", author: "Michael Chang", tags: ["Reports", "Governance"] },
+    { title: "Energy Consumption Baseline Analysis", type: "Document", author: "Priya Sharma", tags: ["Technical", "Data"] },
+    { title: "Communication Templates & Brand Guidelines", type: "Collection", author: "Lisa Park", tags: ["Templates", "Community"] },
+    { title: "Regulatory Framework & Compliance Guide", type: "Document", author: "Robert Hayes", tags: ["Policy", "Legal"] },
+    { title: "Solar Panel Efficiency Benchmarks 2026", type: "Collection", author: "David Miller", tags: ["Research", "Technical"] },
+    { title: "Budget Allocation & Financial Projections", type: "Document", author: "Nina Petrova", tags: ["Funding", "Governance"] },
+    { title: "Public Education & Awareness Materials", type: "Collection", author: "James Wilson", tags: ["Community", "Education"] },
+    { title: "EV Charging Infrastructure Deployment Plan", type: "Document", author: "Tom Bradley", tags: ["Technical", "Infrastructure"] },
+    { title: "Carbon Footprint Reduction Projections", type: "Document", author: "Priya Sharma", tags: ["Research", "Environment"] },
+    { title: "Project Management Toolkit", type: "Collection", author: "Lisa Park", tags: ["Templates", "Governance"] },
+    { title: "Procurement Guidelines for Green Energy Contracts", type: "Document", author: "Robert Hayes", tags: ["Policy", "Legal"] },
+    { title: "Building Energy Audit Results", type: "Collection", author: "Tom Bradley", tags: ["Data", "Infrastructure"] },
+    { title: "Youth Engagement Program Curriculum", type: "Document", author: "Elena Rodriguez", tags: ["Community", "Education"] },
+    { title: "Grant Application: DOE Community Power Accelerator", type: "Document", author: "Nina Petrova", tags: ["Funding", "Reports"] },
+    { title: "Climate Resilience & Adaptation Strategy", type: "Collection", author: "Michael Chang", tags: ["Research", "Environment"] },
   ],
 };
 
-export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription }: SpaceSidebarProps) {
-  const [aboutOpen, setAboutOpen] = useState(false);
+export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription, enabledFeatures }: SpaceSidebarProps) {
+  const features = enabledFeatures || { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
   const [indexOpen, setIndexOpen] = useState(false);
   
   // Use filter context
-  const { searchValue, activeTag, setSearchValue, setActiveTag } = useSpaceFilters();
+  const { searchValue, activeTags, setSearchValue, toggleTag, clearTags } = useSpaceFilters();
 
   const tags = TAB_TAGS[variant] ?? TAB_TAGS.home;
   const allIndexItems = TAB_INDEX[variant] ?? TAB_INDEX.home;
@@ -86,76 +95,90 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       item.title.toLowerCase().includes(searchValue.toLowerCase()) ||
       item.author.toLowerCase().includes(searchValue.toLowerCase());
     
-    const matchesTag = activeTag === null || item.tags.includes(activeTag);
+    const matchesTags = activeTags.length === 0 || activeTags.every((tag) => item.tags.includes(tag));
     
-    return matchesSearch && matchesTag;
+    return matchesSearch && matchesTags;
   });
 
-  const hasFilters = searchValue !== "" || activeTag !== null;
+  const hasFilters = searchValue !== "" || activeTags.length > 0;
   const matchCount = filteredIndexItems.length;
 
   return (
-    <div
-      className="flex flex-col gap-3 w-full"
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      {/* Info Block */}
-      <InfoBlock onAboutClick={() => setAboutOpen(true)} tabDescription={activeTabDescription} />
-      <AboutThisSpaceDialog open={aboutOpen} onOpenChange={setAboutOpen} spaceSlug={spaceSlug} />
+    <div className="flex flex-col w-full p-1.5">
+      {/* Description */}
+      <div className="pb-3">
+        <ReadMoreText
+          maxLines={3}
+          className="text-sm text-foreground/85 leading-relaxed"
+          toggleColor="var(--foreground)"
+          toggleOpacity={0.75}
+        >
+          {activeTabDescription || "Activity and updates from members of this space."}
+        </ReadMoreText>
+      </div>
 
-      {/* Tab-specific CTA buttons */}
-      <TabCTAButtons variant={variant} />
+      {/* Action buttons */}
+      {(features.post || features.addUser || features.createSubspace) && (
+      <div className="pb-4">
+        <div className="flex flex-col gap-2">
+          {features.post && (
+            <Button size="sm" className="w-full gap-2 justify-start">
+              <Plus className="w-4 h-4" />
+              Post
+            </Button>
+          )}
+          {features.addUser && variant === "community" && (
+            <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+              <UserPlus className="w-4 h-4" />
+              Add User
+            </Button>
+          )}
+          {features.createSubspace && (variant === "home" || variant === "workspaces") && (
+            <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+              <Plus className="w-4 h-4" />
+              Create Subspace
+            </Button>
+          )}
+        </div>
+      </div>
+      )}
+
+      {/* ── divider ── */}
+      {(features.post || features.addUser || features.createSubspace) && <div className="mb-4" />}
 
       {/* Search bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder={searchPlaceholder}
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="w-full h-10 pl-9 pr-4 transition-all text-body"
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            borderRadius: "var(--radius)",
-            border: "1px solid var(--border)",
-            background: "var(--input-background)",
-            color: "var(--foreground)",
-            outline: "none",
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--primary)";
-            e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = "var(--border)";
-            e.currentTarget.style.boxShadow = "none";
-          }}
-        />
+      {features.search && (
+      <div className="pb-4">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder={searchPlaceholder}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="w-full h-9 pl-8 pr-3 transition-all text-sm rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "var(--primary)";
+              e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "var(--border)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          />
+        </div>
       </div>
+      )}
 
       {/* Tag cloud */}
-      <div className="flex flex-wrap gap-1.5">
-        {tags.map((tag) => (
-          <button
-            key={tag}
-            onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-            className={cn(
-              "px-2.5 py-1 rounded-full text-badge border transition-colors",
-              activeTag === tag
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
-            )}
-          >
-            {tag}
-          </button>
-        ))}
-      </div>
+      {features.tags && (
+        <TagCloud tags={tags} activeTags={activeTags} toggleTag={toggleTag} />
+      )}
 
       {/* Filter feedback */}
       {hasFilters && (
         <div
-          className="flex items-center justify-between gap-2 p-2.5 rounded-md text-xs"
+          className="flex items-center justify-between gap-2 p-2 rounded-md text-xs mb-3"
           style={{
             background: "color-mix(in srgb, var(--primary) 10%, transparent)",
             color: "var(--primary)",
@@ -163,12 +186,12 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         >
           <span>
             <strong>{matchCount}</strong> item{matchCount !== 1 ? 's' : ''} match
-            {activeTag && (
+            {activeTags.length > 0 && (
               <>
-                {" "}tagged <strong>"{activeTag}"</strong>
+                {" "}tagged <strong>"{activeTags.join('" + "')}"</strong>
               </>
             )}
-            {activeTag && searchValue && " and "}
+            {activeTags.length > 0 && searchValue && " and "}
             {searchValue && (
               <>
                 {" "}search for <strong>"{searchValue}"</strong>
@@ -178,7 +201,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           <button
             onClick={() => {
               setSearchValue("");
-              setActiveTag(null);
+              clearTags();
             }}
             className="flex items-center justify-center w-5 h-5 rounded hover:bg-primary/20 transition-colors"
             title="Clear filters"
@@ -188,18 +211,33 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         </div>
       )}
 
+      {/* ── divider ── */}
+      <div className="mb-4" />
+
+      {/* Subspace quick links (Home tab only) */}
+      {features.subspaceLinks && variant === "home" && (
+        <>
+          <div className="pb-4">
+            <SubspaceQuickLinks />
+          </div>
+          <div className="mb-4" />
+        </>
+      )}
+
       {/* Index Button */}
-      <div className="pt-1">
+      {features.index && (
+      <div>
         <Button
           variant="outline"
-          className="w-full gap-2"
-          style={{ fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-medium)" as any }}
+          size="sm"
+          className="w-full gap-2 justify-start"
           onClick={() => setIndexOpen(true)}
         >
-          <List className="w-4 h-4" />
-          Index {hasFilters && `(${matchCount})`}
+          <List className="w-3.5 h-3.5" />
+          Index
         </Button>
       </div>
+      )}
 
       {/* Index Dialog */}
       <Dialog open={indexOpen} onOpenChange={setIndexOpen}>
@@ -210,64 +248,24 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
               Index
             </DialogTitle>
             <DialogDescription>
-              {activeTag || searchValue ? (
-                <>
-                  {filteredIndexItems.length} item{filteredIndexItems.length !== 1 ? 's' : ''} 
-                  {activeTag && ` tagged "${activeTag}"`}
-                  {activeTag && searchValue && " and "}
-                  {searchValue && `matching "${searchValue}"`}
-                </>
-              ) : (
-                <>All content in this space's {variant === "workspaces" ? "subspaces" : variant === "knowledge" ? "knowledge base" : variant} view.</>
-              )}
+              All content in this space's {variant === "workspaces" ? "subspaces" : variant === "knowledge" ? "knowledge base" : variant} view.
             </DialogDescription>
           </DialogHeader>
-          
-          {/* Search and filter in dialog */}
-          <div className="flex flex-col gap-2 py-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-              <Input
-                placeholder={searchPlaceholder}
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                className="pl-9 h-9 text-sm"
-              />
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {tags.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                    className={cn(
-                      "px-2 py-1 rounded text-xs font-medium border transition-colors",
-                      activeTag === tag
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
-                    )}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
 
           {/* Results */}
-          {filteredIndexItems.length > 0 ? (
+          {allIndexItems.length > 0 ? (
             <div className="space-y-1 mt-2">
-              {filteredIndexItems.map((item, i) => (
+              {allIndexItems.map((item, i) => (
                 <button
                   key={i}
                   className="flex items-start gap-3 w-full text-left px-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
                 >
                   <FileText className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
                   <div className="flex-1 min-w-0">
-                    <p className="truncate" style={{ fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--foreground)" }}>
+                    <p className="truncate text-sm font-medium text-foreground">
                       {item.title}
                     </p>
-                    <p style={{ fontSize: "12px", color: "var(--muted-foreground)" }}>
+                    <p className="text-caption text-muted-foreground">
                       {item.type} · {item.author}
                     </p>
                     {item.tags.length > 0 && (
@@ -275,7 +273,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
                         {item.tags.map((t) => (
                           <span
                             key={t}
-                            className="px-1.5 py-0.5 rounded text-xs"
+                            className="px-1.5 py-0.5 rounded text-badge"
                             style={{
                               background: "color-mix(in srgb, var(--primary) 10%, transparent)",
                               color: "var(--primary)",
@@ -292,7 +290,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
             </div>
           ) : (
             <div style={{ padding: "24px", textAlign: "center", color: "var(--muted-foreground)" }}>
-              <p style={{ fontSize: "var(--text-sm)" }}>No items match your search{activeTag && ` or tag "${activeTag}"`}.</p>
+              <p style={{ fontSize: "var(--text-sm)" }}>No items in this view.</p>
             </div>
           )}
         </DialogContent>
@@ -303,19 +301,160 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
 
 /* ─── Sub-components ─────────────────────────────────────────── */
 
+const TAG_VISIBLE_LIMIT = 8;
+
+function TagCloud({ tags, activeTags, toggleTag }: { tags: string[]; activeTags: string[]; toggleTag: (tag: string) => void }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const visibleTags = expanded ? tags : tags.slice(0, TAG_VISIBLE_LIMIT);
+  const hiddenCount = tags.length - TAG_VISIBLE_LIMIT;
+
+  return (
+    <div className="flex flex-wrap gap-1.5 pb-4">
+      {visibleTags.map((tag) => (
+        <button
+          key={tag}
+          onClick={() => toggleTag(tag)}
+          className={cn(
+            "px-2 py-0.5 rounded-full text-badge border transition-colors",
+            activeTags.includes(tag)
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+          )}
+        >
+          {tag}
+        </button>
+      ))}
+      {!expanded && hiddenCount > 0 && (
+        <button
+          onClick={() => setExpanded(true)}
+          className="px-2 py-0.5 rounded-full text-badge border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors"
+        >
+          +{hiddenCount}
+        </button>
+      )}
+      {expanded && hiddenCount > 0 && (
+        <button
+          onClick={() => setExpanded(false)}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Show fewer
+        </button>
+      )}
+    </div>
+  );
+}
+
+function UpcomingEvents() {
+  const [collapsed, setCollapsed] = useState(false);
+  const events = [
+    { title: "GovTechDay", date: "Today" },
+    { title: "Stakeholder Workshop", date: "Jun 14" },
+    { title: "Community Solar Session", date: "Jun 18" },
+  ];
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between mb-3">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center gap-1 hover:text-foreground transition-colors"
+        >
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Events
+          </span>
+          <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
+        </button>
+        <button
+          className="w-5 h-5 flex items-center justify-center rounded hover:bg-muted/50 transition-colors"
+          style={{ color: "var(--primary)" }}
+          title="Add event"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      {!collapsed && (
+        <>
+          <div className="flex flex-col">
+            {events.map((event) => (
+              <button
+                key={event.title}
+                className="flex items-center gap-2 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+              >
+                <span className="text-foreground/85 truncate">{event.title}</span>
+                <span className="text-xs text-muted-foreground ml-auto shrink-0">{event.date}</span>
+              </button>
+            ))}
+          </div>
+          <button
+            className="mt-3 text-sm text-foreground/85 text-left hover:text-foreground transition-colors"
+          >
+            Show calendar
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+const SUBSPACE_AVATARS = [
+  "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+  "https://images.unsplash.com/photo-1556741533-6e6a62bd8b49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+  "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+  "https://images.unsplash.com/photo-1677506048377-1099738d294d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+];
+
+function SubspaceQuickLinks() {
+  const [collapsed, setCollapsed] = useState(false);
+  const subspaces = TAB_INDEX.workspaces.slice(0, 4);
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between mb-3">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center gap-1 hover:text-foreground transition-colors"
+        >
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Subspaces
+          </span>
+          <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
+        </button>
+      </div>
+      {!collapsed && (
+        <div className="flex flex-col gap-0.5">
+          {subspaces.map((s, i) => (
+            <button
+              key={s.title}
+              className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+            >
+              <img
+                src={SUBSPACE_AVATARS[i % SUBSPACE_AVATARS.length]}
+                alt={s.title}
+                className="w-8 h-8 rounded-lg shrink-0 object-cover"
+              />
+              <span className="text-foreground/85 truncate">{s.title}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function TabCTAButtons({ variant }: { variant: string }) {
   if (variant === "community") {
     return (
       <div className="flex flex-col gap-2">
-        <Button size="sm" className="w-full gap-2">
+        <Button size="sm" className="w-full gap-2 justify-start">
           <Plus className="w-4 h-4" />
           Post
         </Button>
-        <Button variant="outline" size="sm" className="w-full gap-2">
+        <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
           <UserPlus className="w-4 h-4" />
           Add User
         </Button>
-        <Button variant="outline" size="sm" className="w-full gap-2">
+        <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
           <Mail className="w-4 h-4" />
           Contact Leads
         </Button>
@@ -325,11 +464,11 @@ function TabCTAButtons({ variant }: { variant: string }) {
   if (variant === "workspaces") {
     return (
       <div className="flex flex-col gap-2">
-        <Button size="sm" className="w-full gap-2">
+        <Button size="sm" className="w-full gap-2 justify-start">
           <Plus className="w-4 h-4" />
           Post
         </Button>
-        <Button variant="outline" size="sm" className="w-full gap-2">
+        <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
           <Plus className="w-4 h-4" />
           Create Subspace
         </Button>
@@ -338,114 +477,9 @@ function TabCTAButtons({ variant }: { variant: string }) {
   }
   // Home and Knowledge Base
   return (
-    <Button size="sm" className="w-full gap-2">
+    <Button size="sm" className="w-full gap-2 justify-start">
       <Plus className="w-4 h-4" />
       Post
     </Button>
-  );
-}
-
-/* ─── InfoBlock ─────────────────────────────────────────── */
-
-function InfoBlock({ onAboutClick, tabDescription }: { onAboutClick: () => void; tabDescription?: string }) {
-  return (
-    <div
-      className="p-5"
-      style={{
-        background: "var(--primary)",
-        color: "var(--primary-foreground)",
-        borderRadius: "var(--radius)",
-      }}
-    >
-      <div className="mb-3">
-        <ReadMoreText
-          maxLines={3}
-          style={{
-            fontSize: "var(--text-sm)",
-            lineHeight: 1.6,
-            opacity: 0.9,
-          }}
-          toggleColor="var(--primary-foreground)"
-          toggleOpacity={0.8}
-        >
-          {tabDescription || "About this space"}
-        </ReadMoreText>
-      </div>
-
-      {/* Space Lead */}
-      <div
-        className="pt-3 mt-1"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}
-      >
-        <p
-          className="uppercase tracking-wider mb-2"
-          style={{
-            fontSize: "10px",
-            fontWeight: 700,
-            opacity: 0.6,
-            letterSpacing: "0.04em",
-          }}
-        >
-          Lead
-        </p>
-        <div className="flex items-center gap-3">
-          <Avatar
-            className="w-8 h-8"
-            style={{ border: "2px solid rgba(255,255,255,0.25)" }}
-          >
-            <AvatarImage
-              src="https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGdsYXNzZXMlMjBibGFjayUyMGFuZCUyMHdoaXRlJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzY5NDQyNTM3fDA&ixlib=rb-4.1.0&q=80&w=256"
-              alt="Elena Martinez"
-            />
-            <AvatarFallback
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                color: "white",
-                fontSize: "9px",
-                fontWeight: 700,
-              }}
-            >
-              EM
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p style={{ fontSize: "var(--text-sm)", fontWeight: 600 }}>
-              Elena Martinez
-            </p>
-            <p
-              className="flex items-center gap-1"
-              style={{ fontSize: "11px", opacity: 0.7 }}
-            >
-              <MapPin className="w-3 h-3" />
-              Amsterdam, NL
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* About this Space */}
-      <button
-        onClick={onAboutClick}
-        className="w-full flex items-center justify-center gap-2 pt-3 mt-3 hover:underline cursor-pointer"
-        style={{
-          borderTop: "1px solid rgba(255,255,255,0.15)",
-          fontSize: "var(--text-sm)",
-          fontWeight: "var(--font-weight-medium)" as any,
-          color: "var(--primary-foreground)",
-          opacity: 0.8,
-          background: "none",
-          border: "none",
-          borderTopWidth: "1px",
-          borderTopStyle: "solid",
-          borderTopColor: "rgba(255,255,255,0.15)",
-          padding: 0,
-          paddingTop: "12px",
-          marginTop: "12px",
-        }}
-      >
-        <Info className="w-3.5 h-3.5" />
-        About this Space
-      </button>
-    </div>
   );
 }

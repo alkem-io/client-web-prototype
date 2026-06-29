@@ -140,7 +140,8 @@ export function SpaceSubspacesList() {
   const { spaceSlug } = useParams<{ spaceSlug: string }>();
   const slug = spaceSlug || "default-space";
   const [filter, setFilter] = useState("All");
-  const { searchValue, activeTag } = useSpaceFilters();
+  const { searchValue, activeTags, viewMode: ctxViewMode } = useSpaceFilters();
+  const viewMode = ctxViewMode || "grid";
 
   // Attach parent info so SpaceCard can build the correct subspace link
   const subspacesWithParent = SUBSPACES.map((s) => ({
@@ -166,43 +167,23 @@ export function SpaceSubspacesList() {
       s.description.toLowerCase().includes(searchValue.toLowerCase());
     if (!matchesSearch) return false;
     
-    // Tag filter (from context)
-    const matchesTag = !activeTag || s.filterTags.includes(activeTag);
-    if (!matchesTag) return false;
+    // Tag filter (from context) — match against content tags on cards
+    const matchesTags = activeTags.length === 0 || activeTags.every((tag) => s.tags.includes(tag));
+    if (!matchesTags) return false;
     
     return true;
   });
 
   return (
     <div className="space-y-6" style={{ fontFamily: "'Inter', sans-serif" }}>
-      {/* Filters */}
-      <div className="flex items-center gap-2">
-        {["All", "Active", "Archived"].map((status) => (
-          <button
-            key={status}
-            onClick={() => setFilter(status)}
-            className={cn(
-              "px-3 py-1.5 rounded-full transition-colors text-control",
-              filter === status
-                ? "bg-primary text-primary-foreground"
-                : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
-            style={{
-              border: `1px solid ${filter === status ? "var(--primary)" : "var(--border)"}`,
-            }}
-          >
-            {status}
-          </button>
-        ))}
-      </div>
-
-      {/* Card Grid — uses the shared SpaceCard component */}
+      {/* Card Grid/List — uses the shared SpaceCard component */}
       {filteredSubspaces.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" : "flex flex-col gap-3"}>
           {filteredSubspaces.map((subspace) => (
             <SpaceCard
               key={subspace.id}
               space={subspace}
+              compact={viewMode === "list"}
             />
           ))}
         </div>

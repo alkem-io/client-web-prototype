@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1270B8"/>
+      <stop offset="35%" stop-color="#2898D0"/>
+      <stop offset="65%" stop-color="#50BCD5"/>
+      <stop offset="88%" stop-color="#98D8D2"/>
+      <stop offset="100%" stop-color="#E2DFB0"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q70,50 180,32 T436,78 V0 Z" fill="rgba(16,85,165,0.48)"/>
+  <path d="M-20,0 Q100,70 215,52 T436,100 V0 Z" fill="rgba(22,115,190,0.32)"/>
+  <path d="M-20,25 Q105,82 220,65 T436,115 V0 Z" fill="rgba(38,148,208,0.20)"/>
+  <path d="M-20,256 Q65,200 175,215 T340,178 T436,192 V256 Z" fill="rgba(75,185,208,0.22)"/>
+  <path d="M-20,256 Q85,215 205,228 T365,200 T436,215 V256 Z" fill="rgba(115,205,198,0.14)"/>
+  <path d="M170,256 Q255,225 345,235 T436,205 V256 Z" fill="rgba(195,215,165,0.10)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="26" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Atlas</text>
+</svg>

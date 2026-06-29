@@ -6,18 +6,28 @@ import {
   Bot,
   Tag,
   Eye,
+  Activity,
+  User,
 } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/app/components/ui/switch";
 import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import { InvitationsDialog } from "@/app/components/dialogs/InvitationsDialog";
-import { CreateSpaceDialog } from "@/app/components/dialogs/CreateSpaceDialog";
+import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV3";
+import { ActivityFeedDialog } from "@/app/components/dashboard/ActivityFeedDialog";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 
-export function DashboardSidebar() {
+interface DashboardSidebarProps {
+  activityView?: boolean;
+  onToggleView?: (value: boolean) => void;
+}
+
+export function DashboardSidebar({ activityView = true, onToggleView }: DashboardSidebarProps) {
   const [showInvitations, setShowInvitations] = useState(false);
   const [showCreateSpace, setShowCreateSpace] = useState(false);
+  const [showSpacesActivity, setShowSpacesActivity] = useState(false);
+  const [showMyActivity, setShowMyActivity] = useState(false);
   const location = useLocation();
   const { t } = useLanguage();
 
@@ -27,12 +37,25 @@ export function DashboardSidebar() {
     href?: string;
     onClick?: () => void;
     badge?: number;
+    showWhen?: "always" | "normal-only";
   }> = [
     {
       icon: Mail,
       label: t("nav.invitations"),
       onClick: () => setShowInvitations(true),
       badge: 2,
+    },
+    {
+      icon: Activity,
+      label: "Latest Activity in my Spaces",
+      onClick: () => setShowSpacesActivity(true),
+      showWhen: "normal-only",
+    },
+    {
+      icon: User,
+      label: "My Latest Activity",
+      onClick: () => setShowMyActivity(true),
+      showWhen: "normal-only",
     },
     { icon: Rocket, label: "Create my own Space", onClick: () => setShowCreateSpace(true) },
     { icon: Lightbulb, label: "Tips & Tricks", href: "#" },
@@ -55,7 +78,9 @@ export function DashboardSidebar() {
     <nav className="sticky top-20 space-y-6">
       {/* Nav items */}
       <div className="space-y-1">
-        {navItems.map((item) => {
+        {navItems
+          .filter((item) => !item.showWhen || item.showWhen === "always" || (item.showWhen === "normal-only" && !activityView))
+          .map((item) => {
           const isActive = item.href && location.pathname === item.href;
           const commonClasses = cn(
             "flex items-center justify-between rounded-md transition-colors h-9 w-full px-2 text-control",
@@ -92,6 +117,21 @@ export function DashboardSidebar() {
             </button>
           );
         })}
+      </div>
+
+      {/* Activity View toggle */}
+      <div className="pt-4 border-t border-border">
+        <div className="flex items-center justify-between px-2">
+          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
+            <Eye className="w-4 h-4" />
+            <span>{t("nav.activityView")}</span>
+          </div>
+          <Switch
+            id="activity-view"
+            checked={activityView}
+            onCheckedChange={(checked) => onToggleView?.(checked)}
+          />
+        </div>
       </div>
 
       {/* My Spaces */}
@@ -144,19 +184,10 @@ export function DashboardSidebar() {
         </div>
       </div>
 
-      {/* Activity View toggle */}
-      <div className="pt-4 border-t border-border">
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
-            <Eye className="w-4 h-4" />
-            <span>{t("nav.activityView")}</span>
-          </div>
-          <Switch id="activity-view" />
-        </div>
-      </div>
-
       <InvitationsDialog open={showInvitations} onOpenChange={setShowInvitations} />
-      <CreateSpaceDialog open={showCreateSpace} onOpenChange={setShowCreateSpace} />
+      <CreateSpaceDialogV3 open={showCreateSpace} onOpenChange={setShowCreateSpace} />
+      <ActivityFeedDialog open={showSpacesActivity} onOpenChange={setShowSpacesActivity} type="spaces" />
+      <ActivityFeedDialog open={showMyActivity} onOpenChange={setShowMyActivity} type="personal" />
     </nav>
   );
 }

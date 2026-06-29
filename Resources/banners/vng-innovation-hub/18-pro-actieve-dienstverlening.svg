@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#106EB6"/>
+      <stop offset="36%" stop-color="#2694CC"/>
+      <stop offset="65%" stop-color="#4EBAD4"/>
+      <stop offset="88%" stop-color="#94D4CE"/>
+      <stop offset="100%" stop-color="#DFDCAC"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q70,54 180,36 T436,82 V0 Z" fill="rgba(14,80,158,0.50)"/>
+  <path d="M-20,0 Q98,74 208,56 T436,108 V0 Z" fill="rgba(20,110,184,0.34)"/>
+  <path d="M-20,29 Q113,86 223,68 T436,118 V0 Z" fill="rgba(35,142,202,0.22)"/>
+  <path d="M-20,256 Q67,196 177,211 T340,177 T436,193 V256 Z" fill="rgba(76,186,208,0.22)"/>
+  <path d="M-20,256 Q95,218 205,231 T362,203 T436,219 V256 Z" fill="rgba(110,200,194,0.15)"/>
+  <path d="M176,256 Q260,225 350,235 T436,205 V256 Z" fill="rgba(190,210,158,0.10)"/>
+  <text x="208" y="128" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="19" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Pro-actieve</text>
+  <text x="208" y="150" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="19" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">dienstverlening</text>
+</svg>

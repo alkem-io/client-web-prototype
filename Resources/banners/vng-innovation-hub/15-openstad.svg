@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#168ACE"/>
+      <stop offset="42%" stop-color="#36A8DD"/>
+      <stop offset="72%" stop-color="#6ACCDF"/>
+      <stop offset="92%" stop-color="#AEE6DC"/>
+      <stop offset="100%" stop-color="#F1EDC5"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q86,42 196,28 T436,66 V0 Z" fill="rgba(19,92,172,0.44)"/>
+  <path d="M-20,0 Q114,62 224,46 T436,92 V0 Z" fill="rgba(26,122,196,0.29)"/>
+  <path d="M-20,16 Q99,68 209,52 T436,96 V0 Z" fill="rgba(43,156,213,0.19)"/>
+  <path d="M-20,256 Q58,186 168,202 T322,168 T436,184 V256 Z" fill="rgba(88,198,218,0.19)"/>
+  <path d="M-20,256 Q86,210 196,222 T350,196 T436,210 V256 Z" fill="rgba(128,218,208,0.13)"/>
+  <path d="M155,256 Q240,218 330,228 T436,198 V256 Z" fill="rgba(208,228,178,0.11)"/>
+  <text x="208" y="138" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="24" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">OpenStad</text>
+</svg>

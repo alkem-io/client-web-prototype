@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1576C0"/>
+      <stop offset="39%" stop-color="#2B9AD4"/>
+      <stop offset="69%" stop-color="#5EC2D8"/>
+      <stop offset="91%" stop-color="#A2DED6"/>
+      <stop offset="100%" stop-color="#E9E5BA"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q82,45 192,30 T436,72 V0 Z" fill="rgba(18,90,170,0.46)"/>
+  <path d="M-20,0 Q110,65 220,48 T436,95 V0 Z" fill="rgba(25,120,194,0.30)"/>
+  <path d="M-20,21 Q100,75 210,58 T436,106 V0 Z" fill="rgba(41,153,210,0.21)"/>
+  <path d="M-20,256 Q62,190 172,205 T332,172 T436,188 V256 Z" fill="rgba(82,192,214,0.20)"/>
+  <path d="M-20,256 Q88,212 198,225 T355,198 T436,212 V256 Z" fill="rgba(122,212,204,0.14)"/>
+  <path d="M166,256 Q252,220 342,230 T436,200 V256 Z" fill="rgba(202,222,172,0.10)"/>
+  <text x="208" y="128" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="26" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">KISS</text>
+  <text x="208" y="152" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="400" fill="rgba(255,255,255,0.8)" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25))">Klantinteractie Service</text>
+</svg>

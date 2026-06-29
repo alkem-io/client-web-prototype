@@ -8,7 +8,7 @@ import { SpaceSettingsTemplates } from "@/app/components/space/SpaceSettingsTemp
 import { SpaceSettingsStorage } from "@/app/components/space/SpaceSettingsStorage";
 import { SpaceSettingsSettings } from "@/app/components/space/SpaceSettingsSettings";
 import { SpaceSettingsAccount } from "@/app/components/space/SpaceSettingsAccount";
-import { Info, Layout, Users, Megaphone, Layers, FileText, HardDrive, Settings, User, Lightbulb } from "lucide-react";
+import { Info, Layout, Users, Megaphone, Layers, FileText, HardDrive, Settings, UserCircle, Bookmark } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SpaceData {
@@ -53,10 +53,10 @@ export function SpaceSettingsPage() {
     { label: "Community", icon: Users, id: "community" },
     { label: "Updates", icon: Megaphone, id: "updates" },
     { label: "Subspaces", icon: Layers, id: "subspaces" },
-    { label: "Templates", icon: Lightbulb, id: "templates" },
+    { label: "Templates", icon: Bookmark, id: "templates" },
     { label: "Storage", icon: HardDrive, id: "storage" },
     { label: "Settings", icon: Settings, id: "settings" },
-    { label: "Account", icon: User, id: "account" },
+    { label: "Account", icon: UserCircle, id: "account" },
   ];
 
   return (
@@ -119,14 +119,7 @@ export function SpaceSettingsPage() {
           <div className="col-span-12 lg:col-start-2 lg:col-span-10">
         <div>
           {/* Content Rendered based on Tab */}
-          <div
-            className="w-full min-h-[500px] p-6 md:p-8 shadow-sm"
-            style={{
-              background: "var(--card)",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius)",
-            }}
-          >
+          <div className="w-full min-h-[500px]">
             {tab === 'about' ? (
               <SpaceSettingsAbout />
             ) : tab === 'layout' ? (

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416 256" width="416" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A88CE"/>
+      <stop offset="41%" stop-color="#34A6DC"/>
+      <stop offset="71%" stop-color="#68CCDE"/>
+      <stop offset="92%" stop-color="#ACE6DB"/>
+      <stop offset="100%" stop-color="#F0ECC4"/>
+    </linearGradient>
+  </defs>
+  <rect width="416" height="256" fill="url(#bg)"/>
+  <path d="M-20,0 Q76,46 186,30 T436,72 V0 Z" fill="rgba(20,95,175,0.44)"/>
+  <path d="M-20,0 Q105,66 215,48 T436,95 V0 Z" fill="rgba(27,125,198,0.29)"/>
+  <path d="M-20,18 Q95,72 205,55 T436,100 V0 Z" fill="rgba(44,158,214,0.20)"/>
+  <path d="M-20,256 Q60,190 170,205 T328,172 T436,188 V256 Z" fill="rgba(85,195,215,0.19)"/>
+  <path d="M-20,256 Q88,212 198,225 T352,198 T436,212 V256 Z" fill="rgba(125,215,206,0.13)"/>
+  <path d="M156,256 Q242,218 332,228 T436,198 V256 Z" fill="rgba(205,225,175,0.11)"/>
+  <text x="208" y="128" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="20" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Marktplaats</text>
+  <text x="208" y="152" text-anchor="middle" font-family="'Inter', 'Segoe UI', system-ui, sans-serif" font-size="20" font-weight="700" fill="white" style="filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35))">Woningverhuur</text>
+</svg>
