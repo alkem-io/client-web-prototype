@@ -4,7 +4,7 @@ import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { SpaceSidebar } from "./SpaceSidebar";
 import { FilterProvider, useSpaceFilters } from "./FilterContext";
-import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, Search, Plus, MessageCircle, Calendar, CalendarDays, Tag, LayoutGrid } from "lucide-react";
+import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, Calendar, CalendarDays, Tag, LayoutGrid, List } from "lucide-react";
 import { AboutThisSpaceDialog } from "./AboutThisSpaceDialog";
 import { WelcomeSpaceDialog } from "@/app/components/dialogs/WelcomeSpaceDialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/components/ui/sheet";
@@ -29,8 +29,59 @@ export function SpaceShell() {
   const [welcomeOpen, setWelcomeOpen] = useState(searchParams.get("welcome") === "true");
   // Mobile responsive strategy: ?m=1..5 (0 = default/hidden)
   const mobileStrategy = Math.max(0, Math.min(5, parseInt(searchParams.get("m") || "0") || 0)) as 0 | 1 | 2 | 3 | 4 | 5;
-  // Sidebar panel display mode: ?panel=full|rail|hidden (admin setting)
-  const panelMode = (searchParams.get("panel") || "full") as "full" | "rail" | "hidden";
+  // Sidebar panel display mode: ?panel=full|rail|railed|hidden (admin setting)
+  const rawPanel = searchParams.get("panel") || "full";
+  const panelMode = (rawPanel === "railed" ? "rail" : rawPanel) as "full" | "rail" | "hidden";
+
+  // Admin-configured sidebar features — per tab (from localStorage, set via Settings > Layout)
+  type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
+  const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
+  const allTabFeatures = (() => {
+    try {
+      const stored = localStorage.getItem('alkemio-sidebar-features');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const defaults: Record<string, SidebarFeatureSet> = {
+          home: { ...defaultFeatureSet },
+          community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
+          workspaces: { ...defaultFeatureSet, addUser: false },
+          knowledge: { ...defaultFeatureSet, addUser: false, createSubspace: false, subspaceLinks: false },
+        };
+        for (const tabId of Object.keys(defaults)) {
+          if (parsed[tabId]) defaults[tabId] = { ...defaults[tabId], ...parsed[tabId] };
+        }
+        return defaults;
+      }
+      return {
+        home: { ...defaultFeatureSet },
+        community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
+        workspaces: { ...defaultFeatureSet, addUser: false },
+        knowledge: { ...defaultFeatureSet, addUser: false, createSubspace: false, subspaceLinks: false },
+      };
+    } catch {
+      return {
+        home: { ...defaultFeatureSet },
+        community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
+        workspaces: { ...defaultFeatureSet, addUser: false },
+        knowledge: { ...defaultFeatureSet, addUser: false, createSubspace: false, subspaceLinks: false },
+      };
+    }
+  })();
+
+  // Get features for current tab variant
+  const getCurrentTabFeatures = () => {
+    const variant = getSidebarVariant();
+    const variantMap: Record<string, string> = { home: 'home', community: 'community', workspaces: 'subspaces', knowledge: 'knowledge' };
+    return allTabFeatures[variantMap[variant] || 'home'] || defaultFeatureSet;
+  };
+
+  // User-toggleable sidebar: reads admin default, user can switch expanded <-> railed
+  const adminDefaultCollapsed = localStorage.getItem('alkemio-sidebar-default') === 'railed';
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    panelMode === "hidden" ? false : panelMode === "rail" ? true : adminDefaultCollapsed
+  );
+  // Effective panel mode: hidden stays hidden, otherwise user toggles between full/rail
+  const effectivePanelMode = panelMode === "hidden" ? "hidden" : (sidebarCollapsed ? "rail" : "full");
 
   const handleActiveTabChange = useCallback((description: string) => {
     setActiveTabDescription(description);
@@ -151,11 +202,20 @@ export function SpaceShell() {
               )}
 
               {/* ═══ DEFAULT (m=0): Original behavior — sidebar hidden on mobile ═══ */}
-              {mobileStrategy === 0 && panelMode === "full" && (
+              {mobileStrategy === 0 && effectivePanelMode === "full" && (
                 <>
                   <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
                     <aside>
-                      <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} />
+                      <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} enabledFeatures={getCurrentTabFeatures()} />
+                      {/* User collapse toggle */}
+                      <button
+                        onClick={() => setSidebarCollapsed(true)}
+                        className="hidden lg:flex items-center gap-1.5 w-full mt-2 px-2 py-1.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        title="Collapse sidebar"
+                      >
+                        <PanelLeftClose className="w-3.5 h-3.5" />
+                        <span>Collapse</span>
+                      </button>
                     </aside>
                   </div>
                   <div className={`col-span-12 ${usesScaling ? "lg:col-span-10" : "lg:col-span-8"} min-w-0`}>
@@ -165,16 +225,16 @@ export function SpaceShell() {
               )}
 
               {/* ═══ PANEL HIDDEN: Full-width one-pager layout ═══ */}
-              {mobileStrategy === 0 && panelMode === "hidden" && (
+              {mobileStrategy === 0 && effectivePanelMode === "hidden" && (
                 <div className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} min-w-0`}>
                   <Outlet />
                 </div>
               )}
 
               {/* ═══ PANEL RAIL: Slim icon rail + expanded content ═══ */}
-              {mobileStrategy === 0 && panelMode === "rail" && (
+              {mobileStrategy === 0 && effectivePanelMode === "rail" && (
                 <div className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} min-w-0`}>
-                  <SidebarIconRail slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} />
+                  <SidebarIconRail slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} enabledFeatures={getCurrentTabFeatures()} onExpand={() => setSidebarCollapsed(false)} />
                 </div>
               )}
             </div>
@@ -250,9 +310,9 @@ export function SpaceShell() {
         </div>
       )}
       {/* Panel mode indicator badge */}
-      {panelMode !== "full" && (
+      {effectivePanelMode !== "full" && (
         <div className="fixed top-20 right-4 z-[100] bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-lg">
-          Panel: {panelMode} · ?panel=rail|hidden
+          Panel: {effectivePanelMode} · {sidebarCollapsed ? "collapsed" : "expanded"}
         </div>
       )}
     </FilterProvider>
@@ -675,7 +735,13 @@ function MobileBottomNavFAB({ slug, sidebarVariant, activeTabDescription, usesSc
 // Replaces full sidebar when admin sets panel=rail
 // ═══════════════════════════════════════════════════════════════════
 
-function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScaling }: MobileStrategyProps) {
+interface SidebarIconRailProps extends MobileStrategyProps {
+  enabledFeatures?: { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
+  onExpand?: () => void;
+}
+
+function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScaling, enabledFeatures, onExpand }: SidebarIconRailProps) {
+  const features = enabledFeatures || { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const { searchValue, setSearchValue, activeTags, toggleTag, clearTags } = useSpaceFilters();
 
@@ -702,7 +768,19 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
     <div className="flex relative">
       {/* Slim icon rail */}
       <div className="hidden lg:flex flex-col items-center gap-0 shrink-0 sticky top-[8.5rem] self-start">
+        {/* Expand sidebar toggle */}
+        {onExpand && (
+          <button
+            onClick={onExpand}
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted mb-1"
+            title="Expand sidebar"
+          >
+            <PanelLeftOpen className="w-4 h-4" />
+          </button>
+        )}
+
         {/* Search */}
+        {features.search && (
         <button
           onClick={() => togglePopover("search")}
           className={cn(
@@ -715,8 +793,10 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
         >
           <Search className="w-4 h-4" />
         </button>
+        )}
 
         {/* Tags/Filter */}
+        {features.tags && (
         <button
           onClick={() => togglePopover("tags")}
           className={cn(
@@ -734,8 +814,10 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
             </span>
           )}
         </button>
+        )}
 
         {/* Post/Contribute */}
+        {(features.post || features.addUser || features.createSubspace) && (
         <button
           onClick={() => togglePopover("post")}
           className={cn(
@@ -744,12 +826,14 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
               ? "bg-primary/10 text-primary border border-primary/30"
               : "text-muted-foreground hover:text-foreground hover:bg-muted"
           )}
-          title="Post"
+          title="Contribute"
         >
           <Plus className="w-4 h-4" />
         </button>
+        )}
 
         {/* Subspaces */}
+        {features.subspaceLinks && (
         <button
           onClick={() => togglePopover("subspaces")}
           className={cn(
@@ -760,8 +844,9 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
           )}
           title="Subspaces"
         >
-          <LayoutGrid className="w-4 h-4" />
+          <Layers className="w-4 h-4" />
         </button>
+        )}
       </div>
 
       {/* Popover overlays — floating on top of content */}
@@ -835,23 +920,19 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
               <div className="space-y-3">
                 <h4 className="text-sm font-semibold">Contribute</h4>
                 <div className="space-y-2">
-                  <Button size="sm" className="w-full justify-start gap-2">
-                    <Plus className="w-3.5 h-3.5" />
-                    New Post
-                  </Button>
-                  {sidebarVariant === "community" && (
-                    <>
-                      <Button size="sm" variant="outline" className="w-full justify-start gap-2">
-                        <Users className="w-3.5 h-3.5" />
-                        Add User
-                      </Button>
-                      <Button size="sm" variant="outline" className="w-full justify-start gap-2">
-                        <MessageCircle className="w-3.5 h-3.5" />
-                        Contact Leads
-                      </Button>
-                    </>
+                  {features.post && (
+                    <Button size="sm" className="w-full justify-start gap-2">
+                      <Plus className="w-3.5 h-3.5" />
+                      New Post
+                    </Button>
                   )}
-                  {sidebarVariant === "workspaces" && (
+                  {features.addUser && sidebarVariant === "community" && (
+                    <Button size="sm" variant="outline" className="w-full justify-start gap-2">
+                      <Users className="w-3.5 h-3.5" />
+                      Add User
+                    </Button>
+                  )}
+                  {features.createSubspace && (sidebarVariant === "workspaces" || sidebarVariant === "home") && (
                     <Button size="sm" variant="outline" className="w-full justify-start gap-2">
                       <Layers className="w-3.5 h-3.5" />
                       Create Subspace

@@ -2,3 +2,14 @@
 @import './tailwind.css';
 @import './theme.css';
 @import './typography.css';
+
+/* Round Quill editor containers to match design system */
+.ql-toolbar.ql-snow {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+.ql-container.ql-snow {
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+.ql-toolbar.ql-snow + .ql-container.ql-snow {
+  border-top: 0;
+}

@@ -2,27 +2,26 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
 import { Separator } from "@/app/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
 import {
   Plus,
   Megaphone,
-  Pin,
   Trash2,
   Calendar,
   MoreHorizontal,
   Send,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
 } from "@/app/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { SettingsSection } from "@/app/components/shared/SettingsSection";
 
 interface Update {
   id: string;
@@ -81,12 +80,6 @@ export function SpaceSettingsUpdates() {
   const [newTitle, setNewTitle] = useState("");
   const [newBody, setNewBody] = useState("");
 
-  const togglePin = (id: string) => {
-    setUpdates((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, pinned: !u.pinned } : u))
-    );
-  };
-
   const removeUpdate = (id: string) => {
     setUpdates((prev) => prev.filter((u) => u.id !== id));
   };
@@ -120,73 +113,55 @@ export function SpaceSettingsUpdates() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-page-title flex items-center gap-2">
-            <Megaphone className="w-5 h-5" />
-            Updates from the Leads
-          </h2>
-          <p className="text-muted-foreground mt-2">
-            Post announcements, milestones, and progress updates visible to all
-            space members.
-          </p>
-        </div>
-        {!composing && (
+    <div className="space-y-5 animate-in fade-in duration-500">
+      {/* Composer Section */}
+      <SettingsSection
+        title="Post an Update"
+        icon={<Megaphone className="w-4 h-4" />}
+        iconColor="orange"
+        collapsible={false}
+      >
+        {composing ? (
+          <div className="space-y-4">
+            <div className="prose-editor">
+              <ReactQuill
+                theme="snow"
+                value={newBody}
+                onChange={setNewBody}
+                modules={quillModules}
+                placeholder="Write your update…"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <Button size="sm" className="gap-2" onClick={handlePost}>
+                <Send className="w-4 h-4" /> Publish
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setComposing(false);
+                  setNewTitle("");
+                  setNewBody("");
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
           <Button className="gap-2" size="sm" onClick={() => setComposing(true)}>
             <Plus className="w-4 h-4" /> New Update
           </Button>
         )}
-      </div>
+      </SettingsSection>
 
-      <Separator />
-
-      {/* Compose */}
-      {composing && (
-        <div
-          className="rounded-lg p-5 space-y-4"
-          style={{
-            background: "var(--muted)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          <h3 className="text-card-title">New Update</h3>
-          <Input
-            placeholder="Update title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            className="font-semibold"
-          />
-          <div className="prose-editor">
-            <ReactQuill
-              theme="snow"
-              value={newBody}
-              onChange={setNewBody}
-              modules={quillModules}
-              placeholder="Write your update…"
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <Button size="sm" className="gap-2" onClick={handlePost}>
-              <Send className="w-4 h-4" /> Publish
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setComposing(false);
-                setNewTitle("");
-                setNewBody("");
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Update List */}
+      {/* Published Updates */}
+      <SettingsSection
+        title="Published Updates"
+        icon={<Calendar className="w-4 h-4" />}
+        iconColor="green"
+      >
       <div className="space-y-4">
         {updates.length === 0 && (
           <div className="text-center py-12 text-muted-foreground text-body">
@@ -197,8 +172,7 @@ export function SpaceSettingsUpdates() {
           <div
             key={update.id}
             className={cn(
-              "rounded-lg p-5 space-y-3 transition-colors",
-              update.pinned && "ring-1 ring-amber-300 dark:ring-amber-700"
+              "rounded-lg p-5 space-y-3 transition-colors"
             )}
             style={{
               background: "var(--muted)",
@@ -234,9 +208,6 @@ export function SpaceSettingsUpdates() {
               </div>
 
               <div className="flex items-center gap-1">
-                {update.pinned && (
-                  <Pin className="w-3.5 h-3.5 text-amber-500 rotate-45" />
-                )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -244,13 +215,8 @@ export function SpaceSettingsUpdates() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => togglePin(update.id)}>
-                      <Pin className="w-4 h-4 mr-2" />
-                      {update.pinned ? "Unpin" : "Pin to Top"}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      className="text-destructive"
+                      className="text-destructive focus:text-destructive"
                       onClick={() => removeUpdate(update.id)}
                     >
                       <Trash2 className="w-4 h-4 mr-2" /> Delete
@@ -260,9 +226,6 @@ export function SpaceSettingsUpdates() {
               </div>
             </div>
 
-            {/* Title */}
-            <h3 className="text-subheader font-semibold">{update.title}</h3>
-
             {/* Body */}
             <div
               className="text-body text-muted-foreground prose prose-sm max-w-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:text-foreground"
@@ -271,6 +234,7 @@ export function SpaceSettingsUpdates() {
           </div>
         ))}
       </div>
+      </SettingsSection>
     </div>
   );
 }

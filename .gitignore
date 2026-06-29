@@ -5,6 +5,9 @@ node_modules/
 dist/
 .vite/
 
+# Vercel (machine-specific project linking; do not commit per Vercel README)
+.vercel/
+
 # Logs
 logs/
 *.log

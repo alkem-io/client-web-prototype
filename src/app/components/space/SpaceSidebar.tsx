@@ -19,6 +19,8 @@ interface SpaceSidebarProps {
   variant?: "home" | "community" | "workspaces" | "knowledge";
   /** Description of the currently active tab */
   activeTabDescription?: string;
+  /** Admin-controlled feature toggles */
+  enabledFeatures?: { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
 }
 
 const TAB_TAGS: Record<string, string[]> = {
@@ -72,7 +74,8 @@ const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: str
   ],
 };
 
-export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription }: SpaceSidebarProps) {
+export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription, enabledFeatures }: SpaceSidebarProps) {
+  const features = enabledFeatures || { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
   const [indexOpen, setIndexOpen] = useState(false);
   
   // Use filter context
@@ -114,15 +117,37 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         </ReadMoreText>
       </div>
 
-      {/* Post button */}
+      {/* Action buttons */}
+      {(features.post || features.addUser || features.createSubspace) && (
       <div className="pb-4">
-        <TabCTAButtons variant={variant} />
+        <div className="flex flex-col gap-2">
+          {features.post && (
+            <Button size="sm" className="w-full gap-2 justify-start">
+              <Plus className="w-4 h-4" />
+              Post
+            </Button>
+          )}
+          {features.addUser && variant === "community" && (
+            <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+              <UserPlus className="w-4 h-4" />
+              Add User
+            </Button>
+          )}
+          {features.createSubspace && (variant === "home" || variant === "workspaces") && (
+            <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+              <Plus className="w-4 h-4" />
+              Create Subspace
+            </Button>
+          )}
+        </div>
       </div>
+      )}
 
       {/* ── divider ── */}
-      <div className="mb-4" />
+      {(features.post || features.addUser || features.createSubspace) && <div className="mb-4" />}
 
       {/* Search bar */}
+      {features.search && (
       <div className="pb-4">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -143,9 +168,12 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           />
         </div>
       </div>
+      )}
 
       {/* Tag cloud */}
-      <TagCloud tags={tags} activeTags={activeTags} toggleTag={toggleTag} />
+      {features.tags && (
+        <TagCloud tags={tags} activeTags={activeTags} toggleTag={toggleTag} />
+      )}
 
       {/* Filter feedback */}
       {hasFilters && (
@@ -187,7 +215,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       <div className="mb-4" />
 
       {/* Subspace quick links (Home tab only) */}
-      {variant === "home" && (
+      {features.subspaceLinks && variant === "home" && (
         <>
           <div className="pb-4">
             <SubspaceQuickLinks />
@@ -197,6 +225,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       )}
 
       {/* Index Button */}
+      {features.index && (
       <div>
         <Button
           variant="outline"
@@ -208,6 +237,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           Index
         </Button>
       </div>
+      )}
 
       {/* Index Dialog */}
       <Dialog open={indexOpen} onOpenChange={setIndexOpen}>

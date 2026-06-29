@@ -8,11 +8,12 @@ import {
   Copy, 
   Trash2, 
   Eye, 
-  Edit,
-  Lightbulb,
+  Pencil,
+  LayoutTemplate,
   FileText,
   Users,
-  PenTool
+  PenTool,
+  BookText
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -30,11 +31,10 @@ import {
   CollapsibleTrigger,
 } from "@/app/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/app/components/ui/separator";
 
 // --- Types ---
 
-type TemplateCategory = 'Space' | 'Collaboration' | 'Whiteboard' | 'Brief' | 'Guidelines';
+type TemplateCategory = 'Space' | 'Collaboration' | 'Whiteboard' | 'Post' | 'CommunityGuidelines';
 
 interface Template {
   id: string;
@@ -60,7 +60,7 @@ const SECTIONS: TemplateSection[] = [
     id: 'Space', 
     title: 'Space Templates', 
     description: 'Structure your space with predefined layouts and tools.',
-    icon: Lightbulb
+    icon: LayoutTemplate
   },
   { 
     id: 'Collaboration', 
@@ -75,16 +75,16 @@ const SECTIONS: TemplateSection[] = [
     icon: PenTool
   },
   { 
-    id: 'Brief', 
-    title: 'Brief Templates', 
+    id: 'Post', 
+    title: 'Post Templates', 
     description: 'Standardized documents for projects and decisions.',
     icon: FileText
   },
   { 
-    id: 'Guidelines', 
+    id: 'CommunityGuidelines', 
     title: 'Community Guidelines Templates', 
     description: 'Rules and expectations for your community.',
-    icon: Users
+    icon: BookText
   }
 ];
 
@@ -146,7 +146,7 @@ const MOCK_TEMPLATES: Template[] = [
     name: "Product Requirements Doc",
     description: "Standard PRD template with sections for features, metrics, and timeline.",
     image: "https://images.unsplash.com/photo-1641395437808-10c477b8f199?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMGRvY3VtZW50JTIwcHJvamVjdCUyMGJyaWVmfGVufDF8fHx8MTc2OTQ0MzIwN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-    category: "Brief",
+    category: "Post",
     isCustom: false,
     tags: ["Product", "Doc"]
   },
@@ -157,7 +157,7 @@ const MOCK_TEMPLATES: Template[] = [
     name: "Open Source Code of Conduct",
     description: "Standard Contributor Covenant tailored for open innovation spaces.",
     image: "https://images.unsplash.com/photo-1758275557296-0340762a4ab3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb21tdW5pdHklMjBndWlkZWxpbmVzJTIwaGFuZHNoYWtlJTIwZGl2ZXJzZSUyMGdyb3VwfGVufDF8fHx8MTc2OTQ0MzIwN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-    category: "Guidelines",
+    category: "CommunityGuidelines",
     isCustom: false,
     tags: ["Community", "Legal"]
   }
@@ -180,16 +180,7 @@ function TemplateCard({ template, onAction }: {
           alt={template.name} 
           className="w-full h-full object-cover transition-transform group-hover:scale-105"
         />
-        <div className="absolute top-2 right-2 flex gap-2">
-           <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm shadow-sm">
-             {template.category}
-           </Badge>
-           {template.isCustom && (
-             <Badge variant="default" className="bg-primary shadow-sm">
-               Custom
-             </Badge>
-           )}
-        </div>
+
       </div>
 
       {/* Content */}
@@ -215,24 +206,20 @@ function TemplateCard({ template, onAction }: {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAction('duplicate', template.id)}>
                 <Copy className="w-4 h-4 mr-2" />
-                Duplicate as Custom
+                Duplicate
               </DropdownMenuItem>
-              {template.isCustom && (
-                <>
-                  <DropdownMenuItem onClick={() => onAction('edit', template.id)}>
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className="text-destructive"
-                    onClick={() => onAction('delete', template.id)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
-                  </DropdownMenuItem>
-                </>
-              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onAction('edit', template.id)}>
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-destructive focus:text-destructive"
+                onClick={() => onAction('delete', template.id)}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -248,8 +235,8 @@ export function SpaceSettingsTemplates() {
     Space: true,
     Collaboration: true,
     Whiteboard: true,
-    Brief: true,
-    Guidelines: true,
+    Post: true,
+    CommunityGuidelines: true,
   });
 
   const toggleSection = (id: string) => {
@@ -276,18 +263,8 @@ export function SpaceSettingsTemplates() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      {/* 1. Header */}
-      <div>
-        <h2 className="text-page-title">Templates</h2>
-        <p className="text-muted-foreground mt-2">
-          Select and manage the templates available to your space members. You can create custom templates or use templates from the General Library.
-        </p>
-      </div>
-
-      <Separator />
-
-      {/* 2. Search */}
+    <div className="space-y-6 animate-in fade-in duration-500">
+      {/* 1. Search */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -352,7 +329,7 @@ export function SpaceSettingsTemplates() {
                        Create a new template
                      </DropdownMenuItem>
                      <DropdownMenuItem onClick={() => handleAction('select_library', section.id)}>
-                       <Lightbulb className="w-4 h-4 mr-2" />
+                       <LayoutTemplate className="w-4 h-4 mr-2" />
                        Select a template from the platform library
                      </DropdownMenuItem>
                    </DropdownMenuContent>
@@ -370,7 +347,7 @@ export function SpaceSettingsTemplates() {
                        Create a new template
                      </DropdownMenuItem>
                      <DropdownMenuItem onClick={() => handleAction('select_library', section.id)}>
-                       <Lightbulb className="w-4 h-4 mr-2" />
+                       <LayoutTemplate className="w-4 h-4 mr-2" />
                        Select a template from the platform library
                      </DropdownMenuItem>
                    </DropdownMenuContent>

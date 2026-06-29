@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, MoreHorizontal, UserPlus, Shield, User, CheckCircle2, Building2, ExternalLink, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, MoreHorizontal, UserPlus, Shield, User, CheckCircle2, Building2, ExternalLink, Users, ChevronLeft, ChevronRight, Bot } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 import { OrgHoverCard } from "@/app/components/user/OrgHoverCard";
+import { VCHoverCard } from "@/app/components/user/VCHoverCard";
 
 // ── Types ──
 interface MemberEntry {
@@ -45,7 +46,18 @@ interface OrgEntry {
   tags: string[];
 }
 
-type CommunityEntry = MemberEntry | OrgEntry;
+interface VCEntry {
+  kind: "vc";
+  id: string;
+  name: string;
+  description: string;
+  avatar: string | null;
+  initials: string;
+  tags: string[];
+  hostName: string;
+}
+
+type CommunityEntry = MemberEntry | OrgEntry | VCEntry;
 
 // ── Mock Data: Users ──
 const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
@@ -189,13 +201,36 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
   },
 ];
 
+// ── Mock Data: Virtual Contributors ──
+const RAW_VCS: Omit<VCEntry, "kind">[] = [
+  {
+    id: "vc1",
+    name: "Summarizer Bot",
+    description: "Automatically summarizes long discussions and documents",
+    avatar: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256&q=80",
+    initials: "SB",
+    tags: ["Automation", "Active"],
+    hostName: "Sarah Chen",
+  },
+  {
+    id: "vc2",
+    name: "Translation Assistant",
+    description: "Translates content to 50+ languages in real-time",
+    avatar: "https://images.unsplash.com/photo-1633356122544-f134324ef6db?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256&q=80",
+    initials: "TA",
+    tags: ["Translation", "Active"],
+    hostName: "Elena Martinez",
+  },
+];
+
 // ── Merged list ──
 const ALL_ENTRIES: CommunityEntry[] = [
   ...RAW_ORGS.map((o): OrgEntry => ({ ...o, kind: "org" })),
   ...RAW_MEMBERS.map((m): MemberEntry => ({ ...m, kind: "user" })),
+  ...RAW_VCS.map((v): VCEntry => ({ ...v, kind: "vc" })),
 ];
 
-const FILTERS = ["All", "Host", "Admin", "Lead", "Member", "Organization"];
+const FILTERS = ["All", "Host", "Admin", "Lead", "Member", "Organization", "Virtual Contributor"];
 
 // ── Component ──
 export function SpaceMembers() {
@@ -213,7 +248,9 @@ export function SpaceMembers() {
     const extraMatch =
       entry.kind === "user"
         ? entry.role.toLowerCase().includes(searchValue.toLowerCase())
-        : entry.type.toLowerCase().includes(searchValue.toLowerCase());
+        : entry.kind === "org"
+        ? entry.type.toLowerCase().includes(searchValue.toLowerCase())
+        : false;
     if (!nameMatch && !extraMatch) return false;
 
     // Tag match - check if entry has all active tags
@@ -223,6 +260,7 @@ export function SpaceMembers() {
     // Filter match
     if (selectedFilter === "All") return true;
     if (selectedFilter === "Organization") return entry.kind === "org";
+    if (selectedFilter === "Virtual Contributor") return entry.kind === "vc";
     return entry.kind === "user" && entry.role === selectedFilter;
   });
 
@@ -273,8 +311,10 @@ export function SpaceMembers() {
               getRoleBadgeColor={getRoleBadgeColor}
               getRoleIcon={getRoleIcon}
             />
-          ) : (
+          ) : entry.kind === "org" ? (
             <OrgCard key={entry.id} org={entry} />
+          ) : (
+            <VCCard key={entry.id} vc={entry} />
           )
         )}
       </div>
@@ -463,50 +503,51 @@ function UserCard({
 
 // ── Organization Card ──
 function OrgCard({ org }: { org: OrgEntry }) {
-  const orgHoverData = {
-    name: org.name,
-    avatarUrl: org.avatar,
-    initials: org.initials,
-    type: org.type,
-    description: org.description,
-    memberCount: org.members,
-    website: org.website,
-  };
-
   return (
     <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
       <CardContent className="p-0">
         <div className="p-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <OrgHoverCard org={orgHoverData}>
+            <OrgHoverCard
+              org={{
+                name: org.name,
+                avatarUrl: org.avatar,
+                initials: org.initials,
+                type: org.type,
+                description: org.description,
+                memberCount: org.members,
+                website: org.website,
+                profileUrl: `/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`,
+              }}
+            >
               <Link
                 to={`/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`}
                 className="transition-opacity hover:opacity-80"
               >
                 <Avatar
-                className="w-12 h-12"
-                style={{
-                  borderRadius: "var(--radius)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                <AvatarImage
-                  src={org.avatar}
-                  alt={org.name}
-                  style={{ borderRadius: "var(--radius)" }}
-                />
-                <AvatarFallback
-                  className="text-caption font-bold"
+                  className="w-12 h-12"
                   style={{
                     borderRadius: "var(--radius)",
-                    fontFamily: "'Inter', sans-serif",
-                    background: "color-mix(in srgb, var(--info) 15%, transparent)",
-                    color: "var(--info)",
+                    border: "1px solid var(--border)",
                   }}
                 >
-                  {org.initials}
-                </AvatarFallback>
-              </Avatar>
+                  <AvatarImage
+                    src={org.avatar}
+                    alt={org.name}
+                    style={{ borderRadius: "var(--radius)" }}
+                  />
+                  <AvatarFallback
+                    className="text-caption font-bold"
+                    style={{
+                      borderRadius: "var(--radius)",
+                      fontFamily: "'Inter', sans-serif",
+                      background: "color-mix(in srgb, var(--info) 15%, transparent)",
+                      color: "var(--info)",
+                    }}
+                  >
+                    {org.initials}
+                  </AvatarFallback>
+                </Avatar>
               </Link>
             </OrgHoverCard>
             <div>
@@ -573,6 +614,108 @@ function OrgCard({ org }: { org: OrgEntry }) {
           >
             <Users className="w-3 h-3" />
             <span>{org.members} members in this space</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Virtual Contributor Card ──
+function VCCard({ vc }: { vc: VCEntry }) {
+  return (
+    <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
+      <CardContent className="p-0">
+        <div className="p-4 flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <VCHoverCard
+              vc={{
+                name: vc.name,
+                description: vc.description,
+                avatarUrl: vc.avatar,
+                initials: vc.initials,
+                tags: vc.tags,
+                hostName: vc.hostName,
+                profileUrl: `/vc/${vc.name.toLowerCase().replace(/\s+/g, "-")}`,
+              }}
+            >
+              <Link
+                to={`/vc/${vc.name.toLowerCase().replace(/\s+/g, "-")}`}
+                className="transition-opacity hover:opacity-80"
+              >
+                <Avatar className="w-12 h-12" style={{ border: "1px solid var(--border)" }}>
+                  {vc.avatar && <AvatarImage src={vc.avatar} alt={vc.name} />}
+                  <AvatarFallback
+                    className="text-card-title font-bold bg-primary/10 text-primary"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                    }}
+                  >
+                    {vc.initials}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            </VCHoverCard>
+            <div>
+              <Link
+                to={`/vc/${vc.name.toLowerCase().replace(/\s+/g, "-")}`}
+                className="hover:text-primary transition-colors block text-card-title"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  color: "var(--foreground)",
+                }}
+              >
+                {vc.name}
+              </Link>
+              <div
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-medium border mt-1"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  color: "var(--foreground)",
+                  background: "color-mix(in srgb, var(--primary) 10%, transparent)",
+                  borderColor: "color-mix(in srgb, var(--primary) 20%, transparent)",
+                }}
+              >
+                <Bot className="w-3 h-3" />
+                Virtual Contributor
+              </div>
+            </div>
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>View Profile</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive">Remove from Space</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="px-4 pb-4">
+          {vc.description && (
+            <p
+              className="line-clamp-2 text-body"
+              style={{
+                color: "var(--muted-foreground)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {vc.description}
+            </p>
+          )}
+          <div
+            className={cn("flex items-center gap-1 text-caption", vc.description ? "mt-4" : "mt-1")}
+            style={{
+              color: "var(--muted-foreground)",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            <span>Hosted by {vc.hostName}</span>
           </div>
         </div>
       </CardContent>

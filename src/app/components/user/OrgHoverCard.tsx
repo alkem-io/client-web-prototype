@@ -108,7 +108,7 @@ export function OrgHoverCard({
             {org.memberCount != null && (
               <div className="flex items-center gap-1.5 mt-3 text-caption text-muted-foreground">
                 <Users className="w-3.5 h-3.5 shrink-0" />
-                <span>{org.memberCount} members</span>
+                <span>{org.memberCount} associates</span>
               </div>
             )}
           </div>
