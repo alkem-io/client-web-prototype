@@ -434,7 +434,7 @@ export function SubspaceFormBuilderDialog({
                         value={question.label}
                         onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
                         placeholder="Write your question..."
-                        className="flex-1 text-lg font-semibold border-0 bg-transparent placeholder:text-muted-foreground/40 p-0 h-auto"
+                        className="flex-1 text-xl font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 p-0 h-auto leading-relaxed"
                       />
                       <Button
                         variant="ghost"
