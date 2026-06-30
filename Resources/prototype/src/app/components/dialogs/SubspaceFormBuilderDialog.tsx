@@ -41,7 +41,19 @@ const FIELD_TYPES: { id: FormFieldType; label: string; description: string }[] =
   { id: "multi-select-list", label: "Multi-select List", description: "Choose from predefined options" },
 ];
 
-const VNG_TEMPLATE: FormField[] = [
+interface FormTemplate {
+  id: string;
+  name: string;
+  description: string;
+  questions: FormField[];
+}
+
+const TEMPLATES: FormTemplate[] = [
+  {
+    id: "vng-groei",
+    name: "VNG Groei Program",
+    description: "Innovation proposals for municipalities. Includes title, leads, municipalities, and detailed vision sections (WHO/WHAT/WHY/HOW).",
+    questions: [
   {
     id: "title",
     type: "short-text",
@@ -118,15 +130,106 @@ const VNG_TEMPLATE: FormField[] = [
     order: 7,
     constraints: { maxWords: 250 },
   },
+      {
+        id: "how",
+        type: "long-text",
+        label: "HOW? Development and Scaling",
+        required: true,
+        order: 8,
+        constraints: { maxWords: 250 },
+      },
+    ],
+  },
   {
-    id: "how",
-    type: "long-text",
-    label: "HOW? Development and Scaling",
-    required: true,
-    order: 8,
-    constraints: { maxWords: 250 },
+    id: "research-project",
+    name: "Research Project",
+    description: "For research collaborations. Covers project title, team leads, research focus, and methodology.",
+    questions: [
+      {
+        id: "project-title",
+        type: "short-text",
+        label: "Project Title",
+        required: true,
+        order: 0,
+        constraints: { maxLength: 100 },
+      },
+      {
+        id: "principal-investigator",
+        type: "auto-fill-profile",
+        label: "Principal Investigator",
+        required: true,
+        order: 1,
+        constraints: { fields: ["name", "email", "organization"] },
+      },
+      {
+        id: "co-investigators",
+        type: "user-picker",
+        label: "Co-Investigators",
+        description: "Add team members",
+        required: false,
+        order: 2,
+        constraints: { allowManualEntry: true, allowEmailInvite: true },
+      },
+      {
+        id: "research-focus",
+        type: "long-text",
+        label: "Research Focus & Objectives",
+        required: true,
+        order: 3,
+        constraints: { maxWords: 300 },
+      },
+      {
+        id: "methodology",
+        type: "long-text",
+        label: "Proposed Methodology",
+        required: true,
+        order: 4,
+        constraints: { maxWords: 300 },
+      },
+    ],
+  },
+  {
+    id: "event-planning",
+    name: "Event Planning",
+    description: "For organizing events, workshops, or conferences. Covers basics and logistics.",
+    questions: [
+      {
+        id: "event-name",
+        type: "short-text",
+        label: "Event Name",
+        required: true,
+        order: 0,
+        constraints: { maxLength: 120 },
+      },
+      {
+        id: "event-organizer",
+        type: "auto-fill-profile",
+        label: "Primary Organizer",
+        required: true,
+        order: 1,
+        constraints: { fields: ["name", "email", "organization"] },
+      },
+      {
+        id: "event-description",
+        type: "long-text",
+        label: "Event Description & Goals",
+        required: true,
+        order: 2,
+        constraints: { maxWords: 250 },
+      },
+      {
+        id: "expected-audience",
+        type: "short-text",
+        label: "Expected Audience Size",
+        required: true,
+        order: 3,
+        constraints: { maxLength: 80 },
+      },
+    ],
   },
 ];
+
+type PickerStep = "start" | "templates" | "editor";
 
 export function SubspaceFormBuilderDialog({
   open,
@@ -136,18 +239,18 @@ export function SubspaceFormBuilderDialog({
   initialConfig,
   onSave,
 }: SubspaceFormBuilderDialogProps) {
-  const [showTemplatePicker, setShowTemplatePicker] = useState(!initialConfig);
+  const [step, setStep] = useState<PickerStep>(!initialConfig ? "start" : "editor");
   const [questions, setQuestions] = useState<FormField[]>(initialConfig?.questions || []);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleUseTemplate = (template: FormField[]) => {
-    setQuestions(template.map((q, idx) => ({ ...q, order: idx })));
-    setShowTemplatePicker(false);
+  const handleUseTemplate = (template: FormTemplate) => {
+    setQuestions(template.questions.map((q, idx) => ({ ...q, order: idx })));
+    setStep("editor");
   };
 
   const handleStartBlank = () => {
     setQuestions([]);
-    setShowTemplatePicker(false);
+    setStep("editor");
   };
 
   const handleAddQuestion = (fieldType: FormFieldType) => {
@@ -210,27 +313,68 @@ export function SubspaceFormBuilderDialog({
     }, 500);
   };
 
-  if (showTemplatePicker) {
+  if (step === "start") {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Application Form</DialogTitle>
+            <DialogDescription>How would you like to get started?</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 py-6">
+            <button
+              onClick={() => setStep("templates")}
+              className="w-full border-2 border-dashed rounded-lg p-6 hover:bg-muted/50 transition-colors text-left"
+            >
+              <p className="font-semibold mb-1">Use a template</p>
+              <p className="text-sm text-muted-foreground">Start with a pre-built form designed for common use cases</p>
+            </button>
+
+            <button
+              onClick={handleStartBlank}
+              className="w-full border-2 border-dashed rounded-lg p-6 hover:bg-muted/50 transition-colors text-left"
+            >
+              <p className="font-semibold mb-1">Start from scratch</p>
+              <p className="text-sm text-muted-foreground">Create a completely custom form with your own questions</p>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (step === "templates") {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Start with a template</DialogTitle>
-            <DialogDescription>Choose how you'd like to set up your application form</DialogDescription>
+            <DialogTitle>Choose a template</DialogTitle>
+            <DialogDescription>Select a template that matches your needs, then customize it</DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 gap-4 py-6">
-            <div className="border rounded-lg p-6 cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => handleUseTemplate(VNG_TEMPLATE)}>
-              <h3 className="font-semibold mb-2">VNG Groei Program</h3>
-              <p className="text-sm text-muted-foreground mb-4">9 pre-configured questions optimized for innovation proposals</p>
-              <Button variant="outline" size="sm">Use template</Button>
-            </div>
+          <div className="grid grid-cols-1 gap-3 py-6 max-h-[60vh] overflow-y-auto">
+            {TEMPLATES.map((template) => (
+              <button
+                key={template.id}
+                onClick={() => handleUseTemplate(template)}
+                className="border rounded-lg p-4 hover:bg-muted/50 transition-colors text-left"
+              >
+                <h3 className="font-semibold mb-1">{template.name}</h3>
+                <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
+                <p className="text-xs text-muted-foreground">{template.questions.length} questions</p>
+              </button>
+            ))}
+          </div>
 
-            <div className="border rounded-lg p-6 cursor-pointer hover:bg-muted/50 transition-colors" onClick={handleStartBlank}>
-              <h3 className="font-semibold mb-2">Start from scratch</h3>
-              <p className="text-sm text-muted-foreground mb-4">Create a custom form with your own questions</p>
-              <Button variant="outline" size="sm">Start blank</Button>
-            </div>
+          <div className="pt-4 border-t">
+            <Button
+              variant="ghost"
+              onClick={() => setStep("start")}
+              className="w-full"
+            >
+              Back
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
