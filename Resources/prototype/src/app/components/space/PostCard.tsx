@@ -438,36 +438,35 @@ export function PostCard({ post }: { post: PostProps }) {
 
       {/* Responses Section (Contributions) */}
       {post.enabledResponseTypes && post.enabledResponseTypes.length > 0 && (
-        <div className="px-6 py-4 border-t border-border/50">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-label font-semibold text-muted-foreground">RESPONSES</h4>
+        <div className="px-6 py-6 border-t border-border/50">
+          {/* RESPONSES Label */}
+          <div className="mb-4">
+            <h4 className="text-label font-semibold text-muted-foreground uppercase tracking-wider">Responses</h4>
           </div>
 
           {/* Response Type Tabs */}
-          <div className="flex gap-2 flex-wrap mb-4">
+          <div className="flex gap-3 flex-wrap mb-6">
             {post.enabledResponseTypes.map((type) => {
-              const typeLabels: Record<ResponseType, { icon: string; label: string }> = {
-                'whiteboards': { icon: '📋', label: 'WHITEBOARDS' },
-                'posts': { icon: '💬', label: 'POSTS' },
-                'memos': { icon: '📝', label: 'MEMOS' },
-                'links-files': { icon: '🔗', label: 'LINKS & FILES' },
+              const typeLabels: Record<ResponseType, string> = {
+                'whiteboards': 'WHITEBOARDS',
+                'posts': 'POSTS',
+                'memos': 'MEMOS',
+                'links-files': 'LINKS & FILES',
               };
-              const typeInfo = typeLabels[type];
-              const count = post.responses?.[type]?.length || 0;
+              const typeLabel = typeLabels[type];
 
               return (
                 <button
                   key={type}
                   onClick={() => setActiveResponseType(type)}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-colors text-sm font-medium",
+                    "flex items-center gap-2 px-4 py-2 rounded-full border transition-colors text-sm font-medium whitespace-nowrap",
                     activeResponseType === type
-                      ? "border-primary bg-primary/10 text-foreground"
-                      : "border-border bg-background text-muted-foreground hover:border-primary/50"
+                      ? "border-foreground/30 bg-transparent text-foreground"
+                      : "border-border bg-transparent text-muted-foreground hover:border-foreground/30"
                   )}
                 >
-                  <span>{typeInfo.icon}</span>
-                  <span>{typeInfo.label}</span>
+                  <span>{typeLabel}</span>
                 </button>
               );
             })}
@@ -475,24 +474,40 @@ export function PostCard({ post }: { post: PostProps }) {
 
           {/* Response Items Grid */}
           {activeResponseType && post.responses?.[activeResponseType] && (
-            <div className="space-y-3">
+            <div className="space-y-4">
+              {/* Header with count and button */}
               <div className="flex items-center justify-between">
-                <span className="text-caption text-muted-foreground">
+                <span className="text-caption font-medium text-foreground">
                   {post.responses[activeResponseType].length} Contribution{post.responses[activeResponseType].length !== 1 ? 's' : ''}
                 </span>
-                <Button size="sm" className="gap-2">
+                <Button size="sm" className="gap-2 text-xs font-semibold">
                   + ADD {activeResponseType === 'links-files' ? 'LINK OR FILE' : activeResponseType.toUpperCase().replace('-', ' ')}
                 </Button>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+              {/* Items Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {post.responses[activeResponseType].map((item) => (
-                  <div key={item.id} className="p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer">
+                  <div
+                    key={item.id}
+                    className="group relative rounded-lg border border-border overflow-hidden hover:border-foreground/30 transition-colors cursor-pointer bg-muted/20"
+                  >
+                    {/* Image */}
                     {item.imageUrl && (
-                      <img src={item.imageUrl} alt={item.title} className="w-full h-24 object-cover rounded mb-2" />
+                      <div className="relative aspect-square overflow-hidden bg-muted">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        />
+                      </div>
                     )}
-                    <p className="text-caption font-medium text-foreground truncate">{item.title}</p>
-                    <p className="text-label text-muted-foreground text-xs">{item.author}</p>
+
+                    {/* Content */}
+                    <div className="p-3">
+                      <p className="text-body-emphasis font-medium text-foreground truncate">{item.title}</p>
+                      <p className="text-caption text-muted-foreground mt-1">{item.author}</p>
+                    </div>
                   </div>
                 ))}
               </div>
