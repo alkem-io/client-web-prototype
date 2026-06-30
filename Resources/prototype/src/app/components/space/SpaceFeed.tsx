@@ -8,6 +8,10 @@ import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDia
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { ContributionGrid } from "../contribution/ContributionGrid";
+import { ContributionPostCard } from "../contribution/ContributionPostCard";
+import { ContributionMemoCard } from "../contribution/ContributionMemoCard";
+import { ContributionWhiteboardCard } from "../contribution/ContributionWhiteboardCard";
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
@@ -318,115 +322,57 @@ export function SpaceFeed() {
                   <div key={responseType}>
                     <h3 className="text-label font-semibold text-muted-foreground mb-3">{typeLabel}</h3>
 
-                    {/* Whiteboards - show image previews */}
+                    {/* Whiteboards - use production component */}
                     {responseType === 'whiteboards' && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <ContributionGrid totalCount={responses.length}>
                         {responses.map((item: any) => (
-                          <button
+                          <ContributionWhiteboardCard
                             key={item.id}
-                            type="button"
-                            className="group/wb relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 min-h-[200px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left"
-                          >
-                            {item.imageUrl ? (
-                              <img
-                                src={item.imageUrl}
-                                alt={item.title}
-                                className="w-full h-full object-cover transition-transform group-hover/wb:scale-105 duration-500"
-                              />
-                            ) : null}
-                            <div className="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent">
-                              <h4 className="font-medium text-sm text-white leading-tight">{item.title}</h4>
-                              <p className="text-xs text-white/90">{item.author}</p>
-                            </div>
-                          </button>
+                            title={item.title}
+                            author={item.author}
+                            previewUrl={item.imageUrl}
+                          />
                         ))}
-                      </div>
+                      </ContributionGrid>
                     )}
 
-                    {/* Posts - show text cards */}
+                    {/* Posts - use production component */}
                     {responseType === 'posts' && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <ContributionGrid totalCount={responses.length}>
                         {responses.map((item: any) => (
-                          <button
+                          <ContributionPostCard
                             key={item.id}
-                            type="button"
-                            className="p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring space-y-3"
-                          >
-                            <div>
-                              <h4 className="font-semibold text-sm text-foreground">{item.title}</h4>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {item.authorAvatar ? (
-                                <img src={item.authorAvatar} alt={item.author} className="w-5 h-5 rounded-full" />
-                              ) : (
-                                <div className="w-5 h-5 rounded-full bg-muted" />
-                              )}
-                              <div className="text-xs text-muted-foreground">
-                                <div className="font-medium text-foreground">{item.author}</div>
-                                {item.date && <div className="text-xs">{item.date}</div>}
-                              </div>
-                            </div>
-                            {item.description && (
-                              <p className="text-xs text-muted-foreground line-clamp-2">{item.description}</p>
-                            )}
-                            {item.tags && item.tags.length > 0 && (
-                              <div className="flex flex-wrap gap-1">
-                                {item.tags.map((tag: string) => (
-                                  <span key={tag} className="px-2 py-0.5 rounded bg-muted text-xs text-foreground">
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </button>
+                            title={item.title}
+                            author={{ name: item.author }}
+                          />
                         ))}
-                      </div>
+                      </ContributionGrid>
                     )}
 
-                    {/* Memos - show memo preview cards */}
+                    {/* Memos - use production component */}
                     {responseType === 'memos' && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <ContributionGrid totalCount={responses.length}>
                         {responses.map((item: any) => (
-                          <button
+                          <ContributionMemoCard
                             key={item.id}
-                            type="button"
-                            className="group/memo relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 min-h-[180px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left p-3"
-                          >
-                            <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-primary/80 via-primary/20 to-transparent p-3">
-                              <h4 className="font-medium text-sm text-white">{item.title}</h4>
-                              <p className="text-xs text-white/80">{item.author}</p>
-                            </div>
-                          </button>
+                            title={item.title}
+                            author={item.author}
+                          />
                         ))}
-                      </div>
+                      </ContributionGrid>
                     )}
 
-                    {/* Links/Files - show resource cards */}
+                    {/* Links/Files - use post card as fallback */}
                     {responseType === 'links-files' && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <ContributionGrid totalCount={responses.length}>
                         {responses.map((item: any) => (
-                          <button
+                          <ContributionPostCard
                             key={item.id}
-                            type="button"
-                            className="p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring space-y-3"
-                          >
-                            <div>
-                              <h4 className="font-semibold text-sm text-foreground">{item.title}</h4>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {item.authorAvatar ? (
-                                <img src={item.authorAvatar} alt={item.author} className="w-5 h-5 rounded-full" />
-                              ) : (
-                                <div className="w-5 h-5 rounded-full bg-muted" />
-                              )}
-                              <div className="text-xs text-muted-foreground">
-                                <div className="font-medium text-foreground">{item.author}</div>
-                                {item.date && <div className="text-xs">{item.date}</div>}
-                              </div>
-                            </div>
-                          </button>
+                            title={item.title}
+                            author={{ name: item.author }}
+                          />
                         ))}
-                      </div>
+                      </ContributionGrid>
                     )}
                   </div>
                 );
