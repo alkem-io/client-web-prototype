@@ -353,7 +353,11 @@ export function SpaceFeed() {
                           <ContributionPostCard
                             key={item.id}
                             title={item.title}
-                            author={{ name: item.author }}
+                            author={{ name: item.author, avatarUrl: item.authorAvatar }}
+                            createdDate={item.date}
+                            description={item.description}
+                            tags={item.tags}
+                            commentCount={item.commentCount}
                           />
                         ))}
                       </ContributionGrid>
@@ -366,7 +370,10 @@ export function SpaceFeed() {
                           <ContributionPostCard
                             key={item.id}
                             title={item.title}
-                            author={{ name: item.author }}
+                            author={{ name: item.author, avatarUrl: item.authorAvatar }}
+                            createdDate={item.date}
+                            description={item.description}
+                            tags={item.tags}
                           />
                         ))}
                       </ContributionGrid>
@@ -379,7 +386,10 @@ export function SpaceFeed() {
                           <ContributionPostCard
                             key={item.id}
                             title={item.title}
-                            author={{ name: item.author }}
+                            author={{ name: item.author, avatarUrl: item.authorAvatar }}
+                            createdDate={item.date}
+                            description={item.description}
+                            tags={item.tags}
                           />
                         ))}
                       </ContributionGrid>
