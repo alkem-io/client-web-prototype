@@ -10,6 +10,7 @@ import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 import { ContributionWhiteboardCard } from "@/app/components/contribution/ContributionWhiteboardCard";
 import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
 import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
+import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 
 export type PostType = "text" | "whiteboard" | "collection" | "call-for-whiteboards" | "document";
 export type ResponseType = "whiteboards" | "posts" | "memos" | "links-files";
@@ -483,8 +484,8 @@ export function PostCard({ post }: { post: PostProps }) {
                 </Button>
               </div>
 
-              {/* Items Grid - Production components for pixel-perfect match */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Items Grid - Using production ContributionGrid for proper layout */}
+              <ContributionGrid totalCount={post.responses[activeResponseType].length}>
                 {post.responses[activeResponseType].map((item) => {
                   if (activeResponseType === 'posts') {
                     return (
@@ -517,7 +518,7 @@ export function PostCard({ post }: { post: PostProps }) {
                     />
                   );
                 })}
-              </div>
+              </ContributionGrid>
             </div>
           )}
         </div>
