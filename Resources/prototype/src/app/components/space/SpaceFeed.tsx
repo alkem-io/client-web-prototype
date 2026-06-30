@@ -334,7 +334,7 @@ export function SpaceFeed() {
                                 className="w-full h-full object-cover transition-transform group-hover/wb:scale-105 duration-500"
                               />
                             ) : null}
-                            <div className="absolute inset-0 flex flex-col justify-between p-4 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent">
+                            <div className="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent">
                               <h4 className="font-medium text-sm text-white leading-tight">{item.title}</h4>
                               <p className="text-xs text-white/90">{item.author}</p>
                             </div>
