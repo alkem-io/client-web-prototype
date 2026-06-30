@@ -137,16 +137,7 @@ export function SpaceFeed() {
       title: "Call for Ideas: Community Solar Projects",
       snippet: "We need innovative concepts for integrating solar into existing municipal infrastructure. Please sketch out your ideas for public buildings, parking lots, and open spaces.",
       timestamp: "3 hours ago",
-      contentPreview: {
-        whiteboards: [
-            { title: "Public Library Solar Roof", imageUrl: wb1, author: "Sarah Chen" },
-            { title: "Parking Lot Canopies", imageUrl: wb2, author: "David Miller" },
-            { title: "School Microgrids", imageUrl: wb3, author: "Elena Rodriguez" },
-            { title: "Bus Stop Solar Stations", imageUrl: wb4, author: "Marc Johnson" },
-            { title: "Town Hall Retrofit", imageUrl: wb1, author: "John Smith" },
-            { title: "Park Lighting", imageUrl: wb2, author: "Emily Davis" }
-        ]
-      },
+      contentPreview: {},
       enabledResponseTypes: ["whiteboards"],
       responses: {
         whiteboards: [
@@ -241,14 +232,7 @@ export function SpaceFeed() {
       title: "Transition Case Studies & Policy Docs",
       snippet: "A collection of successful case studies from similar sized municipalities reaching 100% renewables. Essential reading for the strategy team.",
       timestamp: "1 day ago",
-      contentPreview: {
-        items: [
-          { title: "Burlington, VT Case Study", type: "pdf" },
-          { title: "Aspen, CO Transition Plan", type: "pdf" },
-          { title: "Grid Integration Analysis", type: "doc" },
-          { title: "2030 Policy Framework", type: "pdf" }
-        ]
-      },
+      contentPreview: {},
       enabledResponseTypes: ["links-files"],
       responses: {
         "links-files": [
