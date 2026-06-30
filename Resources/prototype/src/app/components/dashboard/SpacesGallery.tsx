@@ -115,13 +115,11 @@ export function SpacesGallery() {
 
                 {/* See all subspaces link */}
                 {subspaces.length > 4 && (
-                  <button
-                    className="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors cursor-pointer bg-transparent border-none mx-auto"
-                    onClick={() => handleSeeAllSubspaces(space)}
-                    type="button"
-                  >
-                    See all {subspaces.length} Subspaces <ChevronRight className="w-4 h-4" />
-                  </button>
+                  <div className="flex justify-center mt-3">
+                    <Button variant="link" size="sm" onClick={() => handleSeeAllSubspaces(space)}>
+                      See all {subspaces.length} Subspaces <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
                 )}
               </div>
             )}
@@ -132,13 +130,9 @@ export function SpacesGallery() {
       {/* Load More */}
       {hasMore && (
         <div className="flex justify-center pt-4">
-          <button
-            onClick={() => setVisibleCount((c) => c + BATCH_SIZE)}
-            className="px-6 py-2.5 text-sm font-semibold uppercase tracking-wide rounded-md border border-border text-muted-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer bg-transparent"
-            type="button"
-          >
+          <Button variant="outline" onClick={() => setVisibleCount((c) => c + BATCH_SIZE)}>
             Load More
-          </button>
+          </Button>
         </div>
       )}
 

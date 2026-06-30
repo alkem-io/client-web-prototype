@@ -197,16 +197,16 @@ export function PostCard({ post }: { post: PostProps }) {
         {/* Read more / Show less affordance */}
         {(shouldShowCollapseAffordance || (post.collapsed && isExpanded)) && (
           <div className="flex justify-start mt-3">
-            <button
-              onClick={(e) => {
+            <Button
+              variant="link"
+              size="sm"
+              onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
-                if (isExpanded) setIsExpanded(false);
-                else setIsExpanded(true);
+                setIsExpanded(!isExpanded);
               }}
-              className="text-caption uppercase text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
-              {isExpanded ? "Read less" : "Read more"}
-            </button>
+              {isExpanded ? "Show less" : "Show more"}
+            </Button>
           </div>
         )}
 
