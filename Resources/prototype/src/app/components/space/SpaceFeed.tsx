@@ -10,7 +10,6 @@ import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { ContributionGrid } from "../contribution/ContributionGrid";
 import { ContributionPostCard } from "../contribution/ContributionPostCard";
-import { ContributionMemoCard } from "../contribution/ContributionMemoCard";
 import { ContributionWhiteboardCard } from "../contribution/ContributionWhiteboardCard";
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
@@ -349,14 +348,14 @@ export function SpaceFeed() {
                       </ContributionGrid>
                     )}
 
-                    {/* Memos - use production component */}
+                    {/* Memos - use post card (simpler, no markdown deps) */}
                     {responseType === 'memos' && (
                       <ContributionGrid totalCount={responses.length}>
                         {responses.map((item: any) => (
-                          <ContributionMemoCard
+                          <ContributionPostCard
                             key={item.id}
                             title={item.title}
-                            author={item.author}
+                            author={{ name: item.author }}
                           />
                         ))}
                       </ContributionGrid>
