@@ -145,18 +145,12 @@ export default function UserAccountPage() {
 
         {/* Section: Hosted Spaces */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-section-title font-bold flex items-center gap-2">
-              Hosted Spaces
-              <Badge variant="secondary" className="ml-2 font-normal text-caption">
-                {hostedSpaces.length}/{capacity.spaces} Used
-              </Badge>
-            </h2>
-            <Button size="sm" onClick={() => setShowCreateSpace(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Space
-            </Button>
-          </div>
+          <h2 className="text-section-title font-bold flex items-center gap-2 mb-6">
+            Hosted Spaces
+            <Badge variant="secondary" className="ml-2 font-normal text-caption">
+              {hostedSpaces.length}/{capacity.spaces} Used
+            </Badge>
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {hostedSpaces.map((space) => (
@@ -202,18 +196,12 @@ export default function UserAccountPage() {
 
         {/* Section: Virtual Contributors */}
         <section>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-section-title font-bold flex items-center gap-2">
-              Virtual Contributors
-              <Badge variant="secondary" className="ml-2 font-normal text-caption">
-                {virtualContributors.length}/{capacity.virtualContributors} Used
-              </Badge>
-            </h2>
-            <Button size="sm" variant="outline" onClick={() => setShowCreateVC(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Contributor
-            </Button>
-          </div>
+          <h2 className="text-section-title font-bold flex items-center gap-2 mb-6">
+            Virtual Contributors
+            <Badge variant="secondary" className="ml-2 font-normal text-caption">
+              {virtualContributors.length}/{capacity.virtualContributors} Used
+            </Badge>
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {virtualContributors.map((vc) => (
@@ -253,18 +241,12 @@ export default function UserAccountPage() {
 
           {/* Section: Template Packs */}
           <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-section-title font-bold flex items-center gap-2">
-                Template Packs
-                <Badge variant="secondary" className="ml-2 font-normal text-caption">
-                  {templatePacks.length}/{capacity.templatePacks} Used
-                </Badge>
-              </h2>
-              <Button size="sm" variant="outline" onClick={() => setShowCreateTemplatePack(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                New Pack
-              </Button>
-            </div>
+            <h2 className="text-section-title font-bold flex items-center gap-2 mb-6">
+              Template Packs
+              <Badge variant="secondary" className="ml-2 font-normal text-caption">
+                {templatePacks.length}/{capacity.templatePacks} Used
+              </Badge>
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                {templatePacks.map((pack) => (
@@ -300,18 +282,12 @@ export default function UserAccountPage() {
 
           {/* Section: Custom Homepages */}
           <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-section-title font-bold flex items-center gap-2">
-                Custom Homepages
-                <Badge variant="secondary" className="ml-2 font-normal text-caption">
-                  {customHomepages.length}/{capacity.customHomepages} Used
-                </Badge>
-              </h2>
-              <Button size="sm" variant="outline" onClick={() => setShowCreateHub(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                New Page
-              </Button>
-            </div>
+            <h2 className="text-section-title font-bold flex items-center gap-2 mb-6">
+              Custom Homepages
+              <Badge variant="secondary" className="ml-2 font-normal text-caption">
+                {customHomepages.length}/{capacity.customHomepages} Used
+              </Badge>
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {customHomepages.length > 0 ? (

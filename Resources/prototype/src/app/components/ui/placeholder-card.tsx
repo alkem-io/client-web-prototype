@@ -33,7 +33,7 @@ export function PlaceholderCard({
       aria-label={label}
       className={cn(
         "group/create flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-transparent hover:border-primary hover:bg-primary/5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer w-full",
-        isLarge ? "min-h-[280px]" : "min-h-[160px]",
+        isLarge ? "h-[280px]" : "h-[180px]",
         className
       )}
     >

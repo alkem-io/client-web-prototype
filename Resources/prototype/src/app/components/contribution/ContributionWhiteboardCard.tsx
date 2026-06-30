@@ -20,7 +20,7 @@ export function ContributionWhiteboardCard({
     <button
       type="button"
       className={cn(
-        'group/wb relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 min-h-[200px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left',
+        'group/wb relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 h-[200px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left',
         className
       )}
       onClick={onClick}

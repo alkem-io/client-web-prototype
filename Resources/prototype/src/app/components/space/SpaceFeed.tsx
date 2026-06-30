@@ -4,6 +4,7 @@ import { Plus, Pin, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
+import { ResponseDetailDialog } from "@/app/components/dialogs/ResponseDetailDialog";
 import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { Card, CardContent } from "@/app/components/ui/card";
@@ -25,6 +26,7 @@ interface PostWithTags extends PostProps {
 export function SpaceFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
+  const [selectedResponse, setSelectedResponse] = useState<string | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
   const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
   const [collapseEnabled, setCollapseEnabled] = useState(() => {
@@ -148,6 +150,8 @@ export function SpaceFeed() {
           { id: "w2", title: "Parking Lot Canopies", author: "David Miller", type: "whiteboards", imageUrl: wb2 },
           { id: "w3", title: "School Microgrids", author: "Elena Rodriguez", type: "whiteboards", imageUrl: wb3 },
           { id: "w4", title: "Bus Stop Solar Stations", author: "Marc Johnson", type: "whiteboards", imageUrl: wb4 },
+          { id: "w5", title: "Community Center Solar Wall", author: "Sarah Chen", type: "whiteboards", imageUrl: wb1 },
+          { id: "w6", title: "Stadium Roof Installation", author: "David Miller", type: "whiteboards", imageUrl: wb2 },
         ]
       },
       stats: { comments: 8 },
@@ -239,13 +243,172 @@ export function SpaceFeed() {
       enabledResponseTypes: ["links-files"],
       responses: {
         "links-files": [
-          { id: "lf1", title: "Burlington, VT Case Study", author: "Sarah Chen", type: "links-files" },
-          { id: "lf2", title: "Aspen, CO Transition Plan", author: "David Miller", type: "links-files" },
-          { id: "lf3", title: "Copenhagen District Heating", author: "Marc Johnson", type: "links-files" },
+          {
+            id: "lf1",
+            title: "Test Link",
+            author: "Sarah Chen",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+            type: "links-files",
+            date: "02/15/2026",
+            description: "A curated link resource for policy reference",
+            tags: ["policy", "reference"]
+          },
+          {
+            id: "lf2",
+            title: "Mobile Interactions in Context",
+            author: "David Miller",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
+            type: "links-files",
+            date: "02/14/2026",
+            description: "A Designerly Way Toward Digital Ecology",
+            tags: ["design", "ux", "digital"]
+          },
+          {
+            id: "lf3",
+            title: "Interaction for Visualization",
+            author: "Marc Johnson",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marc",
+            type: "links-files",
+            date: "02/13/2026",
+            description: "Visualization has become a valuable means for data exploration and analysis. Interactive visualization combines expressive graphical representations and ef...",
+            tags: ["visualization", "data", "analysis"]
+          },
+          {
+            id: "lf4",
+            title: "Burlington, VT Case Study",
+            author: "Sarah Chen",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+            type: "links-files",
+            date: "02/12/2026",
+            description: "A comprehensive renewable energy transition strategy for municipalities",
+            tags: ["renewable", "case-study"]
+          },
+          {
+            id: "lf5",
+            title: "Aspen, CO Transition Plan",
+            author: "David Miller",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
+            type: "links-files",
+            date: "02/11/2026",
+            description: "Detailed policy framework and community engagement strategy",
+            tags: ["aspen", "transition"]
+          },
+          {
+            id: "lf6",
+            title: "Copenhagen District Heating",
+            author: "Marc Johnson",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marc",
+            type: "links-files",
+            date: "02/10/2026",
+            description: "European model for sustainable energy infrastructure",
+            tags: ["district-heating", "eu-model"]
+          },
+          {
+            id: "lf7",
+            title: "Grid Integration Standards",
+            author: "Sarah Chen",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+            type: "links-files",
+            date: "02/09/2026",
+            description: "Technical specifications for renewable grid integration",
+            tags: ["grid", "standards"]
+          },
+          {
+            id: "lf8",
+            title: "Community Solar Implementation",
+            author: "David Miller",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
+            type: "links-files",
+            date: "02/08/2026",
+            description: "Best practices for community-owned solar projects",
+            tags: ["solar", "community"]
+          },
+          {
+            id: "lf9",
+            title: "Energy Storage Solutions",
+            author: "Marc Johnson",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marc",
+            type: "links-files",
+            date: "02/07/2026",
+            description: "Technology overview and deployment strategies",
+            tags: ["storage", "technology"]
+          }
         ]
       },
       stats: { comments: 12 },
       commentTexts: ["The Burlington case study is incredibly relevant.", "Aspen's approach to community buy-in is worth studying.", "Grid integration analysis needs peer review.", "Can we add the Copenhagen model?", "The 2030 framework should reference EU directives.", "Essential reading — thanks for compiling this.", "I'd add the Freiburg solar settlement case.", "The policy docs section needs updating.", "Great collection for onboarding new members.", "Should we create a summary document?", "The Aspen plan has some transferable KPIs.", "Let's discuss these at the next strategy meeting."]
+    },
+    {
+      id: "10",
+      type: "text",
+      tags: ["Updates", "Documentation"],
+      author: {
+        name: "Jeroen Nijkamp",
+        role: "Designer",
+        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jeroen",
+        location: "Amsterdam, NL",
+        skills: ["Design Systems", "Documentation", "UI/UX"],
+      },
+      title: "Test Post: Memo's",
+      snippet: "Wikis are powered by wiki software, also known as wiki engines. Being a form of content management system, these differ from other web-based systems such as blog software or static site generators in that the content is created without any defined owner or leader. Wikis have little inherent structure, allowing one to emerge according to the needs of the users.",
+      timestamp: "2/23/2026",
+      enabledResponseTypes: ["memos"],
+      responses: {
+        memos: [
+          {
+            id: "m1",
+            title: "Response Engagement Strategy",
+            author: "Jeroen Nijkamp",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jeroen",
+            type: "memos",
+            date: "02/23/2026",
+            description: "1. **Response Engagement:** 3x+ response contribution rate vs small button\n2. **Consistency:** 95%+ of buttons follow patterns\n3. **Accessibility:** 100% of icon buttons have tooltips\n4. **Maintainability:** ZERO custom button styling in component files\n5. **User Satisfaction:** Reduced support requests about \"How do I respond?\"",
+            tags: ["engagement", "strategy"]
+          },
+          {
+            id: "m2",
+            title: "Label Standardization",
+            author: "Jeroen Nijkamp",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jeroen",
+            type: "memos",
+            date: "02/23/2026",
+            description: "### Label Standardization\n\n#### Standard Action Verbs\n\n| Action | Verb | Example | Avoid |\n|--------|------|---------|-------|\n| Create new | Create | \"Create Space\" | \"New\", \"Add\" (for creating) |\n| Add to collection | Add | \"Add Member\" | \"Create\", \"New\" |\n| Contribute | Add | \"Add Whiteboard\" | \"Submit\", \"Upload\" |\n| Save form | Save | \"Save Changes\" | \"Submit\", \"OK\" |\n| Navigation | Open/View | \"View Details\" | \"Open\", \"See\" |",
+            tags: ["labels", "standards", "documentation"]
+          },
+          {
+            id: "m3",
+            title: "Button Variant Usage Guide",
+            author: "Sarah Chen",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+            type: "memos",
+            date: "02/22/2026",
+            description: "- **Default:** Primary CTAs (Create Space, Save Changes)\n- **Secondary:** Alternative important actions (Preview, Next Step)\n- **Outline:** Navigation and secondary actions (Load More, Cancel)\n- **Ghost:** Minimal contextual actions (Back, Toolbar buttons)\n- **Link:** Text-only actions in content (Show More, Learn More)\n- **Destructive:** Danger actions only in confirmation dialogs (Delete Space)",
+            tags: ["buttons", "design-system", "implementation"]
+          },
+          {
+            id: "m4",
+            title: "Dialog Footer Patterns",
+            author: "David Miller",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=David",
+            type: "memos",
+            date: "02/22/2026",
+            description: "Three button footer patterns emerged:\n\n**Multi-step:** [← Back] [Cancel/ghost] [Primary action/default]\n**Simple:** [Cancel/ghost] [Primary action/default]\n**Destructive:** [Keep/ghost] [Delete/destructive]\n\nKey insight: Always pair secondary actions on left with primary on right for consistent scannability.",
+            tags: ["dialogs", "patterns", "ui-consistency"]
+          },
+          {
+            id: "m5",
+            title: "Icon Button Best Practices",
+            author: "Elena Rodriguez",
+            authorAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Elena",
+            type: "memos",
+            date: "02/21/2026",
+            description: "Every icon-only button MUST use the IconButton wrapper component. This ensures:\n\n✓ Automatic tooltips on hover\n✓ Proper aria-labels for accessibility\n✓ Consistent focus states across the app\n✓ Reduced custom styling in components\n\nSize guide: sm (32px), default (36px), lg (40px), icon (36px square)",
+            tags: ["accessibility", "components", "icon-buttons"]
+          }
+        ]
+      },
+      stats: { comments: 0 },
+      commentTexts: []
     },
     {
       id: "7",
@@ -264,8 +427,12 @@ export function SpaceFeed() {
       enabledResponseTypes: ["posts"],
       responses: {
         posts: [
-          { id: "p1", title: "My Family's Solar Installation Journey", author: "Maria Garcia", type: "posts" },
-          { id: "p2", title: "Building Our First Electric Vehicle Charging Station", author: "Thomas Mueller", type: "posts" },
+          { id: "p1", title: "My Family's Solar Installation Journey", author: "Maria Garcia", type: "posts", date: "02/17/2026", description: "Our family decided to invest in solar panels and it has been the best decision. Here's how we did it...", tags: ["solar", "family", "success"] },
+          { id: "p2", title: "Building Our First Electric Vehicle Charging Station", author: "Thomas Mueller", type: "posts", date: "02/16/2026", description: "We worked with the city to install a public EV charging station in our neighborhood. The process was...", tags: ["ev", "infrastructure", "community"] },
+          { id: "p3", title: "Heat Pump Retrofit Success Story", author: "Ana Silva", type: "posts", date: "02/15/2026", description: "Replacing our old gas heating system with a modern heat pump has cut our energy bills in half. Here's what I learned...", tags: ["heating", "retrofit", "savings"] },
+          { id: "p4", title: "Community Garden Solar Setup", author: "James Chen", type: "posts", date: "02/14/2026", description: "We installed solar panels above our community garden to power irrigation and lighting. It's been amazing to see...", tags: ["community", "gardens", "renewable"] },
+          { id: "p5", title: "My Journey to Zero Waste Living", author: "Sofia Rodriguez", type: "posts", date: "02/13/2026", description: "Starting from scratch with reducing waste has been challenging but incredibly rewarding. Here are my top 5 tips...", tags: ["waste", "sustainability", "lifestyle"] },
+          { id: "p6", title: "Local Energy Cooperative Success", author: "Marcus Williams", type: "posts", date: "02/12/2026", description: "Our neighborhood formed an energy cooperative to bulk-purchase renewable energy. The results exceeded expectations...", tags: ["cooperative", "energy", "community"] },
         ]
       },
       stats: { comments: 15 },
@@ -310,12 +477,7 @@ export function SpaceFeed() {
 
           const contributionsPreview = (post as any).responses && totalResponses > 0 ? (
             <div className="mt-6 pt-6 border-t space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS ({totalResponses})</h3>
-                <Button variant="ghost" size="sm" className="text-primary text-xs font-semibold gap-1">
-                  + ADD
-                </Button>
-              </div>
+              <h3 className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS ({totalResponses})</h3>
 
               {(post as any).enabledResponseTypes?.map((responseType: string) => {
                 const responses = (post as any).responses?.[responseType] || [];
@@ -328,19 +490,33 @@ export function SpaceFeed() {
                   'links-files': 'RESOURCES'
                 }[responseType] || responseType.toUpperCase();
 
+                const addLabel = {
+                  'whiteboards': '+ Add Whiteboard',
+                  'posts': '+ Add Post',
+                  'memos': '+ Add Memo',
+                  'links-files': '+ Add Link or File'
+                }[responseType] || '+ Add';
+
                 return (
                   <div key={responseType}>
                     <h3 className="text-label font-semibold text-muted-foreground mb-3">{typeLabel}</h3>
 
                     {/* Whiteboards - use production component */}
                     {responseType === 'whiteboards' && (
-                      <ContributionGrid totalCount={responses.length}>
+                      <ContributionGrid
+                        totalCount={responses.length}
+                        onAddClick={() => console.log('Add whiteboard')}
+                        onShowMore={() => setSelectedPost(post)}
+                        addLabel={addLabel}
+                        addCardClassName="h-[200px]"
+                      >
                         {responses.map((item: any) => (
                           <ContributionWhiteboardCard
                             key={item.id}
                             title={item.title}
                             author={item.author}
                             previewUrl={item.imageUrl}
+                            onClick={() => console.log('Open whiteboard in Excalidraw:', item.id)}
                           />
                         ))}
                       </ContributionGrid>
@@ -348,7 +524,12 @@ export function SpaceFeed() {
 
                     {/* Posts - use production component */}
                     {responseType === 'posts' && (
-                      <ContributionGrid totalCount={responses.length}>
+                      <ContributionGrid
+                        totalCount={responses.length}
+                        onAddClick={() => console.log('Add post')}
+                        onShowMore={() => setSelectedPost(post)}
+                        addLabel={addLabel}
+                      >
                         {responses.map((item: any) => (
                           <ContributionPostCard
                             key={item.id}
@@ -358,6 +539,7 @@ export function SpaceFeed() {
                             description={item.description}
                             tags={item.tags}
                             commentCount={item.commentCount}
+                            onClick={() => setSelectedResponse(item.id)}
                           />
                         ))}
                       </ContributionGrid>
@@ -365,7 +547,12 @@ export function SpaceFeed() {
 
                     {/* Memos - use post card (simpler, no markdown deps) */}
                     {responseType === 'memos' && (
-                      <ContributionGrid totalCount={responses.length}>
+                      <ContributionGrid
+                        totalCount={responses.length}
+                        onAddClick={() => console.log('Add memo')}
+                        onShowMore={() => setSelectedPost(post)}
+                        addLabel={addLabel}
+                      >
                         {responses.map((item: any) => (
                           <ContributionPostCard
                             key={item.id}
@@ -374,6 +561,7 @@ export function SpaceFeed() {
                             createdDate={item.date}
                             description={item.description}
                             tags={item.tags}
+                            onClick={() => setSelectedResponse(item.id)}
                           />
                         ))}
                       </ContributionGrid>
@@ -381,7 +569,12 @@ export function SpaceFeed() {
 
                     {/* Links/Files - use post card as fallback */}
                     {responseType === 'links-files' && (
-                      <ContributionGrid totalCount={responses.length}>
+                      <ContributionGrid
+                        totalCount={responses.length}
+                        onAddClick={() => console.log('Add link or file')}
+                        onShowMore={() => setSelectedPost(post)}
+                        addLabel={addLabel}
+                      >
                         {responses.map((item: any) => (
                           <ContributionPostCard
                             key={item.id}
@@ -390,6 +583,7 @@ export function SpaceFeed() {
                             createdDate={item.date}
                             description={item.description}
                             tags={item.tags}
+                            onClick={() => setSelectedResponse(item.id)}
                           />
                         ))}
                       </ContributionGrid>
@@ -406,9 +600,9 @@ export function SpaceFeed() {
               post={{
                 ...post,
                 collapsed: collapseEnabled,
-                onClick: () => setSelectedPost(post),
                 onDocumentClick: (doc) => { setSelectedDocument(doc); setSelectedDocAuthor(post.author); }
               }}
+              onClick={() => setSelectedPost(post)}
               contributionsPreview={contributionsPreview}
             />
           );
@@ -425,10 +619,15 @@ export function SpaceFeed() {
         open={isPostModalOpen} 
         onOpenChange={setIsPostModalOpen} 
       />
-      <PostDetailDialog 
-        open={!!selectedPost} 
+      <PostDetailDialog
+        open={!!selectedPost}
         onOpenChange={(open) => !open && setSelectedPost(null)}
         post={selectedPost}
+      />
+      <ResponseDetailDialog
+        open={!!selectedResponse}
+        onOpenChange={(open) => !open && setSelectedResponse(null)}
+        responseId={selectedResponse}
       />
       <DocumentDetailDialog
         open={!!selectedDocument}
