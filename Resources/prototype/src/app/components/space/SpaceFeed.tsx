@@ -299,17 +299,51 @@ export function SpaceFeed() {
       </div>
 
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
-        {filteredPosts.map((post) => (
-          <PostCard 
-            key={post.id} 
-            post={{
-              ...post,
-              collapsed: collapseEnabled,
-              onClick: () => setSelectedPost(post),
-              onDocumentClick: (doc) => { setSelectedDocument(doc); setSelectedDocAuthor(post.author); }
-            }} 
-          />
-        ))}
+        {filteredPosts.map((post) => {
+          // Build contributions preview if post has responses
+          const contributionsPreview = (post as any).responses ? (
+            <div className="mt-6 space-y-3 pt-6 border-t">
+              {(post as any).enabledResponseTypes?.map((responseType: string) => {
+                const responses = (post as any).responses?.[responseType] || [];
+                if (!responses.length) return null;
+
+                const typeLabel = {
+                  'whiteboards': 'WHITEBOARDS',
+                  'posts': 'POSTS',
+                  'memos': 'MEMOS',
+                  'links-files': 'RESOURCES'
+                }[responseType] || responseType.toUpperCase();
+
+                return (
+                  <div key={responseType}>
+                    <h3 className="text-label font-semibold text-muted-foreground mb-3">{typeLabel}</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {responses.map((item: any) => (
+                        <div key={item.id} className="p-3 border border-border rounded-lg bg-card hover:bg-muted/50">
+                          <div className="font-medium text-sm text-foreground">{item.title}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{item.author}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : undefined;
+
+          return (
+            <PostCard
+              key={post.id}
+              post={{
+                ...post,
+                collapsed: collapseEnabled,
+                onClick: () => setSelectedPost(post),
+                onDocumentClick: (doc) => { setSelectedDocument(doc); setSelectedDocAuthor(post.author); }
+              }}
+              contributionsPreview={contributionsPreview}
+            />
+          );
+        })}
       </div>
 
       <div className="mt-8 text-center">
