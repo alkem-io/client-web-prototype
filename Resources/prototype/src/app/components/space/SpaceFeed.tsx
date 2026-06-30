@@ -317,14 +317,81 @@ export function SpaceFeed() {
                 return (
                   <div key={responseType}>
                     <h3 className="text-label font-semibold text-muted-foreground mb-3">{typeLabel}</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {responses.map((item: any) => (
-                        <div key={item.id} className="p-3 border border-border rounded-lg bg-card hover:bg-muted/50">
-                          <div className="font-medium text-sm text-foreground">{item.title}</div>
-                          <div className="text-xs text-muted-foreground mt-1">{item.author}</div>
-                        </div>
-                      ))}
-                    </div>
+
+                    {/* Whiteboards - show image previews */}
+                    {responseType === 'whiteboards' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {responses.map((item: any) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            className="group/wb relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 min-h-[200px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left"
+                          >
+                            {item.imageUrl ? (
+                              <img
+                                src={item.imageUrl}
+                                alt={item.title}
+                                className="w-full h-full object-cover transition-transform group-hover/wb:scale-105 duration-500"
+                              />
+                            ) : null}
+                            <div className="absolute inset-0 flex flex-col justify-between p-3 bg-gradient-to-b from-primary/80 via-primary/20 to-transparent">
+                              <h4 className="font-medium text-sm text-white">{item.title}</h4>
+                              <p className="text-xs text-white/80">{item.author}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Posts - show text cards */}
+                    {responseType === 'posts' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {responses.map((item: any) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            className="p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            <h4 className="font-medium text-sm text-foreground">{item.title}</h4>
+                            <p className="text-xs text-muted-foreground mt-2">{item.author}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Memos - show memo preview cards */}
+                    {responseType === 'memos' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {responses.map((item: any) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            className="group/memo relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 min-h-[180px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left p-3"
+                          >
+                            <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-b from-primary/80 via-primary/20 to-transparent p-3">
+                              <h4 className="font-medium text-sm text-white">{item.title}</h4>
+                              <p className="text-xs text-white/80">{item.author}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Links/Files - show resource cards */}
+                    {responseType === 'links-files' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {responses.map((item: any) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            className="p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            <h4 className="font-medium text-sm text-foreground">{item.title}</h4>
+                            <p className="text-xs text-muted-foreground mt-2">{item.author}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
