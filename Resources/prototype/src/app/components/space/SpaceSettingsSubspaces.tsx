@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { 
-  Search, 
-  Plus, 
-  MoreVertical, 
-  LayoutTemplate, 
+import {
+  Search,
+  Plus,
+  MoreVertical,
+  LayoutTemplate,
   Users,
   Pin,
   PinOff,
@@ -12,7 +12,9 @@ import {
   Check,
   LayoutGrid,
   List as ListIcon,
-  ArrowDownAZ
+  ArrowDownAZ,
+  FileText,
+  MessageSquare
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -37,6 +39,9 @@ import { Separator } from "@/app/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
+import { SubspaceFormBuilderDialog } from "@/app/components/dialogs/SubspaceFormBuilderDialog";
+import { SubspaceApplicationsPanel } from "@/app/components/space/SubspaceApplicationsPanel";
+import type { ApplicationFormConfig, SubspaceApplication, FormField } from "@/app/components/dialogs/SubspaceApplicationDialog";
 
 // --- Mock Data ---
 
@@ -126,6 +131,97 @@ const MOCK_SUBSPACES: Subspace[] = [
   }
 ];
 
+// Default form questions for subspace creation
+const DEFAULT_FORM_QUESTIONS: FormField[] = [
+  {
+    id: "title",
+    type: "short-text",
+    label: "Initiative Title",
+    description: "The name of your initiative",
+    required: true,
+    order: 0,
+    constraints: { maxLength: 80 },
+  },
+  {
+    id: "initiating-municipality",
+    type: "short-text",
+    label: "Initiating Municipality",
+    required: true,
+    order: 1,
+    constraints: { maxLength: 80 },
+  },
+  {
+    id: "first-lead",
+    type: "auto-fill-profile",
+    label: "First Lead",
+    description: "Your contact details",
+    required: true,
+    order: 2,
+    constraints: { fields: ["name", "email", "organization"] },
+  },
+  {
+    id: "second-lead",
+    type: "user-picker",
+    label: "Second Lead (optional)",
+    description: "Search for an existing member or invite someone new",
+    required: false,
+    order: 3,
+    constraints: { allowManualEntry: true, allowEmailInvite: true },
+  },
+  {
+    id: "supporting-municipalities",
+    type: "multi-select-list",
+    label: "Supporting Municipalities",
+    description: "Select at least 2 other municipalities (search to find them)",
+    required: true,
+    order: 4,
+    constraints: {
+      minSelections: 2,
+      maxSelections: 20,
+      items: [
+        { id: "amsterdam", label: "Amsterdam" },
+        { id: "rotterdam", label: "Rotterdam" },
+        { id: "den-haag", label: "Den Haag" },
+        { id: "utrecht", label: "Utrecht" },
+        { id: "eindhoven", label: "Eindhoven" },
+      ],
+    },
+  },
+  {
+    id: "who",
+    type: "long-text",
+    label: "WHO? Goal and Target Audience",
+    description: "Describe the goal and target audience (max 250 words)",
+    required: true,
+    order: 5,
+    constraints: { maxWords: 250 },
+  },
+  {
+    id: "what-for",
+    type: "long-text",
+    label: "WHAT FOR? Strategic Contribution",
+    required: true,
+    order: 6,
+    constraints: { maxWords: 250 },
+  },
+  {
+    id: "why",
+    type: "long-text",
+    label: "WHY? Urgency and Value",
+    required: true,
+    order: 7,
+    constraints: { maxWords: 250 },
+  },
+  {
+    id: "how",
+    type: "long-text",
+    label: "HOW? Development and Scaling",
+    required: true,
+    order: 8,
+    constraints: { maxWords: 250 },
+  },
+];
+
 export function SpaceSettingsSubspaces() {
   const [defaultTemplateId, setDefaultTemplateId] = useState<string>('standard');
   const [subspaces, setSubspaces] = useState<Subspace[]>(MOCK_SUBSPACES);
@@ -140,6 +236,33 @@ export function SpaceSettingsSubspaces() {
   const [newSubspaceTitle, setNewSubspaceTitle] = useState('');
   const [newSubspaceDesc, setNewSubspaceDesc] = useState('');
   const [newSubspaceTemplate, setNewSubspaceTemplate] = useState(defaultTemplateId);
+
+  // Application Form
+  const [formBuilderOpen, setFormBuilderOpen] = useState(false);
+  const [currentFormConfig, setCurrentFormConfig] = useState<ApplicationFormConfig | null>(null);
+  const [applications, setApplications] = useState<SubspaceApplication[]>([
+    {
+      id: "app-1",
+      formConfigId: "form-space",
+      applicantId: "user-1",
+      applicantName: "Alice Chen",
+      applicantEmail: "alice@example.com",
+      spaceId: "space-1",
+      answers: {
+        title: "Solar Panel Research Initiative",
+        "initiating-municipality": "Amsterdam",
+        "first-lead": { name: "Alice Chen", email: "alice@example.com", organization: "City of Amsterdam" },
+        "second-lead": "Bob Johnson",
+        "supporting-municipalities": ["rotterdam", "utrecht"],
+        "who": "Exploring next-generation photovoltaic technologies and materials for sustainable energy.",
+        "what-for": "Contributing to regional renewable energy goals and knowledge sharing across municipalities.",
+        "why": "The urgency of accelerating solar adoption to meet climate targets.",
+        "how": "Phased implementation with pilot projects and scaling to 10+ municipalities.",
+      },
+      status: "submitted",
+      submittedAt: "2026-06-28T10:30:00Z",
+    },
+  ]);
 
   const currentDefaultTemplate = TEMPLATES.find(t => t.id === defaultTemplateId) || TEMPLATES[0];
 
@@ -430,6 +553,70 @@ export function SpaceSettingsSubspaces() {
          )}
       </div>
       </SettingsSection>
+
+      {/* Application Form for creating subspaces */}
+      <Separator className="my-8" />
+
+      <SettingsSection
+        title="Application Form"
+        description="For creating subspaces"
+        icon={<FileText className="w-4 h-4" />}
+        iconColor="purple"
+        defaultOpen={true}
+        collapsible={true}
+      >
+        <div className="space-y-3">
+          <div className="text-caption text-muted-foreground">
+            Members will fill this out when they want to create a subspace in this space.
+          </div>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setFormBuilderOpen(true)}>
+            <FileText className="w-4 h-4" /> Edit Application Form
+          </Button>
+        </div>
+      </SettingsSection>
+
+      {/* Applications for reviewing subspace creation proposals */}
+      <Separator className="my-8" />
+
+      <SettingsSection
+        title="Subspace Applications"
+        description="Review proposals to create subspaces"
+        icon={<MessageSquare className="w-4 h-4" />}
+        iconColor="orange"
+        defaultOpen={true}
+        collapsible={true}
+      >
+        <SubspaceApplicationsPanel
+          applications={applications}
+          formConfig={currentFormConfig || {
+            id: "form-space",
+            spaceId: "space-1",
+            isActive: true,
+            questions: DEFAULT_FORM_QUESTIONS,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }}
+          spaceName="Innovation Lab"
+          onApprove={(appId, message) => {
+            console.log("Approve application", appId, message);
+          }}
+          onReject={(appId, message) => {
+            console.log("Reject application", appId, message);
+          }}
+        />
+      </SettingsSection>
+
+      {/* Form Builder Dialog */}
+      <SubspaceFormBuilderDialog
+        open={formBuilderOpen}
+        onOpenChange={setFormBuilderOpen}
+        spaceId="space-1"
+        spaceName="Innovation Lab"
+        onSave={(config) => {
+          setCurrentFormConfig(config);
+          console.log("Form saved", config);
+        }}
+      />
     </div>
   );
 }
