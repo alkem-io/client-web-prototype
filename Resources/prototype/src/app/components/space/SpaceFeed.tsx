@@ -304,8 +304,19 @@ export function SpaceFeed() {
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
         {filteredPosts.map((post) => {
           // Build contributions preview if post has responses
-          const contributionsPreview = (post as any).responses ? (
-            <div className="mt-6 space-y-3 pt-6 border-t">
+          const totalResponses = (post as any).responses
+            ? Object.values((post as any).responses || {}).reduce((sum: number, arr: any) => sum + arr.length, 0)
+            : 0;
+
+          const contributionsPreview = (post as any).responses && totalResponses > 0 ? (
+            <div className="mt-6 pt-6 border-t space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS ({totalResponses})</h3>
+                <Button variant="ghost" size="sm" className="text-primary text-xs font-semibold gap-1">
+                  + ADD
+                </Button>
+              </div>
+
               {(post as any).enabledResponseTypes?.map((responseType: string) => {
                 const responses = (post as any).responses?.[responseType] || [];
                 if (!responses.length) return null;
