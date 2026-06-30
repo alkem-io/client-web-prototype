@@ -12,6 +12,8 @@ import {
 import { Plus, Mail, UserPlus, Search, List, FileText, X, Calendar, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
+import { SubspaceApplicationDialog } from "@/app/components/dialogs/SubspaceApplicationDialog";
+import type { ApplicationFormConfig } from "@/app/components/dialogs/SubspaceApplicationDialog";
 
 interface SpaceSidebarProps {
   spaceSlug: string;
@@ -77,9 +79,46 @@ const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: str
 export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription, enabledFeatures }: SpaceSidebarProps) {
   const features = enabledFeatures || { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
   const [indexOpen, setIndexOpen] = useState(false);
-  
+  const [applicationDialogOpen, setApplicationDialogOpen] = useState(false);
+
   // Use filter context
   const { searchValue, activeTags, setSearchValue, toggleTag, clearTags } = useSpaceFilters();
+
+  // Mock form config for subspace application
+  const mockFormConfig: ApplicationFormConfig = {
+    id: "form-1",
+    spaceId: spaceSlug,
+    isActive: true,
+    questions: [
+      {
+        id: "subspace-name",
+        type: "short-text",
+        label: "Subspace Name",
+        description: "What would you like to call your subspace?",
+        required: true,
+        order: 1,
+        constraints: { maxLength: 100 },
+      },
+      {
+        id: "purpose",
+        type: "long-text",
+        label: "Purpose & Goals",
+        description: "Describe the purpose and goals of this subspace",
+        required: true,
+        order: 2,
+        constraints: { maxLength: 1000, maxWords: 200 },
+      },
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const currentUser = {
+    id: "user-1",
+    name: "Current User",
+    email: "user@example.com",
+    organization: "Organization",
+  };
 
   const tags = TAB_TAGS[variant] ?? TAB_TAGS.home;
   const allIndexItems = TAB_INDEX[variant] ?? TAB_INDEX.home;
@@ -134,9 +173,14 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
             </Button>
           )}
           {features.createSubspace && (variant === "home" || variant === "workspaces") && (
-            <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-2 justify-start"
+              onClick={() => setApplicationDialogOpen(true)}
+            >
               <Plus className="w-4 h-4" />
-              Create Subspace
+              Apply for a Subspace
             </Button>
           )}
         </div>
@@ -295,6 +339,15 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Subspace Application Dialog */}
+      <SubspaceApplicationDialog
+        open={applicationDialogOpen}
+        onOpenChange={setApplicationDialogOpen}
+        formConfig={mockFormConfig}
+        spaceName={spaceSlug}
+        currentUser={currentUser}
+      />
     </div>
   );
 }
