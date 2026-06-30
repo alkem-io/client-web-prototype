@@ -612,6 +612,7 @@ export function SpaceSettingsSubspaces() {
         onOpenChange={setFormBuilderOpen}
         spaceId="space-1"
         spaceName="Innovation Lab"
+        initialConfig={currentFormConfig}
         onSave={(config) => {
           setCurrentFormConfig(config);
           console.log("Form saved", config);
