@@ -34,11 +34,11 @@ interface SubspaceFormBuilderDialogProps {
 }
 
 const FIELD_TYPES: { id: FormFieldType; label: string; description: string }[] = [
-  { id: "short-text", label: "Short Text", description: "Single line response" },
-  { id: "long-text", label: "Long Text", description: "Multi-line response with word limit" },
-  { id: "auto-fill-profile", label: "Auto-fill Profile", description: "Pre-filled from user profile" },
-  { id: "user-picker", label: "User Picker", description: "Search members or invite by email" },
-  { id: "multi-select-list", label: "Multi-select List", description: "Choose from predefined options" },
+  { id: "short-text", label: "Short Answer", description: "One line of text (e.g., a name or title)" },
+  { id: "long-text", label: "Long Answer", description: "Multi-line text for detailed responses" },
+  { id: "auto-fill-profile", label: "Auto-filled Info", description: "Pre-fills from their profile automatically" },
+  { id: "user-picker", label: "Person Selector", description: "Let them pick or invite team members" },
+  { id: "multi-select-list", label: "Multiple Choice", description: "They pick from a list you provide" },
 ];
 
 interface FormTemplate {
@@ -392,27 +392,28 @@ export function SubspaceFormBuilderDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="space-y-4 max-w-3xl">
-            <div className="flex justify-between items-center mb-6">
-              <Label className="text-body-emphasis">Questions</Label>
+          <div className="space-y-6 max-w-3xl">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-body-emphasis">Your questions</p>
+                <p className="text-caption text-muted-foreground mt-1">Members will answer these when applying</p>
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button size="sm" className="gap-2">
                     <Plus className="w-4 h-4" />
-                    Add Question
+                    Add a question
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="w-56">
                   {FIELD_TYPES.map((type) => (
                     <DropdownMenuItem
                       key={type.id}
                       onClick={() => handleAddQuestion(type.id)}
-                      className="cursor-pointer"
+                      className="cursor-pointer flex flex-col items-start py-2"
                     >
-                      <div>
-                        <div>{type.label}</div>
-                        <div className="text-xs text-muted-foreground">{type.description}</div>
-                      </div>
+                      <div className="font-medium">{type.label}</div>
+                      <div className="text-xs text-muted-foreground">{type.description}</div>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -420,58 +421,65 @@ export function SubspaceFormBuilderDialog({
             </div>
 
             {questions.length === 0 ? (
-              <div className="border-2 border-dashed rounded-lg p-8 text-center text-muted-foreground">
-                No questions yet. Click "Add Question" to get started.
+              <div className="rounded-lg border-2 border-dashed p-12 text-center">
+                <p className="text-muted-foreground mb-2">No questions yet</p>
+                <p className="text-caption text-muted-foreground">Click "Add a question" above to get started</p>
               </div>
             ) : (
-              <div className="border rounded-lg overflow-hidden">
+              <div className="space-y-3">
                 {questions.map((question, index) => (
-                  <div key={question.id} className={cn("p-4", index !== questions.length - 1 && "border-b")}>
+                  <div key={question.id} className="rounded-lg border bg-card p-4 space-y-3 hover:border-primary/30 transition-colors">
                     <div className="flex gap-3 items-start">
-                      <div className="text-sm font-semibold text-muted-foreground w-6 flex-shrink-0 pt-2">
-                        {index + 1}
+                      <div className="text-base font-semibold text-muted-foreground min-w-8 pt-2">
+                        {index + 1}.
                       </div>
 
                       <div className="flex-1 space-y-3 min-w-0">
-                        <div className="flex gap-3 items-start">
-                          <Input
-                            value={question.label}
-                            onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
-                            placeholder="Question label"
-                            className="flex-1"
-                          />
-                          <select
-                            value={question.type}
-                            onChange={(e) =>
-                              handleUpdateQuestion(index, {
-                                type: e.target.value as FormFieldType,
-                                constraints: getDefaultConstraints(e.target.value as FormFieldType),
-                              })
-                            }
-                            className="h-10 px-3 py-2 text-sm border border-input rounded-md bg-background hover:bg-accent"
-                          >
-                            {FIELD_TYPES.map((type) => (
-                              <option key={type.id} value={type.id}>
-                                {type.label}
-                              </option>
-                            ))}
-                          </select>
-                          <label className="flex items-center gap-2 pt-2">
-                            <Checkbox
-                              checked={question.required}
-                              onCheckedChange={(checked) =>
-                                handleUpdateQuestion(index, { required: checked === true })
+                        <Input
+                          value={question.label}
+                          onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
+                          placeholder="Write your question here..."
+                          className="text-base font-medium"
+                        />
+
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <div className="flex-1">
+                            <label className="text-caption font-medium text-muted-foreground mb-2 block">Answer type</label>
+                            <select
+                              value={question.type}
+                              onChange={(e) =>
+                                handleUpdateQuestion(index, {
+                                  type: e.target.value as FormFieldType,
+                                  constraints: getDefaultConstraints(e.target.value as FormFieldType),
+                                })
                               }
-                            />
-                            <span className="text-sm text-muted-foreground">Required</span>
-                          </label>
+                              className="w-full h-9 px-3 py-1 text-sm border border-input rounded-md bg-background hover:bg-accent"
+                            >
+                              {FIELD_TYPES.map((type) => (
+                                <option key={type.id} value={type.id}>
+                                  {type.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="flex items-end">
+                            <label className="flex items-center gap-2 px-3 py-2 rounded-md border border-input hover:bg-muted/50">
+                              <Checkbox
+                                checked={question.required}
+                                onCheckedChange={(checked) =>
+                                  handleUpdateQuestion(index, { required: checked === true })
+                                }
+                              />
+                              <span className="text-sm">Required</span>
+                            </label>
+                          </div>
                         </div>
 
-                        {/* Constraint fields */}
+                        {/* Constraint fields - only show if needed */}
                         {question.type === "short-text" && (
-                          <div className="flex gap-3 text-sm pl-2">
-                            <label className="flex items-center gap-2">
-                              <span className="text-muted-foreground">Max length:</span>
+                          <div className="pt-2 border-t">
+                            <label className="text-caption font-medium text-muted-foreground">Character limit</label>
+                            <div className="flex items-center gap-2 mt-2">
                               <Input
                                 type="number"
                                 value={question.constraints.maxLength || 255}
@@ -482,14 +490,15 @@ export function SubspaceFormBuilderDialog({
                                 }
                                 className="w-20 h-8"
                               />
-                            </label>
+                              <span className="text-caption text-muted-foreground">characters</span>
+                            </div>
                           </div>
                         )}
 
                         {question.type === "long-text" && (
-                          <div className="flex gap-3 text-sm pl-2">
-                            <label className="flex items-center gap-2">
-                              <span className="text-muted-foreground">Max words:</span>
+                          <div className="pt-2 border-t">
+                            <label className="text-caption font-medium text-muted-foreground">Word limit</label>
+                            <div className="flex items-center gap-2 mt-2">
                               <Input
                                 type="number"
                                 value={question.constraints.maxWords || 500}
@@ -500,15 +509,17 @@ export function SubspaceFormBuilderDialog({
                                 }
                                 className="w-20 h-8"
                               />
-                            </label>
+                              <span className="text-caption text-muted-foreground">words</span>
+                            </div>
                           </div>
                         )}
 
                         {question.type === "multi-select-list" && (
-                          <div className="space-y-2 pl-2">
-                            <div className="flex gap-3 text-sm">
-                              <label className="flex items-center gap-2">
-                                <span className="text-muted-foreground">Min:</span>
+                          <div className="pt-2 border-t space-y-3">
+                            <label className="text-caption font-medium text-muted-foreground">How many can they choose?</label>
+                            <div className="flex gap-6">
+                              <div>
+                                <p className="text-caption text-muted-foreground mb-1">At least</p>
                                 <Input
                                   type="number"
                                   value={question.constraints.minSelections || 1}
@@ -517,11 +528,11 @@ export function SubspaceFormBuilderDialog({
                                       constraints: { ...question.constraints, minSelections: parseInt(e.target.value) || 1 },
                                     })
                                   }
-                                  className="w-16 h-8"
+                                  className="w-20 h-8"
                                 />
-                              </label>
-                              <label className="flex items-center gap-2">
-                                <span className="text-muted-foreground">Max:</span>
+                              </div>
+                              <div>
+                                <p className="text-caption text-muted-foreground mb-1">At most</p>
                                 <Input
                                   type="number"
                                   value={question.constraints.maxSelections || 10}
@@ -530,41 +541,43 @@ export function SubspaceFormBuilderDialog({
                                       constraints: { ...question.constraints, maxSelections: parseInt(e.target.value) || 10 },
                                     })
                                   }
-                                  className="w-16 h-8"
+                                  className="w-20 h-8"
                                 />
-                              </label>
+                              </div>
                             </div>
-                            <p className="text-xs text-muted-foreground pl-2">Note: Configure options in the form builder later</p>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex gap-1 flex-shrink-0 pt-2">
+                      <div className="flex gap-1 flex-shrink-0 justify-end pt-3 border-t">
                         <Button
                           variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
+                          size="sm"
+                          className="gap-1 text-xs"
                           onClick={() => handleReorderQuestion(index, "up")}
                           disabled={index === 0}
                         >
-                          <ChevronUp className="w-4 h-4" />
+                          <ChevronUp className="w-3 h-3" />
+                          Move up
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
+                          size="sm"
+                          className="gap-1 text-xs"
                           onClick={() => handleReorderQuestion(index, "down")}
                           disabled={index === questions.length - 1}
                         >
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown className="w-3 h-3" />
+                          Move down
                         </Button>
                         <Button
                           variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
+                          size="sm"
+                          className="gap-1 text-xs text-destructive hover:text-destructive ml-auto"
                           onClick={() => handleDeleteQuestion(index)}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3 h-3" />
+                          Delete
                         </Button>
                       </div>
                     </div>
@@ -575,7 +588,13 @@ export function SubspaceFormBuilderDialog({
           </div>
         </div>
 
-        <DialogFooter className="px-6 py-4 border-t bg-muted/20">
+        <div className="px-6 py-3 border-t bg-blue-50 dark:bg-blue-500/10">
+          <p className="text-caption text-blue-900 dark:text-blue-200">
+            <strong>💡 Pro tip:</strong> Members will see these questions one at a time, grouped smartly by question type. Longer questions get their own page.
+          </p>
+        </div>
+
+        <DialogFooter className="px-6 py-4 border-t">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
