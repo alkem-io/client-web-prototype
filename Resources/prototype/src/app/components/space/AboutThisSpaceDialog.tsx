@@ -10,6 +10,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { ScrollArea } from "@/app/components/ui/scroll-area";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import {
   Avatar,
   AvatarFallback,
@@ -204,36 +205,26 @@ export function AboutThisSpaceDialog({
                 {/* Admin edit icons */}
                 {isAdmin && (
                   <div className="flex justify-end gap-1 px-4 pt-3">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 rounded-full hover:bg-white/10"
-                            style={{ color: "rgba(255,255,255,0.6)" }}
-                            onClick={() => goToSettings("about")}
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Edit space profile</TooltipContent>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 rounded-full hover:bg-white/10"
-                            style={{ color: "rgba(255,255,255,0.6)" }}
-                            onClick={() => goToSettings("community")}
-                          >
-                            <Users className="w-3.5 h-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Manage community</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <div className="flex gap-1">
+                      <IconButton
+                        variant="ghost"
+                        tooltipLabel="Edit space profile"
+                        className="h-7 w-7 rounded-full hover:bg-white/10"
+                        style={{ color: "rgba(255,255,255,0.6)" }}
+                        onClick={() => goToSettings("about")}
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </IconButton>
+                      <IconButton
+                        variant="ghost"
+                        tooltipLabel="Manage community"
+                        className="h-7 w-7 rounded-full hover:bg-white/10"
+                        style={{ color: "rgba(255,255,255,0.6)" }}
+                        onClick={() => goToSettings("community")}
+                      >
+                        <Users className="w-3.5 h-3.5" />
+                      </IconButton>
+                    </div>
                   </div>
                 )}
 
@@ -795,23 +786,16 @@ function ContextSection({
 
 function EditButton({ tooltip, onClick }: { tooltip: string; onClick?: () => void }) {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 shrink-0"
-            onClick={onClick}
-          >
-            <Pencil
-              className="w-3.5 h-3.5"
-              style={{ color: "var(--muted-foreground)" }}
-            />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>{tooltip}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <IconButton
+      variant="ghost"
+      tooltipLabel={tooltip}
+      className="h-7 w-7 shrink-0"
+      onClick={onClick}
+    >
+      <Pencil
+        className="w-3.5 h-3.5"
+        style={{ color: "var(--muted-foreground)" }}
+      />
+    </IconButton>
   );
 }

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Switch } from "@/app/components/ui/switch";
@@ -312,15 +313,15 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                           />
                           <Paperclip className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                         </div>
-                        <Button
+                        <IconButton
                           variant="ghost"
-                          size="icon"
+                          tooltipLabel="Delete"
                           className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
                           onClick={() => setLinkRows(linkRows.filter((_, j) => j !== i))}
                           disabled={linkRows.length === 1}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                        </IconButton>
                       </div>
                       <Input
                         value={row.description}
@@ -514,14 +515,14 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                         />
                       </div>
                       {references.length > 1 && (
-                        <Button
+                        <IconButton
                           variant="ghost"
-                          size="icon"
+                          tooltipLabel="Delete"
                           className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
                           onClick={() => setReferences(references.filter((_, i) => i !== index))}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                        </IconButton>
                       )}
                     </div>
                   </div>

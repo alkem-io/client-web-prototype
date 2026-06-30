@@ -15,6 +15,7 @@ import {
   Filter,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -165,22 +166,22 @@ export function SubspaceSettingsSubspaces() {
             </DropdownMenu>
 
             <div className="border rounded-md flex items-center h-9 p-0.5 bg-muted/20">
-              <Button
+              <IconButton
                 variant={viewMode === "grid" ? "secondary" : "ghost"}
-                size="icon"
+                tooltipLabel="Grid view"
                 className="h-8 w-8 rounded-sm"
                 onClick={() => setViewMode("grid")}
               >
                 <Grid className="w-4 h-4" />
-              </Button>
-              <Button
+              </IconButton>
+              <IconButton
                 variant={viewMode === "list" ? "secondary" : "ghost"}
-                size="icon"
+                tooltipLabel="List view"
                 className="h-8 w-8 rounded-sm"
                 onClick={() => setViewMode("list")}
               >
                 <ListIcon className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </div>
 
             <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
@@ -241,9 +242,9 @@ export function SubspaceSettingsSubspaces() {
                   <div className="absolute top-2 right-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="secondary" size="icon" className="h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm border border-black/5 hover:bg-background">
+                        <IconButton variant="secondary" tooltipLabel="More options" className="h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm border border-black/5 hover:bg-background">
                           <MoreVertical className="w-3.5 h-3.5" />
-                        </Button>
+                        </IconButton>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem><Eye className="w-4 h-4 mr-2" /> View</DropdownMenuItem>
@@ -344,9 +345,9 @@ export function SubspaceSettingsSubspaces() {
                 <div className="shrink-0">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8">
                         <MoreVertical className="w-4 h-4" />
-                      </Button>
+                      </IconButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem><Edit className="w-4 h-4 mr-2" /> Edit</DropdownMenuItem>

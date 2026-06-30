@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Badge } from "@/app/components/ui/badge";
 import {
   DropdownMenu,
@@ -141,31 +142,29 @@ export function Header({
       {/* ─── Right: icon row ─── */}
       <div className="flex items-center gap-1" style={frostedPill}>
         {/* Search icon button */}
-        <Button
+        <IconButton
           variant="ghost"
-          size="icon"
+          tooltipLabel="Search (⌘K)"
           className="text-muted-foreground"
           onClick={() => openSearch()}
-          title="Search (⌘K)"
         >
           <Search className="w-5 h-5" />
-        </Button>
+        </IconButton>
 
         {/* Messaging dropdown → full overlay on click */}
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button
+            <IconButton
               variant="ghost"
-              size="icon"
+              tooltipLabel="Messages"
               className="relative text-muted-foreground"
-              title="Messages"
             >
               <MessageSquare className="w-5 h-5" />
               <span
                 className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full border border-background"
                 style={{ background: "var(--primary)" }}
               />
-            </Button>
+            </IconButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80 p-0 overflow-hidden">
             <div
@@ -207,11 +206,10 @@ export function Header({
         {/* Notifications dropdown → full overlay on click */}
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button
+            <IconButton
               variant="ghost"
-              size="icon"
+              tooltipLabel="Notifications"
               className="relative text-muted-foreground"
-              title="Notifications"
             >
               <Bell className="w-5 h-5" />
               {PREVIEW_NOTIFICATIONS.filter(n => !n.read).length > 0 && (
@@ -220,7 +218,7 @@ export function Header({
                   style={{ background: "var(--destructive)" }}
                 />
               )}
-            </Button>
+            </IconButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80 md:w-96 p-0 overflow-hidden">
             <div
@@ -283,17 +281,16 @@ export function Header({
         </DropdownMenu>
 
         {/* Spaces Grid icon */}
-        <Button
+        <IconButton
           variant="ghost"
-          size="icon"
+          tooltipLabel="Spaces"
           className="text-muted-foreground"
-          title="Spaces"
           asChild
         >
           <Link to="/spaces">
             <LayoutGrid className="w-5 h-5" />
           </Link>
-        </Button>
+        </IconButton>
 
         <div
           className="h-6 w-px hidden md:block"

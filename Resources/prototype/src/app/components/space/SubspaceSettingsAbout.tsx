@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Separator } from "@/app/components/ui/separator";
@@ -389,9 +390,9 @@ export function SubspaceSettingsAbout({
                     className="h-9"
                   />
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => removeReference(i)} className="h-9 w-9 text-muted-foreground hover:text-destructive">
+                <IconButton variant="ghost" tooltipLabel="Delete" onClick={() => removeReference(i)} className="h-9 w-9 text-muted-foreground hover:text-destructive">
                   <X className="w-4 h-4" />
-                </Button>
+                </IconButton>
               </div>
             ))}
             {formData.references.length === 0 && (

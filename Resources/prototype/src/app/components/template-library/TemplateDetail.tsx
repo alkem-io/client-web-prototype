@@ -8,6 +8,7 @@ import {
   BookOpen, List, Shield, ExternalLink, Grid, Paperclip, Settings, PenTool, MoreHorizontal
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Badge } from "@/app/components/ui/badge";
 import { Separator } from "@/app/components/ui/separator";
 import { 
@@ -128,28 +129,14 @@ function TemplateHeader({ template, onBack, onApply, packSlug, templateId }: { t
           </Button>
           
           <div className="flex items-center gap-2 justify-center sm:justify-start">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-10 w-10">
-                    <Share2 className="w-4 h-4 text-muted-foreground" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Share</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <IconButton variant="outline" tooltipLabel="Share" className="h-10 w-10">
+              <Share2 className="w-4 h-4 text-muted-foreground" />
+            </IconButton>
 
             {templateId && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon" className="h-10 w-10" onClick={() => navigate(packSlug ? `/templates/packs/${packSlug}/settings/templates/${templateId}` : `/templates/${templateId}/settings`)}>
-                      <Settings className="w-4 h-4 text-muted-foreground" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Settings</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <IconButton variant="outline" tooltipLabel="Settings" className="h-10 w-10" onClick={() => navigate(packSlug ? `/templates/packs/${packSlug}/settings/templates/${templateId}` : `/templates/${templateId}/settings`)}>
+                <Settings className="w-4 h-4 text-muted-foreground" />
+              </IconButton>
             )}
           </div>
         </div>

@@ -16,6 +16,7 @@ import {
   BookText
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -195,9 +196,9 @@ function TemplateCard({ template, onAction }: {
         <div className="mt-auto flex items-center justify-end pt-2">
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8">
                 <MoreHorizontal className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onAction('preview', template.id)}>
@@ -337,9 +338,9 @@ export function SpaceSettingsTemplates() {
 
                  <DropdownMenu>
                    <DropdownMenuTrigger asChild>
-                     <Button size="icon" variant="outline" className="sm:hidden h-8 w-8">
+                     <IconButton tooltipLabel="Add" variant="outline" className="sm:hidden h-8 w-8">
                        <Plus className="w-4 h-4" />
-                     </Button>
+                     </IconButton>
                    </DropdownMenuTrigger>
                    <DropdownMenuContent align="end" className="w-56">
                      <DropdownMenuItem onClick={() => handleAction('create_new', section.id)}>

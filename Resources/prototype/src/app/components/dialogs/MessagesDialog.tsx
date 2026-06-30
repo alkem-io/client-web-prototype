@@ -1,4 +1,5 @@
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import {
   Dialog,
   DialogContent,
@@ -72,9 +73,9 @@ export function MessagesDialog({ open, onOpenChange }: MessagesDialogProps) {
           <div className="w-80 border-r flex flex-col bg-muted/10 hidden md:flex">
             <div className="p-4 border-b flex items-center justify-between">
               <DialogTitle className="text-subsection-title">Messages</DialogTitle>
-              <Button size="icon" variant="ghost" className="h-8 w-8">
+              <IconButton variant="ghost" tooltipLabel="Start conversation" className="h-8 w-8">
                 <Plus className="w-5 h-5" />
-              </Button>
+              </IconButton>
             </div>
             <div className="p-3">
               <div className="relative">
@@ -133,9 +134,9 @@ export function MessagesDialog({ open, onOpenChange }: MessagesDialogProps) {
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground"><Phone className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground"><Video className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground"><MoreVertical className="w-4 h-4" /></Button>
+                    <IconButton variant="ghost" tooltipLabel="Call" className="h-8 w-8 text-muted-foreground"><Phone className="w-4 h-4" /></IconButton>
+                    <IconButton variant="ghost" tooltipLabel="Video call" className="h-8 w-8 text-muted-foreground"><Video className="w-4 h-4" /></IconButton>
+                    <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground"><MoreVertical className="w-4 h-4" /></IconButton>
                   </div>
                 </div>
                 
@@ -159,18 +160,18 @@ export function MessagesDialog({ open, onOpenChange }: MessagesDialogProps) {
 
                 <div className="p-4 border-t mt-auto">
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="shrink-0 text-muted-foreground">
+                    <IconButton variant="ghost" tooltipLabel="Attach" className="shrink-0 text-muted-foreground">
                       <Plus className="w-5 h-5" />
-                    </Button>
+                    </IconButton>
                     <Input 
                       placeholder="Type a message..." 
                       className="flex-1" 
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
                     />
-                    <Button size="icon" className="shrink-0" disabled={!inputText}>
+                    <IconButton tooltipLabel="Send" className="shrink-0" disabled={!inputText}>
                       <Send className="w-4 h-4" />
-                    </Button>
+                    </IconButton>
                   </div>
                 </div>
               </>

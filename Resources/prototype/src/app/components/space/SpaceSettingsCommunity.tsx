@@ -20,6 +20,7 @@ import {
   ArrowUpDown
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -281,12 +282,12 @@ export function SpaceSettingsCommunity() {
                             </Button>
                           </>
                         )}
-                        <Button variant="ghost" size="icon" className="h-7 w-7" title="View">
+                        <IconButton variant="ghost" tooltipLabel="View" className="h-7 w-7">
                           <Eye className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" title="Delete" onClick={() => handleRemove(member.id)}>
+                        </IconButton>
+                        <IconButton variant="ghost" tooltipLabel="Delete" className="h-7 w-7 text-destructive" onClick={() => handleRemove(member.id)}>
                           <Trash2 className="w-3.5 h-3.5" />
-                        </Button>
+                        </IconButton>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -368,9 +369,9 @@ export function SpaceSettingsCommunity() {
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 p-0">
                               <MoreHorizontal className="w-4 h-4" />
-                            </Button>
+                            </IconButton>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem>View Profile</DropdownMenuItem>
@@ -473,9 +474,9 @@ export function SpaceSettingsCommunity() {
                   <div className="text-caption text-muted-foreground">{org.memberCount} members</div>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+              <IconButton variant="ghost" tooltipLabel="Remove" className="h-8 w-8 text-muted-foreground hover:text-destructive">
                 <X className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </div>
           ))}
           <Button variant="outline" size="sm" className="gap-2">
@@ -518,17 +519,17 @@ export function SpaceSettingsCommunity() {
                   <span className="text-body-emphasis hover:text-primary transition-colors">{vc.name}</span>
                 </Link>
               </VCHoverCard>
-              <Button
+              <IconButton
                 variant="ghost"
-                size="icon"
+                tooltipLabel="Delete"
                 className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                onClick={(e) => {
+                onClick={(e: any) => {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
               >
                 <Trash2 className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </div>
           ))}
           <Button variant="outline" size="sm" className="gap-2">

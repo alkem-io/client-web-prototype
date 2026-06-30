@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -95,19 +96,19 @@ export function DocumentDetailDialog({ open, onOpenChange, document, author }: D
                 <span className="text-white text-[8px] font-bold">SC</span>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => toast.success("Link copied")} className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
+            <IconButton variant="ghost" tooltipLabel="Share" onClick={() => toast.success("Link copied")} className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
               <Share2 className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
+            </IconButton>
+            <IconButton variant="ghost" tooltipLabel="Download" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
               <Download className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
+            </IconButton>
+            <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
               <MoreHorizontal className="w-4 h-4" />
-            </Button>
+            </IconButton>
             <div className="w-px h-5 bg-border mx-1" />
-            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
+            <IconButton variant="ghost" tooltipLabel="Close" onClick={() => onOpenChange(false)} className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
               <X className="w-5 h-5" />
-            </Button>
+            </IconButton>
           </div>
         </div>
 

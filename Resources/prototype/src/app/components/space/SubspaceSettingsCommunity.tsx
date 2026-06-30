@@ -24,6 +24,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -672,9 +673,9 @@ export function SubspaceSettingsCommunity() {
                     <div className="text-caption text-muted-foreground">{org.memberCount} members in subspace</div>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                <IconButton variant="ghost" tooltipLabel="Remove" className="text-muted-foreground hover:text-destructive">
                   <X className="w-4 h-4" />
-                </Button>
+                </IconButton>
               </div>
             ))}
           </div>
@@ -735,9 +736,9 @@ export function SubspaceSettingsCommunity() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="sm">Edit</Button>
-                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                  <IconButton variant="ghost" tooltipLabel="Delete" className="text-muted-foreground hover:text-destructive">
                     <Trash2 className="w-4 h-4" />
-                  </Button>
+                  </IconButton>
                 </div>
               </div>
             ))}

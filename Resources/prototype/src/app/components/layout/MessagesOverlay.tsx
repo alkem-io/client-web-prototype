@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useMessages } from "@/app/contexts/MessagesContext";
@@ -286,15 +287,9 @@ export function MessagesOverlay() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                          <Phone className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                          <Video className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
+                        <IconButton variant="ghost" tooltipLabel="Call" className="h-8 w-8 text-muted-foreground"><Phone className="w-4 h-4" /></IconButton>
+                        <IconButton variant="ghost" tooltipLabel="Video call" className="h-8 w-8 text-muted-foreground"><Video className="w-4 h-4" /></IconButton>
+                        <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground"><MoreVertical className="w-4 h-4" /></IconButton>
                       </div>
                     </div>
 
@@ -343,9 +338,7 @@ export function MessagesOverlay() {
                         background: "var(--card)",
                       }}
                     >
-                      <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-muted-foreground">
-                        <Paperclip className="w-4 h-4" />
-                      </Button>
+                      <IconButton variant="ghost" tooltipLabel="Attach file" className="h-9 w-9 shrink-0 text-muted-foreground"><Paperclip className="w-4 h-4" /></IconButton>
                       <input
                         type="text"
                         placeholder="Type a message..."
@@ -363,13 +356,13 @@ export function MessagesOverlay() {
                           }
                         }}
                       />
-                      <Button
-                        size="icon"
+                      <IconButton
+                        tooltipLabel="Send"
                         className="h-9 w-9 shrink-0"
                         disabled={!messageInput.trim()}
                       >
                         <Send className="w-4 h-4" />
-                      </Button>
+                      </IconButton>
                     </div>
                   </>
                 ) : (

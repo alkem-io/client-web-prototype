@@ -7,6 +7,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { 
   Search, 
   X, 
@@ -402,14 +403,14 @@ export function ExploreSpacesDialog({ open, onOpenChange }: ExploreSpacesDialogP
                                  <Button size="sm" variant="outline" className="h-9 px-4 hidden sm:flex">
                                     View Space
                                  </Button>
-                                 <Button 
-                                    size="icon" 
-                                    variant="ghost" 
+                                 <IconButton
+                                    tooltipLabel="Expand"
+                                    variant="ghost"
                                     className="h-9 w-9 text-muted-foreground bg-muted/30 hover:bg-muted"
                                     onClick={(e) => toggleExpand(space.id, e)}
                                  >
                                     <ChevronDown className={cn("w-5 h-5 transition-transform duration-300", isExpanded && "rotate-180")} />
-                                 </Button>
+                                 </IconButton>
                               </div>
                            </div>
                         </div>

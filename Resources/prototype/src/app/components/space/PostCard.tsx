@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
 import { cn } from "@/lib/utils";
 import { MessageSquare, MoreHorizontal, LayoutGrid, FileText, Presentation, Maximize2, FileSpreadsheet, FileImage } from "lucide-react";
@@ -132,21 +133,20 @@ export function PostCard({ post }: { post: PostProps }) {
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <IconButton
+            variant="ghost"
+            tooltipLabel="Fullscreen"
             className="h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={(e) => {
               e.stopPropagation();
               post.onClick?.();
             }}
-            title="Fullscreen"
           >
             <Maximize2 className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+          </IconButton>
+          <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground">
             <MoreHorizontal className="w-4 h-4" />
-          </Button>
+          </IconButton>
         </div>
       </CardHeader>
       

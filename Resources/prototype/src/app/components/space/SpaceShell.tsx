@@ -9,7 +9,9 @@ import { AboutThisSpaceDialog } from "./AboutThisSpaceDialog";
 import { WelcomeSpaceDialog } from "@/app/components/dialogs/WelcomeSpaceDialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/components/ui/sheet";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 /**
@@ -99,24 +101,36 @@ export function SpaceShell() {
   // Compact action icons shown in the tab bar
   const actionIcons = (
     <div className="flex items-center gap-0.5">
-      {[
-        { icon: Activity, title: "Recent Activity" },
-        { icon: Video, title: "Video Call" },
-        { icon: Share2, title: "Share" },
-      ].map(({ icon: Icon, title, onClick }) => (
-        <button
-          key={title}
-          onClick={onClick}
-          className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-          style={{
-            background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-            color: "var(--muted-foreground)",
-          }}
-          title={title}
-        >
-          <Icon className="w-3.5 h-3.5" />
-        </button>
-      ))}
+      <IconButton
+        tooltipLabel="Recent Activity"
+        className="w-7 h-7"
+        style={{
+          background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+          color: "var(--muted-foreground)",
+        }}
+      >
+        <Activity className="w-3.5 h-3.5" />
+      </IconButton>
+      <IconButton
+        tooltipLabel="Video Call"
+        className="w-7 h-7"
+        style={{
+          background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+          color: "var(--muted-foreground)",
+        }}
+      >
+        <Video className="w-3.5 h-3.5" />
+      </IconButton>
+      <IconButton
+        tooltipLabel="Share"
+        className="w-7 h-7"
+        style={{
+          background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+          color: "var(--muted-foreground)",
+        }}
+      >
+        <Share2 className="w-3.5 h-3.5" />
+      </IconButton>
       {/* Calendar with upcoming events chip */}
       <button
         onClick={() => setEventsOpen(true)}
@@ -132,18 +146,19 @@ export function SpaceShell() {
           3 this week
         </span>
       </button>
-      <Link to={`/space/${slug}/settings`}>
-        <button
-          className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-          style={{
-            background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-            color: "var(--muted-foreground)",
-          }}
-          title="Settings"
-        >
+      <IconButton
+        tooltipLabel="Settings"
+        className="w-7 h-7"
+        asChild
+        style={{
+          background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+          color: "var(--muted-foreground)",
+        }}
+      >
+        <Link to={`/space/${slug}/settings`}>
           <Settings className="w-3.5 h-3.5" />
-        </button>
-      </Link>
+        </Link>
+      </IconButton>
     </div>
   );
 
@@ -770,82 +785,104 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
       <div className="hidden lg:flex flex-col items-center gap-0 shrink-0 sticky top-[8.5rem] self-start">
         {/* Expand sidebar toggle */}
         {onExpand && (
-          <button
-            onClick={onExpand}
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted mb-1"
-            title="Expand sidebar"
-          >
-            <PanelLeftOpen className="w-4 h-4" />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onExpand}
+                className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted mb-1"
+              >
+                <PanelLeftOpen className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Expand sidebar</TooltipContent>
+          </Tooltip>
         )}
 
         {/* Search */}
         {features.search && (
-        <button
-          onClick={() => togglePopover("search")}
-          className={cn(
-            "w-9 h-9 rounded-lg flex items-center justify-center transition-colors relative",
-            activePopover === "search"
-              ? "bg-primary/10 text-primary border border-primary/30"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted"
-          )}
-          title="Search"
-        >
-          <Search className="w-4 h-4" />
-        </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => togglePopover("search")}
+                className={cn(
+                  "w-9 h-9 rounded-lg flex items-center justify-center transition-colors relative",
+                  activePopover === "search"
+                    ? "bg-primary/10 text-primary border border-primary/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Search</TooltipContent>
+          </Tooltip>
         )}
 
         {/* Tags/Filter */}
         {features.tags && (
-        <button
-          onClick={() => togglePopover("tags")}
-          className={cn(
-            "w-9 h-9 rounded-lg flex items-center justify-center transition-colors relative",
-            activePopover === "tags"
-              ? "bg-primary/10 text-primary border border-primary/30"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted"
-          )}
-          title="Filter by Tags"
-        >
-          <Tag className="w-4 h-4" />
-          {activeTags.length > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
-              {activeTags.length}
-            </span>
-          )}
-        </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => togglePopover("tags")}
+                className={cn(
+                  "w-9 h-9 rounded-lg flex items-center justify-center transition-colors relative",
+                  activePopover === "tags"
+                    ? "bg-primary/10 text-primary border border-primary/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <div className="relative">
+                  <Tag className="w-4 h-4" />
+                  {activeTags.length > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
+                      {activeTags.length}
+                    </span>
+                  )}
+                </div>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Filter by Tags</TooltipContent>
+          </Tooltip>
         )}
 
         {/* Post/Contribute */}
         {(features.post || features.addUser || features.createSubspace) && (
-        <button
-          onClick={() => togglePopover("post")}
-          className={cn(
-            "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
-            activePopover === "post"
-              ? "bg-primary/10 text-primary border border-primary/30"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted"
-          )}
-          title="Contribute"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => togglePopover("post")}
+                className={cn(
+                  "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
+                  activePopover === "post"
+                    ? "bg-primary/10 text-primary border border-primary/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Contribute</TooltipContent>
+          </Tooltip>
         )}
 
         {/* Subspaces */}
         {features.subspaceLinks && (
-        <button
-          onClick={() => togglePopover("subspaces")}
-          className={cn(
-            "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
-            activePopover === "subspaces"
-              ? "bg-primary/10 text-primary border border-primary/30"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted"
-          )}
-          title="Subspaces"
-        >
-          <Layers className="w-4 h-4" />
-        </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => togglePopover("subspaces")}
+                className={cn(
+                  "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
+                  activePopover === "subspaces"
+                    ? "bg-primary/10 text-primary border border-primary/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <Layers className="w-4 h-4" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Subspaces</TooltipContent>
+          </Tooltip>
         )}
       </div>
 
@@ -854,12 +891,17 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
         <div className="hidden lg:block absolute left-10 top-0 w-64 z-20">
           <div className="relative rounded-xl border border-border bg-card shadow-lg p-4 animate-in slide-in-from-left-2 duration-200">
             {/* Close button */}
-            <button
-              onClick={() => setActivePopover(null)}
-              className="absolute top-2 right-2 w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setActivePopover(null)}
+                  className="absolute top-2 right-2 w-6 h-6 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Close</TooltipContent>
+            </Tooltip>
 
             {/* Search popover */}
             {activePopover === "search" && (

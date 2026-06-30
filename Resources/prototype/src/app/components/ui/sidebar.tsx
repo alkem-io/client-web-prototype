@@ -8,6 +8,7 @@ import { PanelLeftIcon } from "lucide-react";
 import { useIsMobile } from "./use-mobile";
 import { cn } from "./utils";
 import { Button } from "./button";
+import { IconButton } from "./icon-button";
 import { Input } from "./input";
 import { Separator } from "./separator";
 import {
@@ -261,11 +262,11 @@ function SidebarTrigger({
   const { toggleSidebar } = useSidebar();
 
   return (
-    <Button
+    <IconButton
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
-      size="icon"
+      tooltipLabel="Toggle Sidebar"
       className={cn("size-7", className)}
       onClick={(event) => {
         onClick?.(event);
@@ -275,7 +276,7 @@ function SidebarTrigger({
     >
       <PanelLeftIcon />
       <span className="sr-only">Toggle Sidebar</span>
-    </Button>
+    </IconButton>
   );
 }
 

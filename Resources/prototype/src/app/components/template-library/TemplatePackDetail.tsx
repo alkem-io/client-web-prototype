@@ -4,6 +4,7 @@ import {
   Settings, Plus, Shield, FileText
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Badge } from "@/app/components/ui/badge";
 import { Separator } from "@/app/components/ui/separator";
 import { 
@@ -321,13 +322,13 @@ export function TemplatePackDetail() {
               </div>
               
               <div className="flex items-center gap-3 md:self-center shrink-0 w-full md:w-auto">
-                  <Button variant="outline" size="icon" className="shrink-0" title="Pack Settings" onClick={() => navigate(`/templates/packs/${packSlug}/settings`)}>
+                  <IconButton variant="outline" tooltipLabel="Settings" className="shrink-0" onClick={() => navigate(`/templates/packs/${packSlug}/settings`)}>
                       <Settings className="w-4 h-4" />
-                  </Button>
+                  </IconButton>
 
-                  <Button variant="outline" size="icon" className="shrink-0" title="Share Pack">
+                  <IconButton variant="outline" tooltipLabel="Share" className="shrink-0">
                       <Share2 className="w-4 h-4" />
-                  </Button>
+                  </IconButton>
                   
                   <Button className="flex-1 md:flex-none" onClick={() => openApplyDialog('pack', PACK_DATA.name)}>
                       <Layers className="w-4 h-4 mr-2" />

@@ -12,6 +12,7 @@ import {
   Link
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Badge } from "@/app/components/ui/badge";
@@ -50,19 +51,18 @@ export function SpaceSettingsAccount() {
               readOnly
               className="bg-muted/20 font-mono text-body"
             />
-            <Button
+            <IconButton
               variant="outline"
-              size="icon"
+              tooltipLabel="Copy URL"
               onClick={handleCopyUrl}
               className="shrink-0"
-              title="Copy URL"
             >
               {copied ? (
                 <Check className="h-4 w-4 text-success" />
               ) : (
                 <Copy className="h-4 w-4" />
               )}
-            </Button>
+            </IconButton>
           </div>
           <p className="text-caption text-muted-foreground">
             Contact Alkemio to change this URL.

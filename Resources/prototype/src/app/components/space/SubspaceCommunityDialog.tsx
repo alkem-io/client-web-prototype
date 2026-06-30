@@ -7,6 +7,7 @@ import {
   DialogDescription,
 } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
@@ -258,27 +259,27 @@ export function SubspaceCommunityDialog({ open, onOpenChange }: SubspaceCommunit
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center mt-4">
-              <Button
+              <IconButton
                 variant="ghost"
-                size="icon"
+                tooltipLabel="Previous page"
                 className="h-8 w-8 text-muted-foreground"
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
               >
                 <ChevronLeft className="w-4 h-4" />
-              </Button>
+              </IconButton>
               <span className="mx-2 text-body text-muted-foreground">
                 Page {safeCurrentPage} of {totalPages}
               </span>
-              <Button
+              <IconButton
                 variant="ghost"
-                size="icon"
+                tooltipLabel="Next page"
                 className="h-8 w-8 text-muted-foreground"
                 onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
               >
                 <ChevronRight className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </div>
           )}
 
@@ -379,9 +380,9 @@ function UserCard({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+              <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground">
                 <MoreHorizontal className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>View Profile</DropdownMenuItem>

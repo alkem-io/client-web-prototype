@@ -9,6 +9,7 @@ import {
   DialogFooter,
 } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import {
@@ -436,35 +437,32 @@ export function SubspaceFormBuilderDialog({
                         placeholder="Write your question..."
                         className="flex-1 text-xl font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 p-0 h-auto leading-relaxed"
                       />
-                      <Button
+                      <IconButton
                         variant="ghost"
-                        size="icon"
+                        tooltipLabel="Move up"
                         className="h-7 w-7"
                         onClick={() => handleReorderQuestion(index, "up")}
                         disabled={index === 0}
-                        title="Move up"
                       >
                         <ChevronUp className="w-4 h-4" />
-                      </Button>
-                      <Button
+                      </IconButton>
+                      <IconButton
                         variant="ghost"
-                        size="icon"
+                        tooltipLabel="Move down"
                         className="h-7 w-7"
                         onClick={() => handleReorderQuestion(index, "down")}
                         disabled={index === questions.length - 1}
-                        title="Move down"
                       >
                         <ChevronDown className="w-4 h-4" />
-                      </Button>
-                      <Button
+                      </IconButton>
+                      <IconButton
                         variant="ghost"
-                        size="icon"
+                        tooltipLabel="Delete"
                         className="h-7 w-7 text-destructive hover:text-destructive"
                         onClick={() => handleDeleteQuestion(index)}
-                        title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </Button>
+                      </IconButton>
                     </div>
 
                     {/* Settings - horizontal row */}

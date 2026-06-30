@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
 import { Separator } from "@/app/components/ui/separator";
@@ -56,14 +57,14 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
         {/* 1. Header Bar (Sticky, Light) */}
         <div className="h-16 shrink-0 bg-background text-foreground flex items-center justify-between px-6 shadow-sm border-b border-border z-20">
           <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <IconButton
+              variant="ghost"
+              tooltipLabel="Close"
               onClick={() => onOpenChange(false)}
               className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
             >
               <X className="w-5 h-5" />
-            </Button>
+            </IconButton>
             <div className="flex flex-col">
               <DialogTitle className="text-subheader font-semibold text-foreground line-clamp-1">
                 {post.title}
@@ -75,21 +76,21 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handleShare} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full">
+            <IconButton variant="ghost" tooltipLabel="Share" onClick={handleShare} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full">
               <Share2 className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full">
+            </IconButton>
+            <IconButton variant="ghost" tooltipLabel="More options" className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full">
               <MoreHorizontal className="w-5 h-5" />
-            </Button>
+            </IconButton>
             <div className="w-px h-6 bg-border mx-2" />
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <IconButton
+              variant="ghost"
+              tooltipLabel="Close"
               onClick={() => onOpenChange(false)}
               className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
             >
               <X className="w-5 h-5" />
-            </Button>
+            </IconButton>
           </div>
         </div>
 
@@ -412,12 +413,12 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
                   onChange={(e) => setCommentText(e.target.value)}
                 />
                 <div className="absolute right-2 bottom-2 flex items-center gap-1">
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-primary">
+                  <IconButton variant="ghost" tooltipLabel="Emoji" className="h-7 w-7 text-muted-foreground hover:text-primary">
                     <Smile className="w-4 h-4" />
-                  </Button>
-                  <Button size="icon" className="h-7 w-7 rounded-md" disabled={!commentText.trim()}>
+                  </IconButton>
+                  <IconButton tooltipLabel="Send" className="h-7 w-7 rounded-md" disabled={!commentText.trim()}>
                     <Send className="w-3 h-3" />
-                  </Button>
+                  </IconButton>
                 </div>
              </div>
           </div>

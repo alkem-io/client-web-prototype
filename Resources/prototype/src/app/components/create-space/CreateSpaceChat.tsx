@@ -6,6 +6,7 @@ import {
   BookOpen, ShieldCheck, Image as ImageIcon
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card";
 import { Badge } from "@/app/components/ui/badge";
@@ -390,7 +391,7 @@ const SummaryView = ({ config, onBack, onCreate }: { config: SpaceConfig, onBack
                         {config.subspaces.map((sub, i) => (
                            <div key={i} className="flex items-center justify-between p-3 border border-border rounded-lg bg-card">
                               <span className="text-body-emphasis">{sub.name}</span>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground"><X className="w-3 h-3" /></Button>
+                              <IconButton variant="ghost" tooltipLabel="Remove" className="h-6 w-6 text-muted-foreground"><X className="w-3 h-3" /></IconButton>
                            </div>
                         ))}
                      </div>
@@ -727,14 +728,14 @@ export function CreateSpaceChat({ onClose }: { onClose: () => void }) {
                      placeholder="Type your answer..."
                      className="pr-12 py-6 rounded-full shadow-sm bg-muted/20 border-border focus:bg-background transition-colors text-subheader font-normal"
                   />
-                  <Button 
-                     size="icon" 
+                  <IconButton
+                     tooltipLabel="Send"
                      onClick={() => handleSend()}
                      disabled={!inputValue.trim()}
                      className="absolute right-1.5 rounded-full w-9 h-9"
                   >
                      <Send className="w-4 h-4" />
-                  </Button>
+                  </IconButton>
                </div>
             </div>
          </div>

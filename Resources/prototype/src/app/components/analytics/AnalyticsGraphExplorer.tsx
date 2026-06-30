@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { 
-  Search, RefreshCw, LayoutGrid, Users, 
-  ChevronRight, Share2, ExternalLink, User, Building, 
+import {
+  Search, RefreshCw, LayoutGrid, Users,
+  ChevronRight, Share2, ExternalLink, User, Building,
   X, Plus, Globe, Layers, Network, ArrowUpRight, Link2, ArrowLeft
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import { Switch } from "@/app/components/ui/switch";
@@ -661,14 +662,15 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
             <div className="flex flex-col h-full">
               {/* Drawer Header */}
               <div className="relative" style={{ padding: '16px 16px 14px', borderBottom: '1px solid var(--border)' }}>
-                <Button 
-                  variant="ghost" size="icon" 
-                  className="absolute top-2 right-2" 
-                  style={{ width: 28, height: 28 }} 
+                <IconButton
+                  variant="ghost"
+                  tooltipLabel="Close"
+                  className="absolute top-2 right-2"
+                  style={{ width: 28, height: 28 }}
                   onClick={() => setSelectedNode(null)}
                 >
                   <X style={{ width: 14, height: 14 }} />
-                </Button>
+                </IconButton>
 
                 <div className="flex items-start gap-3">
                   <div 

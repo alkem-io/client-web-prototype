@@ -11,6 +11,7 @@ import {
   MailOpen,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Badge } from "@/app/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
@@ -144,9 +145,9 @@ export function NotificationsPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
+        <IconButton
           variant="ghost"
-          size="icon"
+          tooltipLabel="Notifications"
           className="relative text-muted-foreground"
         >
           <Bell className="w-5 h-5" />
@@ -156,7 +157,7 @@ export function NotificationsPopover() {
               style={{ background: "var(--destructive)" }}
             />
           )}
-        </Button>
+        </IconButton>
       </PopoverTrigger>
       <PopoverContent
         align="end"

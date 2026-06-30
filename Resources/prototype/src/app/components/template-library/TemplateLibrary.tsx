@@ -5,6 +5,7 @@ import {
   ChevronLeft, MoreHorizontal, Home, Image as ImageIcon, Shield
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import { Separator } from "@/app/components/ui/separator";
@@ -265,29 +266,29 @@ function Pagination({
 
   return (
     <div className="flex items-center justify-center gap-2 py-4">
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="w-8 h-8" 
+      <IconButton
+        variant="outline"
+        tooltipLabel="Previous"
+        className="w-8 h-8"
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
       >
         <ChevronLeft className="w-4 h-4" />
-      </Button>
-      
+      </IconButton>
+
       <div className="text-body-emphasis text-muted-foreground px-2">
         Page {currentPage} of {totalPages}
       </div>
 
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="w-8 h-8" 
+      <IconButton
+        variant="outline"
+        tooltipLabel="Next"
+        className="w-8 h-8"
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
       >
         <ChevronRight className="w-4 h-4" />
-      </Button>
+      </IconButton>
     </div>
   );
 }

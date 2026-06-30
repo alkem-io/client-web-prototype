@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Search, MoreHorizontal, UserPlus, Shield, User, CheckCircle2, Building2, ExternalLink, Users, ChevronLeft, ChevronRight, Bot } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
@@ -322,27 +323,27 @@ export function SpaceMembers() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center mt-4">
-          <Button
+          <IconButton
             variant="ghost"
-            size="icon"
+            tooltipLabel="Previous"
             className="h-8 w-8 text-muted-foreground"
             onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
           >
             <ChevronLeft className="w-4 h-4" />
-          </Button>
+          </IconButton>
           <span className="mx-2 text-body text-muted-foreground">
             Page {safeCurrentPage} of {totalPages}
           </span>
-          <Button
+          <IconButton
             variant="ghost"
-            size="icon"
+            tooltipLabel="Next"
             className="h-8 w-8 text-muted-foreground"
             onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
           >
             <ChevronRight className="w-4 h-4" />
-          </Button>
+          </IconButton>
         </div>
       )}
 
@@ -461,9 +462,9 @@ function UserCard({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+              <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground">
                 <MoreHorizontal className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>View Profile</DropdownMenuItem>
@@ -684,9 +685,9 @@ function VCCard({ vc }: { vc: VCEntry }) {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+              <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground">
                 <MoreHorizontal className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>View Profile</DropdownMenuItem>

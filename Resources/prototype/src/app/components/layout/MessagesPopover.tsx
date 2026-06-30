@@ -11,6 +11,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import {
   Popover,
@@ -102,18 +103,17 @@ export function MessagesPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
+        <IconButton
           variant="ghost"
-          size="icon"
+          tooltipLabel="Messages"
           className="relative text-muted-foreground"
-          title="Messages"
         >
           <MessageSquare className="w-5 h-5" />
           <span
             className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full border border-background"
             style={{ background: "var(--primary)" }}
           />
-        </Button>
+        </IconButton>
       </PopoverTrigger>
       <PopoverContent
         align="end"
@@ -133,9 +133,9 @@ export function MessagesPopover() {
               }}
             >
               <h3 className="text-card-title">Messages</h3>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
+              <IconButton variant="ghost" tooltipLabel="Start conversation" className="h-7 w-7">
                 <Plus className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </div>
 
             {/* Search */}
@@ -212,15 +212,15 @@ export function MessagesPopover() {
                 <span className="text-card-title">{contact?.name}</span>
               </div>
               <div className="flex items-center gap-0.5">
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground">
+                <IconButton variant="ghost" tooltipLabel="Call" className="h-7 w-7 text-muted-foreground">
                   <Phone className="w-3.5 h-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground">
+                </IconButton>
+                <IconButton variant="ghost" tooltipLabel="Video call" className="h-7 w-7 text-muted-foreground">
                   <Video className="w-3.5 h-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground">
+                </IconButton>
+                <IconButton variant="ghost" tooltipLabel="More options" className="h-7 w-7 text-muted-foreground">
                   <MoreVertical className="w-3.5 h-3.5" />
-                </Button>
+                </IconButton>
               </div>
             </div>
 
@@ -268,9 +268,9 @@ export function MessagesPopover() {
                 background: "color-mix(in srgb, var(--muted) 30%, transparent)",
               }}
             >
-              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 text-muted-foreground">
+              <IconButton variant="ghost" tooltipLabel="Attach file" className="h-8 w-8 shrink-0 text-muted-foreground">
                 <Paperclip className="w-4 h-4" />
-              </Button>
+              </IconButton>
               <input
                 type="text"
                 placeholder="Type a message..."
@@ -282,13 +282,13 @@ export function MessagesPopover() {
                   color: "var(--foreground)",
                 }}
               />
-              <Button
-                size="icon"
+              <IconButton
+                tooltipLabel="Send"
                 className="h-8 w-8 shrink-0"
                 disabled={!messageInput.trim()}
               >
                 <Send className="w-4 h-4" />
-              </Button>
+              </IconButton>
             </div>
           </div>
         )}

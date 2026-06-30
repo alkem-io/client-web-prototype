@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { X, Plus, Type, MapPin, Image, FileText, Tag, Link2, Info, Check, Upload } from "lucide-react";
@@ -295,22 +296,21 @@ export function SpaceSettingsAbout() {
                     className="h-9"
                   />
                 </div>
-                <Button
+                <IconButton
                   variant="ghost"
-                  size="icon"
-                  title="Upload file"
+                  tooltipLabel="Upload"
                   className="h-9 w-9 text-muted-foreground hover:text-foreground"
                 >
                   <Upload className="w-4 h-4" />
-                </Button>
-                <Button
+                </IconButton>
+                <IconButton
                   variant="ghost"
-                  size="icon"
+                  tooltipLabel="Delete"
                   onClick={() => removeReference(index)}
                   className="h-9 w-9 text-muted-foreground hover:text-destructive"
                 >
                   <X className="w-4 h-4" />
-                </Button>
+                </IconButton>
               </div>
             ))}
             {formData.references.length === 0 && (

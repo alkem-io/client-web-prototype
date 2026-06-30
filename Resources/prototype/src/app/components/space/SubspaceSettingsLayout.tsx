@@ -24,6 +24,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import {
@@ -274,14 +275,14 @@ const PhasePostCard = ({
       </span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
+          <IconButton
             variant="ghost"
-            size="icon"
+            tooltipLabel="More options"
             className="w-6 h-6 shrink-0 opacity-0 group-hover/post:opacity-100 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
             <MoreHorizontal className="w-3.5 h-3.5" />
-          </Button>
+          </IconButton>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuSub>

@@ -1,5 +1,6 @@
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Badge } from "@/app/components/ui/badge";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -95,9 +96,9 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
           </div>
           
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
+            <IconButton variant="ghost" tooltipLabel="Close" onClick={() => onOpenChange(false)} className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
               <X className="w-5 h-5" />
-            </Button>
+            </IconButton>
           </div>
         </div>
 
@@ -192,20 +193,20 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
                 <div className="flex items-center gap-1">
                     {isAuthor && (
                         <>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary rounded-full">
+                        <IconButton variant="ghost" tooltipLabel="Edit" className="h-8 w-8 text-muted-foreground hover:text-primary rounded-full">
                             <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={handleDelete} className="h-8 w-8 text-muted-foreground hover:text-destructive rounded-full">
-                            <Trash2 className="w-4 h-4" />
-                        </Button>
+                        </IconButton>
+                        <IconButton variant="ghost" tooltipLabel="Delete" onClick={handleDelete} className="h-8 w-8 text-muted-foreground hover:text-destructive rounded-full">
+                        <Trash2 className="w-4 h-4" />
+                        </IconButton>
                         </>
                     )}
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
-                        <Share2 className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
-                        <MoreHorizontal className="w-4 h-4" />
-                    </Button>
+                    <IconButton variant="ghost" tooltipLabel="Share" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
+                    <Share2 className="w-4 h-4" />
+                </IconButton>
+                    <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground hover:text-foreground rounded-full">
+                    <MoreHorizontal className="w-4 h-4" />
+                </IconButton>
                 </div>
               </div>
 
@@ -294,16 +295,16 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
                 />
                 <div className="flex items-center justify-between px-2 pb-2">
                    <div className="flex items-center gap-1">
-                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-foreground">
-                        <Smile className="w-4 h-4" />
-                      </Button>
-                      <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-foreground">
-                        <AtSign className="w-4 h-4" />
-                      </Button>
+                      <IconButton variant="ghost" tooltipLabel="Emoji" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                      <Smile className="w-4 h-4" />
+                    </IconButton>
+                      <IconButton variant="ghost" tooltipLabel="Mention" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                      <AtSign className="w-4 h-4" />
+                    </IconButton>
                    </div>
-                   <Button size="icon" className="h-8 w-8 rounded-lg" disabled={!commentText.trim()}>
+                   <IconButton tooltipLabel="Send" className="h-8 w-8 rounded-lg" disabled={!commentText.trim()}>
                      <Send className="w-4 h-4" />
-                   </Button>
+                   </IconButton>
                 </div>
              </div>
           </div>

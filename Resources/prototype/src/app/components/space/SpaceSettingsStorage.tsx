@@ -12,6 +12,7 @@ import {
   Database,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import {
   Table,
   TableBody,
@@ -325,24 +326,22 @@ export function SpaceSettingsStorage() {
                     <TableCell className="text-right">
                       {!isFolder && (
                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
+                          <IconButton
                             variant="ghost"
-                            size="icon"
+                            tooltipLabel="Open"
                             className="w-7 h-7"
-                            title="Open in new tab"
                             onClick={() => window.open(node.url, "_blank")}
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
-                          </Button>
-                          <Button
+                          </IconButton>
+                          <IconButton
                             variant="ghost"
-                            size="icon"
+                            tooltipLabel="Delete"
                             className="w-7 h-7 text-destructive hover:text-destructive"
-                            title="Delete"
                             onClick={() => setPendingDelete(node)}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
+                          </IconButton>
                         </div>
                       )}
                     </TableCell>

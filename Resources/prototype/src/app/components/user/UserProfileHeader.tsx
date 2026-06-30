@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Button } from "@/app/components/ui/button";
+import { IconButton } from "@/app/components/ui/icon-button";
 import { Mail, MapPin, Settings } from "lucide-react";
 
 interface UserProfileHeaderProps {
@@ -47,9 +48,9 @@ export function UserProfileHeader({ user }: UserProfileHeaderProps) {
                 </Button>
                 {user.isOwnProfile && (
                   <Link to={`/user/${userSlug}/settings/account`}>
-                    <Button variant="outline" size="icon" className="shadow-sm">
+                    <IconButton variant="outline" tooltipLabel="Settings" className="shadow-sm">
                       <Settings className="w-4 h-4" />
-                    </Button>
+                    </IconButton>
                   </Link>
                 )}
               </div>
