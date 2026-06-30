@@ -220,7 +220,7 @@ export function SpaceFeed() {
     },
     {
       id: "6",
-      type: "collection",
+      type: "document",
       tags: ["Updates", "Ideas"],
       author: {
         name: "Elena Rodriguez",
