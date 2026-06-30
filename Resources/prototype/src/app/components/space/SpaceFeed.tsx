@@ -147,6 +147,15 @@ export function SpaceFeed() {
             { title: "Park Lighting", imageUrl: wb2, author: "Emily Davis" }
         ]
       },
+      enabledResponseTypes: ["whiteboards"],
+      responses: {
+        whiteboards: [
+          { id: "w1", title: "Public Library Solar Roof", author: "Sarah Chen", type: "whiteboards", imageUrl: wb1 },
+          { id: "w2", title: "Parking Lot Canopies", author: "David Miller", type: "whiteboards", imageUrl: wb2 },
+          { id: "w3", title: "School Microgrids", author: "Elena Rodriguez", type: "whiteboards", imageUrl: wb3 },
+          { id: "w4", title: "Bus Stop Solar Stations", author: "Marc Johnson", type: "whiteboards", imageUrl: wb4 },
+        ]
+      },
       stats: { comments: 8 },
       commentTexts: ["Love the parking lot canopy concept!", "We should consider wind load requirements for the school microgrids.", "The bus stop stations could double as EV chargers.", "What's the estimated ROI on the library roof?", "Can we integrate battery storage into these designs?", "The town hall retrofit should be our flagship project.", "Great sketches David — very detailed.", "Let's schedule a site visit for the top 3 locations."]
     },
@@ -240,8 +249,40 @@ export function SpaceFeed() {
           { title: "2030 Policy Framework", type: "pdf" }
         ]
       },
+      enabledResponseTypes: ["links-files"],
+      responses: {
+        "links-files": [
+          { id: "lf1", title: "Burlington, VT Case Study", author: "Sarah Chen", type: "links-files" },
+          { id: "lf2", title: "Aspen, CO Transition Plan", author: "David Miller", type: "links-files" },
+          { id: "lf3", title: "Copenhagen District Heating", author: "Marc Johnson", type: "links-files" },
+        ]
+      },
       stats: { comments: 12 },
       commentTexts: ["The Burlington case study is incredibly relevant.", "Aspen's approach to community buy-in is worth studying.", "Grid integration analysis needs peer review.", "Can we add the Copenhagen model?", "The 2030 framework should reference EU directives.", "Essential reading — thanks for compiling this.", "I'd add the Freiburg solar settlement case.", "The policy docs section needs updating.", "Great collection for onboarding new members.", "Should we create a summary document?", "The Aspen plan has some transferable KPIs.", "Let's discuss these at the next strategy meeting."]
+    },
+    {
+      id: "7",
+      type: "text",
+      tags: ["Updates", "Community"],
+      author: {
+        name: "John Smith",
+        role: "Coordinator",
+        avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "San Francisco, US",
+        skills: ["Facilitation", "Community Building", "Project Coordination"],
+      },
+      title: "Community Stories: Your Transition Journey",
+      snippet: "Share your personal story about transitioning to renewable energy or sustainable practices. How has this journey changed your perspective? What challenges and victories have you experienced? Help inspire others by sharing your experience.",
+      timestamp: "2 days ago",
+      enabledResponseTypes: ["posts"],
+      responses: {
+        posts: [
+          { id: "p1", title: "My Family's Solar Installation Journey", author: "Maria Garcia", type: "posts" },
+          { id: "p2", title: "Building Our First Electric Vehicle Charging Station", author: "Thomas Mueller", type: "posts" },
+        ]
+      },
+      stats: { comments: 15 },
+      commentTexts: ["Love these real-world stories!", "More of this kind of content please!", "This is really inspiring", "Can't wait to hear more transitions"]
     }
   ];
 

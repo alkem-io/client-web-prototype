@@ -9,6 +9,15 @@ import { MessageSquare, MoreHorizontal, LayoutGrid, FileText, Presentation, Maxi
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 
 export type PostType = "text" | "whiteboard" | "collection" | "call-for-whiteboards" | "document";
+export type ResponseType = "whiteboards" | "posts" | "memos" | "links-files";
+
+export interface ResponseItem {
+  id: string;
+  title: string;
+  author: string;
+  type: ResponseType;
+  imageUrl?: string;
+}
 
 export interface PostProps {
   id: string;
@@ -33,6 +42,10 @@ export interface PostProps {
   stats: {
     comments: number;
   };
+  /** Response types enabled for this post */
+  enabledResponseTypes?: ResponseType[];
+  /** Response items grouped by type */
+  responses?: Partial<Record<ResponseType, ResponseItem[]>>;
   /** Searchable comment/response text snippets */
   commentTexts?: string[];
   /** Whether this post should render in collapsed mode */
@@ -48,6 +61,9 @@ export function PostCard({ post }: { post: PostProps }) {
   const [activeDocPage, setActiveDocPage] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [needsCollapse, setNeedsCollapse] = useState(false);
+  const [activeResponseType, setActiveResponseType] = useState<ResponseType | null>(
+    post.enabledResponseTypes?.[0] || null
+  );
   const snippetRef = useRef<HTMLDivElement>(null);
 
   // Check if description container overflows the fixed height
@@ -419,6 +435,71 @@ export function PostCard({ post }: { post: PostProps }) {
           </div>
         )}
       </CardContent>
+
+      {/* Responses Section (Contributions) */}
+      {post.enabledResponseTypes && post.enabledResponseTypes.length > 0 && (
+        <div className="px-6 py-4 border-t border-border/50">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-label font-semibold text-muted-foreground">RESPONSES</h4>
+          </div>
+
+          {/* Response Type Tabs */}
+          <div className="flex gap-2 flex-wrap mb-4">
+            {post.enabledResponseTypes.map((type) => {
+              const typeLabels: Record<ResponseType, { icon: string; label: string }> = {
+                'whiteboards': { icon: '📋', label: 'WHITEBOARDS' },
+                'posts': { icon: '💬', label: 'POSTS' },
+                'memos': { icon: '📝', label: 'MEMOS' },
+                'links-files': { icon: '🔗', label: 'LINKS & FILES' },
+              };
+              const typeInfo = typeLabels[type];
+              const count = post.responses?.[type]?.length || 0;
+
+              return (
+                <button
+                  key={type}
+                  onClick={() => setActiveResponseType(type)}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-colors text-sm font-medium",
+                    activeResponseType === type
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-border bg-background text-muted-foreground hover:border-primary/50"
+                  )}
+                >
+                  <span>{typeInfo.icon}</span>
+                  <span>{typeInfo.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Response Items Grid */}
+          {activeResponseType && post.responses?.[activeResponseType] && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-caption text-muted-foreground">
+                  {post.responses[activeResponseType].length} Contribution{post.responses[activeResponseType].length !== 1 ? 's' : ''}
+                </span>
+                <Button size="sm" className="gap-2">
+                  + ADD {activeResponseType === 'links-files' ? 'LINK OR FILE' : activeResponseType.toUpperCase().replace('-', ' ')}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+                {post.responses[activeResponseType].map((item) => (
+                  <div key={item.id} className="p-3 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer">
+                    {item.imageUrl && (
+                      <img src={item.imageUrl} alt={item.title} className="w-full h-24 object-cover rounded mb-2" />
+                    )}
+                    <p className="text-caption font-medium text-foreground truncate">{item.title}</p>
+                    <p className="text-label text-muted-foreground text-xs">{item.author}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <CardFooter className="!p-0 flex-col items-stretch gap-0 border-t bg-muted/5">
         <Button variant="ghost" size="sm" className="h-auto gap-2 text-muted-foreground hover:text-foreground hover:bg-transparent justify-start rounded-none px-6 py-3">
