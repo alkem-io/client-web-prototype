@@ -125,7 +125,7 @@ export function SpaceFeed() {
     },
     {
       id: "4",
-      type: "call-for-whiteboards",
+      type: "whiteboard",
       tags: ["Ideas", "Updates"],
       author: {
         name: "Alex Contributor",
