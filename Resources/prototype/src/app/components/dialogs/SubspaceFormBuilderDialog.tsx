@@ -426,25 +426,31 @@ export function SubspaceFormBuilderDialog({
                 <p className="text-caption text-muted-foreground">Click "Add a question" above to get started</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {questions.map((question, index) => (
-                  <div key={question.id} className="rounded-lg border bg-card p-4 space-y-3 hover:border-primary/30 transition-colors">
-                    <div className="flex gap-3 items-start">
-                      <div className="text-base font-semibold text-muted-foreground min-w-8 pt-2">
-                        {index + 1}.
+              <div className="space-y-4">
+                {questions.map((question, index) => {
+                  const typeLabel = FIELD_TYPES.find((t) => t.id === question.type)?.label || question.type;
+
+                  return (
+                    <div key={question.id} className="rounded-xl border bg-gradient-to-br from-card to-muted/20 overflow-hidden hover:shadow-sm transition-shadow">
+                      {/* Question header */}
+                      <div className="px-5 py-4 border-b">
+                        <div className="flex gap-4 items-start">
+                          <div className="text-lg font-bold text-primary/80 min-w-8">{index + 1}</div>
+                          <Input
+                            value={question.label}
+                            onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
+                            placeholder="Write your question here..."
+                            className="flex-1 text-base font-semibold border-0 bg-transparent placeholder:text-muted-foreground/50 p-0 h-auto"
+                          />
+                        </div>
                       </div>
 
-                      <div className="flex-1 space-y-3 min-w-0">
-                        <Input
-                          value={question.label}
-                          onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
-                          placeholder="Write your question here..."
-                          className="text-base font-medium"
-                        />
-
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <div className="flex-1">
-                            <label className="text-caption font-medium text-muted-foreground mb-2 block">Answer type</label>
+                      {/* Question settings */}
+                      <div className="px-5 py-3 space-y-3">
+                        {/* Type & Required row */}
+                        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-muted-foreground">Answer type:</span>
                             <select
                               value={question.type}
                               onChange={(e) =>
@@ -453,7 +459,7 @@ export function SubspaceFormBuilderDialog({
                                   constraints: getDefaultConstraints(e.target.value as FormFieldType),
                                 })
                               }
-                              className="w-full h-9 px-3 py-1 text-sm border border-input rounded-md bg-background hover:bg-accent"
+                              className="px-3 py-1.5 text-sm border border-input rounded-md bg-background hover:bg-accent font-medium"
                             >
                               {FIELD_TYPES.map((type) => (
                                 <option key={type.id} value={type.id}>
@@ -462,127 +468,117 @@ export function SubspaceFormBuilderDialog({
                               ))}
                             </select>
                           </div>
-                          <div className="flex items-end">
-                            <label className="flex items-center gap-2 px-3 py-2 rounded-md border border-input hover:bg-muted/50">
-                              <Checkbox
-                                checked={question.required}
-                                onCheckedChange={(checked) =>
-                                  handleUpdateQuestion(index, { required: checked === true })
-                                }
-                              />
-                              <span className="text-sm">Required</span>
-                            </label>
-                          </div>
+                          <label className="flex items-center gap-2 ml-auto">
+                            <Checkbox
+                              checked={question.required}
+                              onCheckedChange={(checked) =>
+                                handleUpdateQuestion(index, { required: checked === true })
+                              }
+                            />
+                            <span className="text-sm font-medium">Required</span>
+                          </label>
                         </div>
 
-                        {/* Constraint fields - only show if needed */}
+                        {/* Constraints - more compact */}
                         {question.type === "short-text" && (
-                          <div className="pt-2 border-t">
-                            <label className="text-caption font-medium text-muted-foreground">Character limit</label>
-                            <div className="flex items-center gap-2 mt-2">
-                              <Input
-                                type="number"
-                                value={question.constraints.maxLength || 255}
-                                onChange={(e) =>
-                                  handleUpdateQuestion(index, {
-                                    constraints: { ...question.constraints, maxLength: parseInt(e.target.value) || 255 },
-                                  })
-                                }
-                                className="w-20 h-8"
-                              />
-                              <span className="text-caption text-muted-foreground">characters</span>
-                            </div>
+                          <div className="flex items-center gap-2 text-sm pl-0 py-1">
+                            <span className="text-muted-foreground">Character limit:</span>
+                            <Input
+                              type="number"
+                              value={question.constraints.maxLength || 255}
+                              onChange={(e) =>
+                                handleUpdateQuestion(index, {
+                                  constraints: { ...question.constraints, maxLength: parseInt(e.target.value) || 255 },
+                                })
+                              }
+                              className="w-16 h-8 text-sm"
+                            />
                           </div>
                         )}
 
                         {question.type === "long-text" && (
-                          <div className="pt-2 border-t">
-                            <label className="text-caption font-medium text-muted-foreground">Word limit</label>
-                            <div className="flex items-center gap-2 mt-2">
-                              <Input
-                                type="number"
-                                value={question.constraints.maxWords || 500}
-                                onChange={(e) =>
-                                  handleUpdateQuestion(index, {
-                                    constraints: { ...question.constraints, maxWords: parseInt(e.target.value) || 500 },
-                                  })
-                                }
-                                className="w-20 h-8"
-                              />
-                              <span className="text-caption text-muted-foreground">words</span>
-                            </div>
+                          <div className="flex items-center gap-2 text-sm pl-0 py-1">
+                            <span className="text-muted-foreground">Word limit:</span>
+                            <Input
+                              type="number"
+                              value={question.constraints.maxWords || 500}
+                              onChange={(e) =>
+                                handleUpdateQuestion(index, {
+                                  constraints: { ...question.constraints, maxWords: parseInt(e.target.value) || 500 },
+                                })
+                              }
+                              className="w-16 h-8 text-sm"
+                            />
                           </div>
                         )}
 
                         {question.type === "multi-select-list" && (
-                          <div className="pt-2 border-t space-y-3">
-                            <label className="text-caption font-medium text-muted-foreground">How many can they choose?</label>
-                            <div className="flex gap-6">
-                              <div>
-                                <p className="text-caption text-muted-foreground mb-1">At least</p>
-                                <Input
-                                  type="number"
-                                  value={question.constraints.minSelections || 1}
-                                  onChange={(e) =>
-                                    handleUpdateQuestion(index, {
-                                      constraints: { ...question.constraints, minSelections: parseInt(e.target.value) || 1 },
-                                    })
-                                  }
-                                  className="w-20 h-8"
-                                />
-                              </div>
-                              <div>
-                                <p className="text-caption text-muted-foreground mb-1">At most</p>
-                                <Input
-                                  type="number"
-                                  value={question.constraints.maxSelections || 10}
-                                  onChange={(e) =>
-                                    handleUpdateQuestion(index, {
-                                      constraints: { ...question.constraints, maxSelections: parseInt(e.target.value) || 10 },
-                                    })
-                                  }
-                                  className="w-20 h-8"
-                                />
-                              </div>
+                          <div className="flex flex-wrap gap-4 text-sm py-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">At least:</span>
+                              <Input
+                                type="number"
+                                value={question.constraints.minSelections || 1}
+                                onChange={(e) =>
+                                  handleUpdateQuestion(index, {
+                                    constraints: { ...question.constraints, minSelections: parseInt(e.target.value) || 1 },
+                                  })
+                                }
+                                className="w-14 h-8 text-sm"
+                              />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">At most:</span>
+                              <Input
+                                type="number"
+                                value={question.constraints.maxSelections || 10}
+                                onChange={(e) =>
+                                  handleUpdateQuestion(index, {
+                                    constraints: { ...question.constraints, maxSelections: parseInt(e.target.value) || 10 },
+                                  })
+                                }
+                                className="w-14 h-8 text-sm"
+                              />
                             </div>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex gap-1 flex-shrink-0 justify-end pt-3 border-t">
+                      {/* Action buttons footer */}
+                      <div className="px-5 py-3 bg-muted/30 flex items-center gap-2 justify-end">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="gap-1 text-xs"
+                          className="gap-1.5 text-xs h-8"
                           onClick={() => handleReorderQuestion(index, "up")}
                           disabled={index === 0}
+                          title="Move question up"
                         >
-                          <ChevronUp className="w-3 h-3" />
-                          Move up
+                          <ChevronUp className="w-4 h-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="gap-1 text-xs"
+                          className="gap-1.5 text-xs h-8"
                           onClick={() => handleReorderQuestion(index, "down")}
                           disabled={index === questions.length - 1}
+                          title="Move question down"
                         >
-                          <ChevronDown className="w-3 h-3" />
-                          Move down
+                          <ChevronDown className="w-4 h-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="gap-1 text-xs text-destructive hover:text-destructive ml-auto"
+                          className="gap-1.5 text-xs h-8 text-destructive hover:text-destructive"
                           onClick={() => handleDeleteQuestion(index)}
+                          title="Delete question"
                         >
-                          <Trash2 className="w-3 h-3" />
-                          Delete
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
