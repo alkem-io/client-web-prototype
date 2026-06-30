@@ -1,6 +1,5 @@
 import { MessageSquare } from 'lucide-react';
 import { CollapsibleTagList } from '@/app/components/common/CollapsibleTagList';
-import { MarkdownContent } from '@/app/components/common/MarkdownContent';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
 
@@ -34,7 +33,7 @@ export function ContributionPostCard({
   };
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: a <button> here would nest interactive descendants (CollapsibleTagList renders a "+N" <button>; MarkdownContent can render <a> links) which is invalid HTML
+    // biome-ignore lint/a11y/useSemanticElements: a <button> here would nest interactive descendants (CollapsibleTagList renders a "+N" <button>) which is invalid HTML
     <div
       role="button"
       tabIndex={0}
@@ -59,7 +58,7 @@ export function ContributionPostCard({
       )}
       {description && (
         <div className="mt-2 max-h-[3.4rem] overflow-hidden">
-          <MarkdownContent content={description} className="text-body text-muted-foreground line-clamp-2" />
+          <p className="text-body text-muted-foreground line-clamp-2">{description}</p>
         </div>
       )}
       <div className="flex items-center gap-1.5 mt-auto pt-2 min-w-0">
