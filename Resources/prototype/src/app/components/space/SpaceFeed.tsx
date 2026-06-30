@@ -350,10 +350,34 @@ export function SpaceFeed() {
                           <button
                             key={item.id}
                             type="button"
-                            className="p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring space-y-3"
                           >
-                            <h4 className="font-medium text-sm text-foreground">{item.title}</h4>
-                            <p className="text-xs text-muted-foreground mt-2">{item.author}</p>
+                            <div>
+                              <h4 className="font-semibold text-sm text-foreground">{item.title}</h4>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {item.authorAvatar ? (
+                                <img src={item.authorAvatar} alt={item.author} className="w-5 h-5 rounded-full" />
+                              ) : (
+                                <div className="w-5 h-5 rounded-full bg-muted" />
+                              )}
+                              <div className="text-xs text-muted-foreground">
+                                <div className="font-medium text-foreground">{item.author}</div>
+                                {item.date && <div className="text-xs">{item.date}</div>}
+                              </div>
+                            </div>
+                            {item.description && (
+                              <p className="text-xs text-muted-foreground line-clamp-2">{item.description}</p>
+                            )}
+                            {item.tags && item.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {item.tags.map((tag: string) => (
+                                  <span key={tag} className="px-2 py-0.5 rounded bg-muted text-xs text-foreground">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </button>
                         ))}
                       </div>
@@ -368,7 +392,7 @@ export function SpaceFeed() {
                             type="button"
                             className="group/memo relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 min-h-[180px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left p-3"
                           >
-                            <div className="absolute inset-0 flex flex-col justify-between bg-gradient-to-b from-primary/80 via-primary/20 to-transparent p-3">
+                            <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-primary/80 via-primary/20 to-transparent p-3">
                               <h4 className="font-medium text-sm text-white">{item.title}</h4>
                               <p className="text-xs text-white/80">{item.author}</p>
                             </div>
@@ -384,10 +408,22 @@ export function SpaceFeed() {
                           <button
                             key={item.id}
                             type="button"
-                            className="p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            className="p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring space-y-3"
                           >
-                            <h4 className="font-medium text-sm text-foreground">{item.title}</h4>
-                            <p className="text-xs text-muted-foreground mt-2">{item.author}</p>
+                            <div>
+                              <h4 className="font-semibold text-sm text-foreground">{item.title}</h4>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {item.authorAvatar ? (
+                                <img src={item.authorAvatar} alt={item.author} className="w-5 h-5 rounded-full" />
+                              ) : (
+                                <div className="w-5 h-5 rounded-full bg-muted" />
+                              )}
+                              <div className="text-xs text-muted-foreground">
+                                <div className="font-medium text-foreground">{item.author}</div>
+                                {item.date && <div className="text-xs">{item.date}</div>}
+                              </div>
+                            </div>
                           </button>
                         ))}
                       </div>
