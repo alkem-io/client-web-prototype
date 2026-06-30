@@ -10,7 +10,6 @@ import {
 } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -21,7 +20,6 @@ import {
 import {
   Plus, Trash2, ChevronUp, ChevronDown,
 } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
 import type { ApplicationFormConfig, FormField, FormFieldType } from "./SubspaceApplicationDialog";
 
 interface SubspaceFormBuilderDialogProps {
@@ -33,6 +31,13 @@ interface SubspaceFormBuilderDialogProps {
   onSave?: (config: ApplicationFormConfig) => void;
 }
 
+interface FormTemplate {
+  id: string;
+  name: string;
+  description: string;
+  questions: FormField[];
+}
+
 const FIELD_TYPES: { id: FormFieldType; label: string; description: string }[] = [
   { id: "short-text", label: "Short Answer", description: "One line of text (e.g., a name or title)" },
   { id: "long-text", label: "Long Answer", description: "Multi-line text for detailed responses" },
@@ -41,95 +46,88 @@ const FIELD_TYPES: { id: FormFieldType; label: string; description: string }[] =
   { id: "multi-select-list", label: "Multiple Choice", description: "They pick from a list you provide" },
 ];
 
-interface FormTemplate {
-  id: string;
-  name: string;
-  description: string;
-  questions: FormField[];
-}
-
 const TEMPLATES: FormTemplate[] = [
   {
     id: "vng-groei",
     name: "VNG Groei Program",
     description: "Innovation proposals for municipalities. Includes title, leads, municipalities, and detailed vision sections (WHO/WHAT/WHY/HOW).",
     questions: [
-  {
-    id: "title",
-    type: "short-text",
-    label: "Initiative Title",
-    description: "The name of your initiative",
-    required: true,
-    order: 0,
-    constraints: { maxLength: 80 },
-  },
-  {
-    id: "initiating-municipality",
-    type: "short-text",
-    label: "Initiating Municipality",
-    required: true,
-    order: 1,
-    constraints: { maxLength: 80 },
-  },
-  {
-    id: "first-lead",
-    type: "auto-fill-profile",
-    label: "First Lead",
-    description: "Your contact details",
-    required: true,
-    order: 2,
-    constraints: { fields: ["name", "email", "organization"] },
-  },
-  {
-    id: "second-lead",
-    type: "user-picker",
-    label: "Second Lead (optional)",
-    description: "Search for an existing member or invite someone new",
-    required: false,
-    order: 3,
-    constraints: { allowManualEntry: true, allowEmailInvite: true },
-  },
-  {
-    id: "supporting-municipalities",
-    type: "multi-select-list",
-    label: "Supporting Municipalities",
-    description: "Select at least 2 other municipalities",
-    required: true,
-    order: 4,
-    constraints: {
-      minSelections: 2,
-      maxSelections: 20,
-      items: [
-        { id: "amsterdam", label: "Amsterdam" },
-        { id: "rotterdam", label: "Rotterdam" },
-        { id: "den-haag", label: "Den Haag" },
-      ],
-    },
-  },
-  {
-    id: "who",
-    type: "long-text",
-    label: "WHO? Goal and Target Audience",
-    required: true,
-    order: 5,
-    constraints: { maxWords: 250 },
-  },
-  {
-    id: "what-for",
-    type: "long-text",
-    label: "WHAT FOR? Strategic Contribution",
-    required: true,
-    order: 6,
-    constraints: { maxWords: 250 },
-  },
-  {
-    id: "why",
-    type: "long-text",
-    label: "WHY? Urgency and Value",
-    required: true,
-    order: 7,
-    constraints: { maxWords: 250 },
-  },
+      {
+        id: "title",
+        type: "short-text",
+        label: "Initiative Title",
+        description: "The name of your initiative",
+        required: true,
+        order: 0,
+        constraints: { maxLength: 80 },
+      },
+      {
+        id: "initiating-municipality",
+        type: "short-text",
+        label: "Initiating Municipality",
+        required: true,
+        order: 1,
+        constraints: { maxLength: 80 },
+      },
+      {
+        id: "first-lead",
+        type: "auto-fill-profile",
+        label: "First Lead",
+        description: "Your contact details",
+        required: true,
+        order: 2,
+        constraints: { fields: ["name", "email", "organization"] },
+      },
+      {
+        id: "second-lead",
+        type: "user-picker",
+        label: "Second Lead (optional)",
+        description: "Search for an existing member or invite someone new",
+        required: false,
+        order: 3,
+        constraints: { allowManualEntry: true, allowEmailInvite: true },
+      },
+      {
+        id: "supporting-municipalities",
+        type: "multi-select-list",
+        label: "Supporting Municipalities",
+        description: "Select at least 2 other municipalities",
+        required: true,
+        order: 4,
+        constraints: {
+          minSelections: 2,
+          maxSelections: 20,
+          items: [
+            { id: "amsterdam", label: "Amsterdam" },
+            { id: "rotterdam", label: "Rotterdam" },
+            { id: "den-haag", label: "Den Haag" },
+          ],
+        },
+      },
+      {
+        id: "who",
+        type: "long-text",
+        label: "WHO? Goal and Target Audience",
+        required: true,
+        order: 5,
+        constraints: { maxWords: 250 },
+      },
+      {
+        id: "what-for",
+        type: "long-text",
+        label: "WHAT FOR? Strategic Contribution",
+        required: true,
+        order: 6,
+        constraints: { maxWords: 250 },
+      },
+      {
+        id: "why",
+        type: "long-text",
+        label: "WHY? Urgency and Value",
+        required: true,
+        order: 7,
+        constraints: { maxWords: 250 },
+      },
       {
         id: "how",
         type: "long-text",
@@ -426,159 +424,148 @@ export function SubspaceFormBuilderDialog({
                 <p className="text-caption text-muted-foreground">Click "Add a question" above to get started</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {questions.map((question, index) => {
-                  const typeLabel = FIELD_TYPES.find((t) => t.id === question.type)?.label || question.type;
-
-                  return (
-                    <div key={question.id} className="rounded-xl border bg-gradient-to-br from-card to-muted/20 overflow-hidden hover:shadow-sm transition-shadow">
-                      {/* Question header */}
-                      <div className="px-5 py-4 border-b">
-                        <div className="flex gap-4 items-start">
-                          <div className="text-lg font-bold text-primary/80 min-w-8">{index + 1}</div>
-                          <Input
-                            value={question.label}
-                            onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
-                            placeholder="Write your question here..."
-                            className="flex-1 text-base font-semibold border-0 bg-transparent placeholder:text-muted-foreground/50 p-0 h-auto"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Question settings */}
-                      <div className="px-5 py-3 space-y-3">
-                        {/* Type & Required row */}
-                        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-                          <div className="flex items-center gap-2 text-sm">
-                            <span className="text-muted-foreground">Answer type:</span>
-                            <select
-                              value={question.type}
-                              onChange={(e) =>
-                                handleUpdateQuestion(index, {
-                                  type: e.target.value as FormFieldType,
-                                  constraints: getDefaultConstraints(e.target.value as FormFieldType),
-                                })
-                              }
-                              className="px-3 py-1.5 text-sm border border-input rounded-md bg-background hover:bg-accent font-medium"
-                            >
-                              {FIELD_TYPES.map((type) => (
-                                <option key={type.id} value={type.id}>
-                                  {type.label}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <label className="flex items-center gap-2 ml-auto">
-                            <Checkbox
-                              checked={question.required}
-                              onCheckedChange={(checked) =>
-                                handleUpdateQuestion(index, { required: checked === true })
-                              }
-                            />
-                            <span className="text-sm font-medium">Required</span>
-                          </label>
-                        </div>
-
-                        {/* Constraints - more compact */}
-                        {question.type === "short-text" && (
-                          <div className="flex items-center gap-2 text-sm pl-0 py-1">
-                            <span className="text-muted-foreground">Character limit:</span>
-                            <Input
-                              type="number"
-                              value={question.constraints.maxLength || 255}
-                              onChange={(e) =>
-                                handleUpdateQuestion(index, {
-                                  constraints: { ...question.constraints, maxLength: parseInt(e.target.value) || 255 },
-                                })
-                              }
-                              className="w-16 h-8 text-sm"
-                            />
-                          </div>
-                        )}
-
-                        {question.type === "long-text" && (
-                          <div className="flex items-center gap-2 text-sm pl-0 py-1">
-                            <span className="text-muted-foreground">Word limit:</span>
-                            <Input
-                              type="number"
-                              value={question.constraints.maxWords || 500}
-                              onChange={(e) =>
-                                handleUpdateQuestion(index, {
-                                  constraints: { ...question.constraints, maxWords: parseInt(e.target.value) || 500 },
-                                })
-                              }
-                              className="w-16 h-8 text-sm"
-                            />
-                          </div>
-                        )}
-
-                        {question.type === "multi-select-list" && (
-                          <div className="flex flex-wrap gap-4 text-sm py-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground">At least:</span>
-                              <Input
-                                type="number"
-                                value={question.constraints.minSelections || 1}
-                                onChange={(e) =>
-                                  handleUpdateQuestion(index, {
-                                    constraints: { ...question.constraints, minSelections: parseInt(e.target.value) || 1 },
-                                  })
-                                }
-                                className="w-14 h-8 text-sm"
-                              />
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground">At most:</span>
-                              <Input
-                                type="number"
-                                value={question.constraints.maxSelections || 10}
-                                onChange={(e) =>
-                                  handleUpdateQuestion(index, {
-                                    constraints: { ...question.constraints, maxSelections: parseInt(e.target.value) || 10 },
-                                  })
-                                }
-                                className="w-14 h-8 text-sm"
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Action buttons footer */}
-                      <div className="px-5 py-3 bg-muted/30 flex items-center gap-2 justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1.5 text-xs h-8"
-                          onClick={() => handleReorderQuestion(index, "up")}
-                          disabled={index === 0}
-                          title="Move question up"
-                        >
-                          <ChevronUp className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1.5 text-xs h-8"
-                          onClick={() => handleReorderQuestion(index, "down")}
-                          disabled={index === questions.length - 1}
-                          title="Move question down"
-                        >
-                          <ChevronDown className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1.5 text-xs h-8 text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteQuestion(index)}
-                          title="Delete question"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+              <div className="space-y-2">
+                {questions.map((question, index) => (
+                  <div key={question.id} className="border rounded-lg bg-card p-3 space-y-2 hover:border-primary/30 transition-colors">
+                    {/* Question and actions - single row */}
+                    <div className="flex gap-2 items-center">
+                      <span className="text-base font-bold text-muted-foreground min-w-7">{index + 1}.</span>
+                      <Input
+                        value={question.label}
+                        onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
+                        placeholder="Write your question..."
+                        className="flex-1 text-base font-medium border-0 bg-transparent placeholder:text-muted-foreground/40 p-0 h-auto"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => handleReorderQuestion(index, "up")}
+                        disabled={index === 0}
+                        title="Move up"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => handleReorderQuestion(index, "down")}
+                        disabled={index === questions.length - 1}
+                        title="Move down"
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-destructive hover:text-destructive"
+                        onClick={() => handleDeleteQuestion(index)}
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
-                  );
-                })}
+
+                    {/* Settings - horizontal row */}
+                    <div className="flex flex-wrap gap-3 items-center pl-9 text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-muted-foreground">Type:</span>
+                        <select
+                          value={question.type}
+                          onChange={(e) =>
+                            handleUpdateQuestion(index, {
+                              type: e.target.value as FormFieldType,
+                              constraints: getDefaultConstraints(e.target.value as FormFieldType),
+                            })
+                          }
+                          className="px-2 py-1 text-sm border border-input rounded-md bg-background hover:bg-accent font-medium"
+                        >
+                          {FIELD_TYPES.map((type) => (
+                            <option key={type.id} value={type.id}>
+                              {type.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <label className="flex items-center gap-1.5">
+                        <Checkbox
+                          checked={question.required}
+                          onCheckedChange={(checked) =>
+                            handleUpdateQuestion(index, { required: checked === true })
+                          }
+                        />
+                        <span className="font-medium">Required</span>
+                      </label>
+
+                      {question.type === "short-text" && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Max:</span>
+                          <Input
+                            type="number"
+                            value={question.constraints.maxLength || 255}
+                            onChange={(e) =>
+                              handleUpdateQuestion(index, {
+                                constraints: { ...question.constraints, maxLength: parseInt(e.target.value) || 255 },
+                              })
+                            }
+                            className="w-12 h-7 text-sm"
+                          />
+                          <span className="text-muted-foreground">chars</span>
+                        </div>
+                      )}
+
+                      {question.type === "long-text" && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-muted-foreground">Max:</span>
+                          <Input
+                            type="number"
+                            value={question.constraints.maxWords || 500}
+                            onChange={(e) =>
+                              handleUpdateQuestion(index, {
+                                constraints: { ...question.constraints, maxWords: parseInt(e.target.value) || 500 },
+                              })
+                            }
+                            className="w-12 h-7 text-sm"
+                          />
+                          <span className="text-muted-foreground">words</span>
+                        </div>
+                      )}
+
+                      {question.type === "multi-select-list" && (
+                        <>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-muted-foreground">Min:</span>
+                            <Input
+                              type="number"
+                              value={question.constraints.minSelections || 1}
+                              onChange={(e) =>
+                                handleUpdateQuestion(index, {
+                                  constraints: { ...question.constraints, minSelections: parseInt(e.target.value) || 1 },
+                                })
+                              }
+                              className="w-10 h-7 text-sm"
+                            />
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-muted-foreground">Max:</span>
+                            <Input
+                              type="number"
+                              value={question.constraints.maxSelections || 10}
+                              onChange={(e) =>
+                                handleUpdateQuestion(index, {
+                                  constraints: { ...question.constraints, maxSelections: parseInt(e.target.value) || 10 },
+                                })
+                              }
+                              className="w-10 h-7 text-sm"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -586,7 +573,7 @@ export function SubspaceFormBuilderDialog({
 
         <div className="px-6 py-3 border-t bg-blue-50 dark:bg-blue-500/10">
           <p className="text-caption text-blue-900 dark:text-blue-200">
-            <strong>💡 Pro tip:</strong> Members will see these questions one at a time, grouped smartly by question type. Longer questions get their own page.
+            <strong>💡 Pro tip:</strong> Members will see these questions one at a time, grouped smartly by question type.
           </p>
         </div>
 
