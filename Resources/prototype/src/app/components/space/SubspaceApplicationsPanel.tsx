@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { Button } from "@/app/components/ui/button";
 import { Textarea } from "@/app/components/ui/textarea";
@@ -266,16 +267,14 @@ function ApplicationDetailDialog({
             <p className="text-caption font-semibold text-muted-foreground uppercase tracking-wide">Application Details</p>
             {formConfig.questions.map((question) => {
               const answer = app.answers[question.id];
-              if (!answer) return null;
+              if (answer === undefined || answer === null || answer === "") return null;
 
               return (
                 <div key={question.id} className="p-3 rounded-lg border bg-muted/30">
                   <p className="text-caption font-medium text-muted-foreground uppercase tracking-wide mb-2">
                     {question.label}
                   </p>
-                  <p className="text-body whitespace-pre-wrap">
-                    {typeof answer === "string" ? answer : JSON.stringify(answer)}
-                  </p>
+                  {renderAnswerByType(answer, question.type, question.constraints)}
                 </div>
               );
             })}
@@ -363,4 +362,58 @@ function ApplicationDetailDialog({
       </DialogContent>
     </Dialog>
   );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Answer Rendering Helper
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+import type { FormFieldType, FormFieldConstraints } from "@/app/components/dialogs/SubspaceApplicationDialog";
+
+function renderAnswerByType(
+  answer: any,
+  fieldType: FormFieldType,
+  constraints?: FormFieldConstraints
+): ReactNode {
+  if (fieldType === "auto-fill-profile" && typeof answer === "object" && answer !== null) {
+    return (
+      <div className="flex gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+        <Avatar className="w-10 h-10 flex-shrink-0">
+          <AvatarFallback>{(answer.name || "?").slice(0, 2).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <p className="text-body-emphasis">{answer.name || "Unknown"}</p>
+          {answer.email && <p className="text-caption text-muted-foreground">{answer.email}</p>}
+          {answer.organization && <p className="text-caption text-muted-foreground">{answer.organization}</p>}
+        </div>
+      </div>
+    );
+  }
+
+  if (fieldType === "multi-select-list" && Array.isArray(answer)) {
+    const items = constraints?.items || [];
+    return (
+      <div className="flex flex-wrap gap-2">
+        {answer.map((id) => {
+          const label = items.find((item) => item.id === id)?.label || id;
+          return (
+            <Badge key={id} variant="secondary">
+              {label}
+            </Badge>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (fieldType === "user-picker" && typeof answer === "object" && answer !== null) {
+    const name = answer.name || answer.email || answer;
+    return <p className="text-body">{name}</p>;
+  }
+
+  if (typeof answer === "string") {
+    return <p className="text-body whitespace-pre-wrap">{answer}</p>;
+  }
+
+  return <p className="text-body text-muted-foreground">{JSON.stringify(answer)}</p>;
 }
