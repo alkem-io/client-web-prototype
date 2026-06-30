@@ -27,6 +27,9 @@ export interface FormFieldConstraints {
   minSelections?: number;
   maxSelections?: number;
   fields?: Array<"name" | "email" | "organization">;
+  items?: Array<{ id: string; label: string }>;
+  allowManualEntry?: boolean;
+  allowEmailInvite?: boolean;
 }
 
 export type FormFieldType = "short-text" | "long-text" | "user-picker" | "multi-select-list" | "auto-fill-profile";
@@ -89,6 +92,52 @@ interface StepConfig {
   icon: LucideIcon;
   iconColor: string;
   fieldIds: string[];
+}
+
+function deriveStepsFromConfig(formConfig: ApplicationFormConfig): StepConfig[] {
+  const questions = formConfig.questions.sort((a, b) => a.order - b.order);
+  const stepIcons: LucideIcon[] = [Building2, Users, Users, Zap, MessageSquare];
+  const steps: StepConfig[] = [];
+  let questionIndex = 0;
+
+  // Group questions into steps:
+  // - Group up to 2 short-text/user-picker fields per step
+  // - One long-text/multi-select-list per step
+  while (questionIndex < questions.length) {
+    const currentQ = questions[questionIndex];
+    const step: StepConfig = {
+      id: steps.length,
+      title: currentQ.label || "Question",
+      icon: stepIcons[steps.length % stepIcons.length],
+      iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
+      fieldIds: [currentQ.id],
+    };
+
+    // Try to add one more field if possible (short-text or user-picker only)
+    if (
+      questionIndex + 1 < questions.length &&
+      (currentQ.type === "short-text" || currentQ.type === "user-picker") &&
+      (questions[questionIndex + 1].type === "short-text" || questions[questionIndex + 1].type === "user-picker")
+    ) {
+      step.fieldIds.push(questions[questionIndex + 1].id);
+      questionIndex += 2;
+    } else {
+      questionIndex += 1;
+    }
+
+    steps.push(step);
+  }
+
+  // Add final Review & Submit step
+  steps.push({
+    id: steps.length,
+    title: "You're all set!",
+    icon: CheckCircle2,
+    iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
+    fieldIds: [],
+  });
+
+  return steps;
 }
 
 const VNG_STEPS: StepConfig[] = [
@@ -156,7 +205,7 @@ export function SubspaceApplicationDialog({
     }
   }, [formConfig, currentUser, answers]);
 
-  const steps = VNG_STEPS;
+  const steps = deriveStepsFromConfig(formConfig);
   const currentStepConfig = steps[currentStep];
   const isReviewStep = currentStep === steps.length - 1;
 
