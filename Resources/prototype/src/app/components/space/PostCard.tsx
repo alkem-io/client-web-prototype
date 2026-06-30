@@ -21,7 +21,6 @@ import {
   ReferencesAndTagsStrip,
   type ReferencesAndTagsStripReference,
 } from '@/app/components/callout/ReferencesAndTagsStrip';
-import { ExpandableMarkdown } from '@/app/components/common/ExpandableMarkdown';
 import {
   MediaGalleryFeedGrid,
   type MediaGalleryFeedThumbnail,
@@ -32,7 +31,6 @@ import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/app/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/app/components/ui/collapsible';
-import { CroppedMarkdown } from '@/app/components/ui/croppedMarkdown';
 
 export type PostType = 'text' | 'whiteboard' | 'memo' | 'mediaGallery' | 'document' | 'callToAction' | 'poll';
 
@@ -62,6 +60,43 @@ export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKe
   callToAction: { icon: Megaphone, labelKey: 'callout.callToAction', label: 'Call to Action' },
   poll: { icon: BarChart3, labelKey: 'callout.poll', label: 'Poll' },
 };
+
+/**
+ * Simple text-based expandable content component for the prototype.
+ * Renders plain text with line clamping and a "read more" toggle.
+ */
+function SimpleExpandableText({
+  content,
+  maxLines = 3,
+  defaultExpanded = false,
+}: {
+  content: string;
+  maxLines?: number;
+  defaultExpanded?: boolean;
+}) {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const lineArray = content.split('\n');
+  const isClamped = lineArray.length > maxLines;
+  const displayedLines = isExpanded ? lineArray : lineArray.slice(0, maxLines);
+
+  return (
+    <div className="space-y-2">
+      <p className="text-body text-foreground whitespace-pre-wrap break-words">
+        {displayedLines.join('\n')}
+      </p>
+      {isClamped && (
+        <Button
+          variant="link"
+          size="sm"
+          className="h-auto p-0 text-primary"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          {isExpanded ? 'Show less' : 'Read more'}
+        </Button>
+      )}
+    </div>
+  );
+}
 
 export type PostCardData = {
   id: string;
@@ -329,7 +364,7 @@ export function PostCard({
           </a>
         </h3>
         {post.snippet && (
-          <ExpandableMarkdown content={post.snippet} maxLines={3} defaultExpanded={post.descriptionExpanded} />
+          <SimpleExpandableText content={post.snippet} maxLines={3} defaultExpanded={post.descriptionExpanded} />
         )}
 
         {/* References + tags row — same component as the detail dialog (DRY). */}
@@ -342,7 +377,7 @@ export function PostCard({
         {post.type === 'whiteboard' && (
           <button
             type="button"
-            onClick={event => {
+            onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
               event.stopPropagation();
               (onOpenFraming ?? onClick)?.();
             }}
@@ -373,15 +408,15 @@ export function PostCard({
         {post.type === 'memo' && (
           <button
             type="button"
-            onClick={event => {
+            onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
               event.stopPropagation();
               (onOpenFraming ?? onClick)?.();
             }}
             className="relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 h-32 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {post.framingMemoMarkdown ? (
-              <div className="p-3 h-full">
-                <CroppedMarkdown content={post.framingMemoMarkdown} maxHeight="100%" />
+              <div className="p-3 h-full overflow-hidden text-sm text-foreground line-clamp-4">
+                {post.framingMemoMarkdown}
               </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center">
@@ -420,7 +455,7 @@ export function PostCard({
                   variant="outline"
                   size="sm"
                   className="gap-2"
-                  onClick={event => {
+                  onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
                     event.stopPropagation();
                     onAddMediaGalleryImages();
                   }}
