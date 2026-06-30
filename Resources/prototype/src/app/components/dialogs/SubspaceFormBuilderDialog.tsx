@@ -429,12 +429,12 @@ export function SubspaceFormBuilderDialog({
                   <div key={question.id} className="border rounded-lg bg-card p-3 space-y-2 hover:border-primary/30 transition-colors">
                     {/* Question and actions - single row */}
                     <div className="flex gap-2 items-center">
-                      <span className="text-base font-bold text-muted-foreground min-w-7">{index + 1}.</span>
+                      <span className="text-lg font-bold text-muted-foreground min-w-7">{index + 1}.</span>
                       <Input
                         value={question.label}
                         onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
                         placeholder="Write your question..."
-                        className="flex-1 text-base font-medium border-0 bg-transparent placeholder:text-muted-foreground/40 p-0 h-auto"
+                        className="flex-1 text-lg font-semibold border-0 bg-transparent placeholder:text-muted-foreground/40 p-0 h-auto"
                       />
                       <Button
                         variant="ghost"
@@ -535,7 +535,7 @@ export function SubspaceFormBuilderDialog({
 
                       {question.type === "multi-select-list" && (
                         <>
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-2">
                             <span className="text-muted-foreground">Min:</span>
                             <Input
                               type="number"
@@ -545,10 +545,10 @@ export function SubspaceFormBuilderDialog({
                                   constraints: { ...question.constraints, minSelections: parseInt(e.target.value) || 1 },
                                 })
                               }
-                              className="w-10 h-7 text-sm"
+                              className="w-16 h-8 text-sm"
                             />
                           </div>
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-2">
                             <span className="text-muted-foreground">Max:</span>
                             <Input
                               type="number"
@@ -558,7 +558,7 @@ export function SubspaceFormBuilderDialog({
                                   constraints: { ...question.constraints, maxSelections: parseInt(e.target.value) || 10 },
                                 })
                               }
-                              className="w-10 h-7 text-sm"
+                              className="w-16 h-8 text-sm"
                             />
                           </div>
                         </>
