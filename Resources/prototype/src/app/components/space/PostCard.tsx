@@ -1,535 +1,511 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
-import { cn } from "@/lib/utils";
-import { MessageSquare, MoreHorizontal, LayoutGrid, FileText, Presentation, Maximize2, FileSpreadsheet, FileImage } from "lucide-react";
-import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
-import { ContributionWhiteboardCard } from "@/app/components/contribution/ContributionWhiteboardCard";
-import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
-import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
-import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
+import {
+  BarChart3,
+  ChevronDown,
+  FileText,
+  ImagePlus,
+  Images,
+  type LucideIcon,
+  Maximize2,
+  Megaphone,
+  MessageSquare,
+  Presentation,
+  StickyNote,
+} from 'lucide-react';
+import { type ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  CalloutCollaboraPreview,
+  type CollaboraDocumentPreviewType,
+} from '@/app/components/callout/CalloutCollaboraPreview';
+import { CalloutLinkAction } from '@/app/components/callout/CalloutLinkAction';
+import {
+  ReferencesAndTagsStrip,
+  type ReferencesAndTagsStripReference,
+} from '@/app/components/callout/ReferencesAndTagsStrip';
+import { ExpandableMarkdown } from '@/app/components/common/ExpandableMarkdown';
+import {
+  MediaGalleryFeedGrid,
+  type MediaGalleryFeedThumbnail,
+} from '@/app/components/mediaGallery/MediaGalleryFeedGrid';
+import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
+import { Badge } from '@/app/components/ui/badge';
+import { Button } from '@/app/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/app/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/app/components/ui/collapsible';
+import { CroppedMarkdown } from '@/app/components/ui/croppedMarkdown';
 
-export type PostType = "text" | "whiteboard" | "collection" | "call-for-whiteboards" | "document";
-export type ResponseType = "whiteboards" | "posts" | "memos" | "links-files";
+export type PostType = 'text' | 'whiteboard' | 'memo' | 'mediaGallery' | 'document' | 'callToAction' | 'poll';
 
-export interface ResponseItem {
-  id: string;
-  title: string;
-  author: string;
-  type: ResponseType;
-  imageUrl?: string;
-}
+type PostTypeLabelKey =
+  | 'callout.post'
+  | 'callout.whiteboard'
+  | 'callout.memo'
+  | 'callout.mediaGallery'
+  | 'callout.document'
+  | 'callout.callToAction'
+  | 'callout.poll';
 
-export interface PostProps {
+/**
+ * Single source of truth for the icon and translation key per `PostType`.
+ * Adding a new framing type means adding one entry here — the typed Record
+ * forces every `PostType` to be covered, so the icon and label can never
+ * silently fall through to the wrong default. Label keys are typed as a
+ * literal union so the strict-typed `t()` (see `@types/i18next.d.ts`) accepts
+ * them without a cast.
+ */
+export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKey: PostTypeLabelKey }> = {
+  text: { icon: FileText, labelKey: 'callout.post' },
+  whiteboard: { icon: Presentation, labelKey: 'callout.whiteboard' },
+  memo: { icon: StickyNote, labelKey: 'callout.memo' },
+  document: { icon: FileText, labelKey: 'callout.document' },
+  mediaGallery: { icon: Images, labelKey: 'callout.mediaGallery' },
+  callToAction: { icon: Megaphone, labelKey: 'callout.callToAction' },
+  poll: { icon: BarChart3, labelKey: 'callout.poll' },
+};
+
+export type PostCardData = {
   id: string;
   type: PostType;
-  author: {
+  author?: {
     name: string;
     avatarUrl?: string;
-    role: string;
-    location?: string;
-    skills?: string[];
+    profileUrl?: string;
+    role?: string;
   };
   title: string;
-  snippet: string;
-  timestamp: string;
-  contentPreview?: {
-    imageUrl?: string;
-    items?: Array<{ title: string; type: string }>;
-    whiteboards?: Array<{ title: string; imageUrl: string; author: string }>;
-    documents?: Array<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string }>;
-    documentDisplayMode?: 'scroll' | 'paginated';
-  };
-  stats: {
-    comments: number;
-  };
-  /** Response types enabled for this post */
-  enabledResponseTypes?: ResponseType[];
-  /** Response items grouped by type */
-  responses?: Partial<Record<ResponseType, ResponseItem[]>>;
-  /** Searchable comment/response text snippets */
-  commentTexts?: string[];
-  /** Whether this post should render in collapsed mode */
-  collapsed?: boolean;
-  /** User-embedded images in the post body (plain images, no interactive overlay) */
-  embeddedImages?: Array<{ url: string; alt?: string; position?: 'before' | 'after' }>;
+  snippet?: string;
+  timestamp?: string;
+  isDraft?: boolean;
+  /** Framing-level preview image (whiteboard framing only) */
+  framingImageUrl?: string;
+  /** Framing-level memo markdown (memo framing only) — rendered as a compact cropped preview in the feed */
+  framingMemoMarkdown?: string;
+  /**
+   * Framing-level media gallery preview (media gallery framing only) — up to 4 thumbnails
+   * as `{ id, url }` pairs; the feed grid shows a "+N more" overlay on the 4th cell when
+   * `totalCount > thumbnails.length`. Using `id` as the React key keeps rows stable across
+   * reorders / deletions even when image URLs change.
+   */
+  framingMediaGallery?: { thumbnails: MediaGalleryFeedThumbnail[]; totalCount: number };
+  /** Framing-level Collabora document type (document framing only) — drives the icon + label in the feed preview */
+  framingDocumentType?: CollaboraDocumentPreviewType;
+  /** Framing-level call-to-action link (Link framing only). `isValid` is false for non-http(s) or malformed URIs. */
+  framingCallToAction?: { uri: string; displayName: string; isExternal: boolean; isValid: boolean };
+  commentCount?: number;
+  /**
+   * Mirrors `callout.settings.framing.commentsEnabled`. When `false`:
+   *  - the comments footer is hidden entirely if there are no existing messages
+   *  - existing messages stay visible (read-only) when there are some — input gating is the consumer's call (`commentInputSlot`).
+   * Default `true` (legacy callsites stay unchanged).
+   */
+  commentsEnabled?: boolean;
+  /**
+   * Whether the snippet/description starts expanded. Mirrors the space-level
+   * `calloutDescriptionDisplayMode` setting (Expanded vs Collapsed). Only takes
+   * effect when the snippet actually overflows the clamp height.
+   */
+  descriptionExpanded?: boolean;
+  /** External references attached to the callout — each rendered on its own line as a link. */
+  references?: ReferencesAndTagsStripReference[];
+  /** Default-tagset tags — rendered as a wrap-row of pills below the references (MUI parity). */
+  tags?: string[];
+};
+
+type PostCardProps = {
+  post: PostCardData;
+  /** URL for the callout title link. Falls back to onClick when omitted. */
+  href?: string;
   onClick?: () => void;
-  onDocumentClick?: (doc: { title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string }) => void;
-}
+  /**
+   * Fired when the user clicks "Open Whiteboard" / "Open Memo" inside the framing
+   * preview. When omitted, the buttons fall back to `onClick` (i.e. open the
+   * callout dialog). Consumers wire this to launch the framing editor directly.
+   */
+  onOpenFraming?: () => void;
+  /**
+   * Fired when the user clicks "Add images" on a media-gallery framing preview.
+   * When omitted, the button is hidden. Consumer wires this to a hidden file
+   * picker + direct upload, matching the dialog-level flow.
+   */
+  onAddMediaGalleryImages?: () => void;
+  /**
+   * Fallback handler for the footer when no `commentsSlot` is provided — e.g.
+   * the standalone preview app or future callers that want a dialog-only flow.
+   * When `commentsSlot` is supplied the footer becomes a collapsible and this
+   * prop is ignored.
+   */
+  onCommentsClick?: () => void;
+  /**
+   * 3-dots settings area rendered in the card header. The consumer provides a full
+   * menu component (e.g. `CalloutContextMenu`) that brings its own `DropdownMenuTrigger`
+   * button — this card never renders a standalone settings button (plan D8 / T060).
+   */
+  settingsSlot?: ReactNode;
+  onExpandClick?: () => void;
+  /** Opens the Collabora editor directly from the feed preview (document framing only).
+   *  Distinct from `onClick`, which opens the callout dialog via the title link. */
+  onOpenFramingDocument?: () => void;
+  /** Contribution preview rendered by the integration layer (ContributionsPreviewConnector) */
+  contributionsPreview?: ReactNode;
+  /** Content injected after the description/preview area, before the footer (e.g. poll) */
+  children?: ReactNode;
+  /**
+   * Full comment thread rendered inside the expanded footer. When supplied the
+   * footer renders a `<Collapsible>` with a chevron-toggle trigger. The
+   * integration layer (`CalloutCommentsConnector`) provides the node.
+   */
+  commentsSlot?: ReactNode;
+  /**
+   * Comment input rendered above the thread inside the expanded footer.
+   * Consumer passes `null` when the viewer cannot post.
+   */
+  commentInputSlot?: ReactNode | null;
+  /**
+   * Emits on every open/close of the inline comments footer. The integration
+   * layer uses this to gate the live subscription (see
+   * `CalloutCommentsConnector.skipSubscription`).
+   */
+  onCommentsExpandedChange?: (expanded: boolean) => void;
+  className?: string;
+};
 
-export function PostCard({ post }: { post: PostProps }) {
-  const [activeDocIndex, setActiveDocIndex] = useState(0);
-  const [activeDocPage, setActiveDocPage] = useState(0);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [needsCollapse, setNeedsCollapse] = useState(false);
-  const [activeResponseType, setActiveResponseType] = useState<ResponseType | null>(
-    post.enabledResponseTypes?.[0] || null
-  );
-  const snippetRef = useRef<HTMLDivElement>(null);
+export function PostCard({
+  post,
+  href,
+  onClick,
+  onOpenFraming,
+  onAddMediaGalleryImages,
+  onCommentsClick,
+  settingsSlot,
+  onExpandClick,
+  onOpenFramingDocument,
+  contributionsPreview,
+  children,
+  commentsSlot,
+  commentInputSlot,
+  onCommentsExpandedChange,
+  className,
+}: PostCardProps) {
+  const { t } = useTranslation('crd-space');
+  const TypeIcon = POST_TYPE_DESCRIPTORS[post.type].icon;
+  const hasCollapsibleComments = commentsSlot !== undefined;
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
-  // Check if description container overflows the fixed height
-  const checkOverflow = useCallback(() => {
-    if (post.collapsed && snippetRef.current) {
-      setNeedsCollapse(snippetRef.current.scrollHeight > snippetRef.current.clientHeight + 2);
-    }
-  }, [post.collapsed]);
-
-  // Run overflow check on mount and when content changes
-  useEffect(() => {
-    checkOverflow();
-  }, [checkOverflow, post.snippet, post.embeddedImages]);
-
-  const isCollapsed = post.collapsed && !isExpanded;
-  const shouldShowCollapseAffordance = isCollapsed && needsCollapse;
-  const getDocIcon = (docType: 'word' | 'spreadsheet' | 'presentation') => {
-    switch (docType) {
-      case 'word': return <FileText className="w-5 h-5 text-blue-600" />;
-      case 'spreadsheet': return <FileSpreadsheet className="w-5 h-5 text-green-600" />;
-      case 'presentation': return <FileImage className="w-5 h-5 text-orange-500" />;
-    }
+  const handleCommentsOpenChange = (open: boolean) => {
+    setIsCommentsOpen(open);
+    onCommentsExpandedChange?.(open);
   };
 
-  const getDocLabel = (docType: 'word' | 'spreadsheet' | 'presentation') => {
-    switch (docType) {
-      case 'word': return 'Word Document';
-      case 'spreadsheet': return 'Spreadsheet';
-      case 'presentation': return 'Presentation';
-    }
-  };
-
-  const getIcon = () => {
-    switch (post.type) {
-      case "whiteboard": return <LayoutGrid className="w-4 h-4" />;
-      case "collection": return <LayoutGrid className="w-4 h-4" />;
-      case "call-for-whiteboards": return <Presentation className="w-4 h-4" />;
-      case "document": return <FileText className="w-4 h-4" />;
-      default: return <FileText className="w-4 h-4" />;
-    }
-  };
-
-  const getLabel = () => {
-    switch (post.type) {
-      case "whiteboard": return "Whiteboard";
-      case "collection": return "Collection";
-      case "call-for-whiteboards": return "Call for Whiteboards";
-      case "document": return "Document";
-      default: return "Post";
-    }
-  };
+  const commentLabel = post.commentCount
+    ? t('callout.comments', { count: post.commentCount })
+    : t('callout.commentsZero');
 
   return (
-    <Card className="group hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border-border/60">
-      <CardHeader className="flex flex-row items-start justify-between pb-0 pt-5 px-6 space-y-0">
-        <div className="flex gap-3">
-          <ProfileHoverCard
-            user={{
-              name: post.author.name,
-              avatarUrl: post.author.avatarUrl,
-              initials: post.author.name.charAt(0),
-              location: post.author.location,
-              tags: post.author.skills,
-            }}
+    <Card
+      className={cn(
+        'group hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border-border/60',
+        post.isDraft && 'border-l-4 border-l-amber-400',
+        className
+      )}
+    >
+      <CardHeader className="relative isolate flex flex-row items-start justify-between pb-0 pt-5 px-6 space-y-0">
+        {/* Stretched-link overlay: clicking anywhere in the header (the empty
+            space, timestamp, badges, type label) opens the callout — the same
+            target as the title link in the body. The avatar/name profile
+            links and the action cluster (expand + 3-dot menu) sit above it via
+            `relative z-10`, so they keep their own behaviour. Rendered only
+            when the consumer wires a destination, so it never becomes a dead
+            `#` click-trap. It's a sibling of the avatar/name anchors, not an
+            ancestor — no nested-anchor invalidity. `tabIndex={-1}` keeps it
+            out of the keyboard tab order so it doesn't duplicate the visible
+            title link's focus stop — the title link stays the keyboard
+            control. We deliberately don't add `aria-hidden` (Biome
+            `useAnchorContent` forbids a no-accessible-content link); the
+            `sr-only` label keeps it discoverable in AT browse mode. */}
+        {(href || onClick) && (
+          <a
+            href={href ?? '#'}
+            tabIndex={-1}
+            onClick={
+              onClick
+                ? e => {
+                    e.preventDefault();
+                    onClick();
+                  }
+                : undefined
+            }
+            className="absolute inset-0 z-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
           >
-            <button type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full">
+            <span className="sr-only">{t('callout.openAria', { title: post.title })}</span>
+          </a>
+        )}
+        <div className="flex gap-3">
+          {post.author &&
+            (post.author.profileUrl ? (
+              <a
+                href={post.author.profileUrl}
+                onClick={e => e.stopPropagation()}
+                aria-label={post.author.name}
+                className="relative z-10 block shrink-0 self-start rounded-full -m-0.5 p-0.5 hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Avatar className="w-10 h-10 border border-border">
+                  {post.author.avatarUrl && <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />}
+                  <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+              </a>
+            ) : (
               <Avatar className="w-10 h-10 border border-border">
-                <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
+                {post.author.avatarUrl && <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />}
                 <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
               </Avatar>
-            </button>
-          </ProfileHoverCard>
+            ))}
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-card-title text-foreground">{post.author.name}</span>
-              <span className="text-caption text-muted-foreground">• {post.timestamp}</span>
+              {post.author &&
+                (post.author.profileUrl ? (
+                  <a
+                    href={post.author.profileUrl}
+                    onClick={e => e.stopPropagation()}
+                    className="relative z-10 rounded-sm text-card-title text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {post.author.name}
+                  </a>
+                ) : (
+                  <span className="text-card-title text-foreground">{post.author.name}</span>
+                ))}
+              {post.timestamp && <span className="text-caption text-muted-foreground">• {post.timestamp}</span>}
             </div>
             <div className="flex items-center gap-2 mt-0.5">
+              {post.author?.role && (
+                <Badge variant="secondary" className="text-badge h-5 px-1.5 font-normal">
+                  {post.author.role}
+                </Badge>
+              )}
+              {post.isDraft && (
+                <Badge className="text-badge h-5 px-1.5 font-semibold bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-100">
+                  {t('callout.draft')}
+                </Badge>
+              )}
               <span className="text-caption text-muted-foreground flex items-center gap-1">
-                {getIcon()} {getLabel()}
+                <TypeIcon className="w-4 h-4" aria-hidden="true" />
+                {t(POST_TYPE_DESCRIPTORS[post.type].labelKey)}
               </span>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <IconButton
-            variant="ghost"
-            tooltipLabel="Fullscreen"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={(e) => {
-              e.stopPropagation();
-              post.onClick?.();
-            }}
-          >
-            <Maximize2 className="w-4 h-4" />
-          </IconButton>
-          <IconButton variant="ghost" tooltipLabel="More options" className="h-8 w-8 text-muted-foreground">
-            <MoreHorizontal className="w-4 h-4" />
-          </IconButton>
+        <div className="relative z-10 flex items-center gap-1">
+          {onExpandClick && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={e => {
+                e.stopPropagation();
+                onExpandClick();
+              }}
+              aria-label={t('callout.expand')}
+            >
+              <Maximize2 className="w-4 h-4" aria-hidden="true" />
+            </Button>
+          )}
+          {settingsSlot}
         </div>
       </CardHeader>
-      
+
       <CardContent className="px-6 pb-0">
-        <h3
-          className="text-subsection-title font-bold mb-2 text-foreground group-hover:text-primary transition-colors cursor-pointer"
-          onClick={post.onClick}
-        >
-          {post.title}
-        </h3>
-
-        {/* Description container — fixed height when collapsed, clips everything */}
-        <div
-          ref={snippetRef}
-          className={cn(
-            isCollapsed && "max-h-[4.5em] overflow-hidden"
-          )}
-        >
-          {/* Embedded images before text */}
-          {post.embeddedImages?.filter(img => img.position === 'before').map((img, idx) => (
-            <div key={idx} className="rounded-lg overflow-hidden mb-3">
-              <img
-                src={img.url}
-                alt={img.alt || ""}
-                className="w-full rounded-lg"
-                onLoad={checkOverflow}
-              />
-            </div>
-          ))}
-
-          <p className="text-muted-foreground text-body">
-            {post.snippet}
-          </p>
-
-          {/* Embedded images after text */}
-          {post.embeddedImages?.filter(img => img.position !== 'before').map((img, idx) => (
-            <div key={idx} className="rounded-lg overflow-hidden mt-3">
-              <img
-                src={img.url}
-                alt={img.alt || ""}
-                className="w-full rounded-lg"
-                onLoad={checkOverflow}
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* Read more / Show less affordance */}
-        {(shouldShowCollapseAffordance || (post.collapsed && isExpanded)) && (
-          <div className="flex justify-start mt-3">
-            <Button
-              variant="link"
-              size="sm"
-              onClick={(e: React.MouseEvent) => {
-                e.stopPropagation();
-                setIsExpanded(!isExpanded);
-              }}
-            >
-              {isExpanded ? "Show less" : "Show more"}
-            </Button>
-          </div>
-        )}
-
-        {post.type === "whiteboard" && post.contentPreview?.imageUrl && (
-          <div className="rounded-lg overflow-hidden border border-border bg-muted/30 relative aspect-video">
-            <ImageWithFallback 
-              src={post.contentPreview.imageUrl} 
-              alt="Whiteboard preview" 
-              className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500" 
-            />
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-primary/40">
-              <Button variant="secondary" className="shadow-sm">Open Whiteboard</Button>
-            </div>
-          </div>
-        )}
-
-        {post.type === "collection" && post.contentPreview?.items && (
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {post.contentPreview.items.slice(0, 4).map((item, idx) => (
-              <div key={idx} className="bg-muted/30 rounded-md p-3 border border-border flex items-center gap-2">
-                <div className="w-8 h-8 bg-background rounded flex items-center justify-center border border-border shrink-0">
-                  <FileText className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <span className="text-caption font-medium truncate">{item.title}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {post.type === "document" && post.contentPreview?.documents && (() => {
-          const docs = post.contentPreview.documents;
-          const activeDoc = docs[activeDocIndex] || docs[0];
-          const hasMultiple = docs.length > 1;
-
-          // Static document preview thumbnail based on type
-          const getDocPreviewThumbnail = (doc: typeof activeDoc) => {
-            switch (doc.docType) {
-              case 'word':
-                return (
-                  <div className="bg-white dark:bg-zinc-900 px-10 py-8 min-h-[280px]">
-                    <div className="space-y-2.5 text-caption text-foreground/70 leading-[1.7]">
-                      <p className="text-badge uppercase tracking-[0.2em] text-muted-foreground/50 text-center">Municipality of Greenfield</p>
-                      <h1 className="text-[14px] font-bold text-foreground text-center mb-0.5">2030 Renewable Transition Policy Proposal</h1>
-                      <p className="text-badge text-muted-foreground text-center mb-4">Draft v3.2 — April 2026</p>
-                      <div className="w-8 h-px bg-border mx-auto mb-3" />
-                      <h2 className="text-caption font-bold text-foreground mt-3">1. Executive Summary</h2>
-                      <p>This policy proposal outlines a comprehensive framework for achieving 100% renewable energy across all municipal operations by 2030. The strategy addresses grid modernization, community solar programs, building electrification, and transportation fleet conversion.</p>
-                      <p>Key targets include reducing carbon emissions by 85% from 2020 baselines, deploying 45 MW of new solar capacity across public infrastructure, and converting 100% of the municipal vehicle fleet to electric by 2029.</p>
-                      <h2 className="text-caption font-bold text-foreground mt-3">2. Current State Assessment</h2>
-                      <p>As of Q1 2026, the municipality derives 42% of its energy from renewable sources, primarily wind (28%) and solar (14%).</p>
-                    </div>
-                    {/* Fade out at bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-zinc-900 to-transparent pointer-events-none" />
-                  </div>
-                );
-              case 'spreadsheet':
-                return (
-                  <div className="bg-white dark:bg-zinc-900 overflow-hidden min-h-[200px]">
-                    <table className="w-full text-caption border-collapse">
-                      <thead>
-                        <tr className="bg-muted/50">
-                          <th className="border border-border/40 px-3 py-1.5 text-left font-semibold text-muted-foreground">District</th>
-                          <th className="border border-border/40 px-3 py-1.5 text-right font-semibold text-muted-foreground">Budget (€M)</th>
-                          <th className="border border-border/40 px-3 py-1.5 text-right font-semibold text-muted-foreground">Timeline</th>
-                          <th className="border border-border/40 px-3 py-1.5 text-right font-semibold text-muted-foreground">Risk</th>
-                          <th className="border border-border/40 px-3 py-1.5 text-right font-semibold text-muted-foreground">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[
-                          { district: 'North District', budget: '12.4', timeline: 'Q3 2027', risk: 'Medium', status: 'Planning' },
-                          { district: 'Central Grid', budget: '28.1', timeline: 'Q1 2028', risk: 'High', status: 'Assessment' },
-                          { district: 'South Campus', budget: '8.7', timeline: 'Q4 2027', risk: 'Low', status: 'Approved' },
-                          { district: 'East Industrial', budget: '19.3', timeline: 'Q2 2028', risk: 'High', status: 'Planning' },
-                          { district: 'West Residential', budget: '6.2', timeline: 'Q1 2027', risk: 'Low', status: 'In Progress' },
-                        ].map((row, i) => (
-                          <tr key={i} className={i % 2 === 0 ? "bg-background" : "bg-muted/10"}>
-                            <td className="border border-border/40 px-3 py-1.5 font-medium">{row.district}</td>
-                            <td className="border border-border/40 px-3 py-1.5 text-right tabular-nums">{row.budget}</td>
-                            <td className="border border-border/40 px-3 py-1.5 text-right">{row.timeline}</td>
-                            <td className="border border-border/40 px-3 py-1.5 text-right">
-                              <span className={cn("inline-block px-1.5 py-0.5 rounded text-badge font-medium",
-                                row.risk === 'Low' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-                                row.risk === 'Medium' && "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-                                row.risk === 'High' && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                              )}>{row.risk}</span>
-                            </td>
-                            <td className="border border-border/40 px-3 py-1.5 text-right text-muted-foreground">{row.status}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              case 'presentation':
-                return (
-                  <div className="aspect-[16/9] bg-gradient-to-br from-primary/90 to-primary/60 flex flex-col items-center justify-center text-white p-8">
-                    <p className="text-label uppercase tracking-widest opacity-70 mb-3">April 2026 Stakeholder Update</p>
-                    <h2 className="text-section-title font-bold text-center mb-2">2030 Renewable Transition</h2>
-                    <p className="text-body opacity-80 text-center max-w-xs">Progress Report & Revised Timeline for Municipal Energy Strategy</p>
-                    <div className="flex gap-4 mt-6">
-                      <div className="text-center">
-                        <p className="text-page-title">42%</p>
-                        <p className="text-badge opacity-70">Current Renewable</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-page-title">100%</p>
-                        <p className="text-badge opacity-70">2030 Target</p>
-                      </div>
-                    </div>
-                    <p className="text-badge opacity-50 mt-4">Slide 1 of 24</p>
-                  </div>
-                );
+        <h3 className="text-subsection-title mb-2 text-foreground group-hover:text-primary transition-colors">
+          <a
+            href={href ?? '#'}
+            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+            onClick={
+              onClick
+                ? e => {
+                    e.preventDefault();
+                    onClick();
+                  }
+                : undefined
             }
-          };
-
-          return (
-            <div className="mt-2 rounded-lg border border-border overflow-hidden">
-              {/* Document tab bar (only when multiple docs) */}
-              {hasMultiple && (
-                <div className="flex border-b border-border bg-muted/30 overflow-x-auto">
-                  {docs.map((doc, idx) => (
-                    <button
-                      key={idx}
-                      onClick={(e) => { e.stopPropagation(); setActiveDocIndex(idx); setActiveDocPage(0); }}
-                      className={cn(
-                        "flex items-center gap-2 px-3 py-2 text-caption whitespace-nowrap border-b-2 transition-colors shrink-0",
-                        idx === activeDocIndex
-                          ? "border-primary text-foreground bg-background"
-                          : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                      )}
-                    >
-                      {getDocIcon(doc.docType)}
-                      <span className="truncate max-w-[180px]">{doc.title}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Static document preview with click-to-open overlay — goes to L3 */}
-              <div className="relative cursor-pointer" onClick={(e) => { e.stopPropagation(); post.onDocumentClick?.(activeDoc); }}>
-                <div className="max-h-[320px] overflow-hidden">
-                  {getDocPreviewThumbnail(activeDoc)}
-                </div>
-                {/* Hover overlay — same pattern as whiteboards */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-primary/40">
-                  <Button variant="secondary" className="shadow-sm">Open Document</Button>
-                </div>
-              </div>
-
-              {/* Document info footer */}
-              <div className="flex items-center justify-between px-3 py-2 bg-muted/20 border-t border-border">
-                <div className="flex items-center gap-2 min-w-0">
-                  {getDocIcon(activeDoc.docType)}
-                  <span className="text-caption font-medium truncate">{activeDoc.title}</span>
-                  <span className="text-badge text-muted-foreground shrink-0">({activeDoc.size})</span>
-                  {activeDoc.lastEdited && (
-                    <span className="text-badge text-muted-foreground/60 shrink-0">· {activeDoc.lastEdited}</span>
-                  )}
-                </div>
-                {hasMultiple && (
-                  <span className="text-badge text-muted-foreground shrink-0">{docs.length} documents</span>
-                )}
-              </div>
-            </div>
-          );
-        })()}
-
-        {post.type === "call-for-whiteboards" && post.contentPreview?.whiteboards && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-            {post.contentPreview.whiteboards.slice(0, 4).map((wb, idx) => {
-              const remainingCount = (post.contentPreview?.whiteboards?.length || 0) - 3;
-              const isLastItem = idx === 3;
-              const showMoreOverlay = isLastItem && remainingCount > 1;
-
-              return (
-                <div key={idx} className="group/wb relative rounded-lg overflow-hidden border border-border bg-muted/30 aspect-[4/3] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all">
-                  <ImageWithFallback 
-                    src={wb.imageUrl} 
-                    alt={wb.title} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover/wb:scale-105" 
-                  />
-                  
-                  {/* Hover Overlay (Button & Dimming) - Visible on hover, unless it's the "More" block */}
-                  {!showMoreOverlay && (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/wb:opacity-100 transition-opacity duration-200 bg-primary/40">
-                      <Button variant="secondary" size="sm" className="shadow-lg h-8 text-caption font-semibold">
-                        Open Whiteboard
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Text Overlay (Title/Author) - Always visible unless "More" overlay is active */}
-                  {!showMoreOverlay && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent p-3 flex flex-col justify-end pointer-events-none">
-                      <p className="text-white text-caption font-semibold truncate">{wb.title}</p>
-                      <p className="text-white/70 text-badge truncate">by {wb.author}</p>
-                    </div>
-                  )}
-
-                  {/* "More" Overlay - Always visible for the 4th item if there are more */}
-                  {showMoreOverlay && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-primary/60 backdrop-blur-[2px]">
-                      <span className="text-white text-subsection-title font-bold">+{remainingCount} more</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          >
+            {post.title}
+          </a>
+        </h3>
+        {post.snippet && (
+          <ExpandableMarkdown content={post.snippet} maxLines={3} defaultExpanded={post.descriptionExpanded} />
         )}
-      </CardContent>
 
-      {/* Responses Section (Contributions) - Pixel-perfect match to production */}
-      {post.enabledResponseTypes && post.enabledResponseTypes.length > 0 && (
-        <div className="px-6 py-6 border-t border-border space-y-3">
-          {/* Response Type Tabs */}
-          <div className="flex gap-3 flex-wrap">
-            {post.enabledResponseTypes.map((type) => {
-              const typeLabels: Record<ResponseType, string> = {
-                'whiteboards': 'WHITEBOARDS',
-                'posts': 'POSTS',
-                'memos': 'MEMOS',
-                'links-files': 'LINKS & FILES',
-              };
-              const typeLabel = typeLabels[type];
+        {/* References + tags row — same component as the detail dialog (DRY). */}
+        <ReferencesAndTagsStrip references={post.references} tags={post.tags} />
 
-              return (
-                <button
-                  key={type}
-                  onClick={() => setActiveResponseType(type)}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-full border transition-colors text-sm font-medium whitespace-nowrap",
-                    activeResponseType === type
-                      ? "border-foreground/30 bg-transparent text-foreground"
-                      : "border-border bg-transparent text-muted-foreground hover:border-foreground/30"
-                  )}
+        {/* Whiteboard framing preview — always render (even when empty), MUI parity.
+            The whole preview is the click target (cursor-pointer everywhere), not just the centered
+            label — matching the contribution cards. The label is a non-interactive <span> (nesting a
+            <button> would be invalid). */}
+        {post.type === 'whiteboard' && (
+          <button
+            type="button"
+            onClick={event => {
+              event.stopPropagation();
+              (onOpenFraming ?? onClick)?.();
+            }}
+            className="relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 aspect-video text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {post.framingImageUrl ? (
+              <img
+                src={post.framingImageUrl}
+                alt={t('callout.whiteboard')}
+                className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Presentation className="w-12 h-12 text-muted-foreground/50" aria-hidden="true" />
+              </div>
+            )}
+            <div className="absolute inset-0 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
+              <span className="inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-sm h-9 px-4 text-control">
+                {t('callout.openWhiteboard')}
+              </span>
+            </div>
+          </button>
+        )}
+
+        {/* Memo framing preview — fixed-height box; renders icon centred when empty.
+            Whole box is the click target (cursor-pointer everywhere); the label is a non-interactive
+            <span>. Mirrors the contribution cards, which likewise nest CroppedMarkdown in a button. */}
+        {post.type === 'memo' && (
+          <button
+            type="button"
+            onClick={event => {
+              event.stopPropagation();
+              (onOpenFraming ?? onClick)?.();
+            }}
+            className="relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 h-32 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {post.framingMemoMarkdown ? (
+              <div className="p-3 h-full">
+                <CroppedMarkdown content={post.framingMemoMarkdown} maxHeight="100%" />
+              </div>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <StickyNote className="w-12 h-12 text-muted-foreground/50" aria-hidden="true" />
+              </div>
+            )}
+            <div className="absolute inset-0 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
+              <span className="inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-sm h-9 px-4 text-control">
+                {t('callout.openMemo')}
+              </span>
+            </div>
+          </button>
+        )}
+
+        {/* Media gallery framing preview — 4-tile grid; falls back to a placeholder
+            (icon-centred empty box) when there are no images yet so the gallery has
+            a visible affordance in the feed. Mirrors the whiteboard / memo empty-state
+            pattern. The "Add images" button below opens the OS file picker directly
+            (MUI parity — no edit-dialog round-trip). */}
+        {post.type === 'mediaGallery' && (
+          <div className="space-y-2">
+            {post.framingMediaGallery && post.framingMediaGallery.thumbnails.length > 0 ? (
+              <MediaGalleryFeedGrid
+                thumbnails={post.framingMediaGallery.thumbnails}
+                totalCount={post.framingMediaGallery.totalCount}
+                onOpenAt={onClick}
+              />
+            ) : (
+              <div className="rounded-lg overflow-hidden border border-border bg-muted/30 relative aspect-video flex items-center justify-center">
+                <Images className="w-12 h-12 text-muted-foreground/50" aria-hidden="true" />
+              </div>
+            )}
+            {onAddMediaGalleryImages && (
+              <div className="flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={event => {
+                    event.stopPropagation();
+                    onAddMediaGalleryImages();
+                  }}
                 >
-                  <span>{typeLabel}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Response Items Grid */}
-          {activeResponseType && post.responses?.[activeResponseType] && (
-            <div className="space-y-3">
-              {/* Header with count and button */}
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-caption font-medium text-foreground">
-                  {post.responses[activeResponseType].length} Contribution{post.responses[activeResponseType].length !== 1 ? 's' : ''}
-                </span>
-                <Button size="sm" className="gap-2 text-xs font-semibold h-8">
-                  + ADD {activeResponseType === 'links-files' ? 'LINK OR FILE' : activeResponseType.toUpperCase().replace('-', ' ')}
+                  <ImagePlus className="size-4" aria-hidden="true" />
+                  {t('mediaGallery.emptyState.action')}
                 </Button>
               </div>
+            )}
+          </div>
+        )}
 
-              {/* Items Grid - Using production ContributionGrid for proper layout */}
-              <ContributionGrid totalCount={post.responses[activeResponseType].length}>
-                {post.responses[activeResponseType].map((item) => {
-                  if (activeResponseType === 'posts') {
-                    return (
-                      <ContributionPostCard
-                        key={item.id}
-                        title={item.title}
-                        author={item.author ? { name: item.author } : undefined}
-                      />
-                    );
-                  }
+        {/* Collabora document framing preview — compact variant for the feed */}
+        {post.type === 'document' && post.framingDocumentType && (
+          <CalloutCollaboraPreview
+            documentType={post.framingDocumentType}
+            onOpen={onOpenFramingDocument ?? onClick ?? (() => {})}
+            size="compact"
+          />
+        )}
 
-                  if (activeResponseType === 'memos') {
-                    return (
-                      <ContributionMemoCard
-                        key={item.id}
-                        title={item.title}
-                        author={item.author}
-                        markdownContent={item.title}
-                      />
-                    );
-                  }
+        {/* Call-to-action framing preview — full-width link button */}
+        {post.type === 'callToAction' && post.framingCallToAction && (
+          <CalloutLinkAction
+            url={post.framingCallToAction.uri}
+            displayName={post.framingCallToAction.displayName}
+            isExternal={post.framingCallToAction.isExternal}
+            isValid={post.framingCallToAction.isValid}
+            className="mt-4"
+          />
+        )}
 
-                  // Whiteboards and links-files use the whiteboard card style
-                  return (
-                    <ContributionWhiteboardCard
-                      key={item.id}
-                      title={item.title}
-                      author={item.author}
-                      previewUrl={item.imageUrl}
-                    />
-                  );
-                })}
-              </ContributionGrid>
-            </div>
-          )}
-        </div>
-      )}
+        {/* Contribution previews — rendered by integration layer */}
+        {contributionsPreview}
+      </CardContent>
 
-      <CardFooter className="!p-0 flex-col items-stretch gap-0 border-t bg-muted/5">
-        <Button variant="ghost" size="sm" className="h-auto gap-2 text-muted-foreground hover:text-foreground hover:bg-transparent justify-start rounded-none px-6 py-3">
-          <MessageSquare className="w-4 h-4" />
-          <span className="text-caption">{post.stats.comments} Comments</span>
-        </Button>
-      </CardFooter>
+      {children && <div className="px-6 pb-4">{children}</div>}
+
+      {/* Footer is hidden entirely when comments are disabled AND there are no existing messages —
+          mirrors the MUI behavior. When messages exist, the thread stays visible (read-only via
+          consumer-gated `commentInputSlot`) even after the admin disables further commenting. */}
+      {(post.commentsEnabled !== false || (post.commentCount ?? 0) > 0) &&
+        (hasCollapsibleComments ? (
+          <CardFooter className="!p-0 flex-col items-stretch gap-0 border-t bg-muted/5">
+            <Collapsible open={isCommentsOpen} onOpenChange={handleCommentsOpenChange}>
+              <CollapsibleTrigger asChild={true}>
+                <button
+                  type="button"
+                  className="group/comments flex w-full items-center gap-2 px-6 py-3 text-caption text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={t(isCommentsOpen ? 'callout.collapseComments' : 'callout.expandComments')}
+                >
+                  <ChevronDown
+                    className="size-4 transition-transform duration-200 group-data-[state=open]/comments:rotate-180"
+                    aria-hidden="true"
+                  />
+                  <MessageSquare className="size-4" aria-hidden="true" />
+                  <span>{commentLabel}</span>
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-6 pt-4 pb-4">
+                <div className="flex flex-col gap-3">
+                  {commentInputSlot}
+                  <div className="max-h-[400px] overflow-y-auto pr-2">{commentsSlot}</div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </CardFooter>
+        ) : (
+          <CardFooter className="!py-3 flex items-center gap-4 border-t bg-muted/5 px-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-2 text-muted-foreground hover:text-foreground pl-0 hover:bg-transparent"
+              onClick={event => {
+                event.stopPropagation();
+                onCommentsClick?.();
+              }}
+            >
+              <MessageSquare className="w-4 h-4" aria-hidden="true" />
+              <span className="text-caption">{commentLabel}</span>
+            </Button>
+          </CardFooter>
+        ))}
     </Card>
   );
 }

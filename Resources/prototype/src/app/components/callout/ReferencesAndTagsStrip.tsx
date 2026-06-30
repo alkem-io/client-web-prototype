@@ -1,4 +1,5 @@
 import { ExternalLink, FileText } from 'lucide-react';
+import { CollapsibleTagList } from '@/app/components/common/CollapsibleTagList';
 import { cn } from '@/lib/utils';
 
 export type ReferencesAndTagsStripReference = {
@@ -15,14 +16,23 @@ type ReferencesAndTagsStripProps = {
   className?: string;
 };
 
+/**
+ * Compact references + tags row used in the feed callout card AND the detail
+ * dialog body — one component, two surfaces. Mirrors MUI's `CalloutHeader`:
+ * each reference renders on its own line as an external-link affordance
+ * (opens in a new tab); tags wrap on a separate row beneath, capped at two
+ * rows with a `+N` overflow that surfaces the hidden ones on hover.
+ */
 export function ReferencesAndTagsStrip({ references, tags, className }: ReferencesAndTagsStripProps) {
   const hasReferences = (references?.length ?? 0) > 0;
   const hasTags = (tags?.length ?? 0) > 0;
   if (!hasReferences && !hasTags) return null;
 
   return (
-    <div className={cn('space-y-2 mt-3', className)}>
+    <div className={cn('space-y-2', className)}>
       {hasReferences && (
+        // biome-ignore lint/a11y/noRedundantRoles: Tailwind preflight removes list-style
+        // biome-ignore lint/a11y/useSemanticElements: role="list" needed to restore semantics after Tailwind reset
         <ul role="list" className="space-y-1.5">
           {references?.map(ref => (
             <li key={ref.id}>
@@ -50,18 +60,7 @@ export function ReferencesAndTagsStrip({ references, tags, className }: Referenc
         </ul>
       )}
 
-      {hasTags && (
-        <div className="flex gap-2 flex-wrap">
-          {tags?.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-muted/40 border border-border text-caption font-medium text-foreground"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
+      {hasTags && <CollapsibleTagList tags={tags ?? []} />}
     </div>
   );
 }
