@@ -7,6 +7,9 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/c
 import { cn } from "@/lib/utils";
 import { MessageSquare, MoreHorizontal, LayoutGrid, FileText, Presentation, Maximize2, FileSpreadsheet, FileImage } from "lucide-react";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
+import { ContributionWhiteboardCard } from "@/app/components/contribution/ContributionWhiteboardCard";
+import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
+import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
 
 export type PostType = "text" | "whiteboard" | "collection" | "call-for-whiteboards" | "document";
 export type ResponseType = "whiteboards" | "posts" | "memos" | "links-files";
@@ -480,48 +483,38 @@ export function PostCard({ post }: { post: PostProps }) {
                 </Button>
               </div>
 
-              {/* Items Grid - Production: grid grid-cols-1 sm:grid-cols-2 gap-4 */}
+              {/* Items Grid - Production components for pixel-perfect match */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {post.responses[activeResponseType].map((item) => {
-                  // Post cards: text-based layout
                   if (activeResponseType === 'posts') {
                     return (
-                      <div
+                      <ContributionPostCard
                         key={item.id}
-                        className="w-full text-left p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors cursor-pointer flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      >
-                        <p className="text-body-emphasis text-foreground truncate">{item.title}</p>
-                        <div className="flex items-center gap-2 mt-1.5">
-                          <span className="text-caption text-muted-foreground">{item.author}</span>
-                        </div>
-                      </div>
+                        title={item.title}
+                        author={item.author ? { name: item.author } : undefined}
+                      />
                     );
                   }
 
-                  // Whiteboard/Memo cards: image-based with gradient overlay
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className={cn(
-                        "group/wb relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left",
-                        activeResponseType === 'memos' || activeResponseType === 'links-files' ? "min-h-[180px]" : "min-h-[200px]"
-                      )}
-                    >
-                      {item.imageUrl && (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover/wb:scale-105"
-                        />
-                      )}
+                  if (activeResponseType === 'memos') {
+                    return (
+                      <ContributionMemoCard
+                        key={item.id}
+                        title={item.title}
+                        author={item.author}
+                        markdownContent={item.title}
+                      />
+                    );
+                  }
 
-                      {/* Title/author gradient overlay - matches production exactly */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent p-3 flex flex-col justify-end pointer-events-none">
-                        <p className="text-white text-caption font-semibold truncate">{item.title}</p>
-                        {item.author && <p className="text-white/70 text-badge truncate">{item.author}</p>}
-                      </div>
-                    </button>
+                  // Whiteboards and links-files use the whiteboard card style
+                  return (
+                    <ContributionWhiteboardCard
+                      key={item.id}
+                      title={item.title}
+                      author={item.author}
+                      previewUrl={item.imageUrl}
+                    />
                   );
                 })}
               </div>
