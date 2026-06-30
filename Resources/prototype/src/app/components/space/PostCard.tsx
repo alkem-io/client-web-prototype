@@ -12,7 +12,6 @@ import {
   StickyNote,
 } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   CalloutCollaboraPreview,
   type CollaboraDocumentPreviewType,
@@ -54,14 +53,14 @@ type PostTypeLabelKey =
  * literal union so the strict-typed `t()` (see `@types/i18next.d.ts`) accepts
  * them without a cast.
  */
-export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKey: PostTypeLabelKey }> = {
-  text: { icon: FileText, labelKey: 'callout.post' },
-  whiteboard: { icon: Presentation, labelKey: 'callout.whiteboard' },
-  memo: { icon: StickyNote, labelKey: 'callout.memo' },
-  document: { icon: FileText, labelKey: 'callout.document' },
-  mediaGallery: { icon: Images, labelKey: 'callout.mediaGallery' },
-  callToAction: { icon: Megaphone, labelKey: 'callout.callToAction' },
-  poll: { icon: BarChart3, labelKey: 'callout.poll' },
+export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKey: PostTypeLabelKey; label: string }> = {
+  text: { icon: FileText, labelKey: 'callout.post', label: 'Post' },
+  whiteboard: { icon: Presentation, labelKey: 'callout.whiteboard', label: 'Whiteboard' },
+  memo: { icon: StickyNote, labelKey: 'callout.memo', label: 'Memo' },
+  document: { icon: FileText, labelKey: 'callout.document', label: 'Document' },
+  mediaGallery: { icon: Images, labelKey: 'callout.mediaGallery', label: 'Media Gallery' },
+  callToAction: { icon: Megaphone, labelKey: 'callout.callToAction', label: 'Call to Action' },
+  poll: { icon: BarChart3, labelKey: 'callout.poll', label: 'Poll' },
 };
 
 export type PostCardData = {
@@ -187,7 +186,6 @@ export function PostCard({
   onCommentsExpandedChange,
   className,
 }: PostCardProps) {
-  const { t } = useTranslation('crd-space');
   const TypeIcon = POST_TYPE_DESCRIPTORS[post.type].icon;
   const hasCollapsibleComments = commentsSlot !== undefined;
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
@@ -198,8 +196,8 @@ export function PostCard({
   };
 
   const commentLabel = post.commentCount
-    ? t('callout.comments', { count: post.commentCount })
-    : t('callout.commentsZero');
+    ? `${post.commentCount} Comment${post.commentCount !== 1 ? 's' : ''}`
+    : 'No comments';
 
   return (
     <Card
@@ -237,7 +235,7 @@ export function PostCard({
             }
             className="absolute inset-0 z-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
           >
-            <span className="sr-only">{t('callout.openAria', { title: post.title })}</span>
+            <span className="sr-only">Open {post.title}</span>
           </a>
         )}
         <div className="flex gap-3">
@@ -284,12 +282,12 @@ export function PostCard({
               )}
               {post.isDraft && (
                 <Badge className="text-badge h-5 px-1.5 font-semibold bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-100">
-                  {t('callout.draft')}
+                  Draft
                 </Badge>
               )}
               <span className="text-caption text-muted-foreground flex items-center gap-1">
                 <TypeIcon className="w-4 h-4" aria-hidden="true" />
-                {t(POST_TYPE_DESCRIPTORS[post.type].labelKey)}
+                {POST_TYPE_DESCRIPTORS[post.type].label}
               </span>
             </div>
           </div>
@@ -304,7 +302,7 @@ export function PostCard({
                 e.stopPropagation();
                 onExpandClick();
               }}
-              aria-label={t('callout.expand')}
+              aria-label="Expand"
             >
               <Maximize2 className="w-4 h-4" aria-hidden="true" />
             </Button>
@@ -353,7 +351,7 @@ export function PostCard({
             {post.framingImageUrl ? (
               <img
                 src={post.framingImageUrl}
-                alt={t('callout.whiteboard')}
+                alt="Whiteboard"
                 className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
               />
             ) : (
@@ -363,7 +361,7 @@ export function PostCard({
             )}
             <div className="absolute inset-0 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
               <span className="inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-sm h-9 px-4 text-control">
-                {t('callout.openWhiteboard')}
+                Open Whiteboard
               </span>
             </div>
           </button>
@@ -392,7 +390,7 @@ export function PostCard({
             )}
             <div className="absolute inset-0 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
               <span className="inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-sm h-9 px-4 text-control">
-                {t('callout.openMemo')}
+                Open Memo
               </span>
             </div>
           </button>
@@ -428,7 +426,7 @@ export function PostCard({
                   }}
                 >
                   <ImagePlus className="size-4" aria-hidden="true" />
-                  {t('mediaGallery.emptyState.action')}
+                  Add Images
                 </Button>
               </div>
             )}
@@ -472,7 +470,7 @@ export function PostCard({
                 <button
                   type="button"
                   className="group/comments flex w-full items-center gap-2 px-6 py-3 text-caption text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label={t(isCommentsOpen ? 'callout.collapseComments' : 'callout.expandComments')}
+                  aria-label={isCommentsOpen ? 'Collapse comments' : 'Expand comments'}
                 >
                   <ChevronDown
                     className="size-4 transition-transform duration-200 group-data-[state=open]/comments:rotate-180"

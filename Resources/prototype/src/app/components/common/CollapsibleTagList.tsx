@@ -1,6 +1,5 @@
 import type { VariantProps } from 'class-variance-authority';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { TruncatedTag } from '@/app/components/common/TruncatedTag';
 import { cn } from '@/lib/utils';
 import { badgeVariants } from '@/app/components/ui/badge';
@@ -41,7 +40,6 @@ export function CollapsibleTagList({
   variant = 'secondary',
   className,
 }: CollapsibleTagListProps) {
-  const { t } = useTranslation('crd-common');
   const interactive = Boolean(onTagClick);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLUListElement>(null);
@@ -198,7 +196,7 @@ export function CollapsibleTagList({
               <PopoverTrigger asChild={true}>
                 <button
                   type="button"
-                  aria-label={t('tags.moreAria', { count: hiddenTags.length })}
+                  aria-label={`Show ${hiddenTags.length} more tags`}
                   className={moreClass}
                 >
                   +{hiddenTags.length}

@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { MarkdownContent } from '@/app/components/common/MarkdownContent';
 import { cn } from '@/lib/utils';
 
@@ -68,7 +67,6 @@ export function ExpandableMarkdown({
   collapseLabel,
   className,
 }: ExpandableMarkdownProps) {
-  const { t } = useTranslation('crd-space');
   const [overflow, setOverflow] = useState<Overflow>('unknown');
   // `null` → follow the `defaultExpanded` setting. Set only by an explicit
   // user click on "Read more" / "Read less", which then takes precedence.
@@ -120,8 +118,8 @@ export function ExpandableMarkdown({
 
   const showToggle = overflow === 'yes';
   const surfaceClass = surfaceClasses[surface];
-  const expandText = expandLabel ?? t('postSnippet.readMore');
-  const collapseText = collapseLabel ?? t('postSnippet.readLess');
+  const expandText = expandLabel ?? '… Read more';
+  const collapseText = collapseLabel ?? 'Read less';
 
   return (
     <div className={cn('relative', className)}>

@@ -1,5 +1,4 @@
 import { StickyNote } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { CroppedMarkdown } from '@/app/components/ui/croppedMarkdown';
 
@@ -19,8 +18,6 @@ export function ContributionMemoCard({
   onClick,
   className,
 }: ContributionMemoCardProps) {
-  const { t } = useTranslation('crd-space');
-
   return (
     <button
       type="button"
@@ -43,7 +40,7 @@ export function ContributionMemoCard({
       {/* Hover "Open Memo" button overlay */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/memo:opacity-100 transition-opacity duration-200 bg-primary/40">
         <span className="inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-lg h-8 px-3 text-caption font-semibold">
-          {t('callout.openMemo')}
+          Open Memo
         </span>
       </div>
 

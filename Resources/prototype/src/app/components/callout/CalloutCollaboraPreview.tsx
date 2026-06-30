@@ -1,5 +1,4 @@
 import { FileText, Presentation, Sheet } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Button } from '@/app/components/ui/button';
 
@@ -20,10 +19,10 @@ const iconByType: Record<CollaboraDocumentPreviewType, typeof FileText> = {
   presentation: Presentation,
 };
 
-const typeLabelKey: Record<CollaboraDocumentPreviewType, string> = {
-  text: 'callout.documentText',
-  spreadsheet: 'callout.documentSpreadsheet',
-  presentation: 'callout.documentPresentation',
+const typeLabelMap: Record<CollaboraDocumentPreviewType, string> = {
+  text: 'Document',
+  spreadsheet: 'Spreadsheet',
+  presentation: 'Presentation',
 };
 
 export function CalloutCollaboraPreview({
@@ -32,9 +31,8 @@ export function CalloutCollaboraPreview({
   size = 'default',
   className,
 }: CalloutCollaboraPreviewProps) {
-  const { t } = useTranslation('crd-space');
   const Icon = iconByType[documentType];
-  const typeLabel = t(typeLabelKey[documentType] as 'callout.documentText');
+  const typeLabel = typeLabelMap[documentType];
   const compact = size === 'compact';
 
   return (
@@ -56,7 +54,7 @@ export function CalloutCollaboraPreview({
       </div>
       <div className="absolute inset-0 flex items-center justify-center bg-primary/10 hover:bg-primary/20 transition-colors">
         <Button variant="secondary" className="shadow-sm" onClick={onOpen}>
-          {t('callout.openDocument')}
+          Open Document
         </Button>
       </div>
     </div>

@@ -1,6 +1,5 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Button } from '@/app/components/ui/button';
 
@@ -12,7 +11,6 @@ type ContributionGridProps = {
 };
 
 export function ContributionGrid({ children, totalCount, collapsedRows = 2, className }: ContributionGridProps) {
-  const { t } = useTranslation('crd-space');
   const [expanded, setExpanded] = useState(false);
 
   const itemsPerRow = 2;
@@ -36,12 +34,12 @@ export function ContributionGrid({ children, totalCount, collapsedRows = 2, clas
             {expanded ? (
               <>
                 <ChevronUp className="w-4 h-4" aria-hidden="true" />
-                {t('callout.collapse')}
+                Collapse
               </>
             ) : (
               <>
                 <ChevronDown className="w-4 h-4" aria-hidden="true" />
-                {t('callout.expand')} ({totalCount})
+                Expand ({totalCount})
               </>
             )}
           </Button>

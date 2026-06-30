@@ -1,6 +1,5 @@
 import { ExternalLink } from 'lucide-react';
 import type { MouseEvent } from 'react';
-import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { Button } from '@/app/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/app/components/ui/tooltip';
@@ -14,8 +13,6 @@ type CalloutLinkActionProps = {
 };
 
 export function CalloutLinkAction({ url, displayName, isExternal, isValid, className }: CalloutLinkActionProps) {
-  const { t } = useTranslation('crd-space');
-
   // Stop the click bubbling to any clickable ancestor (e.g. the surrounding
   // PostCard opens the detail dialog on click — we don't want that when the
   // user's intent is to follow the link).
@@ -29,9 +26,9 @@ export function CalloutLinkAction({ url, displayName, isExternal, isValid, class
         variant="outline"
         disabled={true}
         className={cn('w-full border-destructive text-destructive', className)}
-        aria-label={t('callToAction.validation.invalidUrl')}
+        aria-label="Invalid URL"
       >
-        {t('callToAction.validation.invalidUrl')}
+        Invalid URL
       </Button>
     );
   }
@@ -44,10 +41,7 @@ export function CalloutLinkAction({ url, displayName, isExternal, isValid, class
             href={url}
             target={isExternal ? '_blank' : undefined}
             rel={isExternal ? 'noopener noreferrer' : undefined}
-            aria-label={t(isExternal ? 'callToAction.linkAriaLabelExternal' : 'callToAction.linkAriaLabel', {
-              displayName,
-              url,
-            })}
+            aria-label={isExternal ? `${displayName} (opens in new window)` : displayName}
             onClick={stopBubble}
           >
             <span className="truncate">{displayName}</span>
@@ -56,7 +50,7 @@ export function CalloutLinkAction({ url, displayName, isExternal, isValid, class
         </Button>
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs text-primary-foreground">
-        {isExternal && <div className="text-caption mb-0.5">{t('callToAction.externalLinkDisclaimer')}</div>}
+        {isExternal && <div className="text-caption mb-0.5">Opens in a new window</div>}
         <div className="text-caption break-all">{url}</div>
       </TooltipContent>
     </Tooltip>
