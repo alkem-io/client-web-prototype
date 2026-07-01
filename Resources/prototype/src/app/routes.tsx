@@ -39,6 +39,7 @@ import ForumPage from "./pages/ForumPage";
 import InnovationHubPage from "./pages/InnovationHubPage";
 import InnovationHubSettingsPage from "./pages/InnovationHubSettingsPage";
 import ResponsiveSidebarDemo from "./pages/ResponsiveSidebarDemo";
+import { SubspaceApplicationPage } from "./pages/SubspaceApplicationPage";
 
 export const router = createBrowserRouter([
   {
@@ -57,6 +58,7 @@ export const router = createBrowserRouter([
       { path: "/password-recovery", Component: AuthPage },
       { path: "/sign-in-v2", Component: AuthPageV2 },
       { path: "/sign-in-v3", Component: AuthPageV3 },
+      { path: "/form", Component: SubspaceApplicationPage },
 
       /* ─── Pages WITH app sidebar (MainLayout) ─── */
       {
