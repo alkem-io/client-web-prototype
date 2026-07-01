@@ -80,6 +80,7 @@ interface SubspaceApplicationDialogProps {
     email: string;
     organization?: string;
   };
+  onSuccess?: () => void;
 }
 
 function countWords(text: string): number {
@@ -184,6 +185,7 @@ export function SubspaceApplicationDialog({
   formConfig,
   spaceName,
   currentUser,
+  onSuccess,
 }: SubspaceApplicationDialogProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -272,6 +274,7 @@ export function SubspaceApplicationDialog({
     setTimeout(() => {
       setIsSubmitting(false);
       handleClose();
+      onSuccess?.();
       toast.success("Application submitted! The space team will review it soon.");
     }, 1500);
   };

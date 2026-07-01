@@ -1,6 +1,30 @@
 import { useState } from "react";
 import { SubspaceApplicationDialog } from "@/app/components/dialogs/SubspaceApplicationDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
+import { Button } from "@/app/components/ui/button";
 import type { ApplicationFormConfig } from "@/app/components/dialogs/SubspaceApplicationDialog";
+
+const DUTCH_MUNICIPALITIES = [
+  { id: "amsterdam", label: "Amsterdam" },
+  { id: "rotterdam", label: "Rotterdam" },
+  { id: "den-haag", label: "Den Haag" },
+  { id: "utrecht", label: "Utrecht" },
+  { id: "eindhoven", label: "Eindhoven" },
+  { id: "groningen", label: "Groningen" },
+  { id: "almere", label: "Almere" },
+  { id: "arnhem", label: "Arnhem" },
+  { id: "zwolle", label: "Zwolle" },
+  { id: "apeldoorn", label: "Apeldoorn" },
+  { id: "breda", label: "Breda" },
+  { id: "nijmegen", label: "Nijmegen" },
+  { id: "maastricht", label: "Maastricht" },
+  { id: "dordrecht", label: "Dordrecht" },
+  { id: "haarlem", label: "Haarlem" },
+  { id: "leiden", label: "Leiden" },
+  { id: "delft", label: "Delft" },
+  { id: "tilburg", label: "Tilburg" },
+  { id: "'s-hertogenbosch", label: "'s-Hertogenbosch" },
+];
 
 const FORM_CONFIG: ApplicationFormConfig = {
   id: "form-1",
@@ -10,26 +34,29 @@ const FORM_CONFIG: ApplicationFormConfig = {
     {
       id: "title",
       type: "short-text",
-      label: "Subspace Title",
-      description: "What would you like to call your subspace?",
+      label: "Naam van de innovatie",
+      description: "Wat is de naam van de innovatie die u in wilt dienen?",
       required: true,
       order: 1,
       constraints: { maxLength: 100 },
     },
     {
       id: "initiating-municipality",
-      type: "short-text",
-      label: "Initiating Municipality",
-      description: "Which municipality is initiating this subspace?",
+      type: "multi-select-list",
+      label: "Uw gemeente",
+      description: "Welke gemeente is aanvrager?",
       required: true,
       order: 2,
-      constraints: { maxLength: 100 },
+      constraints: {
+        maxSelections: 1,
+        items: DUTCH_MUNICIPALITIES,
+      },
     },
     {
       id: "first-lead",
       type: "auto-fill-profile",
-      label: "First Lead",
-      description: "Who is the primary lead?",
+      label: "Contactpersoon",
+      description: "Wie is de contactpersoon?",
       required: true,
       order: 3,
       constraints: { fields: ["name", "email", "organization"] },
@@ -37,8 +64,8 @@ const FORM_CONFIG: ApplicationFormConfig = {
     {
       id: "second-lead",
       type: "user-picker",
-      label: "Second Lead",
-      description: "Who is the co-lead?",
+      label: "Tweede contactpersoon",
+      description: "Optioneel: nog een contactpersoon",
       required: false,
       order: 4,
       constraints: { maxSelections: 1 },
@@ -46,39 +73,23 @@ const FORM_CONFIG: ApplicationFormConfig = {
     {
       id: "supporting-municipalities",
       type: "multi-select-list",
-      label: "Supporting Municipalities",
-      description: "Which other municipalities are involved? (Search by name)",
+      label: "Andere deelnemende gemeenten",
+      description: "Welke andere gemeenten nemen deel? (Zoeken op naam)",
       required: false,
       order: 5,
       constraints: {
         allowManualEntry: false,
-        items: [
-          { id: "amsterdam", label: "Amsterdam" },
-          { id: "rotterdam", label: "Rotterdam" },
-          { id: "den-haag", label: "Den Haag" },
-          { id: "utrecht", label: "Utrecht" },
-          { id: "eindhoven", label: "Eindhoven" },
-          { id: "groningen", label: "Groningen" },
-          { id: "almere", label: "Almere" },
-          { id: "arnhem", label: "Arnhem" },
-          { id: "zwolle", label: "Zwolle" },
-          { id: "apeldoorn", label: "Apeldoorn" },
-          { id: "breda", label: "Breda" },
-          { id: "nijmegen", label: "Nijmegen" },
-          { id: "maastricht", label: "Maastricht" },
-          { id: "dordrecht", label: "Dordrecht" },
-          { id: "haarlem", label: "Haarlem" },
-        ],
+        items: DUTCH_MUNICIPALITIES,
       },
     },
     {
       id: "vision",
       type: "long-text",
-      label: "What's the vision? (Who, What, Why, How)",
-      description: "Please describe: (1) Who will benefit from this initiative? (2) What are you trying to achieve? (3) Why is this important? (4) How will you do it?",
+      label: "De innovatie beschrijven",
+      description: "WIE? Omschrijf (in maximaal 250 woorden) het doel en de doelgroep van de innovatie, op welke manier de innovatie voor een oplossing of verbetering zorgt, en in welke mate dat doel in uw gemeente al is bereikt.\n\nWAARVOOR? Vertel (in maximaal 250 woorden) waar en in hoeverre de casus na de opschaling bijdraagt aan de doelen van de VNG. Dit kan bijvoorbeeld aan de hand van de verenigingsstrategie, de Digitale agenda en/of de omkeringsthema's.\n\nWAAROM? Geef (in maximaal 250 woorden) de aanleiding voor het indienen van dit opschalingsvoorstel. Beschrijf wat de toegevoegde waarde is van de innovatie als die zou zijn opgeschaald. Wat maakt de beoogde opschaling zo belangrijk?\n\nHOE? Beschrijf (in maximaal 250 woorden) op hoofdlijnen wat er naar uw mening moet gebeuren om de casus door te ontwikkelen naar gebruik door tenminste 30 gemeenten. Geef een indicatie van de complexiteit, de benodigde partijen, de gewenste rol van VNG, de investering (en hoe deze te financieren) en de te verwachten doorlooptijd.",
       required: true,
       order: 6,
-      constraints: { maxLength: 2000, maxWords: 400 },
+      constraints: { maxLength: 2000, maxWords: 1000 },
     },
   ],
   createdAt: new Date().toISOString(),
@@ -87,6 +98,16 @@ const FORM_CONFIG: ApplicationFormConfig = {
 
 export function SubspaceApplicationPage() {
   const [open, setOpen] = useState(true);
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  const handleSuccess = () => {
+    setOpen(false);
+    setSuccessOpen(true);
+  };
+
+  const handleRedirect = () => {
+    window.location.href = "https://alkem.io/intakeproceskci/challenges/aanvraagindienen?phase=1a1e2566-66c0-49be-95f9-741cb206f123";
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -94,14 +115,34 @@ export function SubspaceApplicationPage() {
         open={open}
         onOpenChange={setOpen}
         formConfig={FORM_CONFIG}
-        spaceName="Alkemio Space"
+        spaceName="VNG Opschaling"
         currentUser={{
           id: "user-1",
-          name: "Current User",
+          name: "Huidige gebruiker",
           email: "user@example.com",
-          organization: "Organization",
+          organization: "Gemeente",
         }}
+        onSuccess={handleSuccess}
       />
+
+      <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Aanvraag ontvangen</DialogTitle>
+            <DialogDescription>
+              Dank u voor het indienen van uw aanvraag. Wij nemen contact met u op.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 pt-4">
+            <Button variant="outline" className="flex-1" onClick={() => setSuccessOpen(false)}>
+              Sluiten
+            </Button>
+            <Button className="flex-1" onClick={handleRedirect}>
+              Terug naar platform
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
