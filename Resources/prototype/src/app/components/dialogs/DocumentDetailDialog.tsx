@@ -99,10 +99,10 @@ export function DocumentDetailDialog({ open, onOpenChange, document, author }: D
  <IconButton variant="ghost" tooltipLabel="Share" onClick={() => toast.success("Link copied")} className="text-muted-foreground hover:text-foreground rounded-full">
  <Share2 className="w-4 h-4" />
  </IconButton>
- variant="ghost" tooltipLabel="Download" className="text-muted-foreground hover:text-foreground rounded-full">
+ <IconButton variant="ghost" tooltipLabel="Download" className="text-muted-foreground hover:text-foreground rounded-full">
  <Download className="w-4 h-4" />
  </IconButton>
- variant="ghost" tooltipLabel="More options" className="text-muted-foreground hover:text-foreground rounded-full">
+ <IconButton variant="ghost" tooltipLabel="More options" className="text-muted-foreground hover:text-foreground rounded-full">
  <MoreHorizontal className="w-4 h-4" />
  </IconButton>
  <div className="w-px h-5 bg-border mx-1" />

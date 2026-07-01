@@ -76,10 +76,10 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
  </div>
  
  <div className="flex items-center gap-2">
- variant="ghost" tooltipLabel="Share" onClick={handleShare} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full">
+ <IconButton variant="ghost" tooltipLabel="Share" onClick={handleShare} className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full">
  <Share2 className="w-5 h-5" />
  </IconButton>
- variant="ghost" tooltipLabel="More options" className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full">
+ <IconButton variant="ghost" tooltipLabel="More options" className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full">
  <MoreHorizontal className="w-5 h-5" />
  </IconButton>
  <div className="w-px h-6 bg-border mx-2" />
@@ -413,10 +413,10 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
  onChange={(e) => setCommentText(e.target.value)}
  />
  <div className="absolute right-2 bottom-2 flex items-center gap-1">
- variant="ghost" tooltipLabel="Emoji" className="text-muted-foreground hover:text-primary">
+ <IconButton variant="ghost" tooltipLabel="Emoji" className="text-muted-foreground hover:text-primary">
  <Smile className="w-4 h-4" />
  </IconButton>
- tooltipLabel="Send" className="rounded-md" disabled={!commentText.trim()}>
+ <IconButton tooltipLabel="Send" className="rounded-md" disabled={!commentText.trim()}>
  <Send className="w-3 h-3" />
  </IconButton>
  </div>

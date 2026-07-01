@@ -130,7 +130,7 @@ export function Header({
 
  {/* Alkemio logo — always visible as breadcrumb Home anchor */}
  <Link to="/" className="flex items-center shrink-0" aria-label="Home">
- <div >
+ <div className="w-8 h-8">
  <AlkemioSymbolSquare />
  </div>
  </Link>

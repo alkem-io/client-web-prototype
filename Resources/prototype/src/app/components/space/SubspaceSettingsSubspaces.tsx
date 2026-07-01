@@ -166,6 +166,7 @@ export function SubspaceSettingsSubspaces() {
  </DropdownMenu>
 
  <div className="border rounded-md flex items-center h-9 p-0.5 bg-muted/20">
+ <IconButton
  variant={viewMode === "grid" ? "secondary" : "ghost"}
  tooltipLabel="Grid view"
  className="rounded-sm"
@@ -173,6 +174,7 @@ export function SubspaceSettingsSubspaces() {
  >
  <Grid className="w-4 h-4" />
  </IconButton>
+ <IconButton
  variant={viewMode === "list" ? "secondary" : "ghost"}
  tooltipLabel="List view"
  className="rounded-sm"
@@ -240,7 +242,7 @@ export function SubspaceSettingsSubspaces() {
  <div className="absolute top-2 right-2">
  <DropdownMenu>
  <DropdownMenuTrigger asChild>
- variant="secondary" tooltipLabel="More options" className="rounded-full bg-background/80 backdrop-blur-sm border border-black/5 hover:bg-background">
+<IconButton variant="secondary" tooltipLabel="More options" className="rounded-full bg-background/80 backdrop-blur-sm border border-black/5 hover:bg-background">
  <MoreVertical className="w-3.5 h-3.5" />
  </IconButton>
  </DropdownMenuTrigger>

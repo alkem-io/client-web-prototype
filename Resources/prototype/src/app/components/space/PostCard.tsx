@@ -221,7 +221,7 @@ export function PostCard({
   onCommentsExpandedChange,
   className,
 }: PostCardProps) {
-  const TypeIcon = POST_TYPE_DESCRIPTORS[post.type].icon;
+  const TypeIcon = post.type && POST_TYPE_DESCRIPTORS[post.type] ? POST_TYPE_DESCRIPTORS[post.type].icon : FileText;
   const hasCollapsibleComments = commentsSlot !== undefined;
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
 
@@ -322,7 +322,7 @@ export function PostCard({
               )}
               <span className="text-caption text-muted-foreground flex items-center gap-1">
                 <TypeIcon className="w-4 h-4" aria-hidden="true" />
-                {POST_TYPE_DESCRIPTORS[post.type].label}
+                {post.type && POST_TYPE_DESCRIPTORS[post.type] ? POST_TYPE_DESCRIPTORS[post.type].label : 'Post'}
               </span>
             </div>
           </div>

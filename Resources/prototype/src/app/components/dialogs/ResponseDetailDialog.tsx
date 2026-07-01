@@ -193,18 +193,18 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
  <div className="flex items-center gap-1">
  {isAuthor && (
  <>
- variant="ghost" tooltipLabel="Edit" className="text-muted-foreground hover:text-primary rounded-full">
+ <IconButton variant="ghost" tooltipLabel="Edit" className="text-muted-foreground hover:text-primary rounded-full">
  <Edit2 className="w-4 h-4" />
  </IconButton>
- variant="ghost" tooltipLabel="Delete" onClick={handleDelete} className="text-muted-foreground hover:text-destructive rounded-full">
+ <IconButton variant="ghost" tooltipLabel="Delete" onClick={handleDelete} className="text-muted-foreground hover:text-destructive rounded-full">
  <Trash2 className="w-4 h-4" />
  </IconButton>
  </>
  )}
- variant="ghost" tooltipLabel="Share" className="text-muted-foreground hover:text-foreground rounded-full">
+ <IconButton variant="ghost" tooltipLabel="Share" className="text-muted-foreground hover:text-foreground rounded-full">
  <Share2 className="w-4 h-4" />
  </IconButton>
- variant="ghost" tooltipLabel="More options" className="text-muted-foreground hover:text-foreground rounded-full">
+ <IconButton variant="ghost" tooltipLabel="More options" className="text-muted-foreground hover:text-foreground rounded-full">
  <MoreHorizontal className="w-4 h-4" />
  </IconButton>
  </div>
@@ -295,14 +295,14 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
  />
  <div className="flex items-center justify-between px-2 pb-2">
  <div className="flex items-center gap-1">
- variant="ghost" tooltipLabel="Emoji" className="text-muted-foreground hover:text-foreground">
+ <IconButton variant="ghost" tooltipLabel="Emoji" className="text-muted-foreground hover:text-foreground">
  <Smile className="w-4 h-4" />
  </IconButton>
- variant="ghost" tooltipLabel="Mention" className="text-muted-foreground hover:text-foreground">
+ <IconButton variant="ghost" tooltipLabel="Mention" className="text-muted-foreground hover:text-foreground">
  <AtSign className="w-4 h-4" />
  </IconButton>
  </div>
- tooltipLabel="Send" className="rounded-lg" disabled={!commentText.trim()}>
+ <IconButton tooltipLabel="Send" className="rounded-lg" disabled={!commentText.trim()}>
  <Send className="w-4 h-4" />
  </IconButton>
  </div>
