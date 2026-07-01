@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router";
 import { SubspaceApplicationDialog } from "@/app/components/dialogs/SubspaceApplicationDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
@@ -44,7 +45,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       id: "initiating-municipality",
       type: "multi-select-list",
       label: "Uw gemeente",
-      description: "Welke gemeente is aanvrager?",
+      description: "Welke gemeente is aanvrager? (Zoeken op naam)",
       required: true,
       order: 2,
       constraints: {
@@ -83,13 +84,40 @@ const FORM_CONFIG: ApplicationFormConfig = {
       },
     },
     {
-      id: "vision",
+      id: "vision-wie",
       type: "long-text",
-      label: "De innovatie beschrijven",
-      description: "WIE? Omschrijf (in maximaal 250 woorden) het doel en de doelgroep van de innovatie, op welke manier de innovatie voor een oplossing of verbetering zorgt, en in welke mate dat doel in uw gemeente al is bereikt.\n\nWAARVOOR? Vertel (in maximaal 250 woorden) waar en in hoeverre de casus na de opschaling bijdraagt aan de doelen van de VNG. Dit kan bijvoorbeeld aan de hand van de verenigingsstrategie, de Digitale agenda en/of de omkeringsthema's.\n\nWAAROM? Geef (in maximaal 250 woorden) de aanleiding voor het indienen van dit opschalingsvoorstel. Beschrijf wat de toegevoegde waarde is van de innovatie als die zou zijn opgeschaald. Wat maakt de beoogde opschaling zo belangrijk?\n\nHOE? Beschrijf (in maximaal 250 woorden) op hoofdlijnen wat er naar uw mening moet gebeuren om de casus door te ontwikkelen naar gebruik door tenminste 30 gemeenten. Geef een indicatie van de complexiteit, de benodigde partijen, de gewenste rol van VNG, de investering (en hoe deze te financieren) en de te verwachten doorlooptijd.",
+      label: "WIE?",
+      description: "Omschrijf (in maximaal 250 woorden) het doel en de doelgroep van de innovatie, op welke manier de innovatie voor een oplossing of verbetering zorgt, en in welke mate dat doel in uw gemeente al is bereikt.",
       required: true,
       order: 6,
-      constraints: { maxLength: 2000, maxWords: 1000 },
+      constraints: { maxLength: 500, maxWords: 250 },
+    },
+    {
+      id: "vision-waarvoor",
+      type: "long-text",
+      label: "WAARVOOR?",
+      description: "Vertel (in maximaal 250 woorden) waar en in hoeverre de casus na de opschaling bijdraagt aan de doelen van de VNG. Dit kan bijvoorbeeld aan de hand van de verenigingsstrategie, de Digitale agenda en/of de omkeringsthema's.",
+      required: true,
+      order: 7,
+      constraints: { maxLength: 500, maxWords: 250 },
+    },
+    {
+      id: "vision-waarom",
+      type: "long-text",
+      label: "WAAROM?",
+      description: "Geef (in maximaal 250 woorden) de aanleiding voor het indienen van dit opschalingsvoorstel. Beschrijf wat de toegevoegde waarde is van de innovatie als die zou zijn opgeschaald. Wat maakt de beoogde opschaling zo belangrijk?",
+      required: true,
+      order: 8,
+      constraints: { maxLength: 500, maxWords: 250 },
+    },
+    {
+      id: "vision-hoe",
+      type: "long-text",
+      label: "HOE?",
+      description: "Beschrijf (in maximaal 250 woorden) op hoofdlijnen wat er naar uw mening moet gebeuren om de casus door te ontwikkelen naar gebruik door tenminste 30 gemeenten. Geef een indicatie van de complexiteit, de benodigde partijen, de gewenste rol van VNG, de investering (en hoe deze te financieren) en de te verwachten doorlooptijd.",
+      required: true,
+      order: 9,
+      constraints: { maxLength: 500, maxWords: 250 },
     },
   ],
   createdAt: new Date().toISOString(),
@@ -97,8 +125,13 @@ const FORM_CONFIG: ApplicationFormConfig = {
 };
 
 export function SubspaceApplicationPage() {
+  const [searchParams] = useSearchParams();
   const [open, setOpen] = useState(true);
   const [successOpen, setSuccessOpen] = useState(false);
+
+  const formTitle = useMemo(() => {
+    return searchParams.get("title") || "VNG Opschaling";
+  }, [searchParams]);
 
   const handleSuccess = () => {
     setOpen(false);
@@ -106,7 +139,8 @@ export function SubspaceApplicationPage() {
   };
 
   const handleRedirect = () => {
-    window.location.href = "https://alkem.io/intakeproceskci/challenges/aanvraagindienen?phase=1a1e2566-66c0-49be-95f9-741cb206f123";
+    const redirectUrl = searchParams.get("redirect") || "https://alkem.io/intakeproceskci/challenges/aanvraagindienen?phase=1a1e2566-66c0-49be-95f9-741cb206f123";
+    window.location.href = redirectUrl;
   };
 
   return (
@@ -115,7 +149,7 @@ export function SubspaceApplicationPage() {
         open={open}
         onOpenChange={setOpen}
         formConfig={FORM_CONFIG}
-        spaceName="VNG Opschaling"
+        spaceName={formTitle}
         currentUser={{
           id: "user-1",
           name: "Huidige gebruiker",
