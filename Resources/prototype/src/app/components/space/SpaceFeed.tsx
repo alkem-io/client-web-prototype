@@ -8,6 +8,9 @@ import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDia
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { ContributionGrid } from "../contribution/ContributionGrid";
+import { ContributionWhiteboardCard } from "../contribution/ContributionWhiteboardCard";
+import { ContributionPostCard } from "../contribution/ContributionPostCard";
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
@@ -15,10 +18,23 @@ const wb2 = "https://images.unsplash.com/photo-1574359219611-a3031f074b2c?auto=f
 const wb3 = "https://images.unsplash.com/photo-1578401058525-35aaec0b4658?auto=format&fit=crop&q=80&w=1080";
 const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=format&fit=crop&q=80&w=1080";
 
+interface Response {
+  id: string;
+  type: "whiteboard" | "document" | "post" | "memo" | "link-file";
+  title: string;
+  author?: { name: string; role?: string; avatarUrl?: string };
+  previewUrl?: string;
+  createdDate?: string;
+  description?: string;
+  tags?: string[];
+  commentCount?: number;
+}
+
 interface PostWithTags extends PostCardData {
   tags: string[];
   commentTexts?: string[];
   contentPreview?: any;
+  responses?: Response[];
 }
 
 export function SpaceFeed() {
@@ -66,20 +82,49 @@ export function SpaceFeed() {
     {
       id: "7",
       type: "text",
-      tags: ["Updates", "Ideas"],
+      tags: ["Ideas", "Community"],
       author: {
-        name: "David Miller",
+        name: "Jordan Phillips",
         role: "Member",
-        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
-      title: "Site Visit Photos: Solar Installation Progress",
-      snippet: "Here's the latest progress shot from the public library rooftop installation. The panels are about 60% complete and we're on track for the September deadline.",
-      embeddedImages: [
-        { url: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80&w=1080", alt: "Solar panels being installed on rooftop", position: "after" }
-      ],
-      timestamp: "3 hours ago",
-      commentCount: 4,
-      commentTexts: ["Looking great! The alignment is perfect.", "Are those the bifacial panels we discussed?", "Nice progress — the contractor is doing solid work.", "Can you share the specs on the inverter setup?"]
+      title: "Call for Posts: Community Stories: Your Transition Journey",
+      snippet: "Share your personal story about how the renewable energy transition has impacted your life. Whether it's switching to solar, adopting an EV, or simply making more sustainable choices, we want to hear from community members about their experiences and the barriers they've overcome.",
+      timestamp: "2 hours ago",
+      commentCount: 6,
+      commentTexts: ["I'd love to share my experience with home solar.", "What format works best for submissions?", "Community stories are so valuable for outreach.", "Can we do a featured story each month?", "I'm interested in telling my EV transition story.", "Let's compile these into a publication."],
+      responses: [
+        {
+          id: "r1",
+          type: "post",
+          title: "My Journey to Solar: A Homeowner's Story",
+          author: { name: "Maria Santos", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          createdDate: "1 hour ago",
+          description: "After years of high electricity bills, I finally took the leap to install solar panels on my roof. Here's what the process was like...",
+          tags: ["Solar", "Residential"],
+          commentCount: 3
+        },
+        {
+          id: "r2",
+          type: "post",
+          title: "Going Electric: The First Year with My EV",
+          author: { name: "James Chen", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          createdDate: "45 minutes ago",
+          description: "I made the switch from a gas car to an electric vehicle six months ago. It's been transformative, but not without challenges. Let me share what I've learned...",
+          tags: ["EV", "Transportation"],
+          commentCount: 5
+        },
+        {
+          id: "r3",
+          type: "post",
+          title: "Community Building Through Energy Efficiency",
+          author: { name: "Patricia Brown", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          createdDate: "30 minutes ago",
+          description: "Our neighborhood started a collective energy efficiency project and it's been amazing. We've reduced consumption by 40% and strengthened community bonds...",
+          tags: ["Community", "Efficiency"],
+          commentCount: 7
+        }
+      ]
     },
     {
       id: "8",
@@ -119,7 +164,7 @@ export function SpaceFeed() {
     },
     {
       id: "4",
-      type: "whiteboard",
+      type: "text",
       tags: ["Ideas", "Updates"],
       author: {
         name: "Alex Contributor",
@@ -129,9 +174,37 @@ export function SpaceFeed() {
       title: "Call for Ideas: Community Solar Projects",
       snippet: "We need innovative concepts for integrating solar into existing municipal infrastructure. Please sketch out your ideas for public buildings, parking lots, and open spaces.",
       timestamp: "3 hours ago",
-      framingImageUrl: wb1,
       commentCount: 8,
-      commentTexts: ["Love the parking lot canopy concept!", "We should consider wind load requirements for the school microgrids.", "The bus stop stations could double as EV chargers.", "What's the estimated ROI on the library roof?", "Can we integrate battery storage into these designs?", "The town hall retrofit should be our flagship project.", "Great sketches David — very detailed.", "Let's schedule a site visit for the top 3 locations."]
+      commentTexts: ["Love the parking lot canopy concept!", "We should consider wind load requirements for the school microgrids.", "The bus stop stations could double as EV chargers.", "What's the estimated ROI on the library roof?", "Can we integrate battery storage into these designs?", "The town hall retrofit should be our flagship project.", "Great sketches David — very detailed.", "Let's schedule a site visit for the top 3 locations."],
+      responses: [
+        {
+          id: "r1",
+          type: "whiteboard",
+          title: "Solar Canopy Designs for Municipal Parking",
+          author: { name: "David Miller", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          previewUrl: wb1,
+          createdDate: "2 hours ago",
+          commentCount: 4
+        },
+        {
+          id: "r2",
+          type: "whiteboard",
+          title: "Library Rooftop Solar Integration Study",
+          author: { name: "Maria Santos", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          previewUrl: wb3,
+          createdDate: "1 hour ago",
+          commentCount: 2
+        },
+        {
+          id: "r3",
+          type: "whiteboard",
+          title: "Bus Stop + EV Charging Hybrid Stations",
+          author: { name: "James Chen", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          previewUrl: wb4,
+          createdDate: "45 minutes ago",
+          commentCount: 3
+        }
+      ]
     },
     {
       id: "2",
@@ -225,16 +298,52 @@ export function SpaceFeed() {
       </div>
 
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
-        {filteredPosts.map((post) => (
-          <PostCard 
-            key={post.id} 
-            post={{
-              ...post,
-              descriptionExpanded: !collapseEnabled,
-            }}
-            onClick={() => setSelectedPost(post)}
-          />
-        ))}
+        {filteredPosts.map((post) => {
+          const contributionsPreview = post.responses && post.responses.length > 0 ? (
+            <div className="pt-4 border-t border-border">
+              <div className="text-sm font-semibold text-foreground mb-3">CONTRIBUTIONS ({post.responses.length})</div>
+              <ContributionGrid
+                totalCount={post.responses.length}
+                onAddClick={() => setSelectedPost(post)}
+              >
+                {post.responses.map((response) => (
+                  response.type === 'whiteboard' ? (
+                    <ContributionWhiteboardCard
+                      key={response.id}
+                      title={response.title}
+                      previewUrl={response.previewUrl}
+                      author={response.author?.name}
+                      onClick={() => setSelectedPost(post)}
+                    />
+                  ) : (
+                    <ContributionPostCard
+                      key={response.id}
+                      title={response.title}
+                      author={response.author}
+                      createdDate={response.createdDate}
+                      description={response.description}
+                      tags={response.tags}
+                      commentCount={response.commentCount}
+                      onClick={() => setSelectedPost(post)}
+                    />
+                  )
+                ))}
+              </ContributionGrid>
+            </div>
+          ) : undefined;
+
+          return (
+            <PostCard
+              key={post.id}
+              post={{
+                ...post,
+                descriptionExpanded: !collapseEnabled,
+              }}
+              onClick={() => setSelectedPost(post)}
+              contributionsPreview={contributionsPreview}
+            />
+          );
+        })}
       </div>
 
       <div className="mt-8 text-center">
