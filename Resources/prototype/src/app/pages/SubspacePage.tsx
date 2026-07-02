@@ -15,6 +15,7 @@ import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs
 import { PostCard, type PostProps } from "@/app/components/space/PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
+import { ResponseDetailDialog } from "@/app/components/dialogs/ResponseDetailDialog";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { ContributionGrid } from "../components/contribution/ContributionGrid";
 import { ContributionWhiteboardCard } from "../components/contribution/ContributionWhiteboardCard";
@@ -310,6 +311,7 @@ export default function SubspacePage() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCommunityDialogOpen, setIsCommunityDialogOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
+  const [selectedResponse, setSelectedResponse] = useState<Response | null>(null);
 
   // Filter posts by active phase
   const filteredPosts = useMemo(
@@ -475,6 +477,7 @@ export default function SubspacePage() {
                             title={response.title}
                             previewUrl={response.previewUrl}
                             author={response.author?.name}
+                            onClick={() => setSelectedResponse(response)}
                           />
                         ) : (
                           <ContributionPostCard
@@ -485,6 +488,7 @@ export default function SubspacePage() {
                             description={response.description}
                             tags={response.tags}
                             commentCount={response.commentCount}
+                            onClick={() => setSelectedResponse(response)}
                           />
                         )
                       ))}
@@ -542,6 +546,13 @@ export default function SubspacePage() {
         open={!!selectedPost}
         onOpenChange={(open) => !open && setSelectedPost(null)}
         post={selectedPost}
+      />
+
+      {/* Response Detail Dialog (L2) */}
+      <ResponseDetailDialog
+        open={!!selectedResponse}
+        onOpenChange={(open) => !open && setSelectedResponse(null)}
+        responseId={selectedResponse?.id}
       />
 
       {/* Community Dialog */}

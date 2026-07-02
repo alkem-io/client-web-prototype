@@ -3,8 +3,9 @@ import { Button } from "@/app/components/ui/button";
 import { Plus, Pin, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
-import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
-import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
+import { PostDetailDialog } from "../dialogs/PostDetailDialog";
+import { ResponseDetailDialog } from "../dialogs/ResponseDetailDialog";
+import { DocumentDetailDialog } from "../dialogs/DocumentDetailDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
@@ -40,6 +41,7 @@ interface PostWithTags extends PostCardData {
 export function SpaceFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
+  const [selectedResponse, setSelectedResponse] = useState<Response | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
   const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
   const [collapseEnabled, setCollapseEnabled] = useState(() => {
@@ -313,7 +315,7 @@ export function SpaceFeed() {
                       title={response.title}
                       previewUrl={response.previewUrl}
                       author={response.author?.name}
-                      onClick={() => setSelectedPost(post)}
+                      onClick={() => setSelectedResponse(response)}
                     />
                   ) : (
                     <ContributionPostCard
@@ -324,7 +326,7 @@ export function SpaceFeed() {
                       description={response.description}
                       tags={response.tags}
                       commentCount={response.commentCount}
-                      onClick={() => setSelectedPost(post)}
+                      onClick={() => setSelectedResponse(response)}
                     />
                   )
                 ))}
@@ -356,10 +358,15 @@ export function SpaceFeed() {
         open={isPostModalOpen} 
         onOpenChange={setIsPostModalOpen} 
       />
-      <PostDetailDialog 
-        open={!!selectedPost} 
+      <PostDetailDialog
+        open={!!selectedPost}
         onOpenChange={(open) => !open && setSelectedPost(null)}
         post={selectedPost}
+      />
+      <ResponseDetailDialog
+        open={!!selectedResponse}
+        onOpenChange={(open) => !open && setSelectedResponse(null)}
+        responseId={selectedResponse?.id}
       />
       <DocumentDetailDialog
         open={!!selectedDocument}
