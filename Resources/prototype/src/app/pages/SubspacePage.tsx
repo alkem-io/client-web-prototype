@@ -14,6 +14,7 @@ import { SubspaceSidebar } from "@/app/components/space/SubspaceSidebar";
 import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs";
 import { PostCard, type PostProps } from "@/app/components/space/PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
+import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { ContributionGrid } from "../components/contribution/ContributionGrid";
 import { ContributionWhiteboardCard } from "../components/contribution/ContributionWhiteboardCard";
@@ -308,6 +309,7 @@ export default function SubspacePage() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCommunityDialogOpen, setIsCommunityDialogOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
 
   // Filter posts by active phase
   const filteredPosts = useMemo(
@@ -494,6 +496,7 @@ export default function SubspacePage() {
                   <PostCard
                     key={post.id}
                     post={post}
+                    onClick={() => setSelectedPost(post)}
                     contributionsPreview={contributionsPreview}
                   />
                 );
@@ -532,6 +535,13 @@ export default function SubspacePage() {
       <AddPostModal
         open={isPostModalOpen}
         onOpenChange={setIsPostModalOpen}
+      />
+
+      {/* Post Detail Dialog (L1) */}
+      <PostDetailDialog
+        open={!!selectedPost}
+        onOpenChange={(open) => !open && setSelectedPost(null)}
+        post={selectedPost}
       />
 
       {/* Community Dialog */}
