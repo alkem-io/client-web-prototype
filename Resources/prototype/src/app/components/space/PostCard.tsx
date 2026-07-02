@@ -11,7 +11,7 @@ import {
   Presentation,
   StickyNote,
 } from 'lucide-react';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import {
   CalloutCollaboraPreview,
   type CollaboraDocumentPreviewType,
@@ -62,34 +62,90 @@ export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKe
 };
 
 /**
- * Simple text-based expandable content component for the prototype.
- * Renders plain text with line clamping and a "read more" toggle.
+ * Expandable content component using DOM-based overflow detection.
+ * Uses a fixed max-height (~3 lines) and checks scrollHeight vs clientHeight
+ * to determine if content is clipped. Works with text, images, and mixed content.
  */
 function SimpleExpandableText({
   content,
   maxLines = 3,
   defaultExpanded = false,
+  embeddedImages,
 }: {
   content: string;
   maxLines?: number;
   defaultExpanded?: boolean;
+  embeddedImages?: Array<{ url: string; alt?: string; position?: 'before' | 'after' }>;
 }) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-  const lineArray = content.split('\n');
-  const isClamped = lineArray.length > maxLines;
-  const displayedLines = isExpanded ? lineArray : lineArray.slice(0, maxLines);
+  const [needsCollapse, setNeedsCollapse] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync with external defaultExpanded changes (e.g. "Expand all posts" toggle)
+  useEffect(() => {
+    setIsExpanded(defaultExpanded);
+  }, [defaultExpanded]);
+
+  const checkOverflow = useCallback(() => {
+    if (containerRef.current && !isExpanded) {
+      setNeedsCollapse(containerRef.current.scrollHeight > containerRef.current.clientHeight + 2);
+    }
+  }, [isExpanded]);
+
+  useEffect(() => {
+    checkOverflow();
+  }, [checkOverflow, content, embeddedImages]);
+
+  const isCollapsed = !isExpanded;
+  const showAffordance = (isCollapsed && needsCollapse) || (isExpanded && needsCollapse);
+
+  // maxLines * 1.5em line-height = max height in em
+  const maxHeightEm = `${maxLines * 1.5}em`;
 
   return (
-    <div className="space-y-2">
-      <p className="text-body text-foreground whitespace-pre-wrap break-words">
-        {displayedLines.join('\n')}
-      </p>
-      {isClamped && (
+    <div className="space-y-0">
+      <div
+        ref={containerRef}
+        className={cn(isCollapsed ? 'overflow-hidden' : '')}
+        style={isCollapsed ? { maxHeight: maxHeightEm } : undefined}
+      >
+        {/* Embedded images before text */}
+        {embeddedImages?.filter(img => img.position === 'before').map((img, idx) => (
+          <div key={`before-${idx}`} className="rounded-lg overflow-hidden mb-3">
+            <img
+              src={img.url}
+              alt={img.alt || ''}
+              className="w-full rounded-lg"
+              onLoad={checkOverflow}
+            />
+          </div>
+        ))}
+
+        <p className="text-body text-foreground whitespace-pre-wrap break-words">
+          {content}
+        </p>
+
+        {/* Embedded images after text */}
+        {embeddedImages?.filter(img => img.position !== 'before').map((img, idx) => (
+          <div key={`after-${idx}`} className="rounded-lg overflow-hidden mt-3">
+            <img
+              src={img.url}
+              alt={img.alt || ''}
+              className="w-full rounded-lg"
+              onLoad={checkOverflow}
+            />
+          </div>
+        ))}
+      </div>
+      {showAffordance && (
         <Button
           variant="link"
           size="sm"
-          className="h-auto p-0 text-primary"
-          onClick={() => setIsExpanded(!isExpanded)}
+          className="h-auto p-0 mt-2 text-primary"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
         >
           {isExpanded ? 'Show less' : 'Read more'}
         </Button>
@@ -140,6 +196,8 @@ export type PostCardData = {
    * effect when the snippet actually overflows the clamp height.
    */
   descriptionExpanded?: boolean;
+  /** User-embedded images in the post body (plain images, no interactive overlay) */
+  embeddedImages?: Array<{ url: string; alt?: string; position?: 'before' | 'after' }>;
   /** External references attached to the callout — each rendered on its own line as a link. */
   references?: ReferencesAndTagsStripReference[];
   /** Default-tagset tags — rendered as a wrap-row of pills below the references (MUI parity). */
@@ -203,6 +261,9 @@ type PostCardProps = {
   onCommentsExpandedChange?: (expanded: boolean) => void;
   className?: string;
 };
+
+/** @deprecated Use PostCardData instead */
+export type PostProps = PostCardData;
 
 export function PostCard({
   post,
@@ -364,7 +425,7 @@ export function PostCard({
           </a>
         </h3>
         {post.snippet && (
-          <SimpleExpandableText content={post.snippet} maxLines={3} defaultExpanded={post.descriptionExpanded} />
+          <SimpleExpandableText content={post.snippet} maxLines={3} defaultExpanded={post.descriptionExpanded} embeddedImages={post.embeddedImages} />
         )}
 
         {/* References + tags row — same component as the detail dialog (DRY). */}
