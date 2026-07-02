@@ -19,7 +19,7 @@ import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunit
 /* ─── Mock subspace metadata ─── */
 
 // Parent space banner — subspaces always inherit their parent's banner
-const PARENT_SPACE_BANNER = "/banners/steward-ownership.png";
+const PARENT_SPACE_BANNER = "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBjaGFsbGVuZ2UlMjBjcmVhdGl2ZSUyMHdvcmtzaG9wJTIwdGVhbSUyMGNvbGxhYm9yYXRpb24lMjBpbm5vdmF0aW9uJTIwc3ByaW50JTIwZGVzaWduJTIwc3ByaW50fGVufDF8fHx8MTc2OTA5NDMxMHww&ixlib=rb-4.1.0&q=80&w=1920";
 
 interface SubspaceInfo {
   title: string;

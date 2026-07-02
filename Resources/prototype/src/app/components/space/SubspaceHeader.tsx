@@ -59,15 +59,24 @@ export function SubspaceHeader({
         </div>
       ) : (
         <div
-          className="relative w-full overflow-hidden"
-          style={{ marginTop: "-64px", height: "256px" }}
+          className="w-full"
+          style={{ marginTop: "-64px", paddingLeft: 32, paddingRight: 32 }}
         >
-          <img
-            src={imageUrl}
-            alt="Subspace banner"
-            className="w-full h-full object-cover"
-            style={{ display: "block" }}
-          />
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-12 lg:col-start-2 lg:col-span-10">
+              <div
+                className="relative overflow-hidden"
+                style={{ aspectRatio: "6 / 1", width: "100%" }}
+              >
+                <img
+                  src={imageUrl}
+                  alt="Subspace banner"
+                  className="w-full h-full object-cover"
+                  style={{ display: "block" }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
