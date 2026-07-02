@@ -61,7 +61,7 @@ export function ContributionPostCard({
           <p className="text-body text-muted-foreground line-clamp-2">{description}</p>
         </div>
       )}
-      <div className="flex items-center gap-1.5 mt-auto pt-2 min-w-0">
+      <div className="flex items-center gap-1.5 mt-auto pt-[10px] min-w-0">
         {tags && tags.length > 0 && <CollapsibleTagList tags={tags} maxRows={1} className="flex-1 min-w-0" />}
         {commentCount !== undefined && commentCount > 0 && (
           <span className="flex items-center gap-1 text-caption text-muted-foreground ml-auto shrink-0">
