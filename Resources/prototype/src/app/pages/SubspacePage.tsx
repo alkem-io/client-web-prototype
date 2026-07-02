@@ -147,7 +147,7 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     snippet:
       "We are officially launching the strategy phase for the 2030 renewable transition. Our goal is to outline a clear path for municipalities to reach 100% renewable energy.",
     timestamp: "2 hours ago",
-    stats: { comments: 5 },
+    stats: { comments: 5, likes: 0 },
   },
   {
     id: "sp-2",
@@ -166,7 +166,7 @@ const SUBSPACE_POSTS: CalloutPost[] = [
       "Interactive whiteboard exploring the interconnections between solar, wind and storage for the 2030 grid model.",
     timestamp: "5 hours ago",
     contentPreview: { imageUrl: wb1 },
-    stats: { comments: 3 },
+    stats: { comments: 3, likes: 0 },
   },
   {
     id: "sp-3",
@@ -184,7 +184,7 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     snippet:
       "Sharing the first draft of the municipal incentive framework. Please review Section 3 on tax credits and provide feedback by Friday.",
     timestamp: "1 day ago",
-    stats: { comments: 8 },
+    stats: { comments: 8, likes: 0 },
   },
   {
     id: "sp-4",
@@ -202,7 +202,7 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     snippet:
       "We need ideas on how to best involve communities in shared solar projects. Submit your whiteboard proposals below.",
     timestamp: "2 days ago",
-    stats: { comments: 12 },
+    stats: { comments: 12, likes: 0 },
     responses: [
       {
         id: "r1",
@@ -240,7 +240,7 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     snippet:
       "Compiled directory of all stakeholders across municipal, industry, and NGO sectors involved in the transition programme.",
     timestamp: "3 days ago",
-    stats: { comments: 2 },
+    stats: { comments: 2, likes: 0 },
     responses: [
       {
         id: "r1",
@@ -284,7 +284,7 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     snippet:
       "A comparative study of EU member-state approaches to the Renewable Energy Directive (RED III) and implications for our municipal framework.",
     timestamp: "4 days ago",
-    stats: { comments: 4 },
+    stats: { comments: 4, likes: 0 },
   },
 ];
 
