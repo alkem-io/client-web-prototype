@@ -15,6 +15,9 @@ import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs
 import { PostCard, type PostProps } from "@/app/components/space/PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
+import { ContributionGrid } from "../components/contribution/ContributionGrid";
+import { ContributionWhiteboardCard } from "../components/contribution/ContributionWhiteboardCard";
+import { ContributionPostCard } from "../components/contribution/ContributionPostCard";
 
 /* ─── Mock subspace metadata ─── */
 
@@ -109,8 +112,21 @@ const wb1 =
 const wb2 =
   "https://images.unsplash.com/photo-1574359219611-a3031f074b2c?auto=format&fit=crop&q=80&w=1080";
 
+interface Response {
+  id: string;
+  type: "whiteboard" | "document" | "post" | "memo" | "link-file";
+  title: string;
+  author?: { name: string; role?: string; avatarUrl?: string };
+  previewUrl?: string;
+  createdDate?: string;
+  description?: string;
+  tags?: string[];
+  commentCount?: number;
+}
+
 interface CalloutPost extends PostProps {
   callout: string; // matches a callout id
+  responses?: Response[];
 }
 
 const SUBSPACE_POSTS: CalloutPost[] = [
@@ -171,7 +187,7 @@ const SUBSPACE_POSTS: CalloutPost[] = [
   },
   {
     id: "sp-4",
-    type: "call-for-whiteboards",
+    type: "text",
     callout: "municipal",
     author: {
       name: "Alex Torres",
@@ -185,25 +201,31 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     snippet:
       "We need ideas on how to best involve communities in shared solar projects. Submit your whiteboard proposals below.",
     timestamp: "2 days ago",
-    contentPreview: {
-      whiteboards: [
-        {
-          title: "Community Solar Model A",
-          imageUrl: wb1,
-          author: "Sarah Chen",
-        },
-        {
-          title: "Rooftop Sharing Plan",
-          imageUrl: wb2,
-          author: "David Kim",
-        },
-      ],
-    },
     stats: { comments: 12 },
+    responses: [
+      {
+        id: "r1",
+        type: "whiteboard",
+        title: "Community Solar Model A",
+        author: { name: "Sarah Chen", role: "Lead", avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+        previewUrl: wb1,
+        createdDate: "2 days ago",
+        commentCount: 4
+      },
+      {
+        id: "r2",
+        type: "whiteboard",
+        title: "Rooftop Sharing Plan",
+        author: { name: "David Kim", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+        previewUrl: wb2,
+        createdDate: "2 days ago",
+        commentCount: 2
+      },
+    ],
   },
   {
     id: "sp-5",
-    type: "collection",
+    type: "text",
     callout: "stakeholders",
     author: {
       name: "Anna Martinez",
@@ -217,14 +239,33 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     snippet:
       "Compiled directory of all stakeholders across municipal, industry, and NGO sectors involved in the transition programme.",
     timestamp: "3 days ago",
-    contentPreview: {
-      items: [
-        { title: "Municipality Contacts", type: "spreadsheet" },
-        { title: "Industry Partners", type: "document" },
-        { title: "NGO Directory", type: "document" },
-      ],
-    },
     stats: { comments: 2 },
+    responses: [
+      {
+        id: "r1",
+        type: "document",
+        title: "Municipality Contacts",
+        author: { name: "Anna Martinez", role: "Lead", avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+        createdDate: "3 days ago",
+        commentCount: 1
+      },
+      {
+        id: "r2",
+        type: "document",
+        title: "Industry Partners",
+        author: { name: "Anna Martinez", role: "Lead", avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+        createdDate: "3 days ago",
+        commentCount: 0
+      },
+      {
+        id: "r3",
+        type: "document",
+        title: "NGO Directory",
+        author: { name: "Anna Martinez", role: "Lead", avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+        createdDate: "3 days ago",
+        commentCount: 1
+      },
+    ],
   },
   {
     id: "sp-6",
@@ -418,12 +459,45 @@ export default function SubspacePage() {
           {/* Feed */}
           <div className="space-y-6">
             {filteredPosts.length > 0 ? (
-              filteredPosts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                />
-              ))
+              filteredPosts.map((post) => {
+                const contributionsPreview = post.responses && post.responses.length > 0 ? (
+                  <div className="pt-4 border-t border-border">
+                    <div className="text-sm font-semibold text-foreground mb-3">CONTRIBUTIONS ({post.responses.length})</div>
+                    <ContributionGrid
+                      totalCount={post.responses.length}
+                    >
+                      {post.responses.map((response) => (
+                        response.type === 'whiteboard' ? (
+                          <ContributionWhiteboardCard
+                            key={response.id}
+                            title={response.title}
+                            previewUrl={response.previewUrl}
+                            author={response.author?.name}
+                          />
+                        ) : (
+                          <ContributionPostCard
+                            key={response.id}
+                            title={response.title}
+                            author={response.author}
+                            createdDate={response.createdDate}
+                            description={response.description}
+                            tags={response.tags}
+                            commentCount={response.commentCount}
+                          />
+                        )
+                      ))}
+                    </ContributionGrid>
+                  </div>
+                ) : undefined;
+
+                return (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    contributionsPreview={contributionsPreview}
+                  />
+                );
+              })
             ) : (
               <div
                 className="flex flex-col items-center justify-center py-16"
