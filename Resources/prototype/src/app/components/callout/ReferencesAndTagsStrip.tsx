@@ -29,7 +29,7 @@ export function ReferencesAndTagsStrip({ references, tags, className }: Referenc
   if (!hasReferences && !hasTags) return null;
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('space-y-2 py-[10px]', className)}>
       {hasReferences && (
         // biome-ignore lint/a11y/noRedundantRoles: Tailwind preflight removes list-style
         // biome-ignore lint/a11y/useSemanticElements: role="list" needed to restore semantics after Tailwind reset

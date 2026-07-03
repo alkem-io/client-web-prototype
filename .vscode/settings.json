@@ -8,7 +8,11 @@
     },
     "chat.tools.terminal.autoApprove": {
         ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true
+        ".specify/scripts/powershell/": true,
+        "/^cd \"/Users/jeroennijkamp/Documents/Shadcn Ui Redesign Project/Resources/prototype\" && npx vercel --prod$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }
 

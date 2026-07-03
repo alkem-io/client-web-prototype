@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/app/components/ui/button";
-import { Plus, Pin, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
+import { Plus, Pin, ChevronsDownUp, ChevronsUpDown, CalendarDays } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "../dialogs/PostDetailDialog";
@@ -72,7 +72,6 @@ export function SpaceFeed() {
       tags: ["Updates", "Announcements"],
       author: {
         name: "Sarah Chen",
-        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "Kickoff: Municipal Transition Strategy",
@@ -87,7 +86,6 @@ export function SpaceFeed() {
       tags: ["Ideas", "Community"],
       author: {
         name: "Jordan Phillips",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "Call for Posts: Community Stories: Your Transition Journey",
@@ -100,7 +98,7 @@ export function SpaceFeed() {
           id: "r1",
           type: "post",
           title: "My Journey to Solar: A Homeowner's Story",
-          author: { name: "Maria Santos", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          author: { name: "Maria Santos", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
           createdDate: "1 hour ago",
           description: "After years of high electricity bills, I finally took the leap to install solar panels on my roof. Here's what the process was like...",
           tags: ["Solar", "Residential"],
@@ -110,7 +108,7 @@ export function SpaceFeed() {
           id: "r2",
           type: "post",
           title: "Going Electric: The First Year with My EV",
-          author: { name: "James Chen", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          author: { name: "James Chen", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
           createdDate: "45 minutes ago",
           description: "I made the switch from a gas car to an electric vehicle six months ago. It's been transformative, but not without challenges. Let me share what I've learned...",
           tags: ["EV", "Transportation"],
@@ -120,7 +118,7 @@ export function SpaceFeed() {
           id: "r3",
           type: "post",
           title: "Community Building Through Energy Efficiency",
-          author: { name: "Patricia Brown", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          author: { name: "Patricia Brown", avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
           createdDate: "30 minutes ago",
           description: "Our neighborhood started a collective energy efficiency project and it's been amazing. We've reduced consumption by 40% and strengthened community bonds...",
           tags: ["Community", "Efficiency"],
@@ -134,7 +132,6 @@ export function SpaceFeed() {
       tags: ["Announcements", "Events"],
       author: {
         name: "Elena Rodriguez",
-        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "New EV Charging Network — Proposed Locations",
@@ -152,7 +149,6 @@ export function SpaceFeed() {
       tags: ["Updates", "Discussion"],
       author: {
         name: "Alex Contributor",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "Community Workshop Recap: Building Electrification",
@@ -170,7 +166,6 @@ export function SpaceFeed() {
       tags: ["Ideas", "Updates"],
       author: {
         name: "Alex Contributor",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "Call for Ideas: Community Solar Projects",
@@ -183,7 +178,7 @@ export function SpaceFeed() {
           id: "r1",
           type: "whiteboard",
           title: "Solar Canopy Designs for Municipal Parking",
-          author: { name: "David Miller", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          author: { name: "David Miller", avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
           previewUrl: wb1,
           createdDate: "2 hours ago",
           commentCount: 4
@@ -192,7 +187,7 @@ export function SpaceFeed() {
           id: "r2",
           type: "whiteboard",
           title: "Library Rooftop Solar Integration Study",
-          author: { name: "Maria Santos", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          author: { name: "Maria Santos", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
           previewUrl: wb3,
           createdDate: "1 hour ago",
           commentCount: 2
@@ -201,7 +196,7 @@ export function SpaceFeed() {
           id: "r3",
           type: "whiteboard",
           title: "Bus Stop + EV Charging Hybrid Stations",
-          author: { name: "James Chen", role: "Member", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+          author: { name: "James Chen", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
           previewUrl: wb4,
           createdDate: "45 minutes ago",
           commentCount: 3
@@ -214,7 +209,6 @@ export function SpaceFeed() {
       tags: ["Updates", "Events"],
       author: {
         name: "David Miller",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "2030 Renewable Transition Policy Proposal",
@@ -229,7 +223,6 @@ export function SpaceFeed() {
       tags: ["Ideas", "Updates"],
       author: {
         name: "David Miller",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "Brainstorming: Municipal Infrastructure Upgrades",
@@ -245,7 +238,6 @@ export function SpaceFeed() {
       tags: ["Announcements", "Events"],
       author: {
         name: "Elena Rodriguez",
-        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "2030 Renewable Transition — Working Documents",
@@ -260,7 +252,6 @@ export function SpaceFeed() {
       tags: ["Updates", "Ideas"],
       author: {
         name: "Elena Rodriguez",
-        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
       title: "Transition Case Studies & Policy Docs",
@@ -293,6 +284,44 @@ export function SpaceFeed() {
       {/* Lead Update — pinned announcement (temporarily hidden) */}
       {/* <LeadUpdate /> */}
 
+      {/* Upcoming Events — inline strip */}
+      <div
+        className="mb-5"
+        style={{
+          background: "var(--card)",
+        }}
+      >
+        <div className="flex items-center justify-between mb-2.5">
+          <div className="flex items-center gap-1.5">
+            <CalendarDays className="w-4 h-4" style={{ color: "var(--primary)" }} />
+            <span className="text-sm font-semibold text-foreground">Upcoming Events</span>
+          </div>
+          <button
+            className="text-xs font-medium transition-colors hover:underline"
+            style={{ color: "var(--primary)" }}
+          >
+            View all
+          </button>
+        </div>
+        <div className="flex gap-3 overflow-x-auto">
+          {[
+            { title: "Strategy Workshop", date: "Jul 8", time: "10:00 CET", attendees: 14 },
+            { title: "Stakeholder Review", date: "Jul 11", time: "14:00 CET", attendees: 8 },
+            { title: "Community Solar Session", date: "Jul 15", time: "09:00 CET", attendees: 22 },
+          ].map((event, i) => (
+            <button
+              key={i}
+              className="flex-1 min-w-0 p-2.5 rounded-md text-left transition-colors hover:bg-muted/50"
+              style={{ border: "1px solid var(--border)" }}
+            >
+              <p className="text-sm font-medium text-foreground truncate">{event.title}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{event.date} · {event.time}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{event.attendees} attending</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="flex items-center justify-end mb-4">
         <button onClick={() => setCollapseEnabled(!collapseEnabled)} className="flex items-center gap-1.5 text-caption font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
           {collapseEnabled ? (<><ChevronsUpDown className="w-3.5 h-3.5" /> Expand all posts</>) : (<><ChevronsDownUp className="w-3.5 h-3.5" /> Collapse posts</>)}
@@ -302,7 +331,7 @@ export function SpaceFeed() {
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
         {filteredPosts.map((post) => {
           const contributionsPreview = post.responses && post.responses.length > 0 ? (
-            <div className="pt-4 border-t border-border">
+            <div className="pt-4">
               <div className="text-sm font-semibold text-foreground mb-3">CONTRIBUTIONS ({post.responses.length})</div>
               <ContributionGrid
                 totalCount={post.responses.length}

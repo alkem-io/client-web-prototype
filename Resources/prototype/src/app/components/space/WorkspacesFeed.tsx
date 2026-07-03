@@ -17,7 +17,6 @@ const WORKSPACES_POSTS: PostWithTags[] = [
     tags: ["Active", "Planning"],
     author: {
       name: "David Kim",
-      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1723537742563-15c3d351dbf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdCUyMGJ1c2luZXNzfGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256",
     },
@@ -34,7 +33,6 @@ const WORKSPACES_POSTS: PostWithTags[] = [
     tags: ["Planning", "Research"],
     author: {
       name: "Sophia Li",
-      role: "Admin",
       avatarUrl:
         "https://images.unsplash.com/photo-1758599543113-3de73604e916?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGN1cmx5JTIwaGFpciUyMHByb2Zlc3Npb25hbCUyMHBvcnRyYWl0fGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256",
     },

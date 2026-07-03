@@ -15,6 +15,13 @@ import { Badge } from "@/app/components/ui/badge";
 import { Checkbox } from "@/app/components/ui/checkbox";
 import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+import {
   ChevronRight, CheckCircle2, Building2,
   Users, MessageSquare, Zap,
   type LucideIcon,
@@ -99,34 +106,28 @@ function deriveStepsFromConfig(formConfig: ApplicationFormConfig): StepConfig[] 
   const questions = formConfig.questions.sort((a, b) => a.order - b.order);
   const stepIcons: LucideIcon[] = [Building2, Users, Users, Zap, MessageSquare];
   const steps: StepConfig[] = [];
-  let questionIndex = 0;
+  const seenOrders = new Set<number>();
 
-  // Group questions into steps:
-  // - Group up to 2 short-text/user-picker fields per step
-  // - One long-text/multi-select-list per step
-  while (questionIndex < questions.length) {
-    const currentQ = questions[questionIndex];
-    const step: StepConfig = {
-      id: steps.length,
-      title: currentQ.label || "Question",
-      icon: stepIcons[steps.length % stepIcons.length],
-      iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-      fieldIds: [currentQ.id],
-    };
-
-    // Try to add one more field if possible (short-text or user-picker only)
-    if (
-      questionIndex + 1 < questions.length &&
-      (currentQ.type === "short-text" || currentQ.type === "user-picker") &&
-      (questions[questionIndex + 1].type === "short-text" || questions[questionIndex + 1].type === "user-picker")
-    ) {
-      step.fieldIds.push(questions[questionIndex + 1].id);
-      questionIndex += 2;
+  // Group questions by their order value
+  for (const question of questions) {
+    if (seenOrders.has(question.order)) {
+      // Add to existing step with this order
+      const existingStep = steps.find((s) => s.id === question.order - 1);
+      if (existingStep) {
+        existingStep.fieldIds.push(question.id);
+      }
     } else {
-      questionIndex += 1;
+      // Create new step for this order
+      seenOrders.add(question.order);
+      const step: StepConfig = {
+        id: question.order - 1,
+        title: question.label || "Question",
+        icon: stepIcons[(question.order - 1) % stepIcons.length],
+        iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
+        fieldIds: [question.id],
+      };
+      steps.push(step);
     }
-
-    steps.push(step);
   }
 
   // Add final Review & Submit step
@@ -639,12 +640,38 @@ function FormFieldRenderer({
 
     const items = field.constraints.items || [];
     const selectedValues = Array.isArray(value) ? value : [];
+    const maxSelections = field.constraints.maxSelections;
+    const isSingleSelect = maxSelections === 1;
 
     // Filter items based on search
     const filteredItems = items.filter((item) =>
       item.label.toLowerCase().includes(multiSelectSearch.toLowerCase())
     );
 
+    // Render as dropdown for single selection
+    if (isSingleSelect) {
+      return (
+        <div className="space-y-3">
+          <Label className="text-body-emphasis">{field.label}</Label>
+          {field.description && <p className="text-caption text-muted-foreground">{field.description}</p>}
+          <Select value={selectedValues[0] || ""} onValueChange={(val) => onChange([val])}>
+            <SelectTrigger className="bg-background h-12">
+              <SelectValue placeholder={`Select ${field.label.toLowerCase()}`} />
+            </SelectTrigger>
+            <SelectContent>
+              {items.map((item) => (
+                <SelectItem key={item.id} value={item.id}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {error && <p className="text-caption text-red-600">{error}</p>}
+        </div>
+      );
+    }
+
+    // Render as multi-select with checkboxes for multiple selections
     return (
       <div className="space-y-3">
         <Label className="text-body-emphasis">{field.label}</Label>

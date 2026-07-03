@@ -45,7 +45,6 @@ const MOCK_UPDATES: Update[] = [
  authorInitials: "EM",
  authorAvatar:
  "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- role: "Lead",
  date: "2024-02-18",
  title: "Phase 2 Kickoff — What to Expect",
  body: "<p>We're excited to announce that Phase 2 of this challenge is now officially underway. Over the next four weeks, we'll be focusing on prototyping and testing the top 5 ideas that emerged from Phase 1.</p><p><strong>Key milestones:</strong></p><ul><li>Week 1–2: Rapid prototyping sessions</li><li>Week 3: Community voting on prototypes</li><li>Week 4: Final selection &amp; Phase 3 planning</li></ul>",
@@ -57,7 +56,6 @@ const MOCK_UPDATES: Update[] = [
  authorInitials: "SC",
  authorAvatar:
  "https://images.unsplash.com/photo-1757347398206-7425300ef990?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- role: "Admin",
  date: "2024-02-10",
  title: "Community Survey Results",
  body: "<p>Thank you to everyone who participated in our community survey! We received 47 responses and the results are in. The top priorities identified by the community are:</p><ol><li>More structured collaboration workshops</li><li>Regular progress updates from leads</li><li>Dedicated Q&A sessions with experts</li></ol>",
@@ -70,7 +68,6 @@ const MOCK_UPDATES: Update[] = [
  authorInitials: "EM",
  authorAvatar:
  "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- role: "Lead",
  date: "2024-02-05",
  title: "Welcome & Phase 1 Recap",
  body: "<p>A warm welcome to all new members who joined this month! Here's a quick recap of what we accomplished in Phase 1...</p>",
@@ -102,7 +99,6 @@ export function SubspaceSettingsUpdates() {
  author: "You",
  authorInitials: "YO",
  authorAvatar: null,
- role: "Lead",
  date: new Date().toISOString().slice(0, 10),
  title: newTitle,
  body: newBody,

@@ -98,7 +98,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       label: "WAARVOOR?",
       description: "Vertel (in maximaal 250 woorden) waar en in hoeverre de casus na de opschaling bijdraagt aan de doelen van de VNG. Dit kan bijvoorbeeld aan de hand van de verenigingsstrategie, de Digitale agenda en/of de omkeringsthema's.",
       required: true,
-      order: 7,
+      order: 6,
       constraints: { maxLength: 500, maxWords: 250 },
     },
     {
@@ -107,7 +107,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       label: "WAAROM?",
       description: "Geef (in maximaal 250 woorden) de aanleiding voor het indienen van dit opschalingsvoorstel. Beschrijf wat de toegevoegde waarde is van de innovatie als die zou zijn opgeschaald. Wat maakt de beoogde opschaling zo belangrijk?",
       required: true,
-      order: 8,
+      order: 6,
       constraints: { maxLength: 500, maxWords: 250 },
     },
     {
@@ -116,7 +116,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       label: "HOE?",
       description: "Beschrijf (in maximaal 250 woorden) op hoofdlijnen wat er naar uw mening moet gebeuren om de casus door te ontwikkelen naar gebruik door tenminste 30 gemeenten. Geef een indicatie van de complexiteit, de benodigde partijen, de gewenste rol van VNG, de investering (en hoe deze te financieren) en de te verwachten doorlooptijd.",
       required: true,
-      order: 9,
+      order: 6,
       constraints: { maxLength: 500, maxWords: 250 },
     },
   ],
@@ -130,7 +130,7 @@ export function SubspaceApplicationPage() {
   const [successOpen, setSuccessOpen] = useState(false);
 
   const formTitle = useMemo(() => {
-    return searchParams.get("title") || "VNG Opschaling";
+    return searchParams.get("title") || "Aanmelden programma GROEI";
   }, [searchParams]);
 
   const handleSuccess = () => {
@@ -177,6 +177,10 @@ export function SubspaceApplicationPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <div className="fixed bottom-4 left-4 right-4 mx-auto max-w-md bg-amber-50 border border-amber-200 rounded-lg p-3 text-center text-sm text-amber-800 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200">
+        ⚠️ This is a mock-up demo
+      </div>
     </div>
   );
 }

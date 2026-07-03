@@ -371,11 +371,6 @@ export function PostCard({
               {post.timestamp && <span className="text-caption text-muted-foreground">• {post.timestamp}</span>}
             </div>
             <div className="flex items-center gap-2 mt-0.5">
-              {post.author?.role && (
-                <Badge variant="secondary" className="text-badge h-5 px-1.5 font-normal">
-                  {post.author.role}
-                </Badge>
-              )}
               {post.isDraft && (
                 <Badge className="text-badge h-5 px-1.5 font-semibold bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-100">
                   Draft

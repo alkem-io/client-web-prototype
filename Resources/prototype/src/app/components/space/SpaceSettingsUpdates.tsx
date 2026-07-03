@@ -43,7 +43,6 @@ const MOCK_UPDATES: Update[] = [
  authorInitials: "EM",
  authorAvatar:
  "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- role: "Host",
  date: "2024-02-18",
  title: "2024 Roadmap & Community Goals",
  body: "<p>We've finalized the 2024 roadmap for this space. Our three strategic pillars this year are:</p><ul><li><strong>Decarbonization:</strong> Accelerating the transition to net-zero energy systems</li><li><strong>Community Building:</strong> Growing from 150 to 500 active contributors</li><li><strong>Knowledge Sharing:</strong> Publishing quarterly insight reports</li></ul><p>Stay tuned for detailed challenge briefs rolling out over the next two weeks.</p>",
@@ -55,7 +54,6 @@ const MOCK_UPDATES: Update[] = [
  authorInitials: "SC",
  authorAvatar:
  "https://images.unsplash.com/photo-1757347398206-7425300ef990?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- role: "Admin",
  date: "2024-02-10",
  title: "New Subspaces Now Open",
  body: "<p>We've launched three new subspaces based on community feedback:</p><ol><li>Urban Mobility Lab — focused on sustainable city transport</li><li>Green Infrastructure — planning urban green spaces</li><li>Circular Economy — reducing waste through systemic design</li></ol><p>Each subspace has dedicated leads and an innovation flow already set up. Jump in!</p>",
@@ -67,7 +65,6 @@ const MOCK_UPDATES: Update[] = [
  authorInitials: "EM",
  authorAvatar:
  "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- role: "Host",
  date: "2024-01-15",
  title: "Welcome to the Green Energy Space!",
  body: "<p>Welcome to all new members! This space is our shared home for exploring sustainable energy solutions. Check out the knowledge base for background reading, and introduce yourself in the community feed.</p>",
@@ -92,7 +89,6 @@ export function SpaceSettingsUpdates() {
  author: "You",
  authorInitials: "YO",
  authorAvatar: null,
- role: "Host",
  date: new Date().toISOString().slice(0, 10),
  title: newTitle,
  body: newBody,

@@ -1,9 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router";
-import { Settings, Search, X, ChevronDown, SlidersHorizontal, FolderOpen } from "lucide-react";
+import { Settings, Search, X, ChevronDown, SlidersHorizontal, FolderOpen, Bot, Layers } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 
 import {
   DropdownMenu,
@@ -21,7 +22,7 @@ const hubData = {
   slug: "vng-innovation-hub",
   name: "VNG Innovation Hub",
   tagline: "innovatie met en door de gemeentes",
-  bannerImage: "/banners/vng-innovation-hub.png",
+  bannerImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920",
   description: `De <strong>open innovatiehub</strong> voor <strong>samenwerking tussen en voor de gemeentes</strong> in Nederland.<br/>Hier vind je communities die werken aan nieuwe vormen van publieke dienstverlening die aansluiten bij de leefwereld van mensen.<br/>Een plek waar de <strong>overheid, markt, wetenschap</strong> en <strong>samenleving</strong> samen kunnen werken aan <em>maatschappelijke missies</em>.`,
 };
 
@@ -425,6 +426,102 @@ const hubSpaces: SpaceCardData[] = [
   },
 ];
 
+/* ─── VNG Template Packs ─── */
+const hubPacks = [
+  {
+    id: "p1",
+    name: "Gemeentelijk Innovatie Pack",
+    description: "Templates voor het opzetten van innovatieprojecten binnen gemeenten: van idee tot implementatie.",
+    templateCount: 8,
+    image: "https://images.unsplash.com/photo-1554103210-26d928978fb5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
+    initials: "GI",
+    color: "bg-blue-100 text-blue-700",
+    tags: ["innovatie", "gemeenten", "processen"],
+  },
+  {
+    id: "p2",
+    name: "Digitale Transformatie Toolkit",
+    description: "Alles voor de digitale transformatie: roadmaps, assessments en implementatieplannen.",
+    templateCount: 12,
+    image: "https://images.unsplash.com/photo-1631203924388-644782a70944?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
+    initials: "DT",
+    color: "bg-green-100 text-green-700",
+    tags: ["digitaal", "transformatie", "strategie"],
+  },
+  {
+    id: "p3",
+    name: "Burgerparticipatie Methoden",
+    description: "Bewezen methoden voor het betrekken van inwoners bij beleidsontwikkeling.",
+    templateCount: 6,
+    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
+    initials: "BP",
+    color: "bg-purple-100 text-purple-700",
+    tags: ["participatie", "inwoners", "beleid"],
+  },
+  {
+    id: "p4",
+    name: "Data Governance Framework",
+    description: "Kaders en templates voor verantwoord databeheer en data-ethiek binnen de overheid.",
+    templateCount: 5,
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
+    initials: "DG",
+    color: "bg-orange-100 text-orange-700",
+    tags: ["data", "governance", "ethiek"],
+  },
+];
+
+/* ─── VNG Virtual Contributors ─── */
+const hubVCs = [
+  {
+    id: "vc1",
+    name: "VNG Kennisassistent",
+    description: "AI-assistent gespecialiseerd in gemeentelijke regelgeving, VNG-resoluties en best practices.",
+    avatar: null,
+    initials: "VK",
+    tags: ["kennisbank", "regelgeving"],
+  },
+  {
+    id: "vc2",
+    name: "Subsidie Navigator",
+    description: "Helpt gemeenten bij het vinden en aanvragen van relevante subsidies en fondsen.",
+    avatar: null,
+    initials: "SN",
+    tags: ["subsidies", "financiering"],
+  },
+  {
+    id: "vc3",
+    name: "Data Analyst Bot",
+    description: "Automatische analyse van gemeentelijke datasets en generatie van inzichten en rapportages.",
+    avatar: null,
+    initials: "DA",
+    tags: ["data", "analyse", "rapportage"],
+  },
+  {
+    id: "vc4",
+    name: "Inkoop Adviseur",
+    description: "Ondersteunt bij aanbestedingen en inkooptrajecten conform gemeentelijke richtlijnen.",
+    avatar: null,
+    initials: "IA",
+    tags: ["inkoop", "aanbesteding"],
+  },
+  {
+    id: "vc5",
+    name: "Communicatie Coach",
+    description: "Helpt bij het schrijven van heldere inwonercommunicatie en beleidsteksten.",
+    avatar: null,
+    initials: "CC",
+    tags: ["communicatie", "tekst"],
+  },
+  {
+    id: "vc6",
+    name: "Privacy Officer Bot",
+    description: "Adviseert over AVG-compliance, DPIA's en privacybeleid voor gemeentelijke systemen.",
+    avatar: null,
+    initials: "PO",
+    tags: ["privacy", "AVG", "compliance"],
+  },
+];
+
 /* ─── Innovation Hub Page ─── */
 const BATCH_SIZE = 12;
 type PrivacyFilter = "all" | "public" | "private";
@@ -499,7 +596,7 @@ export default function InnovationHubPage() {
       {/* ── Info Bar (title + tagline below banner, like SpaceHeader) ── */}
       <div
         className="w-full"
-        style={{ paddingLeft: 32, paddingRight: 32, paddingTop: 32, paddingBottom: 24 }}
+        style={{ paddingLeft: 32, paddingRight: 32, paddingTop: 32, paddingBottom: 32 }}
       >
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12 lg:col-start-2 lg:col-span-10 flex flex-col gap-1">
@@ -831,6 +928,165 @@ export default function InnovationHubPage() {
             </Button>
           </div>
         )}
+      </div>
+
+      {/* ── VNG Innovation Packs ── */}
+      <div style={{ marginTop: 48 }}>
+        <div className="flex items-center gap-2" style={{ marginBottom: 16 }}>
+          <Layers style={{ width: 20, height: 20, color: "var(--muted-foreground)" }} />
+          <h2 className="text-subheader font-semibold" style={{ color: "var(--foreground)" }}>
+            VNG Innovation Packs
+          </h2>
+          <Badge variant="outline" className="ml-1" style={{ fontSize: "var(--text-caption)" }}>
+            {hubPacks.length}
+          </Badge>
+        </div>
+        <div
+          className="grid gap-4"
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}
+        >
+          {hubPacks.map((pack) => (
+            <div
+              key={pack.id}
+              className="group overflow-hidden border border-border bg-card hover:shadow-md transition-shadow"
+              style={{ borderRadius: "calc(var(--radius) + 4px)" }}
+            >
+              {/* Banner */}
+              <div className="relative" style={{ height: 120 }}>
+                <img
+                  src={pack.image}
+                  alt={pack.name}
+                  className="w-full h-full object-cover"
+                />
+                <Badge
+                  className="absolute top-2 right-2"
+                  style={{
+                    background: "rgba(0,0,0,0.6)",
+                    color: "#fff",
+                    fontSize: "var(--text-caption)",
+                  }}
+                >
+                  {pack.templateCount} templates
+                </Badge>
+              </div>
+              {/* Body */}
+              <div style={{ padding: 16 }}>
+                <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
+                  <div
+                    className={`flex items-center justify-center rounded-md text-xs font-medium ${pack.color}`}
+                    style={{ width: 28, height: 28, fontSize: 11 }}
+                  >
+                    {pack.initials}
+                  </div>
+                  <div>
+                    <p className="text-body font-medium leading-tight" style={{ color: "var(--foreground)" }}>
+                      {pack.name}
+                    </p>
+                    <p style={{ fontSize: "var(--text-caption)", color: "var(--muted-foreground)" }}>
+                      by VNG
+                    </p>
+                  </div>
+                </div>
+                <p
+                  className="line-clamp-2"
+                  style={{
+                    fontSize: "var(--text-caption)",
+                    color: "var(--muted-foreground)",
+                    marginBottom: 10,
+                  }}
+                >
+                  {pack.description}
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {pack.tags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      style={{ fontSize: 11, padding: "2px 6px" }}
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── VNG Virtual Contributors ── */}
+      <div style={{ marginTop: 48 }}>
+        <div className="flex items-center gap-2" style={{ marginBottom: 16 }}>
+          <Bot style={{ width: 20, height: 20, color: "var(--muted-foreground)" }} />
+          <h2 className="text-subheader font-semibold" style={{ color: "var(--foreground)" }}>
+            VNG Virtual Contributors
+          </h2>
+          <Badge variant="outline" className="ml-1" style={{ fontSize: "var(--text-caption)" }}>
+            {hubVCs.length}
+          </Badge>
+        </div>
+        <div
+          className="grid gap-4"
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}
+        >
+          {hubVCs.map((vc) => (
+            <div
+              key={vc.id}
+              className="flex gap-3 border border-border bg-card hover:shadow-md transition-shadow"
+              style={{ padding: 16, borderRadius: "calc(var(--radius) + 4px)" }}
+            >
+              <Avatar className="shrink-0" style={{ width: 40, height: 40 }}>
+                {vc.avatar ? (
+                  <AvatarImage src={vc.avatar} alt={vc.name} />
+                ) : null}
+                <AvatarFallback
+                  style={{ fontSize: 13, background: "var(--muted)", color: "var(--muted-foreground)" }}
+                >
+                  {vc.initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
+                  <p className="text-body font-medium truncate" style={{ color: "var(--foreground)" }}>
+                    {vc.name}
+                  </p>
+                  <Badge
+                    variant="secondary"
+                    className="shrink-0"
+                    style={{ fontSize: 10, padding: "1px 5px" }}
+                  >
+                    <Bot style={{ width: 10, height: 10, marginRight: 3 }} />
+                    VC
+                  </Badge>
+                </div>
+                <p
+                  className="line-clamp-2"
+                  style={{
+                    fontSize: "var(--text-caption)",
+                    color: "var(--muted-foreground)",
+                    marginBottom: 8,
+                  }}
+                >
+                  {vc.description}
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {vc.tags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="outline"
+                      style={{ fontSize: 10, padding: "1px 5px" }}
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <p style={{ fontSize: 11, color: "var(--muted-foreground)", marginTop: 6 }}>
+                  Hosted by <span className="font-medium">VNG</span>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── CTA Banner ── */}

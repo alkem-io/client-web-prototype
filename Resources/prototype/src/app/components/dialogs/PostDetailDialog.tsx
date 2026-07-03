@@ -113,7 +113,7 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
  </Avatar>
  <div className="flex flex-col">
  <span className="text-card-title text-foreground">{post.author.name}</span>
- <span className="text-caption text-muted-foreground">{post.timestamp} • {post.author.role}</span>
+ <span className="text-caption text-muted-foreground">{post.timestamp}</span>
  </div>
  </div>
 
@@ -260,7 +260,7 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive/10 text-destructive text-caption border border-background">❤️</span>
  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-warning/10 text-warning text-caption border border-background">💡</span>
  </div>
- <span className="text-body-emphasis text-muted-foreground">{post.stats.likes} reactions</span>
+ <span className="text-body-emphasis text-muted-foreground">{post.stats?.likes ?? 0} reactions</span>
  
  <div className="flex-1" />
  
@@ -366,7 +366,7 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
  <div className="px-[40px] py-[20px] md:px-10 max-w-4xl">
  <h2 className="text-section-title font-bold flex items-center gap-2 mb-2">
  Discussion
- <Badge variant="secondary" className="rounded-full px-2">{post.stats.comments}</Badge>
+ <Badge variant="secondary" className="rounded-full px-2">{post.stats?.comments ?? 0}</Badge>
  </h2>
  <p className="text-body text-muted-foreground mb-6">Comments on this post</p>
 
