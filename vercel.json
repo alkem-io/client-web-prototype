@@ -1,0 +1,6 @@
+{
+  "buildCommand": "cd Resources/Prototype && npm run build",
+  "devCommand": "cd Resources/Prototype && npm run dev",
+  "installCommand": "cd Resources/Prototype && npm install",
+  "outputDirectory": "Resources/Prototype/dist"
+}

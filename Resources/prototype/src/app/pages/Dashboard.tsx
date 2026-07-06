@@ -3,7 +3,7 @@ import { RecentSpaces } from "@/app/components/dashboard/RecentSpaces";
 import { ActivityFeed } from "@/app/components/dashboard/ActivityFeed";
 import { DashboardSidebar } from "@/app/components/dashboard/DashboardSidebar";
 import { UpdateBanner } from "@/app/components/dashboard/UpdateBanner";
-import { SpacesGallery } from "@/app/components/dashboard/SpacesGallery";
+import { EnhancedSpacesGallery } from "@/app/components/dashboard/EnhancedSpacesGallery";
 
 const STORAGE_KEY = "alkemio-activity-view";
 
@@ -43,7 +43,7 @@ export function Dashboard() {
             </>
           ) : (
             <div className="col-span-9">
-              <SpacesGallery />
+              <EnhancedSpacesGallery />
             </div>
           )}
         </div>

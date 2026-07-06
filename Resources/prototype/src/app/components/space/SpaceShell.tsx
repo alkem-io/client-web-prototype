@@ -4,7 +4,7 @@ import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { SpaceSidebar } from "./SpaceSidebar";
 import { FilterProvider, useSpaceFilters } from "./FilterContext";
-import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, Calendar, CalendarDays, Tag, LayoutGrid, List } from "lucide-react";
+import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, Calendar, CalendarDays, LayoutGrid, List } from "lucide-react";
 import { AboutThisSpaceDialog } from "./AboutThisSpaceDialog";
 import { WelcomeSpaceDialog } from "@/app/components/dialogs/WelcomeSpaceDialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/components/ui/sheet";
@@ -798,8 +798,8 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
           </Tooltip>
         )}
 
-        {/* Search */}
-        {features.search && (
+        {/* Search & Filter (merged) */}
+        {(features.search || features.tags) && (
           <Tooltip>
             <TooltipTrigger asChild>
               <button
@@ -811,28 +811,8 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
-                <Search className="w-4 h-4" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="right">Search</TooltipContent>
-          </Tooltip>
-        )}
-
-        {/* Tags/Filter */}
-        {features.tags && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => togglePopover("tags")}
-                className={cn(
-                  "w-9 h-9 rounded-lg flex items-center justify-center transition-colors relative",
-                  activePopover === "tags"
-                    ? "bg-primary/10 text-primary border border-primary/30"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
                 <div className="relative">
-                  <Tag className="w-4 h-4" />
+                  <Search className="w-4 h-4" />
                   {activeTags.length > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
                       {activeTags.length}
@@ -841,7 +821,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
                 </div>
               </button>
             </TooltipTrigger>
-            <TooltipContent side="right">Filter by Tags</TooltipContent>
+            <TooltipContent side="right">Search & Filter</TooltipContent>
           </Tooltip>
         )}
 
@@ -903,57 +883,57 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
               <TooltipContent>Close</TooltipContent>
             </Tooltip>
 
-            {/* Search popover */}
+            {/* Search & Filter combined popover */}
             {activePopover === "search" && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold">Search</h4>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search posts, comments, documents…"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    className="w-full h-9 pl-8 pr-3 text-sm rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
-                    autoFocus
-                  />
-                </div>
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold">Search & Filter</h4>
+                {features.search && (
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search posts, comments, documents…"
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      className="w-full h-9 pl-8 pr-3 text-sm rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+                      autoFocus
+                    />
+                  </div>
+                )}
                 {searchValue && (
                   <p className="text-xs text-muted-foreground">
                     Filtering by: <span className="font-medium text-foreground">"{searchValue}"</span>
                     <button onClick={() => setSearchValue("")} className="ml-2 text-primary hover:underline">Clear</button>
                   </p>
                 )}
-              </div>
-            )}
-
-            {/* Tags popover */}
-            {activePopover === "tags" && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold">Filter by Tags</h4>
-                  {activeTags.length > 0 && (
-                    <button onClick={clearTags} className="text-xs text-primary hover:underline">
-                      Clear all
-                    </button>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {tags.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => toggleTag(tag)}
-                      className={cn(
-                        "px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
-                        activeTags.includes(tag)
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                {features.tags && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Tags</span>
+                      {activeTags.length > 0 && (
+                        <button onClick={clearTags} className="text-xs text-primary hover:underline">
+                          Clear all
+                        </button>
                       )}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {tags.map((tag) => (
+                        <button
+                          key={tag}
+                          onClick={() => toggleTag(tag)}
+                          className={cn(
+                            "px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
+                            activeTags.includes(tag)
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                          )}
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
