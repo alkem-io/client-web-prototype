@@ -49,9 +49,27 @@ export function EnhancedSpacesGallery() {
   );
   const placeholderCount = 4 - pinnedSpaces.length;
 
-  // Row 2: Recent Spaces (last 30 days)
-  const recentSpaces = useMemo(() => {
+  // Row 2: Spaces with Most Activity (last 30 days)
+  const activitySpaces = useMemo(() => {
     const seenIds = getSeenIds(pinnedSpaces);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    return spaces
+      .filter(
+        s =>
+          !seenIds.has(s.id) &&
+          s.activityScore &&
+          s.lastActivityDate &&
+          new Date(s.lastActivityDate) > thirtyDaysAgo
+      )
+      .sort((a, b) => (b.activityScore ?? 0) - (a.activityScore ?? 0))
+      .slice(0, 4);
+  }, [spaces, pinnedSpaces]);
+
+  // Row 3: Recent Spaces (last 30 days, last edited)
+  const recentSpaces = useMemo(() => {
+    const seenIds = getSeenIds(pinnedSpaces, activitySpaces);
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -68,11 +86,11 @@ export function EnhancedSpacesGallery() {
           (a.lastModified?.getTime() ?? 0)
       )
       .slice(0, 4);
-  }, [spaces, pinnedSpaces]);
+  }, [spaces, pinnedSpaces, activitySpaces]);
 
-  // Row 3: Spaces I Lead & Administer
+  // Row 4: Spaces I Lead & Administer
   const leadSpaces = useMemo(() => {
-    const seenIds = getSeenIds(pinnedSpaces, recentSpaces);
+    const seenIds = getSeenIds(pinnedSpaces, activitySpaces, recentSpaces);
     return spaces
       .filter(
         s => !seenIds.has(s.id) && (s.role === "Lead" || s.role === "Admin")
@@ -81,41 +99,18 @@ export function EnhancedSpacesGallery() {
         (a, b) =>
           (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0)
       );
-  }, [spaces, pinnedSpaces, recentSpaces]);
+  }, [spaces, pinnedSpaces, activitySpaces, recentSpaces]);
 
-  // Row 4: Spaces I Host
+  // Row 5: Spaces I Host
   const hostSpaces = useMemo(() => {
-    const seenIds = getSeenIds(pinnedSpaces, recentSpaces, leadSpaces);
+    const seenIds = getSeenIds(pinnedSpaces, activitySpaces, recentSpaces, leadSpaces);
     return spaces
       .filter(s => !seenIds.has(s.id) && s.role === "Host")
       .sort(
         (a, b) =>
           (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0)
       );
-  }, [spaces, pinnedSpaces, recentSpaces, leadSpaces]);
-
-  // Row 5: Spaces with Most Activity
-  const activitySpaces = useMemo(() => {
-    const seenIds = getSeenIds(
-      pinnedSpaces,
-      recentSpaces,
-      leadSpaces,
-      hostSpaces
-    );
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    return spaces
-      .filter(
-        s =>
-          !seenIds.has(s.id) &&
-          s.activityScore &&
-          s.lastActivityDate &&
-          new Date(s.lastActivityDate) > thirtyDaysAgo
-      )
-      .sort((a, b) => (b.activityScore ?? 0) - (a.activityScore ?? 0))
-      .slice(0, 4);
-  }, [spaces, pinnedSpaces, recentSpaces, leadSpaces, hostSpaces]);
+  }, [spaces, pinnedSpaces, activitySpaces, recentSpaces, leadSpaces]);
 
   const handlePinSpace = (spaceId: string) => {
     setPinned(prev => new Set([...prev, spaceId]));
@@ -161,7 +156,22 @@ export function EnhancedSpacesGallery() {
           </div>
         </section>
 
-        {/* Row 2: Recent Spaces */}
+        {/* Row 2: Spaces with Most Activity */}
+        {activitySpaces.length > 0 && (
+          <section>
+            <h2 className="text-lg font-semibold mb-4">Spaces with Most Activity</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {activitySpaces.map(space => (
+                <SpaceCard
+                  key={space.id}
+                  space={toSpaceCardData(space)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Row 3: Recent Spaces */}
         {recentSpaces.length > 0 && (
           <section>
             <h2 className="text-lg font-semibold mb-4">My Recent Spaces</h2>
@@ -176,7 +186,7 @@ export function EnhancedSpacesGallery() {
           </section>
         )}
 
-        {/* Row 3: Spaces I Lead & Administer */}
+        {/* Row 4: Spaces I Lead & Administer */}
         {leadSpaces.length > 0 && (
           <section>
             <h2 className="text-lg font-semibold mb-4">
@@ -207,7 +217,7 @@ export function EnhancedSpacesGallery() {
           </section>
         )}
 
-        {/* Row 4: Spaces I Host */}
+        {/* Row 5: Spaces I Host */}
         {hostSpaces.length > 0 && (
           <section>
             <h2 className="text-lg font-semibold mb-4">Spaces I Host</h2>
@@ -233,23 +243,6 @@ export function EnhancedSpacesGallery() {
                 </Button>
               </div>
             )}
-          </section>
-        )}
-
-        {/* Row 5: Spaces with Most Activity */}
-        {activitySpaces.length > 0 && (
-          <section>
-            <h2 className="text-lg font-semibold mb-4">
-              Spaces with Most Activity
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {activitySpaces.map(space => (
-                <SpaceCard
-                  key={space.id}
-                  space={toSpaceCardData(space)}
-                />
-              ))}
-            </div>
           </section>
         )}
       </div>
