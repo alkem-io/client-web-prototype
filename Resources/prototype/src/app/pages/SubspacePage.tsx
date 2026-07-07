@@ -297,7 +297,7 @@ export default function SubspacePage() {
   } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const variant = (parseInt(searchParams.get("v") || "1") || 1) as 1 | 2 | 3 | 4 | 5;
+  const variant = (parseInt(searchParams.get("v") || "1") || 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
   const info = SUBSPACE_MAP[subspaceSlug] || {
     ...DEFAULT_SUBSPACE,
