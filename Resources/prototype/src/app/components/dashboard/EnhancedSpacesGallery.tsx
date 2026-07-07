@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight, Plus, Lock } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { SpaceCard, SpaceCardData } from "@/app/components/space/SpaceCard";
@@ -120,32 +120,115 @@ export function EnhancedSpacesGallery() {
   return (
     <>
       <div className="space-y-8">
-        {/* Row 1: Pinned Spaces (Always renders) */}
+        {/* Row 1: Pinned Spaces (Always renders) - Compact banner + footer format */}
         <section>
           <h2 className="text-lg font-semibold mb-4">My Pinned Spaces</h2>
-          <div className="space-y-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {pinnedSpaces.map(space => (
-              <SpaceCard
+              <div
                 key={space.id}
-                space={toSpaceCardData(space)}
-                compact
-              />
+                onClick={() => navigate(`/space/${space.slug}`)}
+                className="group relative overflow-hidden cursor-pointer transition-all duration-300"
+                style={{
+                  background: "var(--card)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius)",
+                  boxShadow: "none",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.boxShadow = "var(--elevation-sm)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.boxShadow = "none")
+                }
+              >
+                {/* Banner */}
+                <div className="relative aspect-video overflow-hidden">
+                  {space.image ? (
+                    <img
+                      src={space.image}
+                      alt={space.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full"
+                      style={{
+                        background: `linear-gradient(135deg, ${space.color}, ${space.color}88)`,
+                      }}
+                    />
+                  )}
+                  {space.isPrivate && (
+                    <div
+                      className="absolute top-2 right-2 backdrop-blur-sm p-1.5 rounded-full"
+                      style={{
+                        background:
+                          "color-mix(in srgb, var(--foreground) 50%, transparent)",
+                        color: "var(--primary-foreground)",
+                      }}
+                    >
+                      <Lock className="w-3 h-3" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer: Avatar + Name */}
+                <div className="p-3 flex items-center gap-2">
+                  <div
+                    className="w-8 h-8 rounded-lg shrink-0 overflow-hidden"
+                    style={{
+                      border: "1px solid var(--border)",
+                      background: space.color,
+                    }}
+                  >
+                    {space.image ? (
+                      <img
+                        src={space.image}
+                        alt={space.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
+                        {space.initials}
+                      </div>
+                    )}
+                  </div>
+                  <h3
+                    className="truncate text-sm font-medium"
+                    style={{
+                      color: "var(--card-foreground)",
+                    }}
+                  >
+                    {space.name}
+                  </h3>
+                </div>
+              </div>
             ))}
             {Array(placeholderCount)
               .fill(null)
               .map((_, i) => (
-                <button
+                <div
                   key={`placeholder-${i}`}
                   onClick={() => setBrowseAndPinOpen(true)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed border-muted-foreground/30 bg-transparent hover:border-primary hover:bg-primary/5 transition-all text-left"
+                  className="group relative overflow-hidden cursor-pointer transition-all rounded-xl border-2 border-dashed border-muted-foreground/30 bg-transparent hover:border-primary hover:bg-primary/5"
+                  style={{ aspectRatio: "1 / 1.2" }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setBrowseAndPinOpen(true);
+                    }
+                  }}
                 >
-                  <div className="flex items-center justify-center rounded-full bg-muted shadow-sm size-10 shrink-0">
-                    <Plus className="text-muted-foreground" size={16} />
+                  <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                    <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-2 size-8">
+                      <Plus className="text-muted-foreground" size={16} />
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground text-center">
+                      Pin a space
+                    </span>
                   </div>
-                  <span className="text-body-emphasis font-medium text-muted-foreground">
-                    Pin a space
-                  </span>
-                </button>
+                </div>
               ))}
           </div>
         </section>
