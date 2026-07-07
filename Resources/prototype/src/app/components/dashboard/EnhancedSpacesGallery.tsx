@@ -1,8 +1,7 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, ChevronDown, Lock } from "lucide-react";
+import { ChevronRight, ChevronDown, Lock, Plus } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
-import { PlaceholderCard } from "@/app/components/ui/placeholder-card";
 import { MOCK_MEMBERSHIPS, MembershipItem } from "@/app/components/memberships/membershipData";
 import { ShowMoreModal } from "./ShowMoreModal";
 import { BrowseAndPinModal } from "./BrowseAndPinModal";
@@ -24,6 +23,36 @@ function toSpaceCardData(item: MembershipItem): SpaceCardData {
       { name: "User 2", avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=64", type: "person" },
     ],
   };
+}
+
+// Responsive placeholder card (matches SpaceCardCompact format)
+function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      className="group cursor-pointer transition-all rounded-lg border-2 border-dashed border-muted-foreground/30 hover:border-primary hover:bg-primary/5 flex items-center justify-center"
+      style={{
+        background: "var(--card)",
+        aspectRatio: "2 / 1",
+      }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onClick();
+        }
+      }}
+    >
+      <div className="flex flex-col items-center">
+        <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-2 size-10">
+          <Plus className="text-muted-foreground group-hover:text-primary transition-colors" size={20} />
+        </div>
+        <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
+          Pin a space
+        </span>
+      </div>
+    </div>
+  );
 }
 
 // Reusable card component (banner + footer format)
@@ -243,10 +272,8 @@ export function EnhancedSpacesGallery() {
             {Array(placeholderCount)
               .fill(null)
               .map((_, i) => (
-                <PlaceholderCard
+                <ResponsivePlaceholderCard
                   key={`placeholder-${i}`}
-                  label="Pin a space"
-                  size="sm"
                   onClick={() => setBrowseAndPinOpen(true)}
                 />
               ))}
