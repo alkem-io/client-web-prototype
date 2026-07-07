@@ -219,8 +219,13 @@ export function EnhancedSpacesGallery() {
                 <div
                   key={`placeholder-${i}`}
                   onClick={() => setBrowseAndPinOpen(true)}
-                  className="group relative overflow-hidden cursor-pointer transition-all rounded-lg border-2 border-dashed border-muted-foreground/30 bg-transparent hover:border-primary hover:bg-primary/5"
-                  style={{ aspectRatio: "2 / 1" }}
+                  className="cursor-pointer transition-all"
+                  style={{
+                    background: "var(--card)",
+                    border: "2px dashed var(--border)",
+                    borderRadius: "var(--radius)",
+                    overflow: "hidden",
+                  }}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
@@ -228,8 +233,18 @@ export function EnhancedSpacesGallery() {
                       setBrowseAndPinOpen(true);
                     }
                   }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.borderColor = "var(--primary)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.borderColor = "var(--border)")
+                  }
                 >
-                  <div className="w-full h-full flex items-center justify-center">
+                  {/* Banner - 2:1 aspect ratio */}
+                  <div
+                    className="relative flex items-center justify-center bg-muted/30"
+                    style={{ aspectRatio: "2 / 1" }}
+                  >
                     <div className="flex flex-col items-center">
                       <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-2 size-8">
                         <Plus className="text-muted-foreground" size={16} />
@@ -239,6 +254,9 @@ export function EnhancedSpacesGallery() {
                       </span>
                     </div>
                   </div>
+
+                  {/* Footer - matches card footer structure */}
+                  <div className="p-3 flex items-center gap-2 h-14 bg-transparent" />
                 </div>
               ))}
           </div>
