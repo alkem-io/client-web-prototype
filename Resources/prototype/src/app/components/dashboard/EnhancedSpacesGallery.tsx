@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, Lock } from "lucide-react";
+import { ChevronRight, ChevronDown, Lock } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { PlaceholderCard } from "@/app/components/ui/placeholder-card";
@@ -121,6 +121,20 @@ export function EnhancedSpacesGallery() {
     new Set(spaces.filter(s => s.isPinned).map(s => s.id))
   );
 
+  // Collapse state for each row
+  const [collapsedRows, setCollapsedRows] = useState<Set<string>>(new Set());
+  const toggleRowCollapse = (rowId: string) => {
+    setCollapsedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(rowId)) {
+        newSet.delete(rowId);
+      } else {
+        newSet.add(rowId);
+      }
+      return newSet;
+    });
+  };
+
   // Helper: get seen space IDs across multiple lists
   const getSeenIds = (...lists: MembershipItem[][]): Set<string> =>
     new Set(lists.flat().map(s => s.id));
@@ -205,7 +219,19 @@ export function EnhancedSpacesGallery() {
       <div className="space-y-8">
         {/* Row 1: Pinned Spaces (Always renders) */}
         <section>
-          <h2 className="text-lg font-semibold mb-4">My Pinned Spaces</h2>
+          <button
+            onClick={() => toggleRowCollapse("pinned")}
+            className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+            type="button"
+          >
+            {collapsedRows.has("pinned") ? (
+              <ChevronRight className="w-5 h-5" />
+            ) : (
+              <ChevronDown className="w-5 h-5" />
+            )}
+            <h2 className="text-lg font-semibold">My Pinned Spaces</h2>
+          </button>
+          {!collapsedRows.has("pinned") && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {pinnedSpaces.map(space => (
               <SpaceCardCompact
@@ -225,12 +251,25 @@ export function EnhancedSpacesGallery() {
                 />
               ))}
           </div>
+          )}
         </section>
 
         {/* Row 2: Spaces with Most Activity */}
         {activitySpaces.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold mb-4">Spaces with Most Activity</h2>
+            <button
+              onClick={() => toggleRowCollapse("activity")}
+              className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+              type="button"
+            >
+              {collapsedRows.has("activity") ? (
+                <ChevronRight className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+              <h2 className="text-lg font-semibold">Spaces with Most Activity</h2>
+            </button>
+            {!collapsedRows.has("activity") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {activitySpaces.map(space => (
                 <SpaceCardCompact
@@ -240,13 +279,26 @@ export function EnhancedSpacesGallery() {
                 />
               ))}
             </div>
+            )}
           </section>
         )}
 
         {/* Row 3: Recent Spaces */}
         {recentSpaces.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold mb-4">My Recent Spaces</h2>
+            <button
+              onClick={() => toggleRowCollapse("recent")}
+              className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+              type="button"
+            >
+              {collapsedRows.has("recent") ? (
+                <ChevronRight className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+              <h2 className="text-lg font-semibold">My Recent Spaces</h2>
+            </button>
+            {!collapsedRows.has("recent") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {recentSpaces.map(space => (
                 <SpaceCardCompact
@@ -256,15 +308,26 @@ export function EnhancedSpacesGallery() {
                 />
               ))}
             </div>
+            )}
           </section>
         )}
 
         {/* Row 4: Spaces I Lead & Administer */}
         {leadSpaces.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold mb-4">
-              Spaces I Lead & Administer
-            </h2>
+            <button
+              onClick={() => toggleRowCollapse("lead")}
+              className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+              type="button"
+            >
+              {collapsedRows.has("lead") ? (
+                <ChevronRight className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+              <h2 className="text-lg font-semibold">Spaces I Lead & Administer</h2>
+            </button>
+            {!collapsedRows.has("lead") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {leadSpaces.slice(0, 4).map(space => (
                 <SpaceCardCompact
@@ -274,7 +337,8 @@ export function EnhancedSpacesGallery() {
                 />
               ))}
             </div>
-            {leadSpaces.length > 4 && (
+            )}
+            {leadSpaces.length > 4 && !collapsedRows.has("lead") && (
               <div className="flex justify-center mt-4">
                 <Button
                   variant="outline"
@@ -294,7 +358,19 @@ export function EnhancedSpacesGallery() {
         {/* Row 5: Spaces I Host */}
         {hostSpaces.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold mb-4">Spaces I Host</h2>
+            <button
+              onClick={() => toggleRowCollapse("host")}
+              className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+              type="button"
+            >
+              {collapsedRows.has("host") ? (
+                <ChevronRight className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+              <h2 className="text-lg font-semibold">Spaces I Host</h2>
+            </button>
+            {!collapsedRows.has("host") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {hostSpaces.slice(0, 4).map(space => (
                 <SpaceCardCompact
@@ -304,7 +380,8 @@ export function EnhancedSpacesGallery() {
                 />
               ))}
             </div>
-            {hostSpaces.length > 4 && (
+            )}
+            {hostSpaces.length > 4 && !collapsedRows.has("host") && (
               <div className="flex justify-center mt-4">
                 <Button
                   variant="outline"
