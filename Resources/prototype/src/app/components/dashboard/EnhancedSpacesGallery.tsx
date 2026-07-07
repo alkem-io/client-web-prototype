@@ -123,35 +123,29 @@ export function EnhancedSpacesGallery() {
         {/* Row 1: Pinned Spaces (Always renders) */}
         <section>
           <h2 className="text-lg font-semibold mb-4">My Pinned Spaces</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="space-y-2">
             {pinnedSpaces.map(space => (
               <SpaceCard
                 key={space.id}
                 space={toSpaceCardData(space)}
+                compact
               />
             ))}
             {Array(placeholderCount)
               .fill(null)
               .map((_, i) => (
-                <div
+                <button
                   key={`placeholder-${i}`}
-                  className="h-full rounded-xl border-2 border-dashed border-muted-foreground/30 bg-transparent hover:border-primary hover:bg-primary/5 transition-all cursor-pointer flex flex-col items-center justify-center p-4"
                   onClick={() => setBrowseAndPinOpen(true)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setBrowseAndPinOpen(true);
-                    }
-                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed border-muted-foreground/30 bg-transparent hover:border-primary hover:bg-primary/5 transition-all text-left"
                 >
-                  <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-3 size-10">
-                    <Plus className="text-muted-foreground" size={20} />
+                  <div className="flex items-center justify-center rounded-full bg-muted shadow-sm size-10 shrink-0">
+                    <Plus className="text-muted-foreground" size={16} />
                   </div>
-                  <span className="text-body-emphasis font-medium text-foreground text-center">
+                  <span className="text-body-emphasis font-medium text-muted-foreground">
                     Pin a space
                   </span>
-                </div>
+                </button>
               ))}
           </div>
         </section>
