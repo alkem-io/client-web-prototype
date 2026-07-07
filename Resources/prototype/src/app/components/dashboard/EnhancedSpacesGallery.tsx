@@ -44,17 +44,15 @@ function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
     >
       {/* Banner - 2:1 aspect ratio */}
       <div
-        className="relative flex items-center justify-center"
+        className="w-full flex flex-col items-center justify-center"
         style={{ aspectRatio: "2 / 1" }}
       >
-        <div className="flex flex-col items-center">
-          <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-2 size-10">
-            <Plus className="text-muted-foreground group-hover:text-primary transition-colors" size={20} />
-          </div>
-          <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
-            Pin a space
-          </span>
+        <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-2 size-10">
+          <Plus className="text-muted-foreground group-hover:text-primary transition-colors" size={20} />
         </div>
+        <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
+          Pin a space
+        </span>
       </div>
 
       {/* Footer - matches card footer structure */}
