@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, Plus, Lock } from "lucide-react";
+import { ChevronRight, Lock } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Button } from "@/app/components/ui/button";
+import { PlaceholderCard } from "@/app/components/ui/placeholder-card";
 import { MOCK_MEMBERSHIPS, MembershipItem } from "@/app/components/memberships/membershipData";
 import { ShowMoreModal } from "./ShowMoreModal";
 import { BrowseAndPinModal } from "./BrowseAndPinModal";
@@ -216,48 +217,12 @@ export function EnhancedSpacesGallery() {
             {Array(placeholderCount)
               .fill(null)
               .map((_, i) => (
-                <div
+                <PlaceholderCard
                   key={`placeholder-${i}`}
+                  label="Pin a space"
+                  size="sm"
                   onClick={() => setBrowseAndPinOpen(true)}
-                  className="cursor-pointer transition-all"
-                  style={{
-                    background: "var(--card)",
-                    border: "2px dashed var(--border)",
-                    borderRadius: "var(--radius)",
-                    overflow: "hidden",
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setBrowseAndPinOpen(true);
-                    }
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.borderColor = "var(--primary)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.borderColor = "var(--border)")
-                  }
-                >
-                  {/* Banner - 2:1 aspect ratio */}
-                  <div
-                    className="relative flex items-center justify-center bg-muted/30"
-                    style={{ aspectRatio: "2 / 1" }}
-                  >
-                    <div className="flex flex-col items-center">
-                      <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-2 size-8">
-                        <Plus className="text-muted-foreground" size={16} />
-                      </div>
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Pin a space
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Footer - matches card footer structure */}
-                  <div className="p-3 flex items-center gap-2 h-14 bg-transparent" />
-                </div>
+                />
               ))}
           </div>
         </section>
