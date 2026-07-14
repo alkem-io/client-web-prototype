@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/app/components/ui/hover-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { MapPin } from "lucide-react";
+import { MapPin, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface ProfileHoverCardUser {
@@ -65,11 +65,20 @@ export function ProfileHoverCard({
                   {user.initials || user.name.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="min-w-0 pt-0.5">
-                {/* Name */}
-                <h4 className="text-body-emphasis font-semibold text-foreground leading-tight line-clamp-2">
-                  {user.name}
-                </h4>
+              <div className="min-w-0 pt-0.5 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  {/* Name */}
+                  <h4 className="text-body-emphasis font-semibold text-foreground leading-tight line-clamp-2">
+                    {user.name}
+                  </h4>
+                  {/* Message icon */}
+                  <span
+                    className="inline-flex items-center justify-center w-7 h-7 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-colors shrink-0"
+                    aria-label="Send message"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </span>
+                </div>
 
                 {/* Location */}
                 {user.location && (

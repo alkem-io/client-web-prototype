@@ -26,9 +26,9 @@ Always looking for collaborators on open source climate data projects. Feel free
   };
 
   const organizations = [
-    { id: 1, name: "CityScale", role: "Director of Innovation", memberCount: 142, imageUrl: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-    { id: 2, name: "Open Climate Fix", role: "Contributor", memberCount: 850, imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
-    { id: 3, name: "Urban Tech Alliance", role: "Member", memberCount: 2400, imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" },
+    { id: 1, name: "CityScale", role: "Director of Innovation", memberCount: 142, imageUrl: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80", tags: ["Smart Cities", "IoT", "Urban Planning"] },
+    { id: 2, name: "Open Climate Fix", role: "Contributor", memberCount: 850, imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80", tags: ["Climate", "Machine Learning", "Open Source"] },
+    { id: 3, name: "Urban Tech Alliance", role: "Member", memberCount: 2400, imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80", tags: ["Technology", "Infrastructure", "Sustainability"] },
   ];
 
   const hostedSpaces = [
@@ -78,6 +78,7 @@ Always looking for collaborators on open source climate data projects. Feel free
                     org={{
                       name: org.name,
                       avatarUrl: org.imageUrl,
+                      tags: org.tags,
                     }}
                   >
                     <div>
