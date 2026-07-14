@@ -1,11 +1,20 @@
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
-import { Lock } from "lucide-react";
+import { Lock, Search } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog";
+import { Input } from "@/app/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
 import { MembershipItem } from "@/app/components/memberships/membershipData";
 
 interface ShowMoreModalProps {
@@ -15,88 +24,6 @@ interface ShowMoreModalProps {
   spaces: MembershipItem[];
 }
 
-function CompactCard({ item, onClick }: { item: MembershipItem; onClick: () => void }) {
-  return (
-    <div
-      onClick={onClick}
-      className="group relative overflow-hidden cursor-pointer transition-all duration-300"
-      style={{
-        background: "var(--card)",
-        border: "1px solid var(--border)",
-        borderRadius: "var(--radius)",
-        boxShadow: "none",
-      }}
-      onMouseEnter={(e) =>
-        (e.currentTarget.style.boxShadow = "var(--elevation-sm)")
-      }
-      onMouseLeave={(e) =>
-        (e.currentTarget.style.boxShadow = "none")
-      }
-    >
-      {/* Banner - 2:1 aspect ratio */}
-      <div className="relative overflow-hidden" style={{ aspectRatio: "2 / 1" }}>
-        {item.image ? (
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div
-            className="w-full h-full"
-            style={{
-              background: `linear-gradient(135deg, ${item.color}, ${item.color}88)`,
-            }}
-          />
-        )}
-        {item.isPrivate && (
-          <div
-            className="absolute top-2 right-2 backdrop-blur-sm p-1.5 rounded-full"
-            style={{
-              background:
-                "color-mix(in srgb, var(--foreground) 50%, transparent)",
-              color: "var(--primary-foreground)",
-            }}
-          >
-            <Lock className="w-3 h-3" />
-          </div>
-        )}
-      </div>
-
-      {/* Footer: Avatar + Name */}
-      <div className="p-3 flex items-center gap-2">
-        <div
-          className="w-8 h-8 rounded-lg shrink-0 overflow-hidden"
-          style={{
-            border: "1px solid var(--border)",
-            background: item.color,
-          }}
-        >
-          {item.image ? (
-            <img
-              src={item.image}
-              alt={item.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
-              {item.initials}
-            </div>
-          )}
-        </div>
-        <h3
-          className="truncate text-sm font-medium"
-          style={{
-            color: "var(--card-foreground)",
-          }}
-        >
-          {item.name}
-        </h3>
-      </div>
-    </div>
-  );
-}
-
 export function ShowMoreModal({
   open,
   onOpenChange,
@@ -104,32 +31,116 @@ export function ShowMoreModal({
   spaces,
 }: ShowMoreModalProps) {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const titles = {
     lead: "Spaces I Lead & Administer",
     host: "Spaces I Host",
   };
 
+  const filteredSpaces = useMemo(() => {
+    return spaces.filter(space =>
+      space.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (space.tagline || "").toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [spaces, searchQuery]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
             {category ? titles[category] : ""}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-          {spaces.map(space => (
-            <CompactCard
-              key={space.id}
-              item={space}
-              onClick={() => {
-                navigate(`/space/${space.slug}`);
-                onOpenChange(false);
-              }}
+        {/* Search and filters */}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Search your spaces..."
+              className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          ))}
+          </div>
+          <Select defaultValue="all">
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">ALL ROLES</SelectItem>
+              <SelectItem value="lead">Lead</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="host">Host</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Spaces list */}
+        <div className="flex-1 overflow-y-auto space-y-1 mt-4">
+          {filteredSpaces.length > 0 ? (
+            filteredSpaces.map((space) => (
+              <div
+                key={space.id}
+                onClick={() => {
+                  navigate(`/space/${space.slug}`);
+                  onOpenChange(false);
+                }}
+                className="p-3 rounded-md cursor-pointer hover:bg-accent transition-colors flex items-start gap-3 group"
+              >
+                {/* Avatar */}
+                <div
+                  className="w-10 h-10 rounded-lg shrink-0 overflow-hidden mt-0.5 relative"
+                  style={{
+                    border: "1px solid var(--border)",
+                    background: space.color,
+                  }}
+                >
+                  {space.image ? (
+                    <img
+                      src={space.image}
+                      alt={space.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
+                      {space.initials}
+                    </div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-medium truncate">
+                      {space.name}
+                    </h3>
+                    {space.isPrivate && (
+                      <Lock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    )}
+                  </div>
+                  {space.tagline && (
+                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                      {space.tagline}
+                    </p>
+                  )}
+                </div>
+
+                {/* Subspace count (if any) */}
+                {space.parentId === undefined && (
+                  <div className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
+                    2 subspaces
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No spaces found
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

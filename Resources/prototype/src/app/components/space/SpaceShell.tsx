@@ -4,7 +4,7 @@ import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { SpaceSidebar } from "./SpaceSidebar";
 import { FilterProvider, useSpaceFilters } from "./FilterContext";
-import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, Calendar, CalendarDays, LayoutGrid, List } from "lucide-react";
+import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, LayoutGrid, List } from "lucide-react";
 import { AboutThisSpaceDialog } from "./AboutThisSpaceDialog";
 import { WelcomeSpaceDialog } from "@/app/components/dialogs/WelcomeSpaceDialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/components/ui/sheet";
@@ -27,7 +27,6 @@ export function SpaceShell() {
   const variant = (parseInt(searchParams.get("v") || "1") || 1) as 1 | 2 | 3 | 4 | 5;
   const [activeTabDescription, setActiveTabDescription] = useState("Activity and updates from members of this space.");
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [eventsOpen, setEventsOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(searchParams.get("welcome") === "true");
   // Mobile responsive strategy: ?m=1..5 (0 = default/hidden)
   const mobileStrategy = Math.max(0, Math.min(5, parseInt(searchParams.get("m") || "0") || 0)) as 0 | 1 | 2 | 3 | 4 | 5;
@@ -131,21 +130,6 @@ export function SpaceShell() {
       >
         <Share2 className="w-3.5 h-3.5" />
       </IconButton>
-      {/* Calendar with upcoming events chip */}
-      <button
-        onClick={() => setEventsOpen(true)}
-        className="h-7 px-2.5 rounded-lg flex items-center gap-1.5 transition-colors"
-        style={{
-          background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-          color: "var(--muted-foreground)",
-        }}
-        title="Upcoming Events"
-      >
-        <Calendar className="w-3.5 h-3.5" />
-        <span className="text-[11px] font-medium whitespace-nowrap">
-          3 this week
-        </span>
-      </button>
       <IconButton
         tooltipLabel="Settings"
         className="w-7 h-7"
@@ -259,64 +243,7 @@ export function SpaceShell() {
       <AboutThisSpaceDialog open={aboutOpen} onOpenChange={setAboutOpen} spaceSlug={slug} />
       <WelcomeSpaceDialog open={welcomeOpen} onOpenChange={setWelcomeOpen} spaceName={slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} />
 
-      {/* Events Dialog */}
-      <Dialog open={eventsOpen} onOpenChange={setEventsOpen}>
-        <DialogContent
-          className="max-w-none sm:max-w-none max-h-[85vh] overflow-y-auto"
-          style={{ width: 'calc((100vw - 2 * var(--grid-margin-desktop) - 11 * var(--grid-gutter)) / var(--grid-columns) * 6 + 5 * var(--grid-gutter))' }}
-        >
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CalendarDays className="w-5 h-5" style={{ color: "var(--primary)" }} />
-              Events
-            </DialogTitle>
-            <DialogDescription>Upcoming and past events for this space.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
-            {[
-              { title: "Strategy Workshop", date: "Apr 25, 2026", time: "10:00 – 12:00 CET", status: "upcoming", attendees: 14 },
-              { title: "Stakeholder Review Meeting", date: "Apr 28, 2026", time: "14:00 – 15:30 CET", status: "upcoming", attendees: 8 },
-              { title: "Policy Framework Feedback Session", date: "May 2, 2026", time: "09:00 – 11:00 CET", status: "upcoming", attendees: 22 },
-              { title: "Community Solar Ideation Sprint", date: "Apr 15, 2026", time: "13:00 – 17:00 CET", status: "past", attendees: 18 },
-              { title: "Monthly Progress Sync", date: "Apr 10, 2026", time: "11:00 – 12:00 CET", status: "past", attendees: 12 },
-            ].map((event, i) => (
-              <div
-                key={i}
-                className="p-3 rounded-lg"
-                style={{
-                  border: "1px solid var(--border)",
-                  background: event.status === "upcoming" ? "var(--card)" : "var(--muted)",
-                }}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--foreground)" }}>{event.title}</p>
-                    <p className="mt-1 flex items-center gap-1.5" style={{ fontSize: "12px", color: "var(--muted-foreground)" }}>
-                      <CalendarDays className="w-3 h-3" />
-                      {event.date} · {event.time}
-                    </p>
-                  </div>
-                  <span
-                    className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-medium"
-                    style={{
-                      background: event.status === "upcoming"
-                        ? "color-mix(in srgb, var(--primary) 12%, transparent)"
-                        : "color-mix(in srgb, var(--muted-foreground) 12%, transparent)",
-                      color: event.status === "upcoming" ? "var(--primary)" : "var(--muted-foreground)",
-                    }}
-                  >
-                    {event.status === "upcoming" ? "Upcoming" : "Past"}
-                  </span>
-                </div>
-                <p className="mt-1.5 flex items-center gap-1" style={{ fontSize: "12px", color: "var(--muted-foreground)" }}>
-                  <Users className="w-3 h-3" />
-                  {event.attendees} attendees
-                </p>
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Footer */}
 
       {/* Mobile strategy indicator badge */}
       {mobileStrategy > 0 && (
@@ -943,7 +870,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
                 <h4 className="text-sm font-semibold">Contribute</h4>
                 <div className="space-y-2">
                   {features.post && (
-                    <Button size="sm" className="w-full justify-start gap-2">
+                    <Button size="sm" className="w-full justify-start gap-2" onClick={() => { window.dispatchEvent(new Event("open-add-post-modal")); setActivePopover(null); }}>
                       <Plus className="w-3.5 h-3.5" />
                       New Post
                     </Button>

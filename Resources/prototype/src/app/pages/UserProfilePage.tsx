@@ -78,7 +78,6 @@ Always looking for collaborators on open source climate data projects. Feel free
                     org={{
                       name: org.name,
                       avatarUrl: org.imageUrl,
-                      memberCount: org.memberCount,
                     }}
                   >
                     <div>

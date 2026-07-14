@@ -54,7 +54,6 @@ import {
   MessageSquarePlus,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Badge } from "@/app/components/ui/badge";
 import { Switch } from "@/app/components/ui/switch";
@@ -73,6 +72,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
 } from "@/app/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
@@ -299,14 +299,14 @@ const PostCard = ({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <IconButton
+          <Button
             variant="ghost"
-            tooltipLabel="More options"
+            size="icon"
             className="w-6 h-6 shrink-0 opacity-0 group-hover/post:opacity-100 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >
             <MoreVertical className="w-3.5 h-3.5" />
-          </IconButton>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuSub>
@@ -342,6 +342,19 @@ const PostCard = ({
 // SECTION 2 — Kanban Column (collapsible, drop target)
 // ═══════════════════════════════════════════════════════════════════════════════
 
+type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
+type PerTabFeatures = Record<TabId, SidebarFeatureSet>;
+
+const FEATURE_DEFS: Array<{ key: keyof SidebarFeatureSet; icon: React.ElementType; label: string }> = [
+  { key: 'search', icon: Search, label: 'Search' },
+  { key: 'tags', icon: Tag, label: 'Tags & Filters' },
+  { key: 'post', icon: MessageSquarePlus, label: 'Post' },
+  { key: 'addUser', icon: UserPlus, label: 'Add User' },
+  { key: 'createSubspace', icon: Layers, label: 'Create Subspace' },
+  { key: 'subspaceLinks', icon: Layers, label: 'Subspace Links' },
+  { key: 'index', icon: ListOrdered, label: 'Index' },
+];
+
 interface KanbanColumnProps {
   tab: TabItem;
   posts: PostEntry[];
@@ -363,6 +376,9 @@ interface KanbanColumnProps {
   onIconChange: (id: TabId, newIcon: React.ElementType) => void;
   isEditing: boolean;
   setEditingId: (id: TabId | null) => void;
+  sidebarFeatures: SidebarFeatureSet;
+  onSidebarFeatureToggle: (key: keyof SidebarFeatureSet, checked: boolean) => void;
+  sidebarMode: 'expanded' | 'railed' | 'hidden';
 }
 
 const KanbanColumn = ({
@@ -381,6 +397,9 @@ const KanbanColumn = ({
   onIconChange,
   isEditing,
   setEditingId,
+  sidebarFeatures,
+  onSidebarFeatureToggle,
+  sidebarMode,
 }: KanbanColumnProps) => {
   const autoExpandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -519,6 +538,31 @@ const KanbanColumn = ({
                 <DropdownMenuItem>
                   Clear Default Template
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {sidebarMode !== 'hidden' && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <PanelLeft className="w-3.5 h-3.5 mr-2" />
+                        Sidebar Features
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="w-52">
+                        {FEATURE_DEFS.map(({ key, icon: FeatureIcon, label }) => (
+                          <DropdownMenuCheckboxItem
+                            key={key}
+                            checked={sidebarFeatures[key]}
+                            onCheckedChange={(checked) => onSidebarFeatureToggle(key, !!checked)}
+                            onSelect={(e) => e.preventDefault()}
+                          >
+                            <FeatureIcon className="w-3.5 h-3.5 mr-2" />
+                            {label}
+                          </DropdownMenuCheckboxItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                  </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <EyeOff className="w-3.5 h-3.5 mr-2" />
@@ -731,9 +775,7 @@ export function SpaceSettingsLayout() {
   });
 
   // Sidebar feature toggles — per tab
-  type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
   const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
-  type PerTabFeatures = Record<TabId, SidebarFeatureSet>;
   const defaultPerTabFeatures: PerTabFeatures = {
     home: { ...defaultFeatureSet },
     community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
@@ -981,6 +1023,14 @@ export function SpaceSettingsLayout() {
                   onIconChange={handleIconChange}
                   isEditing={editingId === tab.id}
                   setEditingId={setEditingId}
+                  sidebarFeatures={sidebarFeatures[tab.id]}
+                  onSidebarFeatureToggle={(key, checked) =>
+                    setSidebarFeatures((prev) => ({
+                      ...prev,
+                      [tab.id]: { ...prev[tab.id], [key]: checked },
+                    }))
+                  }
+                  sidebarMode={sidebarMode}
                 />
               </DraggableColumnWrapper>
             ))}
@@ -1095,89 +1145,6 @@ export function SpaceSettingsLayout() {
                     onCheckedChange={setSidebarDefaultCollapsed}
                     aria-label="Default sidebar collapsed"
                   />
-                </div>
-              </div>
-            )}
-
-            {/* Sidebar feature toggles — per tab (only when sidebar is visible) */}
-            {sidebarMode !== 'hidden' && (
-              <div className="mt-6 pt-5 border-t">
-                <h4 className="text-body-emphasis mb-1">Sidebar Features</h4>
-                <p className="text-body text-muted-foreground mb-4">
-                  Configure which sidebar features are available per tab. Disabled features won't appear for members.
-                </p>
-                <div className="space-y-3">
-                  {tabs.map((tab) => {
-                    const TabIcon = tab.icon;
-                    const tabFeatures = sidebarFeatures[tab.id];
-                    const enabledCount = Object.values(tabFeatures).filter(Boolean).length;
-                    const totalCount = Object.keys(tabFeatures).length;
-
-                    const FEATURE_DEFS: Array<{ key: keyof SidebarFeatureSet; icon: React.ElementType; label: string; description: string }> = [
-                      { key: 'search', icon: Search, label: 'Search', description: 'Search bar to filter content' },
-                      { key: 'tags', icon: Tag, label: 'Tags & Filters', description: 'Tag cloud for filtering by category' },
-                      { key: 'post', icon: MessageSquarePlus, label: 'Post', description: 'Create a new post in this tab' },
-                      { key: 'addUser', icon: UserPlus, label: 'Add User', description: 'Invite or add members' },
-                      { key: 'createSubspace', icon: Layers, label: 'Create Subspace', description: 'Create a new child subspace' },
-                      { key: 'subspaceLinks', icon: Layers, label: 'Subspace Links', description: 'Quick links to child subspaces' },
-                      { key: 'index', icon: ListOrdered, label: 'Index', description: 'Full content index with type and author' },
-                    ];
-
-                    return (
-                      <Collapsible key={tab.id} defaultOpen={tab.id === 'home'}>
-                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg border bg-muted/20 hover:bg-muted/30 transition-colors group">
-                          <div className="flex items-center gap-2.5">
-                            <div
-                              className="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
-                              style={{ background: "color-mix(in srgb, var(--primary) 10%, transparent)" }}
-                            >
-                              <TabIcon className="w-3.5 h-3.5" style={{ color: "var(--primary)" }} />
-                            </div>
-                            <span className="text-body-emphasis">{tab.label}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-caption text-muted-foreground">
-                              {enabledCount}/{totalCount}
-                            </span>
-                            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <div className="space-y-1 pt-2 pl-2">
-                            {FEATURE_DEFS.map(({ key, icon: FeatureIcon, label, description }) => (
-                              <div
-                                key={key}
-                                className={cn(
-                                  "flex items-center justify-between gap-3 px-3 py-2 rounded-md transition-colors",
-                                  tabFeatures[key]
-                                    ? "hover:bg-muted/30"
-                                    : "opacity-50"
-                                )}
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <FeatureIcon className="w-4 h-4 shrink-0 text-muted-foreground" />
-                                  <div className="min-w-0">
-                                    <span className="text-body block">{label}</span>
-                                    <span className="text-caption text-muted-foreground block">{description}</span>
-                                  </div>
-                                </div>
-                                <Switch
-                                  checked={tabFeatures[key]}
-                                  onCheckedChange={(checked) =>
-                                    setSidebarFeatures((prev) => ({
-                                      ...prev,
-                                      [tab.id]: { ...prev[tab.id], [key]: checked },
-                                    }))
-                                  }
-                                  aria-label={`Enable ${label} for ${tab.label}`}
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    );
-                  })}
                 </div>
               </div>
             )}

@@ -30,7 +30,7 @@ function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="group cursor-pointer transition-all overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/30 hover:border-primary hover:bg-primary/5"
+      className="group cursor-pointer transition-all overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/30 hover:border-primary hover:bg-primary/5 relative"
       style={{
         background: "var(--card)",
       }}
@@ -42,11 +42,9 @@ function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
         }
       }}
     >
-      {/* Banner - 2:1 aspect ratio */}
-      <div
-        className="w-full flex flex-col items-center justify-center"
-        style={{ aspectRatio: "2 / 1" }}
-      >
+      {/* Invisible spacer to match other cards' total height (aspect-ratio 2/1 banner + h-14 footer) */}
+      <div className="w-full" style={{ aspectRatio: "2 / 1" }} aria-hidden="true" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-2 size-10">
           <Plus className="text-muted-foreground group-hover:text-primary transition-colors" size={20} />
         </div>
@@ -55,7 +53,7 @@ function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
         </span>
       </div>
 
-      {/* Footer - matches card footer structure */}
+      {/* Footer spacer - matches card footer structure */}
       <div className="p-3 h-14" />
     </div>
   );
@@ -144,7 +142,11 @@ function SpaceCardCompact({ item, onClick }: { item: MembershipItem; onClick: ()
   );
 }
 
-export function EnhancedSpacesGallery() {
+interface EnhancedSpacesGalleryProps {
+  newUserView?: boolean;
+}
+
+export function EnhancedSpacesGallery({ newUserView = false }: EnhancedSpacesGalleryProps) {
   const navigate = useNavigate();
   const spaces = useMemo(() => MOCK_MEMBERSHIPS.filter(m => m.type === "space"), []);
 
@@ -249,6 +251,91 @@ export function EnhancedSpacesGallery() {
     setBrowseAndPinOpen(false);
   };
 
+  // For new user view, show only welcome space in recent
+  const newUserRecentSpaces = useMemo(() => {
+    if (!newUserView) return recentSpaces;
+    return spaces.filter(s => s.id === "welcome");
+  }, [spaces, recentSpaces, newUserView]);
+
+  if (newUserView) {
+    return (
+      <>
+        <div className="space-y-8">
+          {/* Row 1: Pinned Spaces (all placeholders for new user) */}
+          <section>
+            <button
+              onClick={() => toggleRowCollapse("pinned")}
+              className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
+              type="button"
+            >
+              <h2 className="text-lg font-semibold">My Pinned Spaces</h2>
+              {collapsedRows.has("pinned") ? (
+                <ChevronRight className="w-5 h-5" />
+              ) : (
+                <ChevronDown className="w-5 h-5" />
+              )}
+            </button>
+            {!collapsedRows.has("pinned") && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {Array(4)
+                .fill(null)
+                .map((_, i) => (
+                  <ResponsivePlaceholderCard
+                    key={`placeholder-${i}`}
+                    onClick={() => setBrowseAndPinOpen(true)}
+                  />
+                ))}
+            </div>
+            )}
+          </section>
+
+          {/* Row 2: Recent Spaces (welcome space for new user) */}
+          {newUserRecentSpaces.length > 0 && (
+            <section>
+              <button
+                onClick={() => toggleRowCollapse("recent")}
+                className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
+                type="button"
+              >
+                <h2 className="text-lg font-semibold">Get Started</h2>
+                {collapsedRows.has("recent") ? (
+                  <ChevronRight className="w-5 h-5" />
+                ) : (
+                  <ChevronDown className="w-5 h-5" />
+                )}
+              </button>
+              {!collapsedRows.has("recent") && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {newUserRecentSpaces.map(space => (
+                  <SpaceCardCompact
+                    key={space.id}
+                    item={space}
+                    onClick={() => navigate(`/space/${space.slug}`)}
+                  />
+                ))}
+              </div>
+              )}
+            </section>
+          )}
+        </div>
+
+        {/* Modals */}
+        <ShowMoreModal
+          open={showMoreOpen}
+          category={showMoreCategory}
+          onOpenChange={setShowMoreOpen}
+          spaces={showMoreCategory === "lead" ? leadSpaces : hostSpaces}
+        />
+        <BrowseAndPinModal
+          open={browseAndPinOpen}
+          onOpenChange={setBrowseAndPinOpen}
+          pinnedIds={pinned}
+          onPin={handlePinSpace}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <div className="space-y-8">
@@ -256,15 +343,15 @@ export function EnhancedSpacesGallery() {
         <section>
           <button
             onClick={() => toggleRowCollapse("pinned")}
-            className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+            className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
             type="button"
           >
+            <h2 className="text-lg font-semibold">My Pinned Spaces</h2>
             {collapsedRows.has("pinned") ? (
               <ChevronRight className="w-5 h-5" />
             ) : (
               <ChevronDown className="w-5 h-5" />
             )}
-            <h2 className="text-lg font-semibold">My Pinned Spaces</h2>
           </button>
           {!collapsedRows.has("pinned") && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -292,15 +379,15 @@ export function EnhancedSpacesGallery() {
           <section>
             <button
               onClick={() => toggleRowCollapse("activity")}
-              className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+              className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
               type="button"
             >
+              <h2 className="text-lg font-semibold">Spaces with Most Activity</h2>
               {collapsedRows.has("activity") ? (
                 <ChevronRight className="w-5 h-5" />
               ) : (
                 <ChevronDown className="w-5 h-5" />
               )}
-              <h2 className="text-lg font-semibold">Spaces with Most Activity</h2>
             </button>
             {!collapsedRows.has("activity") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -321,15 +408,15 @@ export function EnhancedSpacesGallery() {
           <section>
             <button
               onClick={() => toggleRowCollapse("recent")}
-              className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+              className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
               type="button"
             >
+              <h2 className="text-lg font-semibold">My Recent Spaces</h2>
               {collapsedRows.has("recent") ? (
                 <ChevronRight className="w-5 h-5" />
               ) : (
                 <ChevronDown className="w-5 h-5" />
               )}
-              <h2 className="text-lg font-semibold">My Recent Spaces</h2>
             </button>
             {!collapsedRows.has("recent") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -350,15 +437,15 @@ export function EnhancedSpacesGallery() {
           <section>
             <button
               onClick={() => toggleRowCollapse("lead")}
-              className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+              className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
               type="button"
             >
+              <h2 className="text-lg font-semibold">Spaces I Lead & Administer</h2>
               {collapsedRows.has("lead") ? (
                 <ChevronRight className="w-5 h-5" />
               ) : (
                 <ChevronDown className="w-5 h-5" />
               )}
-              <h2 className="text-lg font-semibold">Spaces I Lead & Administer</h2>
             </button>
             {!collapsedRows.has("lead") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -393,15 +480,15 @@ export function EnhancedSpacesGallery() {
           <section>
             <button
               onClick={() => toggleRowCollapse("host")}
-              className="w-full flex items-center gap-2 mb-4 hover:opacity-75 transition-opacity"
+              className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
               type="button"
             >
+              <h2 className="text-lg font-semibold">Spaces I Host</h2>
               {collapsedRows.has("host") ? (
                 <ChevronRight className="w-5 h-5" />
               ) : (
                 <ChevronDown className="w-5 h-5" />
               )}
-              <h2 className="text-lg font-semibold">Spaces I Host</h2>
             </button>
             {!collapsedRows.has("host") && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

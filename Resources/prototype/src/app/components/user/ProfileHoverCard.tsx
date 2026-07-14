@@ -2,8 +2,7 @@ import React from "react";
 import { Link } from "react-router";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/app/components/ui/hover-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
-import { MapPin, Mail } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface ProfileHoverCardUser {
@@ -27,8 +26,6 @@ interface ProfileHoverCardProps {
   openDelay?: number;
   /** Close delay in ms (default 0) */
   closeDelay?: number;
-  /** Called when Message button is clicked */
-  onMessage?: () => void;
 }
 
 const MAX_VISIBLE_TAGS = 4;
@@ -40,7 +37,6 @@ export function ProfileHoverCard({
   align = "center",
   openDelay = 200,
   closeDelay = 0,
-  onMessage,
 }: ProfileHoverCardProps) {
   const profileUrl = user.profileUrl || `/user/${user.name.toLowerCase().replace(/\s+/g, "-")}`;
   const visibleTags = user.tags?.slice(0, MAX_VISIBLE_TAGS) ?? [];
@@ -115,23 +111,6 @@ export function ProfileHoverCard({
             )}
           </div>
         </Link>
-
-        {/* Message button — outside the link to prevent navigation */}
-        <div className="px-4 pb-4 -mt-1">
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-full gap-2 text-caption"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onMessage?.();
-            }}
-          >
-            <Mail className="w-3.5 h-3.5" />
-            Message
-          </Button>
-        </div>
       </HoverCardContent>
     </HoverCard>
   );

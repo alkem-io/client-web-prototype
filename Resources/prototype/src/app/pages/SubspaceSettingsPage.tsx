@@ -104,7 +104,7 @@ export default function SubspaceSettingsPage() {
   return (
     <div className="min-h-screen bg-background pb-12">
       {/* Sticky header with title + tabs */}
-      <div className="sticky top-16 z-20 border-b border-border bg-card">
+      <div className="sticky top-16 z-20 bg-card">
         <div className="px-6 md:px-8 pt-8 pb-0">
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 lg:col-start-2 lg:col-span-10">
@@ -130,7 +130,9 @@ export default function SubspaceSettingsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
+              <div className="flex items-end gap-0 overflow-x-auto no-scrollbar relative">
+                {/* Bottom border line that runs the full width */}
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-border" />
                 {tabs.map((item) => {
                   const isActive = tab === item.id;
                   return (
@@ -138,10 +140,10 @@ export default function SubspaceSettingsPage() {
                       key={item.id}
                       to={`/space/${spaceSlug}/subspaces/${subspaceSlug}/settings/${item.id}`}
                       className={cn(
-                        "flex items-center gap-2 pb-4 text-control border-b-2 transition-colors whitespace-nowrap",
+                        "relative flex items-center gap-2 px-4 py-2.5 transition-all duration-200 whitespace-nowrap select-none rounded-t-lg text-control",
                         isActive
-                          ? "border-primary text-primary"
-                          : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+                          ? "bg-background text-foreground font-semibold border border-border border-b-0 z-10 -mb-px"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
                       )}
                     >
                       <item.icon className="w-4 h-4" />

@@ -35,6 +35,23 @@ const c = (i: number) => colors[i % colors.length];
 
 export const MOCK_MEMBERSHIPS: MembershipItem[] = [
   {
+    id: "welcome",
+    type: "space",
+    name: "Welcome",
+    slug: "welcome",
+    tagline: "Get started with your first space and learn the basics.",
+    isPrivate: false,
+    role: "Member",
+    initials: "W",
+    color: "#2563eb",
+    image: "https://picsum.photos/1200/256?random=welcome",
+    isPinned: false,
+    lastModified: new Date("2026-07-07"),
+    lastActivityDate: new Date("2026-07-07"),
+    activityScore: 100,
+    createdAt: new Date("2026-07-07"),
+  },
+  {
     id: "s1",
     type: "space",
     name: "Innovation Lab",

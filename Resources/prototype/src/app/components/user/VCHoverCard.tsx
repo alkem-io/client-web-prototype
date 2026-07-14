@@ -2,16 +2,16 @@ import React from "react";
 import { Link } from "react-router";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/app/components/ui/hover-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Bot } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface VCHoverCardData {
   name: string;
   avatarUrl?: string | null;
   initials?: string;
+  location?: string;
   description?: string;
   tags?: string[];
-  hostName?: string;
   profileUrl?: string;
 }
 
@@ -54,7 +54,7 @@ export function VCHoverCard({
         >
           <div className="p-4 pb-3">
             <div className="flex items-start gap-3">
-              <Avatar className="w-11 h-11 shrink-0 border border-border">
+              <Avatar className="w-14 h-14 shrink-0 border border-border">
                 {vc.avatarUrl && (
                   <AvatarImage src={vc.avatarUrl} alt={vc.name} />
                 )}
@@ -66,15 +66,12 @@ export function VCHoverCard({
                 <h4 className="text-body-emphasis font-semibold text-foreground leading-tight">
                   {vc.name}
                 </h4>
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1 mt-1 text-caption font-medium",
-                    "text-muted-foreground"
-                  )}
-                >
-                  <Bot className="w-3 h-3" />
-                  Virtual Contributor
-                </span>
+                {vc.location && (
+                  <div className="flex items-center gap-1.5 mt-1 text-caption text-muted-foreground">
+                    <MapPin className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{vc.location}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -84,24 +81,21 @@ export function VCHoverCard({
               </p>
             )}
 
-            {vc.hostName && (
-              <p className="mt-2 text-caption text-muted-foreground">
-                Hosted by <span className="font-medium text-foreground">{vc.hostName}</span>
-              </p>
-            )}
-
             {visibleTags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-3">
+              <div className="flex flex-wrap items-center gap-1.5 mt-3">
                 {visibleTags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-caption border border-border text-muted-foreground bg-muted/40"
+                    className={cn(
+                      "inline-flex items-center px-2 py-0.5 text-caption font-medium rounded-full",
+                      "bg-muted text-muted-foreground border border-border"
+                    )}
                   >
                     {tag}
                   </span>
                 ))}
                 {overflowCount > 0 && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-caption text-muted-foreground">
+                  <span className="text-caption text-muted-foreground font-medium px-1">
                     +{overflowCount}
                   </span>
                 )}

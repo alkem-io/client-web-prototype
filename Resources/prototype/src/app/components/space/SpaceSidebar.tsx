@@ -273,7 +273,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       <div className="pb-4">
         <div className="flex flex-col gap-2">
           {features.post && (
-            <Button size="sm" className="w-full gap-2 justify-start">
+            <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
               <Plus className="w-4 h-4" />
               Post
             </Button>
@@ -375,6 +375,16 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         <>
           <div className="pb-4">
             <SubspaceQuickLinks />
+          </div>
+          <div className="mb-4" />
+        </>
+      )}
+
+      {/* Upcoming Events (Home tab only) */}
+      {variant === "home" && (
+        <>
+          <div className="pb-4">
+            <UpcomingEvents />
           </div>
           <div className="mb-4" />
         </>
@@ -513,9 +523,9 @@ function TagCloud({ tags, activeTags, toggleTag }: { tags: string[]; activeTags:
 function UpcomingEvents() {
   const [collapsed, setCollapsed] = useState(false);
   const events = [
-    { title: "GovTechDay", date: "Today" },
-    { title: "Stakeholder Workshop", date: "Jun 14" },
-    { title: "Community Solar Session", date: "Jun 18" },
+    { title: "Strategy Workshop", date: "Jul 8" },
+    { title: "Stakeholder Review", date: "Jul 11" },
+    { title: "Community Solar Session", date: "Jul 15" },
   ];
 
   return (
@@ -539,24 +549,26 @@ function UpcomingEvents() {
         </button>
       </div>
       {!collapsed && (
-        <>
-          <div className="flex flex-col">
-            {events.map((event) => (
-              <button
-                key={event.title}
-                className="flex items-center gap-2 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+        <div className="flex flex-col gap-0.5">
+          {events.map((event) => (
+            <button
+              key={event.title}
+              className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+            >
+              <span
+                className="w-8 h-8 rounded-lg shrink-0 flex flex-col items-center justify-center leading-none"
+                style={{
+                  background: "color-mix(in srgb, var(--primary) 10%, transparent)",
+                  color: "var(--primary)",
+                }}
               >
-                <span className="text-foreground/85 truncate">{event.title}</span>
-                <span className="text-xs text-muted-foreground ml-auto shrink-0">{event.date}</span>
-              </button>
-            ))}
-          </div>
-          <button
-            className="mt-3 text-sm text-foreground/85 text-left hover:text-foreground transition-colors"
-          >
-            Show calendar
-          </button>
-        </>
+                <span className="text-[9px] font-medium uppercase">{event.date.split(" ")[0]}</span>
+                <span className="text-xs font-bold">{event.date.split(" ")[1]}</span>
+              </span>
+              <span className="text-foreground/85 truncate">{event.title}</span>
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
@@ -611,7 +623,7 @@ function TabCTAButtons({ variant }: { variant: string }) {
   if (variant === "community") {
     return (
       <div className="flex flex-col gap-2">
-        <Button size="sm" className="w-full gap-2 justify-start">
+        <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
           <Plus className="w-4 h-4" />
           Post
         </Button>
@@ -629,7 +641,7 @@ function TabCTAButtons({ variant }: { variant: string }) {
   if (variant === "workspaces") {
     return (
       <div className="flex flex-col gap-2">
-        <Button size="sm" className="w-full gap-2 justify-start">
+        <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
           <Plus className="w-4 h-4" />
           Post
         </Button>
@@ -642,7 +654,7 @@ function TabCTAButtons({ variant }: { variant: string }) {
   }
   // Home and Knowledge Base
   return (
-    <Button size="sm" className="w-full gap-2 justify-start">
+    <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
       <Plus className="w-4 h-4" />
       Post
     </Button>

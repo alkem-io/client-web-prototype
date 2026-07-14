@@ -18,9 +18,11 @@ import { useLanguage } from "@/app/contexts/LanguageContext";
 interface DashboardSidebarProps {
   activityView: boolean;
   onToggleView: (value: boolean) => void;
+  newUserView: boolean;
+  onToggleNewUserView: (value: boolean) => void;
 }
 
-export function DashboardSidebar({ activityView, onToggleView }: DashboardSidebarProps) {
+export function DashboardSidebar({ activityView, onToggleView, newUserView, onToggleNewUserView }: DashboardSidebarProps) {
   const [showInvitations, setShowInvitations] = useState(false);
   const [showCreateSpace, setShowCreateSpace] = useState(false);
   const location = useLocation();
@@ -150,7 +152,7 @@ export function DashboardSidebar({ activityView, onToggleView }: DashboardSideba
       </div>
 
       {/* Activity View toggle */}
-      <div className="pt-4 border-t border-border">
+      <div className="pt-4 border-t border-border space-y-3">
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
             <Eye className="w-4 h-4" />
@@ -160,6 +162,19 @@ export function DashboardSidebar({ activityView, onToggleView }: DashboardSideba
             id="activity-view"
             checked={activityView}
             onCheckedChange={onToggleView}
+          />
+        </div>
+
+        {/* New User View toggle */}
+        <div className="flex items-center justify-between px-2">
+          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
+            <Eye className="w-4 h-4" />
+            <span className="text-xs">New User View</span>
+          </div>
+          <Switch
+            id="new-user-view"
+            checked={newUserView}
+            onCheckedChange={onToggleNewUserView}
           />
         </div>
       </div>

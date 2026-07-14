@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams } from "react-router";
 import { 
   X, Image, 
   Settings, Presentation, StickyNote, Megaphone,
@@ -6,7 +7,8 @@ import {
   Link2, FileText, PenLine, BarChart3, Lightbulb,
   Globe, Shield, Trash2, Paperclip, Plus, MessageSquare,
   Users, Pencil, Search, Check, ChevronsUpDown,
-  FileSpreadsheet, Upload
+  FileSpreadsheet, Upload,
+  Zap, UserPlus, Calendar, LayoutGrid, BookOpen, Mail, PlusCircle, CirclePlus
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
@@ -27,6 +29,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/ui/popover";
 import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
 
 interface AddPostModalProps {
@@ -35,6 +42,7 @@ interface AddPostModalProps {
 }
 
 export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
+  const { spaceSlug = "design-workshop", subspaceSlug } = useParams<{ spaceSlug: string; subspaceSlug?: string }>();
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState("");
   const [content, setContent] = useState("");
@@ -46,6 +54,93 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
   const [activeAttachment, setActiveAttachment] = useState<"none" | "whiteboard" | "memo" | "cta" | "image" | "poll" | "document">("none");
   const [ctaText, setCtaText] = useState("");
   const [ctaLink, setCtaLink] = useState("");
+  const [ctaPickerOpen, setCtaPickerOpen] = useState(false);
+
+  // Simulated space settings (in production, these come from space config)
+  const spaceSettings = {
+    membershipPolicy: "application" as "open" | "application" | "invitation",
+    memberCreatePosts: false,
+    memberCreateSubspaces: true,
+    subspaceEvents: true,
+  };
+
+  // Resolve base path for actions (works for both space and subspace context)
+  const basePath = subspaceSlug
+    ? `/space/${spaceSlug}/subspaces/${subspaceSlug}`
+    : `/space/${spaceSlug}`;
+
+  // Predefined space actions
+  const predefinedActions: Array<{
+    id: string;
+    category: string;
+    label: string;
+    defaultDisplayName: string;
+    icon: typeof UserPlus;
+    url: string;
+    disabled: boolean;
+    disabledReason?: string;
+  }> = [
+    // Membership
+    {
+      id: "join",
+      category: "Membership",
+      label: spaceSettings.membershipPolicy === "application" ? "Apply to join this space" : "Join this space",
+      defaultDisplayName: spaceSettings.membershipPolicy === "application" ? "Apply to join" : "Join this space",
+      icon: UserPlus,
+      url: `${basePath}/join`,
+      disabled: false,
+    },
+    // Create / Contribute
+    {
+      id: "create-post",
+      category: "Contribute",
+      label: "Create a post",
+      defaultDisplayName: "Share something",
+      icon: PenLine,
+      url: `${basePath}/new-post`,
+      disabled: !spaceSettings.memberCreatePosts,
+      disabledReason: "Members are not allowed to create posts in this space",
+    },
+    {
+      id: "create-subspace",
+      category: "Contribute",
+      label: "Create a subspace",
+      defaultDisplayName: "Start a subspace",
+      icon: CirclePlus,
+      url: `${basePath}/new-subspace`,
+      disabled: !spaceSettings.memberCreateSubspaces,
+      disabledReason: "Members are not allowed to create subspaces in this space",
+    },
+    {
+      id: "add-event",
+      category: "Contribute",
+      label: "Add an event",
+      defaultDisplayName: "Add an event",
+      icon: Calendar,
+      url: `${basePath}/new-event`,
+      disabled: !spaceSettings.subspaceEvents,
+      disabledReason: "Events are disabled for this space",
+    },
+    // Connect
+    {
+      id: "contact-leads",
+      category: "Connect",
+      label: "Contact the leads",
+      defaultDisplayName: "Get in touch",
+      icon: Mail,
+      url: `${basePath}/contact-leads`,
+      disabled: false,
+    },
+  ];
+
+  const actionCategories = ["Membership", "Contribute", "Connect"];
+
+  const handleSelectAction = (action: typeof predefinedActions[0]) => {
+    if (action.disabled) return;
+    setCtaLink(action.url);
+    setCtaText(action.defaultDisplayName);
+    setCtaPickerOpen(false);
+  };
 
   // Collection type — always visible
   const [collectionType, setCollectionType] = useState<"none" | "links" | "posts" | "memos" | "whiteboards" | "documents">("none");
@@ -169,7 +264,72 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                      </div>
                      <div className="space-y-1">
                        <Label className="text-body-emphasis">Target URL</Label>
-                       <Input value={ctaLink} onChange={e => setCtaLink(e.target.value)} placeholder="https://" className="h-8 bg-background" />
+                       <div className="flex gap-1.5">
+                         <Input value={ctaLink} onChange={e => setCtaLink(e.target.value)} placeholder="https://" className="h-8 bg-background flex-1" />
+                         <Popover open={ctaPickerOpen} onOpenChange={setCtaPickerOpen}>
+                           <TooltipProvider>
+                             <Tooltip>
+                               <TooltipTrigger asChild>
+                                 <PopoverTrigger asChild>
+                                   <button
+                                     type="button"
+                                     className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground transition-colors shrink-0"
+                                   >
+                                     <Zap className="w-4 h-4" />
+                                   </button>
+                                 </PopoverTrigger>
+                               </TooltipTrigger>
+                               <TooltipContent side="top">
+                                 <p>Choose a space action</p>
+                               </TooltipContent>
+                             </Tooltip>
+                           </TooltipProvider>
+                           <PopoverContent align="end" side="bottom" className="w-72 p-0" sideOffset={8}>
+                       <div className="px-3 py-2 border-b">
+                         <p className="text-body-emphasis">Space Actions</p>
+                         <p className="text-caption text-muted-foreground">Select a predefined action for the CTA</p>
+                       </div>
+                       <div className="max-h-64 overflow-y-auto py-1">
+                         {actionCategories.map((category) => {
+                           const categoryActions = predefinedActions.filter(a => a.category === category);
+                           if (categoryActions.length === 0) return null;
+                           return (
+                             <div key={category}>
+                               <p className="px-3 pt-2 pb-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70">{category}</p>
+                               {categoryActions.map((action) => (
+                                 <TooltipProvider key={action.id}>
+                                   <Tooltip>
+                                     <TooltipTrigger asChild>
+                                       <button
+                                         type="button"
+                                         onClick={() => handleSelectAction(action)}
+                                         disabled={action.disabled}
+                                         className={cn(
+                                           "w-full flex items-center gap-2.5 px-3 py-2 text-left text-control transition-colors",
+                                           action.disabled
+                                             ? "opacity-40 cursor-not-allowed"
+                                             : "hover:bg-muted cursor-pointer"
+                                         )}
+                                       >
+                                         <action.icon className="w-4 h-4 shrink-0" />
+                                         <span className="truncate">{action.label}</span>
+                                       </button>
+                                     </TooltipTrigger>
+                                     {action.disabled && action.disabledReason && (
+                                       <TooltipContent side="left">
+                                         <p>{action.disabledReason}</p>
+                                       </TooltipContent>
+                                     )}
+                                   </Tooltip>
+                                 </TooltipProvider>
+                               ))}
+                             </div>
+                           );
+                         })}
+                       </div>
+                     </PopoverContent>
+                   </Popover>
+                       </div>
                      </div>
                    </div>
                 </div>

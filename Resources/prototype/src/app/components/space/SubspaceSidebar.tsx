@@ -14,6 +14,7 @@ import { Separator } from "@/app/components/ui/separator";
 import {
   Info,
   ChevronLeft,
+  ChevronDown,
   Activity,
   CalendarDays,
   List,
@@ -26,6 +27,8 @@ import {
   Users,
   Plus,
   Folder,
+  Search,
+  X,
 } from "lucide-react";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
@@ -122,7 +125,6 @@ export function SubspaceSidebar({
         isCollapsed ? "w-12" : "w-full",
         className
       )}
-      style={{ fontFamily: "var(--font-family, 'Inter', sans-serif)" }}
     >
       {/* Collapse toggle — positioned on the right edge */}
       <button
@@ -144,320 +146,108 @@ export function SubspaceSidebar({
       {/* Sidebar content — hidden when collapsed */}
       <div
         className={cn(
-          "flex flex-col gap-6 overflow-hidden transition-opacity duration-200",
+          "flex flex-col w-full p-1.5 overflow-hidden transition-opacity duration-200",
           isCollapsed
             ? "opacity-0 invisible pointer-events-none"
             : "opacity-100 visible"
         )}
       >
-        {/* ── Challenge Statement ── */}
-        <div
-          className="p-5"
-          style={{
-            background: "var(--primary)",
-            color: "var(--primary-foreground)",
-            borderRadius: "var(--radius)",
-          }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Info className="w-4 h-4" style={{ opacity: 0.8 }} />
-            <span
-              className="uppercase tracking-wider"
-              style={{
-                fontSize: "11px",
-                fontWeight: 700,
-                opacity: 0.8,
-              }}
-            >
-              Challenge Statement
-            </span>
-          </div>
+        {/* 1. Description */}
+        <div className="pb-3">
           <ReadMoreText
             maxLines={3}
-            style={{
-              fontSize: "var(--text-sm)",
-              lineHeight: 1.6,
-              opacity: 0.92,
-            }}
-            toggleColor="var(--primary-foreground)"
-            toggleOpacity={0.8}
+            className="text-sm text-foreground/85 leading-relaxed"
+            toggleColor="var(--foreground)"
+            toggleOpacity={0.75}
           >
             How might we design a collaborative platform that empowers
             distributed teams to innovate effectively while maintaining social
             connection?
           </ReadMoreText>
+        </div>
 
-          {/* Subspace Lead */}
-          <div
-            className="pt-3 mt-3"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}
-          >
-            <p
-              className="uppercase tracking-wider mb-2"
-              style={{
-                fontSize: "10px",
-                fontWeight: 700,
-                opacity: 0.6,
-                letterSpacing: "0.04em",
+        {/* 2–3. Action buttons */}
+        <div className="pb-4">
+          <div className="flex flex-col gap-2">
+            <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
+              <Plus className="w-4 h-4" />
+              Post
+            </Button>
+            <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+              <Plus className="w-4 h-4" />
+              Create Subspace
+            </Button>
+          </div>
+        </div>
+
+        {/* ── divider ── */}
+        <div className="mb-4" />
+
+        {/* 4. Search bar */}
+        <div className="pb-4">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search posts…"
+              className="w-full h-9 pl-8 pr-3 transition-all text-sm rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "var(--primary)";
+                e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
               }}
-            >
-              Lead
-            </p>
-            <div className="flex items-center gap-3">
-              <ProfileHoverCard
-                user={{
-                  name: SUBSPACE_LEAD.name,
-                  avatarUrl: SUBSPACE_LEAD.avatar,
-                  initials: SUBSPACE_LEAD.initials,
-                  location: SUBSPACE_LEAD.location,
-                }}
-              >
-                <button type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full">
-                  <Avatar
-                    className="w-8 h-8"
-                    style={{ border: "2px solid rgba(255,255,255,0.25)" }}
-                  >
-                    <AvatarImage src={SUBSPACE_LEAD.avatar} alt={SUBSPACE_LEAD.name} />
-                    <AvatarFallback
-                      style={{
-                        background: "rgba(255,255,255,0.15)",
-                        color: "white",
-                        fontSize: "9px",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {SUBSPACE_LEAD.initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
-              </ProfileHoverCard>
-              <div>
-                <p style={{ fontSize: "var(--text-sm)", fontWeight: 600 }}>
-                  {SUBSPACE_LEAD.name}
-                </p>
-                <p
-                  className="flex items-center gap-1"
-                  style={{ fontSize: "11px", opacity: 0.7 }}
-                >
-                  <MapPin className="w-3 h-3" />
-                  {SUBSPACE_LEAD.location}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Community Members ── */}
-        <div
-          className="p-4"
-          style={{
-            background: "var(--card)",
-            border: "1px solid var(--border)",
-            borderRadius: "var(--radius)",
-          }}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5" style={{ color: "var(--muted-foreground)" }} />
-              <h3
-                className="uppercase tracking-wider"
-                style={{
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  color: "var(--muted-foreground)",
-                }}
-              >
-                Community
-              </h3>
-            </div>
-            <span style={{ fontSize: "11px", color: "var(--muted-foreground)" }}>
-              16 members
-            </span>
-          </div>
-          <div className="flex -space-x-2 mb-3">
-            {[
-              { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", initials: "SC" },
-              { name: "David Kim", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", initials: "DK" },
-              { name: "Emily Davis", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", initials: "ED" },
-              { name: "Marc Johnson", avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=128", initials: "MJ" },
-              { name: "Lisa Wang", avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80", initials: "LW" },
-            ].map((m) => (
-              <ProfileHoverCard
-                key={m.initials}
-                user={{
-                  name: m.name,
-                  avatarUrl: m.avatar,
-                  initials: m.initials,
-                }}
-              >
-                <button type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full">
-                  <Avatar
-                    className="w-8 h-8 transition-transform hover:z-10 hover:scale-110"
-                    style={{ border: "2px solid var(--card)" }}
-                  >
-                    <AvatarImage src={m.avatar} alt={m.name} />
-                    <AvatarFallback
-                      style={{
-                        background: "color-mix(in srgb, var(--primary) 15%, transparent)",
-                        color: "var(--primary)",
-                        fontSize: "10px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {m.initials}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
-              </ProfileHoverCard>
-            ))}
-            <div
-              className="flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-colors"
-              style={{
-                background: "color-mix(in srgb, var(--primary) 10%, transparent)",
-                color: "var(--primary)",
-                fontSize: "11px",
-                fontWeight: 600,
-                border: "2px solid var(--card)",
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.boxShadow = "none";
               }}
-            >
-              +11
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full gap-1.5"
-            style={{ fontSize: "var(--text-sm)" }}
-            onClick={() => setOpenDialog("community")}
-          >
-            <Users className="w-3.5 h-3.5" />
-            View all members
-          </Button>
-        </div>
-
-        {/* ── Quick Actions ── */}
-        <div>
-          <p
-            className="uppercase tracking-wider mb-3 px-1"
-            style={{
-              fontSize: "11px",
-              fontWeight: 600,
-              color: "var(--muted-foreground)",
-            }}
-          >
-            Quick Actions
-          </p>
-          <div className="space-y-1">
-            {[
-              { icon: Activity, label: "Recent Activity", key: "activity" },
-              { icon: Users, label: "Community", key: "community" },
-              { icon: CalendarDays, label: "Events", key: "events" },
-              { icon: List, label: "Index", key: "index" },
-              { icon: Layers, label: "Subspaces", key: "subspaces" },
-            ].map(({ icon: Icon, label, key }) => (
-              <button
-                key={key}
-                onClick={() => setOpenDialog(key)}
-                className="flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
-                style={{
-                  background:
-                    "color-mix(in srgb, var(--secondary) 30%, transparent)",
-                }}
-              >
-                <Icon
-                  className="w-4 h-4 shrink-0"
-                  style={{ color: "var(--primary)" }}
-                />
-                <span
-                  style={{
-                    fontSize: "var(--text-sm)",
-                    fontWeight: "var(--font-weight-medium)" as any,
-                    color: "var(--foreground)",
-                  }}
-                >
-                  {label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Virtual Contributor ── */}
-        <div
-          className="p-4"
-          style={{
-            background: "var(--card)",
-            border: "1px solid var(--border)",
-            borderRadius: "var(--radius)",
-          }}
-        >
-          <div className="flex items-center gap-1.5 mb-3">
-            <Bot
-              className="w-3.5 h-3.5"
-              style={{ color: "var(--muted-foreground)" }}
             />
-            <p
-              className="uppercase tracking-wider"
-              style={{
-                fontSize: "11px",
-                fontWeight: 600,
-                color: "var(--muted-foreground)",
-              }}
-            >
-              Virtual Contributor
-            </p>
           </div>
-          <div className="flex items-start gap-3">
-            <VCHoverCard
-              vc={{
-                name: VIRTUAL_CONTRIBUTOR.name,
-                avatarUrl: VIRTUAL_CONTRIBUTOR.avatar,
-                description: VIRTUAL_CONTRIBUTOR.description,
-                initials: "DA",
-              }}
+        </div>
+
+        {/* Tag cloud */}
+        <div className="flex flex-wrap gap-1.5 pb-4">
+          {["Strategy", "Policy", "Solar", "Grid", "Stakeholders", "Data", "Funding", "Community"].map((tag) => (
+            <button
+              key={tag}
+              className="px-2 py-0.5 rounded-full text-badge border transition-colors bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
             >
-              <button className="shrink-0 focus:outline-none">
-                <Avatar className="w-8 h-8 shrink-0">
-                  <AvatarImage
-                    src={VIRTUAL_CONTRIBUTOR.avatar}
-                    alt={VIRTUAL_CONTRIBUTOR.name}
-                  />
-                  <AvatarFallback
-                    style={{
-                      background:
-                        "color-mix(in srgb, var(--info) 15%, transparent)",
-                      color: "var(--info)",
-                      fontSize: "9px",
-                      fontWeight: 700,
-                    }}
-                  >
-                    DA
-                  </AvatarFallback>
-                </Avatar>
-              </button>
-            </VCHoverCard>
-            <div className="min-w-0">
-              <p
-                style={{
-                  fontSize: "var(--text-sm)",
-                  fontWeight: "var(--font-weight-medium)" as any,
-                  color: "var(--foreground)",
-                }}
-              >
-                {VIRTUAL_CONTRIBUTOR.name}
-              </p>
-              <p
-                className="line-clamp-2 mt-0.5"
-                style={{
-                  fontSize: "12px",
-                  color: "var(--muted-foreground)",
-                  lineHeight: 1.4,
-                }}
-              >
-                {VIRTUAL_CONTRIBUTOR.description}
-              </p>
-            </div>
-          </div>
+              {tag}
+            </button>
+          ))}
+        </div>
+
+        {/* ── divider ── */}
+        <div className="mb-4" />
+
+        {/* 5. Subspaces section */}
+        <div className="pb-4">
+          <SubspaceQuickLinks />
+        </div>
+
+        {/* ── divider ── */}
+        <div className="mb-4" />
+
+        {/* 6–9. Action links */}
+        <div className="flex flex-col">
+          {[
+            { icon: Activity, label: "Recent Activity", key: "activity" },
+            { icon: Users, label: "Community", key: "community" },
+            { icon: CalendarDays, label: "Events", key: "events" },
+            { icon: List, label: "Index", key: "index" },
+          ].map(({ icon: Icon, label, key }) => (
+            <button
+              key={key}
+              onClick={() => setOpenDialog(key)}
+              className="flex items-center gap-2.5 w-full text-left py-1.5 rounded-md text-sm transition-colors hover:bg-muted/50"
+            >
+              <Icon
+                className="w-4 h-4 shrink-0"
+                style={{ color: "var(--primary)" }}
+              />
+              <span className="text-foreground/85">
+                {label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -667,6 +457,53 @@ export function SubspaceSidebar({
           </div>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+/* ─── Sub-components ─────────────────────────────────────────── */
+
+const SUBSPACE_AVATARS = [
+  "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+  "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+  "https://images.unsplash.com/photo-1620714223084-8fcacc6dfd8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+];
+
+function SubspaceQuickLinks() {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const subspaces = SUB_SUBSPACES.slice(0, 3);
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between mb-3">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center gap-1 hover:text-foreground transition-colors"
+        >
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Subspaces
+          </span>
+          <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
+        </button>
+      </div>
+      {!collapsed && (
+        <div className="flex flex-col gap-0.5">
+          {subspaces.map((s, i) => (
+            <button
+              key={s.id}
+              className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+            >
+              <img
+                src={SUBSPACE_AVATARS[i % SUBSPACE_AVATARS.length]}
+                alt={s.name}
+                className="w-8 h-8 rounded-lg shrink-0 object-cover"
+              />
+              <span className="text-foreground/85 truncate">{s.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

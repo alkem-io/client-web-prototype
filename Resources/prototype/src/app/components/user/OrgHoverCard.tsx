@@ -2,17 +2,16 @@ import React from "react";
 import { Link } from "react-router";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/app/components/ui/hover-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Building2, Users, ExternalLink } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface OrgHoverCardData {
   name: string;
   avatarUrl?: string | null;
   initials?: string;
-  type?: string;
+  location?: string;
   description?: string;
-  memberCount?: number;
-  website?: string;
+  tags?: string[];
   profileUrl?: string;
 }
 
@@ -25,6 +24,8 @@ interface OrgHoverCardProps {
   closeDelay?: number;
 }
 
+const MAX_VISIBLE_TAGS = 4;
+
 export function OrgHoverCard({
   org,
   children,
@@ -34,6 +35,8 @@ export function OrgHoverCard({
   closeDelay = 0,
 }: OrgHoverCardProps) {
   const profileUrl = org.profileUrl || `/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`;
+  const visibleTags = org.tags?.slice(0, MAX_VISIBLE_TAGS) ?? [];
+  const overflowCount = (org.tags?.length ?? 0) - MAX_VISIBLE_TAGS;
 
   return (
     <HoverCard openDelay={openDelay} closeDelay={closeDelay}>
@@ -52,7 +55,7 @@ export function OrgHoverCard({
           <div className="p-4 pb-3">
             <div className="flex items-start gap-3">
               <Avatar
-                className="w-12 h-12 shrink-0"
+                className="w-14 h-14 shrink-0"
                 style={{
                   borderRadius: "var(--radius)",
                   border: "1px solid var(--border)",
@@ -80,21 +83,11 @@ export function OrgHoverCard({
                 <h4 className="text-body-emphasis font-semibold text-foreground leading-tight line-clamp-2">
                   {org.name}
                 </h4>
-                {org.type && (
-                  <span
-                    className={cn(
-                      "inline-flex items-center gap-1 px-2 py-0.5 mt-1 text-caption font-medium rounded-full",
-                      "border"
-                    )}
-                    style={{
-                      color: "var(--info)",
-                      background: "color-mix(in srgb, var(--info) 10%, transparent)",
-                      borderColor: "color-mix(in srgb, var(--info) 20%, transparent)",
-                    }}
-                  >
-                    <Building2 className="w-3 h-3" />
-                    {org.type}
-                  </span>
+                {org.location && (
+                  <div className="flex items-center gap-1.5 mt-1 text-caption text-muted-foreground">
+                    <MapPin className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{org.location}</span>
+                  </div>
                 )}
               </div>
             </div>
@@ -105,32 +98,28 @@ export function OrgHoverCard({
               </p>
             )}
 
-            {org.memberCount != null && (
-              <div className="flex items-center gap-1.5 mt-3 text-caption text-muted-foreground">
-                <Users className="w-3.5 h-3.5 shrink-0" />
-                <span>{org.memberCount} associates</span>
+            {visibleTags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                {visibleTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className={cn(
+                      "inline-flex items-center px-2 py-0.5 text-caption font-medium rounded-full",
+                      "bg-muted text-muted-foreground border border-border"
+                    )}
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {overflowCount > 0 && (
+                  <span className="text-caption text-muted-foreground font-medium px-1">
+                    +{overflowCount}
+                  </span>
+                )}
               </div>
             )}
           </div>
         </Link>
-
-        {org.website && (
-          <div className="px-4 pb-4 -mt-1">
-            <a
-              href={org.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                "flex items-center justify-center gap-2 w-full px-3 py-1.5 rounded-md text-caption font-medium",
-                "border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              )}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Visit website
-            </a>
-          </div>
-        )}
       </HoverCardContent>
     </HoverCard>
   );

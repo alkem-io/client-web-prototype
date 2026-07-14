@@ -37,7 +37,7 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick }: SpaceHeader
           <div className="px-4">
             <div
               className="relative overflow-hidden"
-              style={{ ...scaledContainer, ...(variant === 3 ? { height: "77px" } : { aspectRatio: "6 / 1" }) }}
+              style={{ ...scaledContainer, height: "80px" }}
             >
               <img
                 src={BANNER_IMAGE}
@@ -78,7 +78,7 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick }: SpaceHeader
             <div className="col-span-12 lg:col-start-2 lg:col-span-10">
               <div
                 className="relative overflow-hidden"
-                style={{ aspectRatio: "6 / 1", width: "100%" }}
+                style={{ height: "80px", width: "100%" }}
               >
                 <img
                   src={BANNER_IMAGE}
@@ -96,8 +96,8 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick }: SpaceHeader
       <div
         className="w-full px-4"
         style={{
-          paddingTop: (variant === 5 || variant === 1) ? 32 : 16,
-          paddingBottom: (variant === 5 || variant === 1) ? 32 : 16,
+          paddingTop: 12,
+          paddingBottom: 12,
           ...(!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : {}),
         }}
       >

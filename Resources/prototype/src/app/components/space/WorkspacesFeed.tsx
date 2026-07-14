@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Plus } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
@@ -65,6 +65,13 @@ export function WorkspacesFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
   const { searchValue, activeTags } = useSpaceFilters();
+
+  // Listen for sidebar "New Post" button event
+  useEffect(() => {
+    const handler = () => setIsPostModalOpen(true);
+    window.addEventListener("open-add-post-modal", handler);
+    return () => window.removeEventListener("open-add-post-modal", handler);
+  }, []);
 
   // Filter posts based on search and tag filters
   const filteredPosts = WORKSPACES_POSTS.filter((post) => {

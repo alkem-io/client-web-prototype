@@ -6,6 +6,7 @@ import { UpdateBanner } from "@/app/components/dashboard/UpdateBanner";
 import { EnhancedSpacesGallery } from "@/app/components/dashboard/EnhancedSpacesGallery";
 
 const STORAGE_KEY = "alkemio-activity-view";
+const NEW_USER_VIEW_KEY = "alkemio-new-user-view";
 
 export function Dashboard() {
   const [activityView, setActivityView] = useState(() => {
@@ -13,16 +14,30 @@ export function Dashboard() {
     return stored === null ? true : stored === "true";
   });
 
+  const [newUserView, setNewUserView] = useState(() => {
+    const stored = localStorage.getItem(NEW_USER_VIEW_KEY);
+    return stored === "true";
+  });
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, String(activityView));
   }, [activityView]);
+
+  useEffect(() => {
+    localStorage.setItem(NEW_USER_VIEW_KEY, String(newUserView));
+  }, [newUserView]);
 
   return (
     <div className="px-6 md:px-8 py-8 w-full">
       <div className="grid grid-cols-12 gap-6">
         {/* Sidebar — occupies the 1-col margin area + 1 more col */}
         <div className="hidden md:block col-span-2">
-          <DashboardSidebar activityView={activityView} onToggleView={setActivityView} />
+          <DashboardSidebar
+            activityView={activityView}
+            onToggleView={setActivityView}
+            newUserView={newUserView}
+            onToggleNewUserView={setNewUserView}
+          />
         </div>
         {/* Main content — 9 columns, leaving 1-col margin on right */}
         <div className="col-span-12 md:col-span-9 grid grid-cols-9 gap-6">
@@ -43,7 +58,7 @@ export function Dashboard() {
             </>
           ) : (
             <div className="col-span-9">
-              <EnhancedSpacesGallery />
+              <EnhancedSpacesGallery newUserView={newUserView} />
             </div>
           )}
         </div>

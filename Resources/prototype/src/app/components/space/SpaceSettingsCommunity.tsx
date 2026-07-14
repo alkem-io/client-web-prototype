@@ -502,7 +502,6 @@ export function SpaceSettingsCommunity() {
  initials: vc.initials,
  description: vc.description,
  tags: vc.tags,
- hostName: vc.hostName,
  profileUrl: `/vc/${vc.name.toLowerCase().replace(/\s+/g, '-')}`,
  }}
  >

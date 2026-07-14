@@ -1,17 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
-import { Plus, Pin, ChevronsDownUp, ChevronsUpDown, CalendarDays } from "lucide-react";
-import { PostCard, type PostCardData } from "./PostCard";
+import { Plus, Pin } from "lucide-react";
+import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
-import { PostDetailDialog } from "../dialogs/PostDetailDialog";
-import { ResponseDetailDialog } from "../dialogs/ResponseDetailDialog";
-import { DocumentDetailDialog } from "../dialogs/DocumentDetailDialog";
+import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
+import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { ContributionGrid } from "../contribution/ContributionGrid";
-import { ContributionWhiteboardCard } from "../contribution/ContributionWhiteboardCard";
-import { ContributionPostCard } from "../contribution/ContributionPostCard";
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
@@ -19,51 +15,16 @@ const wb2 = "https://images.unsplash.com/photo-1574359219611-a3031f074b2c?auto=f
 const wb3 = "https://images.unsplash.com/photo-1578401058525-35aaec0b4658?auto=format&fit=crop&q=80&w=1080";
 const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=format&fit=crop&q=80&w=1080";
 
-interface Response {
-  id: string;
-  type: "whiteboard" | "document" | "post" | "memo" | "link-file";
-  title: string;
-  author?: { name: string; role?: string; avatarUrl?: string };
-  previewUrl?: string;
-  createdDate?: string;
-  description?: string;
-  tags?: string[];
-  commentCount?: number;
-}
-
-interface PostWithTags extends PostCardData {
+interface PostWithTags extends PostProps {
   tags: string[];
-  commentTexts?: string[];
-  contentPreview?: any;
-  responses?: Response[];
 }
 
 export function SpaceFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
-  const [selectedResponse, setSelectedResponse] = useState<Response | null>(null);
+  const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
   const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
-  const [collapseEnabled, setCollapseEnabled] = useState(() => {
-    const stored = localStorage.getItem('alkemio-collapse-posts');
-    return stored !== null ? stored === 'true' : true;
-  });
   const { searchValue, activeTags, viewMode } = useSpaceFilters();
-
-  // Persist collapse preference
-  useEffect(() => {
-    localStorage.setItem('alkemio-collapse-posts', String(collapseEnabled));
-  }, [collapseEnabled]);
-
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'alkemio-collapse-posts' && e.newValue !== null) {
-        setCollapseEnabled(e.newValue === 'true');
-      }
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
 
   const posts: PostWithTags[] = [
     {
@@ -72,136 +33,43 @@ export function SpaceFeed() {
       tags: ["Updates", "Announcements"],
       author: {
         name: "Sarah Chen",
+        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Amsterdam, NL",
+        skills: ["Energy Systems", "Green Tech", "Data Analysis", "Renewable Energy", "Smart Grids"],
       },
       title: "Kickoff: Municipal Transition Strategy",
-      snippet: "We are officially launching the strategy phase for the 2030 renewable transition. Our goal is to outline a clear path for municipalities to reach 100% renewable energy. This involves coordinating across all departments, securing federal and state grants, engaging community stakeholders, and building a robust timeline that accounts for infrastructure upgrades, workforce training, and regulatory compliance. Please review the initial policy draft in the 'Policy Drafts' channel and leave your comments by end of week. We'll be hosting a town hall next Thursday to discuss the first phase milestones.",
+      snippet: "We are officially launching the strategy phase for the 2030 renewable transition. Our goal is to outline a clear path for municipalities to reach 100% renewable energy. Please review the initial policy draft in the 'Policy Drafts' channel.",
       timestamp: "2 hours ago",
-      commentCount: 5,
+      stats: { comments: 5 },
       commentTexts: ["Great initiative! I think we should prioritize the northern districts first.", "Can we get a timeline for the stakeholder consultations?", "The policy draft looks solid, but we need more detail on subsidies.", "I agree with Sarah — let's set up a working group.", "Has anyone looked at the Danish model for comparison?"]
     },
     {
-      id: "7",
-      type: "text",
-      tags: ["Ideas", "Community"],
-      author: {
-        name: "Jordan Phillips",
-        avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      },
-      title: "Call for Posts: Community Stories: Your Transition Journey",
-      snippet: "Share your personal story about how the renewable energy transition has impacted your life. Whether it's switching to solar, adopting an EV, or simply making more sustainable choices, we want to hear from community members about their experiences and the barriers they've overcome.",
-      timestamp: "2 hours ago",
-      commentCount: 6,
-      commentTexts: ["I'd love to share my experience with home solar.", "What format works best for submissions?", "Community stories are so valuable for outreach.", "Can we do a featured story each month?", "I'm interested in telling my EV transition story.", "Let's compile these into a publication."],
-      responses: [
-        {
-          id: "r1",
-          type: "post",
-          title: "My Journey to Solar: A Homeowner's Story",
-          author: { name: "Maria Santos", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
-          createdDate: "1 hour ago",
-          description: "After years of high electricity bills, I finally took the leap to install solar panels on my roof. Here's what the process was like...",
-          tags: ["Solar", "Residential"],
-          commentCount: 3
-        },
-        {
-          id: "r2",
-          type: "post",
-          title: "Going Electric: The First Year with My EV",
-          author: { name: "James Chen", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
-          createdDate: "45 minutes ago",
-          description: "I made the switch from a gas car to an electric vehicle six months ago. It's been transformative, but not without challenges. Let me share what I've learned...",
-          tags: ["EV", "Transportation"],
-          commentCount: 5
-        },
-        {
-          id: "r3",
-          type: "post",
-          title: "Community Building Through Energy Efficiency",
-          author: { name: "Patricia Brown", avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
-          createdDate: "30 minutes ago",
-          description: "Our neighborhood started a collective energy efficiency project and it's been amazing. We've reduced consumption by 40% and strengthened community bonds...",
-          tags: ["Community", "Efficiency"],
-          commentCount: 7
-        }
-      ]
-    },
-    {
-      id: "8",
-      type: "text",
-      tags: ["Announcements", "Events"],
-      author: {
-        name: "Elena Rodriguez",
-        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      },
-      title: "New EV Charging Network — Proposed Locations",
-      snippet: "The infrastructure team has mapped out the first 12 proposed locations for public EV charging stations. The map below shows coverage zones prioritized near transit hubs, shopping centers, and residential areas with limited home-charging access.",
-      embeddedImages: [
-        { url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1080", alt: "Proposed EV charging locations map", position: "before" }
-      ],
-      timestamp: "4 hours ago",
-      commentCount: 7,
-      commentTexts: ["The transit hub locations make perfect sense.", "Can we add one near the community center on 5th?", "Great coverage in the eastern district!"]
-    },
-    {
-      id: "9",
-      type: "text",
-      tags: ["Updates", "Discussion"],
-      author: {
-        name: "Alex Contributor",
-        avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      },
-      title: "Community Workshop Recap: Building Electrification",
-      snippet: "Last Saturday's workshop on building electrification was a huge success — over 85 attendees joined us at the community center. We covered heat pump technology, induction cooking benefits, and the available rebate programs. The energy from the crowd was amazing. If you missed it, we'll be hosting another session in two weeks focused specifically on multi-family buildings and retrofit challenges for older construction types.",
-      embeddedImages: [
-        { url: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1080", alt: "Community workshop attendees during Q&A", position: "after" }
-      ],
-      timestamp: "6 hours ago",
-      commentCount: 11,
-      commentTexts: ["This was such a great event!", "The rebate info was exactly what I needed.", "Can you share the slide deck?"]
-    },
-    {
       id: "4",
-      type: "text",
+      type: "call-for-whiteboards",
       tags: ["Ideas", "Updates"],
       author: {
         name: "Alex Contributor",
+        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Lisbon, PT",
+        skills: ["Community Engagement", "Solar Energy", "Project Management"],
       },
       title: "Call for Ideas: Community Solar Projects",
       snippet: "We need innovative concepts for integrating solar into existing municipal infrastructure. Please sketch out your ideas for public buildings, parking lots, and open spaces.",
       timestamp: "3 hours ago",
-      commentCount: 8,
-      commentTexts: ["Love the parking lot canopy concept!", "We should consider wind load requirements for the school microgrids.", "The bus stop stations could double as EV chargers.", "What's the estimated ROI on the library roof?", "Can we integrate battery storage into these designs?", "The town hall retrofit should be our flagship project.", "Great sketches David — very detailed.", "Let's schedule a site visit for the top 3 locations."],
-      responses: [
-        {
-          id: "r1",
-          type: "whiteboard",
-          title: "Solar Canopy Designs for Municipal Parking",
-          author: { name: "David Miller", avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
-          previewUrl: wb1,
-          createdDate: "2 hours ago",
-          commentCount: 4
-        },
-        {
-          id: "r2",
-          type: "whiteboard",
-          title: "Library Rooftop Solar Integration Study",
-          author: { name: "Maria Santos", avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
-          previewUrl: wb3,
-          createdDate: "1 hour ago",
-          commentCount: 2
-        },
-        {
-          id: "r3",
-          type: "whiteboard",
-          title: "Bus Stop + EV Charging Hybrid Stations",
-          author: { name: "James Chen", avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
-          previewUrl: wb4,
-          createdDate: "45 minutes ago",
-          commentCount: 3
-        }
-      ]
+      contentPreview: {
+        whiteboards: [
+            { title: "Public Library Solar Roof", imageUrl: wb1, author: "Sarah Chen" },
+            { title: "Parking Lot Canopies", imageUrl: wb2, author: "David Miller" },
+            { title: "School Microgrids", imageUrl: wb3, author: "Elena Rodriguez" },
+            { title: "Bus Stop Solar Stations", imageUrl: wb4, author: "Marc Johnson" },
+            { title: "Town Hall Retrofit", imageUrl: wb1, author: "John Smith" },
+            { title: "Park Lighting", imageUrl: wb2, author: "Emily Davis" }
+        ]
+      },
+      stats: { comments: 8 },
+      commentTexts: ["Love the parking lot canopy concept!", "We should consider wind load requirements for the school microgrids.", "The bus stop stations could double as EV chargers.", "What's the estimated ROI on the library roof?", "Can we integrate battery storage into these designs?", "The town hall retrofit should be our flagship project.", "Great sketches David — very detailed.", "Let's schedule a site visit for the top 3 locations."]
     },
     {
       id: "2",
@@ -209,12 +77,21 @@ export function SpaceFeed() {
       tags: ["Updates", "Events"],
       author: {
         name: "David Miller",
+        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Seoul, KR",
+        skills: ["Software Development", "Grid Systems", "Infrastructure", "Smart Metering"],
       },
       title: "2030 Renewable Transition Policy Proposal",
       snippet: "The latest draft of our comprehensive policy proposal is ready for review. It covers the full strategic framework including grid modernization, community solar, building electrification, and fleet conversion — with updated budget projections and implementation timeline.",
       timestamp: "4 hours ago",
-      commentCount: 6,
+      contentPreview: {
+        documents: [
+          { title: "2030 Renewable Transition Policy Proposal.docx", docType: "word", size: "1.8 MB", lastEdited: "2 hours ago" }
+        ],
+        documentDisplayMode: 'scroll'
+      },
+      stats: { comments: 6 },
       commentTexts: ["The budget projections look reasonable but we need to factor in inflation.", "Section 3 on grid modernization needs more technical detail.", "Can we add a risk assessment section?", "The community solar chapter is excellent.", "I've sent my tracked changes to David.", "When is the final review deadline?"]
     },
     {
@@ -223,13 +100,18 @@ export function SpaceFeed() {
       tags: ["Ideas", "Updates"],
       author: {
         name: "David Miller",
+        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Seoul, KR",
+        skills: ["Software Development", "Grid Systems", "Infrastructure", "Smart Metering"],
       },
       title: "Brainstorming: Municipal Infrastructure Upgrades",
       snippet: "Outputs from our session on grid modernization. Key clusters include smart metering, battery storage integration, and EV charging networks.",
       timestamp: "5 hours ago",
-      framingImageUrl: wb3,
-      commentCount: 3,
+      contentPreview: {
+        imageUrl: wb3
+      },
+      stats: { comments: 3 },
       commentTexts: ["The smart metering cluster is the highest priority.", "We should explore partnerships with local utilities for battery storage.", "EV charging networks need a phased rollout plan."]
     },
     {
@@ -238,26 +120,48 @@ export function SpaceFeed() {
       tags: ["Announcements", "Events"],
       author: {
         name: "Elena Rodriguez",
+        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Valencia, ES",
+        skills: ["Strategy", "Stakeholder Relations", "Policy", "Budgeting", "Presentations"],
       },
       title: "2030 Renewable Transition — Working Documents",
       snippet: "Sharing the latest drafts for the transition strategy. The policy proposal has been updated with feedback from last week's stakeholder session, and the budget model now includes the revised subsidy figures.",
       timestamp: "1 day ago",
-      commentCount: 9,
+      contentPreview: {
+        documents: [
+          { title: "2030 Renewable Transition Policy Proposal.docx", docType: "word", size: "1.8 MB", lastEdited: "6 hours ago" },
+          { title: "Municipal Budget Model FY2027–2030.xlsx", docType: "spreadsheet", size: "3.1 MB", lastEdited: "1 day ago" },
+          { title: "Stakeholder Presentation — April Update.pptx", docType: "presentation", size: "12.4 MB", lastEdited: "2 days ago" }
+        ],
+        documentDisplayMode: 'paginated'
+      },
+      stats: { comments: 9 },
       commentTexts: ["The revised subsidy figures look much more realistic.", "Can we add a comparison table for the three scenarios?", "The stakeholder presentation needs updating for the May meeting.", "Budget model looks great — nice work on the projections.", "I noticed a formula error in the FY2029 column.", "Should we include contingency funding?", "The policy proposal is ready for external review.", "Let's share this with the mayor's office.", "When do we present to council?"]
     },
     {
       id: "6",
-      type: "text",
+      type: "collection",
       tags: ["Updates", "Ideas"],
       author: {
         name: "Elena Rodriguez",
+        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        location: "Valencia, ES",
+        skills: ["Strategy", "Stakeholder Relations", "Policy", "Budgeting", "Presentations"],
       },
       title: "Transition Case Studies & Policy Docs",
       snippet: "A collection of successful case studies from similar sized municipalities reaching 100% renewables. Essential reading for the strategy team.",
       timestamp: "1 day ago",
-      commentCount: 12,
+      contentPreview: {
+        items: [
+          { title: "Burlington, VT Case Study", type: "pdf" },
+          { title: "Aspen, CO Transition Plan", type: "pdf" },
+          { title: "Grid Integration Analysis", type: "doc" },
+          { title: "2030 Policy Framework", type: "pdf" }
+        ]
+      },
+      stats: { comments: 12 },
       commentTexts: ["The Burlington case study is incredibly relevant.", "Aspen's approach to community buy-in is worth studying.", "Grid integration analysis needs peer review.", "Can we add the Copenhagen model?", "The 2030 framework should reference EU directives.", "Essential reading — thanks for compiling this.", "I'd add the Freiburg solar settlement case.", "The policy docs section needs updating.", "Great collection for onboarding new members.", "Should we create a summary document?", "The Aspen plan has some transferable KPIs.", "Let's discuss these at the next strategy meeting."]
     }
   ];
@@ -284,97 +188,17 @@ export function SpaceFeed() {
       {/* Lead Update — pinned announcement (temporarily hidden) */}
       {/* <LeadUpdate /> */}
 
-      {/* Upcoming Events — inline strip */}
-      <div
-        className="mb-5"
-        style={{
-          background: "var(--card)",
-        }}
-      >
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-1.5">
-            <CalendarDays className="w-4 h-4" style={{ color: "var(--primary)" }} />
-            <span className="text-sm font-semibold text-foreground">Upcoming Events</span>
-          </div>
-          <button
-            className="text-xs font-medium transition-colors hover:underline"
-            style={{ color: "var(--primary)" }}
-          >
-            View all
-          </button>
-        </div>
-        <div className="flex gap-3 overflow-x-auto">
-          {[
-            { title: "Strategy Workshop", date: "Jul 8", time: "10:00 CET", attendees: 14 },
-            { title: "Stakeholder Review", date: "Jul 11", time: "14:00 CET", attendees: 8 },
-            { title: "Community Solar Session", date: "Jul 15", time: "09:00 CET", attendees: 22 },
-          ].map((event, i) => (
-            <button
-              key={i}
-              className="flex-1 min-w-0 p-2.5 rounded-md text-left transition-colors hover:bg-muted/50"
-              style={{ border: "1px solid var(--border)" }}
-            >
-              <p className="text-sm font-medium text-foreground truncate">{event.title}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{event.date} · {event.time}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{event.attendees} attending</p>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex items-center justify-end mb-4">
-        <button onClick={() => setCollapseEnabled(!collapseEnabled)} className="flex items-center gap-1.5 text-caption font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-          {collapseEnabled ? (<><ChevronsUpDown className="w-3.5 h-3.5" /> Expand all posts</>) : (<><ChevronsDownUp className="w-3.5 h-3.5" /> Collapse posts</>)}
-        </button>
-      </div>
-
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
-        {filteredPosts.map((post) => {
-          const contributionsPreview = post.responses && post.responses.length > 0 ? (
-            <div className="pt-4">
-              <div className="text-sm font-semibold text-foreground mb-3">CONTRIBUTIONS ({post.responses.length})</div>
-              <ContributionGrid
-                totalCount={post.responses.length}
-                onAddClick={() => setSelectedPost(post)}
-              >
-                {post.responses.map((response) => (
-                  response.type === 'whiteboard' ? (
-                    <ContributionWhiteboardCard
-                      key={response.id}
-                      title={response.title}
-                      previewUrl={response.previewUrl}
-                      author={response.author?.name}
-                      onClick={() => setSelectedResponse(response)}
-                    />
-                  ) : (
-                    <ContributionPostCard
-                      key={response.id}
-                      title={response.title}
-                      author={response.author}
-                      createdDate={response.createdDate}
-                      description={response.description}
-                      tags={response.tags}
-                      commentCount={response.commentCount}
-                      onClick={() => setSelectedResponse(response)}
-                    />
-                  )
-                ))}
-              </ContributionGrid>
-            </div>
-          ) : undefined;
-
-          return (
-            <PostCard
-              key={post.id}
-              post={{
-                ...post,
-                descriptionExpanded: !collapseEnabled,
-              }}
-              onClick={() => setSelectedPost(post)}
-              contributionsPreview={contributionsPreview}
-            />
-          );
-        })}
+        {filteredPosts.map((post) => (
+          <PostCard 
+            key={post.id} 
+            post={{
+              ...post, 
+              onClick: () => setSelectedPost(post),
+              onDocumentClick: (doc) => { setSelectedDocument(doc); setSelectedDocAuthor(post.author); }
+            }} 
+          />
+        ))}
       </div>
 
       <div className="mt-8 text-center">
@@ -387,15 +211,10 @@ export function SpaceFeed() {
         open={isPostModalOpen} 
         onOpenChange={setIsPostModalOpen} 
       />
-      <PostDetailDialog
-        open={!!selectedPost}
+      <PostDetailDialog 
+        open={!!selectedPost} 
         onOpenChange={(open) => !open && setSelectedPost(null)}
         post={selectedPost}
-      />
-      <ResponseDetailDialog
-        open={!!selectedResponse}
-        onOpenChange={(open) => !open && setSelectedResponse(null)}
-        responseId={selectedResponse?.id}
       />
       <DocumentDetailDialog
         open={!!selectedDocument}
