@@ -1,18 +1,14 @@
-import { createContext, useContext, ReactNode, useState } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
-interface FilterContextType {
+interface FilterContextValue {
   searchValue: string;
   activeTags: string[];
   setSearchValue: (value: string) => void;
   toggleTag: (tag: string) => void;
   clearTags: () => void;
-  /** @deprecated Use activeTags instead */
-  activeTag: string | null;
-  /** @deprecated Use toggleTag instead */
-  setActiveTag: (tag: string | null) => void;
 }
 
-const FilterContext = createContext<FilterContextType | undefined>(undefined);
+const FilterContext = createContext<FilterContextValue | null>(null);
 
 export function FilterProvider({ children }: { children: ReactNode }) {
   const [searchValue, setSearchValue] = useState("");
@@ -26,27 +22,19 @@ export function FilterProvider({ children }: { children: ReactNode }) {
 
   const clearTags = () => setActiveTags([]);
 
-  // Backwards-compatible shims
-  const activeTag = activeTags.length === 1 ? activeTags[0] : activeTags.length > 0 ? activeTags[0] : null;
-  const setActiveTag = (tag: string | null) => {
-    if (tag === null) {
-      clearTags();
-    } else {
-      toggleTag(tag);
-    }
-  };
-
   return (
-    <FilterContext.Provider value={{ searchValue, activeTags, setSearchValue, toggleTag, clearTags, activeTag, setActiveTag }}>
+    <FilterContext.Provider
+      value={{ searchValue, activeTags, setSearchValue, toggleTag, clearTags }}
+    >
       {children}
     </FilterContext.Provider>
   );
 }
 
 export function useSpaceFilters() {
-  const context = useContext(FilterContext);
-  if (context === undefined) {
+  const ctx = useContext(FilterContext);
+  if (!ctx) {
     throw new Error("useSpaceFilters must be used within a FilterProvider");
   }
-  return context;
+  return ctx;
 }

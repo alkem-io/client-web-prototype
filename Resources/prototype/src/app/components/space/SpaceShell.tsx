@@ -156,7 +156,7 @@ export function SpaceShell() {
   return (
     <FilterProvider>
       <div className="flex flex-col bg-background">
-        <SpaceHeader spaceSlug={slug} variant={variant} onInfoClick={() => setAboutOpen(true)} />
+        <SpaceHeader spaceSlug={slug} variant={variant} onInfoClick={() => setAboutOpen(true)} actionButtons={actionIcons} />
 
         {/* Content area */}
         <div className="w-full px-4 pt-0 pb-8" style={!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : undefined}>
@@ -172,7 +172,7 @@ export function SpaceShell() {
                   WebkitBackdropFilter: "blur(8px)",
                 }}
               >
-                <SpaceNavigationTabs spaceSlug={slug} actionButton={getActionButtons()} onActiveTabChange={handleActiveTabChange} />
+                <SpaceNavigationTabs spaceSlug={slug} onActiveTabChange={handleActiveTabChange} />
               </div>
 
               {/* ═══ MOBILE STRATEGY 1: Sheet / Drawer ═══ */}

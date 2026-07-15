@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, ArrowRight } from "lucide-react";
+import { Lock } from "lucide-react";
 import { useNavigate } from "react-router";
 import { MyMembershipsPanel } from "@/app/components/memberships/MyMembershipsPanel";
 
@@ -57,15 +57,6 @@ export function RecentSpaces() {
         >
           Recent Spaces
         </h2>
-        <button
-          onClick={() => setMembershipsOpen(true)}
-          className="flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none text-control"
-          style={{
-            color: "var(--primary)",
-          }}
-        >
-          Explore all your Spaces <ArrowRight className="w-4 h-4" />
-        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

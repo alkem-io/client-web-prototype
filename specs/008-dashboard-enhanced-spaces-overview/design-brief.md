@@ -284,9 +284,26 @@ Row 1 always renders, even if all 4 slots are placeholders.
 - SpaceCard handles truncation via CSS (existing behavior)
 
 ### New User (0 spaces)
-- Row 1: 4 placeholder cards → "Browse & Pin" modal on click
-- All other rows: hidden
-- Consider adding a CTA banner: "Get started by exploring spaces" with link to /spaces
+
+The new user view is designed for users who have been invited to join spaces/subspaces and land on the home page after applying. The layout is:
+
+1. **Open Applications** (top section, above pinned spaces)
+   - Shows pending applications the user has submitted (similar to how invitations are displayed)
+   - Each application card shows: space name, space avatar/image, submission date, pending status indicator
+   - Badge showing count of pending applications (e.g., "2 pending")
+   - Section is collapsible
+   - Clicking an application navigates to the space
+
+2. **My Pinned Spaces** — Row 1: 4 placeholder cards → "Browse & Pin" modal on click
+
+3. **Explore all Spaces** (replaces previous "Get Started" section)
+   - Shows all available spaces in the standard card grid
+   - **Welcome space is pinned first** in this section (always shown as the first card)
+   - Remaining spaces follow after the Welcome space
+   - Uses the same `SpaceCardCompact` component and responsive grid
+   - Section is collapsible
+
+All other rows (activity, recent, lead, host): hidden
 
 ---
 

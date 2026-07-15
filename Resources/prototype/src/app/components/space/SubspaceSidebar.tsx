@@ -28,9 +28,12 @@ import {
   Plus,
   Folder,
   Search,
-  X,
+  ArrowUpLeft,
+  PanelLeftOpen,
+  PanelLeftClose,
 } from "lucide-react";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
+import { TagCloud, SubspaceQuickLinks } from "@/app/components/space/SpaceSidebar";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 import { VCHoverCard } from "@/app/components/user/VCHoverCard";
 import { cn } from "@/lib/utils";
@@ -39,6 +42,9 @@ interface SubspaceSidebarProps {
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   className?: string;
+  parentSpaceName?: string;
+  parentSpaceInitials?: string;
+  parentSpaceColor?: string;
 }
 
 const SUBSPACE_LEAD = {
@@ -115,8 +121,12 @@ export function SubspaceSidebar({
   isCollapsed,
   onToggleCollapse,
   className,
+  parentSpaceName = "The Sandbox",
+  parentSpaceInitials = "S",
+  parentSpaceColor = "#22c55e",
 }: SubspaceSidebarProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
+  const [railHovered, setRailHovered] = useState(false);
 
   return (
     <div
@@ -125,109 +135,276 @@ export function SubspaceSidebar({
         isCollapsed ? "w-12" : "w-full",
         className
       )}
+      style={{ fontFamily: "var(--font-family, 'Inter', sans-serif)" }}
     >
-      {/* Collapse toggle — positioned on the right edge */}
-      <button
-        onClick={onToggleCollapse}
-        className={cn(
-          "absolute -right-3 top-0 z-20 hidden md:flex items-center justify-center w-6 h-6 rounded-full transition-transform",
-          isCollapsed && "rotate-180"
-        )}
-        style={{
-          background: "var(--background)",
-          border: "1px solid var(--border)",
-          boxShadow: "var(--elevation-sm)",
-          color: "var(--muted-foreground)",
-        }}
-      >
-        <ChevronLeft className="w-3 h-3" />
-      </button>
+      {/* ── Collapsed Rail View ── */}
+      {isCollapsed && (
+        <div className="flex flex-col items-center gap-0 pt-1">
+          {/* Expand button */}
+          <button
+            onClick={onToggleCollapse}
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted mb-1"
+            title="Expand sidebar"
+          >
+            <PanelLeftOpen className="w-4 h-4" />
+          </button>
+
+          {/* Parent space indicator */}
+          <a
+            href="#"
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-muted mb-1"
+            title={`Go to ${parentSpaceName}`}
+            style={{ textDecoration: "none" }}
+          >
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: 4,
+                background: parentSpaceColor,
+                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+              }}
+            >
+              <span style={{ color: "white", fontSize: "8px", fontWeight: 700, letterSpacing: "-0.02em" }}>
+                {parentSpaceInitials}
+              </span>
+            </div>
+          </a>
+
+          {/* Divider */}
+          <div className="w-5 h-px my-1.5" style={{ background: "var(--border)" }} />
+
+          {/* Quick action icons */}
+          {[
+            { icon: Activity, label: "Recent Activity", key: "activity" },
+            { icon: Users, label: "Community", key: "community" },
+            { icon: CalendarDays, label: "Events", key: "events" },
+            { icon: List, label: "Index", key: "index" },
+            { icon: Layers, label: "Subspaces", key: "subspaces" },
+          ].map(({ icon: Icon, label, key }) => (
+            <button
+              key={key}
+              onClick={() => setOpenDialog(key)}
+              className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
+              title={label}
+            >
+              <Icon className="w-4 h-4" />
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Sidebar content — hidden when collapsed */}
       <div
         className={cn(
-          "flex flex-col w-full p-1.5 overflow-hidden transition-opacity duration-200",
+          "flex flex-col gap-6 overflow-hidden transition-opacity duration-200",
           isCollapsed
-            ? "opacity-0 invisible pointer-events-none"
+            ? "opacity-0 invisible pointer-events-none h-0"
             : "opacity-100 visible"
         )}
       >
-        {/* 1. Description */}
-        <div className="pb-3">
-          <ReadMoreText
-            maxLines={3}
-            className="text-sm text-foreground/85 leading-relaxed"
-            toggleColor="var(--foreground)"
-            toggleOpacity={0.75}
+        {/* ── Challenge Statement with Depth Rail ── */}
+        <div className="flex items-stretch gap-0">
+          {/* Depth rail — shows parent space */}
+          <a
+            href="#"
+            className="shrink-0 flex flex-col items-center self-stretch transition-all duration-200 no-underline"
+            style={{
+              width: 36,
+              paddingTop: 10,
+              paddingBottom: 10,
+              borderRight: railHovered
+                ? "2px solid color-mix(in srgb, var(--primary) 50%, var(--border))"
+                : "2px solid color-mix(in srgb, var(--primary) 20%, var(--border))",
+              borderTopLeftRadius: 6,
+              borderBottomLeftRadius: 6,
+              background: railHovered ? "var(--muted)" : "transparent",
+              textDecoration: "none",
+            }}
+            title={`Go to ${parentSpaceName}`}
+            onMouseEnter={() => setRailHovered(true)}
+            onMouseLeave={() => setRailHovered(false)}
           >
-            How might we design a collaborative platform that empowers
-            distributed teams to innovate effectively while maintaining social
-            connection?
-          </ReadMoreText>
-        </div>
+            {/* Parent space avatar */}
+            <div
+              className="flex items-center justify-center transition-transform duration-200"
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: 4,
+                background: parentSpaceColor,
+                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                transform: railHovered ? "scale(1.1)" : "scale(1)",
+              }}
+            >
+              <span style={{ color: "white", fontSize: "8px", fontWeight: 700, letterSpacing: "-0.02em" }}>
+                {parentSpaceInitials}
+              </span>
+            </div>
 
-        {/* 2–3. Action buttons */}
-        <div className="pb-4">
-          <div className="flex flex-col gap-2">
-            <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
-              <Plus className="w-4 h-4" />
-              Post
-            </Button>
-            <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
-              <Plus className="w-4 h-4" />
-              Create Subspace
-            </Button>
+            {/* Parent space name — vertical */}
+            <div
+              className="flex-1 flex items-center justify-center mt-2 overflow-hidden"
+              style={{ maxHeight: "100%" }}
+            >
+              <span
+                className="transition-opacity duration-200"
+                style={{
+                  writingMode: "vertical-rl",
+                  textOrientation: "mixed",
+                  transform: "rotate(180deg)",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                  color: railHovered ? "var(--foreground)" : "var(--muted-foreground)",
+                  opacity: railHovered ? 1 : 0.7,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {parentSpaceName}
+              </span>
+            </div>
+
+            {/* Hover indicator */}
+            <div
+              className="flex items-center justify-center transition-opacity duration-200"
+              style={{
+                width: 16,
+                height: 16,
+                borderRadius: "50%",
+                background: railHovered ? "color-mix(in srgb, var(--primary) 10%, transparent)" : "transparent",
+                opacity: railHovered ? 1 : 0,
+              }}
+            >
+              <ArrowUpLeft className="w-3 h-3" style={{ color: "var(--primary)" }} />
+            </div>
+          </a>
+
+          {/* Challenge Statement — connected to rail */}
+          <div className="flex-1 min-w-0" style={{ marginLeft: -1 }}>
+            <div
+              className="p-5"
+              style={{
+                background: "var(--primary)",
+                color: "var(--primary-foreground)",
+                borderRadius: "0 var(--radius) var(--radius) 0",
+              }}
+            >
+              <ReadMoreText
+                maxLines={3}
+                style={{
+                  fontSize: "var(--text-sm)",
+                  lineHeight: 1.6,
+                  opacity: 0.92,
+                }}
+                toggleColor="var(--primary-foreground)"
+                toggleOpacity={0.8}
+              >
+                How might we design a collaborative platform that empowers
+                distributed teams to innovate effectively while maintaining social
+                connection?
+              </ReadMoreText>
+
+              {/* Subspace Lead */}
+              <div
+                className="pt-3 mt-3"
+                style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}
+              >
+                <p
+                  className="uppercase tracking-wider mb-2"
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    opacity: 0.6,
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  Lead
+                </p>
+                <div className="flex items-center gap-3">
+                  <ProfileHoverCard
+                    user={{
+                      name: SUBSPACE_LEAD.name,
+                      avatarUrl: SUBSPACE_LEAD.avatar,
+                      initials: SUBSPACE_LEAD.initials,
+                      location: SUBSPACE_LEAD.location,
+                    }}
+                  >
+                    <button type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full">
+                      <Avatar
+                        className="w-8 h-8"
+                        style={{ border: "2px solid rgba(255,255,255,0.25)" }}
+                      >
+                        <AvatarImage src={SUBSPACE_LEAD.avatar} alt={SUBSPACE_LEAD.name} />
+                        <AvatarFallback
+                          style={{
+                            background: "rgba(255,255,255,0.15)",
+                            color: "white",
+                            fontSize: "9px",
+                            fontWeight: 700,
+                          }}
+                        >
+                          {SUBSPACE_LEAD.initials}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+                  </ProfileHoverCard>
+                  <div>
+                    <p style={{ fontSize: "var(--text-sm)", fontWeight: 600 }}>
+                      {SUBSPACE_LEAD.name}
+                    </p>
+                    <p
+                      className="flex items-center gap-1"
+                      style={{ fontSize: "11px", opacity: 0.7 }}
+                    >
+                      <MapPin className="w-3 h-3" />
+                      {SUBSPACE_LEAD.location}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* ── divider ── */}
-        <div className="mb-4" />
+        {/* ── Action Buttons ── */}
+        <div className="flex flex-col gap-2">
+          <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
+            <Plus className="w-4 h-4" />
+            Post
+          </Button>
+          <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+            <Plus className="w-4 h-4" />
+            Create Subspace
+          </Button>
+        </div>
 
-        {/* 4. Search bar */}
-        <div className="pb-4">
+        {/* ── Search ── */}
+        <div>
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search posts…"
+              placeholder="Search posts..."
               className="w-full h-9 pl-8 pr-3 transition-all text-sm rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = "var(--primary)";
-                e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = "var(--border)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
             />
           </div>
         </div>
 
-        {/* Tag cloud */}
-        <div className="flex flex-wrap gap-1.5 pb-4">
-          {["Strategy", "Policy", "Solar", "Grid", "Stakeholders", "Data", "Funding", "Community"].map((tag) => (
-            <button
-              key={tag}
-              className="px-2 py-0.5 rounded-full text-badge border transition-colors bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
+        {/* ── Tags ── */}
+        <TagCloud
+          tags={["Strategy", "Policy", "Solar", "Grid", "Stakeholders", "Data", "Funding", "Community"]}
+          activeTags={[]}
+          toggleTag={() => {}}
+        />
 
-        {/* ── divider ── */}
-        <div className="mb-4" />
+        {/* ── Subspaces ── */}
+        <SubspaceQuickLinks />
 
-        {/* 5. Subspaces section */}
-        <div className="pb-4">
-          <SubspaceQuickLinks />
-        </div>
-
-        {/* ── divider ── */}
-        <div className="mb-4" />
-
-        {/* 6–9. Action links */}
-        <div className="flex flex-col">
+        {/* ── Quick Actions ── */}
+        <div className="space-y-1">
           {[
             { icon: Activity, label: "Recent Activity", key: "activity" },
             { icon: Users, label: "Community", key: "community" },
@@ -237,18 +414,34 @@ export function SubspaceSidebar({
             <button
               key={key}
               onClick={() => setOpenDialog(key)}
-              className="flex items-center gap-2.5 w-full text-left py-1.5 rounded-md text-sm transition-colors hover:bg-muted/50"
+              className="flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
             >
               <Icon
                 className="w-4 h-4 shrink-0"
                 style={{ color: "var(--primary)" }}
               />
-              <span className="text-foreground/85">
+              <span
+                style={{
+                  fontSize: "var(--text-sm)",
+                  fontWeight: "var(--font-weight-medium)" as any,
+                  color: "var(--foreground)",
+                }}
+              >
                 {label}
               </span>
             </button>
           ))}
         </div>
+
+        {/* Collapse button */}
+        <button
+          onClick={onToggleCollapse}
+          className="hidden lg:flex items-center gap-1.5 w-full mt-2 px-2 py-1.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          title="Collapse sidebar"
+        >
+          <PanelLeftClose className="w-3.5 h-3.5" />
+          <span>Collapse</span>
+        </button>
       </div>
 
       {/* ── Quick Action Dialogs ── */}
@@ -457,53 +650,6 @@ export function SubspaceSidebar({
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
-
-/* ─── Sub-components ─────────────────────────────────────────── */
-
-const SUBSPACE_AVATARS = [
-  "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
-  "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
-  "https://images.unsplash.com/photo-1620714223084-8fcacc6dfd8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
-];
-
-function SubspaceQuickLinks() {
-  const [collapsed, setCollapsed] = useState(false);
-
-  const subspaces = SUB_SUBSPACES.slice(0, 3);
-
-  return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center gap-1 hover:text-foreground transition-colors"
-        >
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Subspaces
-          </span>
-          <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
-        </button>
-      </div>
-      {!collapsed && (
-        <div className="flex flex-col gap-0.5">
-          {subspaces.map((s, i) => (
-            <button
-              key={s.id}
-              className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
-            >
-              <img
-                src={SUBSPACE_AVATARS[i % SUBSPACE_AVATARS.length]}
-                alt={s.name}
-                className="w-8 h-8 rounded-lg shrink-0 object-cover"
-              />
-              <span className="text-foreground/85 truncate">{s.name}</span>
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

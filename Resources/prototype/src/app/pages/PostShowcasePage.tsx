@@ -226,22 +226,11 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
           }}
           contributionsPreview={
             <div className="mt-6 space-y-3 pt-6 border-t">
-              <h3 className="text-label font-semibold text-muted-foreground">WHITEBOARDS</h3>
-
-              <div className="flex gap-3 flex-wrap">
-                <button className="px-4 py-2 rounded-full border border-foreground/40 bg-transparent text-foreground text-sm font-medium">
-                  WHITEBOARDS
-                </button>
-              </div>
-
               <div className="flex items-center justify-between">
-                <span className="text-caption font-medium text-foreground">4 Contributions</span>
-                <button className="px-4 py-2 h-8 bg-foreground text-background text-xs font-semibold rounded hover:bg-foreground/90">
-                  + ADD WHITEBOARDS
-                </button>
+                <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (6)</span>
               </div>
 
-              <ContributionGrid totalCount={4}>
+              <ContributionGrid totalCount={6} onAddClick={() => {}} addLabel="+ Add Whiteboard">
                 <ContributionWhiteboardCard
                   title="Public Library Solar Roof"
                   author="Sarah Chen"
@@ -264,6 +253,18 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
                   title="Bus Stop Solar Stations"
                   author="Marc Johnson"
                   previewUrl={wb4}
+                  onClick={() => console.log('Whiteboard clicked')}
+                />
+                <ContributionWhiteboardCard
+                  title="Town Hall Retrofit"
+                  author="John Smith"
+                  previewUrl={wb1}
+                  onClick={() => console.log('Whiteboard clicked')}
+                />
+                <ContributionWhiteboardCard
+                  title="Park Lighting"
+                  author="Emily Davis"
+                  previewUrl={wb2}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
               </ContributionGrid>
@@ -295,22 +296,11 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
           }}
           contributionsPreview={
             <div className="mt-6 space-y-3 pt-6 border-t">
-              <h3 className="text-label font-semibold text-muted-foreground">POSTS</h3>
-
-              <div className="flex gap-3 flex-wrap">
-                <button className="px-4 py-2 rounded-full border border-foreground/40 bg-transparent text-foreground text-sm font-medium">
-                  POSTS
-                </button>
-              </div>
-
               <div className="flex items-center justify-between">
-                <span className="text-caption font-medium text-foreground">2 Contributions</span>
-                <button className="px-4 py-2 h-8 bg-foreground text-background text-xs font-semibold rounded hover:bg-foreground/90">
-                  + ADD POST
-                </button>
+                <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (2)</span>
               </div>
 
-              <ContributionGrid totalCount={2}>
+              <ContributionGrid totalCount={2} onAddClick={() => {}} addLabel="+ Add Post">
                 <ContributionPostCard
                   title="My Journey: From Doubt to Confidence"
                   author={{ name: 'Maria Garcia' }}

@@ -98,7 +98,7 @@ Every Space and Subspace currently has:
 │  TITLE + TAGLINE                                        │
 ├─────────────────────────────────────────────────────────┤
 │  [Left Panel]  │  [Tab Bar]                             │
-│                │  [Content]                              │
+│                │  [Content]                             │
 └─────────────────────────────────────────────────────────┘
 ```
 

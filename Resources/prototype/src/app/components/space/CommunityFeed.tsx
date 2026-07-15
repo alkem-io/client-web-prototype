@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Plus } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
@@ -12,6 +12,7 @@ const COMMUNITY_POSTS: PostProps[] = [
     type: "text",
     author: {
       name: "Elena Martinez",
+      role: "Host",
       avatarUrl:
         "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGdsYXNzZXMlMjBibGFjayUyMGFuZCUyMHdoaXRlJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzY5NDQyNTM3fDA&ixlib=rb-4.1.0&q=80&w=256",
       location: "Barcelona, ES",
@@ -29,6 +30,7 @@ const COMMUNITY_POSTS: PostProps[] = [
     type: "call-for-whiteboards",
     author: {
       name: "Maya Ross",
+      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1589332911105-a6b59f2e4c4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHNtaWxpbmclMjBkYXJrJTIwaGFpciUyMHBvcnRyYWl0fGVufDF8fHx8MTc2OTQ0MjUzN3ww&ixlib=rb-4.1.0&q=80&w=256",
       location: "Berlin, DE",
@@ -63,13 +65,6 @@ export function CommunityFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
   const { searchValue } = useSpaceFilters();
-
-  // Listen for sidebar "New Post" button event
-  useEffect(() => {
-    const handler = () => setIsPostModalOpen(true);
-    window.addEventListener("open-add-post-modal", handler);
-    return () => window.removeEventListener("open-add-post-modal", handler);
-  }, []);
 
   const filteredPosts = COMMUNITY_POSTS.filter((post) => {
     if (!searchValue) return true;

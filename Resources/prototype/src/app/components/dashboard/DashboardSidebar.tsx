@@ -20,9 +20,11 @@ interface DashboardSidebarProps {
   onToggleView: (value: boolean) => void;
   newUserView: boolean;
   onToggleNewUserView: (value: boolean) => void;
+  hasPending: boolean;
+  onToggleHasPending: (value: boolean) => void;
 }
 
-export function DashboardSidebar({ activityView, onToggleView, newUserView, onToggleNewUserView }: DashboardSidebarProps) {
+export function DashboardSidebar({ activityView, onToggleView, newUserView, onToggleNewUserView, hasPending, onToggleHasPending }: DashboardSidebarProps) {
   const [showInvitations, setShowInvitations] = useState(false);
   const [showCreateSpace, setShowCreateSpace] = useState(false);
   const location = useLocation();
@@ -101,6 +103,49 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
         })}
       </div>
 
+      {/* Activity View toggle */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-2">
+          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
+            <Eye className="w-4 h-4" />
+            <span>{t("nav.activityView")}</span>
+          </div>
+          <Switch
+            id="activity-view"
+            checked={activityView}
+            onCheckedChange={onToggleView}
+          />
+        </div>
+
+        {/* New User View toggle */}
+        <div className="flex items-center justify-between px-2">
+          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
+            <Eye className="w-4 h-4" />
+            <span className="text-xs">New User View</span>
+          </div>
+          <Switch
+            id="new-user-view"
+            checked={newUserView}
+            onCheckedChange={onToggleNewUserView}
+          />
+        </div>
+
+        {/* Has Pending toggle (only visible when new user view is on) */}
+        {newUserView && (
+        <div className="flex items-center justify-between px-2">
+          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
+            <Eye className="w-4 h-4" />
+            <span className="text-xs">Has Pending</span>
+          </div>
+          <Switch
+            id="has-pending"
+            checked={hasPending}
+            onCheckedChange={onToggleHasPending}
+          />
+        </div>
+        )}
+      </div>
+
       {/* My Spaces */}
       <div>
         <div className="text-sidebar-label uppercase px-2 mb-2 text-muted-foreground/50">
@@ -148,34 +193,6 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
               <span className="truncate">{vc.name}</span>
             </Link>
           ))}
-        </div>
-      </div>
-
-      {/* Activity View toggle */}
-      <div className="pt-4 border-t border-border space-y-3">
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
-            <Eye className="w-4 h-4" />
-            <span>{t("nav.activityView")}</span>
-          </div>
-          <Switch
-            id="activity-view"
-            checked={activityView}
-            onCheckedChange={onToggleView}
-          />
-        </div>
-
-        {/* New User View toggle */}
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
-            <Eye className="w-4 h-4" />
-            <span className="text-xs">New User View</span>
-          </div>
-          <Switch
-            id="new-user-view"
-            checked={newUserView}
-            onCheckedChange={onToggleNewUserView}
-          />
         </div>
       </div>
 

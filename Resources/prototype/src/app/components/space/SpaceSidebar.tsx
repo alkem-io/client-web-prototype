@@ -478,7 +478,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
 
 const TAG_VISIBLE_LIMIT = 8;
 
-function TagCloud({ tags, activeTags, toggleTag }: { tags: string[]; activeTags: string[]; toggleTag: (tag: string) => void }) {
+export function TagCloud({ tags, activeTags, toggleTag }: { tags: string[]; activeTags: string[]; toggleTag: (tag: string) => void }) {
   const [expanded, setExpanded] = useState(false);
 
   const visibleTags = expanded ? tags : tags.slice(0, TAG_VISIBLE_LIMIT);
@@ -574,14 +574,14 @@ function UpcomingEvents() {
   );
 }
 
-const SUBSPACE_AVATARS = [
+export const SUBSPACE_AVATARS = [
   "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
   "https://images.unsplash.com/photo-1556741533-6e6a62bd8b49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
   "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
   "https://images.unsplash.com/photo-1677506048377-1099738d294d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
 ];
 
-function SubspaceQuickLinks() {
+export function SubspaceQuickLinks() {
   const [collapsed, setCollapsed] = useState(false);
   const subspaces = TAB_INDEX.workspaces.slice(0, 4);
 

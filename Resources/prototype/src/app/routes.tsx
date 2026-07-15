@@ -39,6 +39,7 @@ import ForumPage from "./pages/ForumPage";
 import InnovationHubPage from "./pages/InnovationHubPage";
 import InnovationHubSettingsPage from "./pages/InnovationHubSettingsPage";
 import ResponsiveSidebarDemo from "./pages/ResponsiveSidebarDemo";
+import SubspaceStackingExploration from "./pages/SubspaceStackingExploration";
 import { SubspaceApplicationPage } from "./pages/SubspaceApplicationPage";
 
 export const router = createBrowserRouter([
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
       { path: "/typography", Component: TypographySystemPage },
       { path: "/typography-decisions", Component: TypographyDecisionPage },
       { path: "/responsive-sidebar-demo", Component: ResponsiveSidebarDemo },
+      { path: "/subspace-stacking", Component: SubspaceStackingExploration },
       { path: "/analytics", Component: EcosystemAnalyticsPage },
       { path: "/onboarding", Component: OnboardingPage },
       { path: "/sign-in", Component: AuthPage },

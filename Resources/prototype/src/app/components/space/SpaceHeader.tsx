@@ -16,9 +16,10 @@ interface SpaceHeaderProps {
   spaceName?: string;
   variant?: 1 | 2 | 3 | 4 | 5;
   onInfoClick?: () => void;
+  actionButtons?: React.ReactNode;
 }
 
-export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick }: SpaceHeaderProps) {
+export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick, actionButtons }: SpaceHeaderProps) {
 
   // V2+ use a max-width container so content scales into margins on zoom
   const scaledContainer = { maxWidth: 1536, margin: "0 auto", width: "100%" };
@@ -29,65 +30,21 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick }: SpaceHeader
       {/* Banner */}
       {variant === 4 ? (
         <div style={{ marginTop: "-64px", height: "64px" }} />
-      ) : (variant === 2 || variant === 3) ? (
+      ) : (
         <div
           className="w-full"
           style={{ marginTop: "-64px" }}
         >
-          <div className="px-4">
-            <div
-              className="relative overflow-hidden"
-              style={{ ...scaledContainer, height: "80px" }}
-            >
-              <img
-                src={BANNER_IMAGE}
-                alt="Space banner"
-                className="w-full h-full object-cover"
-                style={{ display: "block" }}
-              />
-              {/* Gradient wing overlays on left and right edges */}
-              {variant === 2 && (
-                <>
-                  <div
-                    className="absolute inset-y-0 left-0"
-                    style={{
-                      width: "15%",
-                      background: "linear-gradient(to right, rgba(44, 24, 16, 0.85), transparent)",
-                      pointerEvents: "none",
-                    }}
-                  />
-                  <div
-                    className="absolute inset-y-0 right-0"
-                    style={{
-                      width: "15%",
-                      background: "linear-gradient(to left, rgba(44, 24, 16, 0.85), transparent)",
-                      pointerEvents: "none",
-                    }}
-                  />
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div
-          className="w-full"
-          style={{ marginTop: "-64px", paddingLeft: 32, paddingRight: 32 }}
-        >
-          <div className="grid grid-cols-12 gap-6">
-            <div className="col-span-12 lg:col-start-2 lg:col-span-10">
-              <div
-                className="relative overflow-hidden"
-                style={{ height: "80px", width: "100%" }}
-              >
-                <img
-                  src={BANNER_IMAGE}
-                  alt="Space banner"
-                  className="w-full h-full object-cover"
-                  style={{ display: "block" }}
-                />
-              </div>
-            </div>
+          <div
+            className="relative overflow-hidden"
+            style={{ height: "80px", width: "100%" }}
+          >
+            <img
+              src={BANNER_IMAGE}
+              alt="Space banner"
+              className="w-full h-full object-cover"
+              style={{ display: "block" }}
+            />
           </div>
         </div>
       )}
@@ -129,10 +86,15 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick }: SpaceHeader
                   <LeadChip />
                 </div>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-between gap-4">
                 <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.4 }}>
                   The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.
                 </p>
+                {actionButtons && (
+                  <div className="shrink-0">
+                    {actionButtons}
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -163,10 +125,15 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick }: SpaceHeader
                     <LeadChip />
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center justify-between gap-4">
                   <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.4 }}>
                     The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.
                   </p>
+                  {actionButtons && (
+                    <div className="shrink-0">
+                      {actionButtons}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
