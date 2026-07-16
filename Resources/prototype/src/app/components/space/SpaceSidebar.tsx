@@ -9,7 +9,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/app/components/ui/dialog";
-import { Plus, Mail, UserPlus, Search, List, FileText, X, Calendar, ChevronDown } from "lucide-react";
+import { Plus, Mail, UserPlus, Search, List, FileText, X, Calendar, ChevronDown, Target, ExternalLink, ArrowUpDown } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { SubspaceApplicationDialog } from "@/app/components/dialogs/SubspaceApplicationDialog";
@@ -22,7 +23,7 @@ interface SpaceSidebarProps {
   /** Description of the currently active tab */
   activeTabDescription?: string;
   /** Admin-controlled feature toggles */
-  enabledFeatures?: { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
+  enabledFeatures?: { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean; intent: boolean };
 }
 
 const TAB_TAGS: Record<string, string[]> = {
@@ -77,7 +78,7 @@ const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: str
 };
 
 export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription, enabledFeatures }: SpaceSidebarProps) {
-  const features = enabledFeatures || { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
+  const features = enabledFeatures || { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true, intent: true };
   const [indexOpen, setIndexOpen] = useState(false);
   const [applicationDialogOpen, setApplicationDialogOpen] = useState(false);
 
@@ -255,9 +256,9 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
   const matchCount = filteredIndexItems.length;
 
   return (
-    <div className="flex flex-col w-full p-1.5">
+    <div className="flex flex-col w-full">
       {/* Description */}
-      <div className="pb-3">
+      <div className="pb-2">
         <ReadMoreText
           maxLines={3}
           className="text-sm text-foreground/85 leading-relaxed"
@@ -268,9 +269,18 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         </ReadMoreText>
       </div>
 
+      {/* Intent + Leads box (Home tab only) */}
+      {features.intent && variant === "home" && (
+        <>
+          <div className="mb-2">
+            <IntentLeadsBox />
+          </div>
+        </>
+      )}
+
       {/* Action buttons */}
       {(features.post || features.addUser || features.createSubspace) && (
-      <div className="pb-4">
+      <div className="pb-2">
         <div className="flex flex-col gap-2">
           {features.post && (
             <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
@@ -300,11 +310,11 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       )}
 
       {/* ── divider ── */}
-      {(features.post || features.addUser || features.createSubspace) && <div className="mb-4" />}
+      {(features.post || features.addUser || features.createSubspace) && <div className="mb-2" />}
 
       {/* Search bar */}
       {features.search && (
-      <div className="pb-4">
+      <div className="pb-2">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <input
@@ -368,25 +378,25 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       )}
 
       {/* ── divider ── */}
-      <div className="mb-4" />
+      <div className="mb-2" />
 
       {/* Subspace quick links (Home tab only) */}
       {features.subspaceLinks && variant === "home" && (
         <>
-          <div className="pb-4">
+          <div className="pb-2">
             <SubspaceQuickLinks />
           </div>
-          <div className="mb-4" />
+          <div className="mb-2" />
         </>
       )}
 
       {/* Upcoming Events (Home tab only) */}
       {variant === "home" && (
         <>
-          <div className="pb-4">
+          <div className="pb-2">
             <UpcomingEvents />
           </div>
-          <div className="mb-4" />
+          <div className="mb-2" />
         </>
       )}
 
@@ -485,7 +495,7 @@ export function TagCloud({ tags, activeTags, toggleTag }: { tags: string[]; acti
   const hiddenCount = tags.length - TAG_VISIBLE_LIMIT;
 
   return (
-    <div className="flex flex-wrap gap-1.5 pb-4">
+    <div className="flex flex-wrap gap-1.5 pb-2">
       {visibleTags.map((tag) => (
         <button
           key={tag}
@@ -574,6 +584,95 @@ function UpcomingEvents() {
   );
 }
 
+function IntentLeadsBox() {
+  return (
+    <div className="rounded-lg border border-border bg-white p-3 pb-5 flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
+        <p className="text-sm text-foreground/85 leading-relaxed">
+          A place to try and play around with various Alkemio features, to gain a better understanding of the platform, its flows and experience.
+        </p>
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("open-about-dialog"))}
+          className="flex items-center gap-1 text-xs font-medium transition-colors hover:opacity-80 self-start"
+          style={{ color: "var(--primary)" }}
+        >
+          Learn more
+          <ExternalLink className="w-3 h-3" />
+        </button>
+      </div>
+      <div className="border-t border-border" />
+      <div className="flex flex-col gap-1.5">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          Leads
+        </span>
+        <div className="flex flex-col gap-1">
+          {SIDEBAR_LEADS.map((lead) => (
+            <button
+              key={lead.name}
+              className="flex items-center gap-2.5 py-1 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+            >
+              <Avatar className="w-7 h-7 shrink-0">
+                <AvatarImage src={lead.avatar} alt={lead.name} />
+                <AvatarFallback className="text-[10px]">{lead.initials}</AvatarFallback>
+              </Avatar>
+              <span className="text-foreground/85 truncate">{lead.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SIDEBAR_LEADS = [
+  {
+    name: "Jeroen Nijkamp",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+    initials: "JN",
+  },
+  {
+    name: "Elena Martinez",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+    initials: "EM",
+  },
+];
+
+function LeadsSection() {
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between mb-3">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center gap-1 hover:text-foreground transition-colors"
+        >
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Leads
+          </span>
+          <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
+        </button>
+      </div>
+      {!collapsed && (
+        <div className="flex flex-col gap-1">
+          {SIDEBAR_LEADS.map((lead) => (
+            <button
+              key={lead.name}
+              className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+            >
+              <Avatar className="w-7 h-7 shrink-0">
+                <AvatarImage src={lead.avatar} alt={lead.name} />
+                <AvatarFallback className="text-[10px]">{lead.initials}</AvatarFallback>
+              </Avatar>
+              <span className="text-foreground/85 truncate">{lead.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export const SUBSPACE_AVATARS = [
   "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
   "https://images.unsplash.com/photo-1556741533-6e6a62bd8b49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
@@ -583,7 +682,21 @@ export const SUBSPACE_AVATARS = [
 
 export function SubspaceQuickLinks() {
   const [collapsed, setCollapsed] = useState(false);
+  const [sortMode, setSortMode] = useState<'az' | 'za' | 'newest' | 'oldest'>('az');
+  const [sortOpen, setSortOpen] = useState(false);
   const subspaces = TAB_INDEX.workspaces.slice(0, 4);
+
+  const sortedSubspaces = [...subspaces].sort((a, b) => {
+    switch (sortMode) {
+      case 'az': return a.title.localeCompare(b.title);
+      case 'za': return b.title.localeCompare(a.title);
+      case 'newest': return subspaces.indexOf(b) - subspaces.indexOf(a);
+      case 'oldest': return subspaces.indexOf(a) - subspaces.indexOf(b);
+      default: return 0;
+    }
+  });
+
+  const sortLabels: Record<string, string> = { az: 'A → Z', za: 'Z → A', newest: 'Newest', oldest: 'Oldest' };
 
   return (
     <div className="flex flex-col">
@@ -597,10 +710,40 @@ export function SubspaceQuickLinks() {
           </span>
           <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
         </button>
+        {!collapsed && (
+          <div className="relative">
+            <button
+              onClick={() => setSortOpen(!sortOpen)}
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              title="Sort subspaces"
+            >
+              <ArrowUpDown className="w-3 h-3" />
+              <span>{sortLabels[sortMode]}</span>
+            </button>
+            {sortOpen && (
+              <div
+                className="absolute right-0 top-full mt-1 z-50 rounded-md border border-border bg-white shadow-md py-1 min-w-[120px]"
+              >
+                {(['az', 'za', 'newest', 'oldest'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => { setSortMode(mode); setSortOpen(false); }}
+                    className={cn(
+                      "w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-muted/50",
+                      sortMode === mode ? "text-primary font-medium" : "text-foreground"
+                    )}
+                  >
+                    {sortLabels[mode]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       {!collapsed && (
         <div className="flex flex-col gap-0.5">
-          {subspaces.map((s, i) => (
+          {sortedSubspaces.map((s, i) => (
             <button
               key={s.title}
               className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"

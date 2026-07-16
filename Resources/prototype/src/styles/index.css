@@ -13,3 +13,12 @@
 .ql-toolbar.ql-snow + .ql-container.ql-snow {
   border-top: 0;
 }
+
+/* Hide scrollbar while keeping scroll functionality */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
+}

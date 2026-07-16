@@ -32,7 +32,7 @@ export function SpaceFeed() {
   const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
   const [collapseEnabled, setCollapseEnabled] = useState(() => {
     const stored = localStorage.getItem('alkemio-collapse-posts');
-    return stored !== null ? stored === 'true' : true;
+    return stored !== null ? stored === 'true' : false;
   });
   const { searchValue, activeTags, viewMode } = useSpaceFilters();
 
@@ -307,12 +307,6 @@ export function SpaceFeed() {
     <div className="w-full">
       {/* Lead Update — pinned announcement (temporarily hidden) */}
       {/* <LeadUpdate /> */}
-
-      <div className="flex items-center justify-end mb-4">
-        <button onClick={() => setCollapseEnabled(!collapseEnabled)} className="flex items-center gap-1.5 text-caption font-medium text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-          {collapseEnabled ? (<><ChevronsUpDown className="w-3.5 h-3.5" /> Expand all posts</>) : (<><ChevronsDownUp className="w-3.5 h-3.5" /> Collapse posts</>)}
-        </button>
-      </div>
 
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
         {filteredPosts.map((post) => (

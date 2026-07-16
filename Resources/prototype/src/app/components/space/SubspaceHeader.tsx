@@ -17,6 +17,7 @@ interface SubspaceHeaderProps {
   memberCount?: number;
   onCommunityClick?: () => void;
   onInfoClick?: () => void;
+  actionButtons?: React.ReactNode;
   variant?: 1 | 2 | 3 | 4 | 5;
 }
 
@@ -33,6 +34,7 @@ export function SubspaceHeader({
   parentInitials,
   parentAvatarColor,
   onInfoClick,
+  actionButtons,
   variant = 1,
 }: SubspaceHeaderProps) {
   const scaledContainer = { maxWidth: 1536, margin: "0 auto", width: "100%" };
@@ -135,9 +137,16 @@ export function SubspaceHeader({
                     </button>
                   )}
                 </div>
-                <p className="text-muted-foreground truncate" style={{ lineHeight: 1.4 }}>
-                  {description}
-                </p>
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-muted-foreground truncate" style={{ lineHeight: 1.4 }}>
+                    {description}
+                  </p>
+                  {actionButtons && (
+                    <div className="shrink-0">
+                      {actionButtons}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -202,9 +211,16 @@ export function SubspaceHeader({
                       </button>
                     )}
                   </div>
-                  <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.5 }}>
-                    {description}
-                  </p>
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.5 }}>
+                      {description}
+                    </p>
+                    {actionButtons && (
+                      <div className="shrink-0">
+                        {actionButtons}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

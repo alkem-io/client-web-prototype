@@ -44,7 +44,6 @@ interface SubspaceSidebarProps {
   className?: string;
   parentSpaceName?: string;
   parentSpaceInitials?: string;
-  parentSpaceColor?: string;
 }
 
 const SUBSPACE_LEAD = {
@@ -123,7 +122,6 @@ export function SubspaceSidebar({
   className,
   parentSpaceName = "The Sandbox",
   parentSpaceInitials = "S",
-  parentSpaceColor = "#22c55e",
 }: SubspaceSidebarProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const [railHovered, setRailHovered] = useState(false);
@@ -162,7 +160,7 @@ export function SubspaceSidebar({
                 width: 22,
                 height: 22,
                 borderRadius: 4,
-                background: parentSpaceColor,
+                background: "var(--primary)",
                 boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
               }}
             >
@@ -198,98 +196,75 @@ export function SubspaceSidebar({
       {/* Sidebar content — hidden when collapsed */}
       <div
         className={cn(
-          "flex flex-col gap-6 overflow-hidden transition-opacity duration-200",
+          "flex flex-col gap-3 transition-opacity duration-200",
           isCollapsed
-            ? "opacity-0 invisible pointer-events-none h-0"
-            : "opacity-100 visible"
+            ? "opacity-0 invisible pointer-events-none h-0 overflow-hidden"
+            : "opacity-100 visible overflow-visible"
         )}
       >
-        {/* ── Challenge Statement with Depth Rail ── */}
-        <div className="flex items-stretch gap-0">
-          {/* Depth rail — shows parent space */}
+        {/* ── Challenge Statement with Parent Stack ── */}
+        <div style={{ marginTop: 26, marginLeft: 16, overflow: "visible" }} className="relative">
+          {/* Parent card — offset behind */}
           <a
             href="#"
-            className="shrink-0 flex flex-col items-center self-stretch transition-all duration-200 no-underline"
+            className="absolute block no-underline"
             style={{
-              width: 36,
-              paddingTop: 10,
-              paddingBottom: 10,
-              borderRight: railHovered
-                ? "2px solid color-mix(in srgb, var(--primary) 50%, var(--border))"
-                : "2px solid color-mix(in srgb, var(--primary) 20%, var(--border))",
-              borderTopLeftRadius: 6,
-              borderBottomLeftRadius: 6,
-              background: railHovered ? "var(--muted)" : "transparent",
-              textDecoration: "none",
+              top: -20,
+              left: -16,
+              width: "calc(100% + 4px)",
+              height: "calc(100% + 8px)",
+              background: "white",
+              border: "1px solid var(--border)",
+              borderRadius: 8,
+              boxShadow: railHovered
+                ? "0 4px 12px rgba(0,0,0,0.08)"
+                : "0 2px 6px rgba(0,0,0,0.04)",
+              transform: railHovered
+                ? "translateY(-3px)"
+                : "translateY(0)",
+              transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
             }}
             title={`Go to ${parentSpaceName}`}
             onMouseEnter={() => setRailHovered(true)}
             onMouseLeave={() => setRailHovered(false)}
           >
-            {/* Parent space avatar */}
+            {/* Parent space name on the exposed top area */}
             <div
-              className="flex items-center justify-center transition-transform duration-200"
+              className="flex items-center gap-1.5 px-3"
               style={{
-                width: 22,
-                height: 22,
-                borderRadius: 4,
-                background: parentSpaceColor,
-                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-                transform: railHovered ? "scale(1.1)" : "scale(1)",
+                height: 20,
+                paddingTop: 4,
               }}
             >
-              <span style={{ color: "white", fontSize: "8px", fontWeight: 700, letterSpacing: "-0.02em" }}>
-                {parentSpaceInitials}
-              </span>
-            </div>
-
-            {/* Parent space name — vertical */}
-            <div
-              className="flex-1 flex items-center justify-center mt-2 overflow-hidden"
-              style={{ maxHeight: "100%" }}
-            >
               <span
-                className="transition-opacity duration-200"
-                style={{
-                  writingMode: "vertical-rl",
-                  textOrientation: "mixed",
-                  transform: "rotate(180deg)",
-                  fontSize: "10px",
-                  fontWeight: 600,
-                  letterSpacing: "0.04em",
-                  textTransform: "uppercase",
-                  color: railHovered ? "var(--foreground)" : "var(--muted-foreground)",
-                  opacity: railHovered ? 1 : 0.7,
-                  whiteSpace: "nowrap",
-                }}
+                className="text-xs font-medium truncate"
+                style={{ color: "var(--muted-foreground)" }}
               >
                 {parentSpaceName}
               </span>
-            </div>
-
-            {/* Hover indicator */}
-            <div
-              className="flex items-center justify-center transition-opacity duration-200"
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: "50%",
-                background: railHovered ? "color-mix(in srgb, var(--primary) 10%, transparent)" : "transparent",
-                opacity: railHovered ? 1 : 0,
-              }}
-            >
-              <ArrowUpLeft className="w-3 h-3" style={{ color: "var(--primary)" }} />
+              <ArrowUpLeft
+                className="w-3 h-3 shrink-0"
+                style={{
+                  color: "var(--muted-foreground)",
+                  opacity: railHovered ? 0.6 : 0,
+                  transition: "opacity 0.2s ease",
+                }}
+              />
             </div>
           </a>
 
-          {/* Challenge Statement — connected to rail */}
-          <div className="flex-1 min-w-0" style={{ marginLeft: -1 }}>
+          {/* Front card — elevated challenge statement */}
+          <div
+            className="relative rounded-lg overflow-hidden"
+            style={{
+              boxShadow: "0 8px 24px -6px rgba(0,0,0,0.18), 0 4px 8px -4px rgba(0,0,0,0.1)",
+            }}
+          >
             <div
-              className="p-5"
+              className="p-4"
               style={{
                 background: "var(--primary)",
                 color: "var(--primary-foreground)",
-                borderRadius: "0 var(--radius) var(--radius) 0",
               }}
             >
               <ReadMoreText
@@ -323,7 +298,7 @@ export function SubspaceSidebar({
                 >
                   Lead
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <ProfileHoverCard
                     user={{
                       name: SUBSPACE_LEAD.name,

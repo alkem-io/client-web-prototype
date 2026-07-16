@@ -298,6 +298,39 @@ export default function SubspacePage() {
         memberCount={info.memberCount}
         onCommunityClick={() => setIsCommunityDialogOpen(true)}
         onInfoClick={() => setIsAboutOpen(true)}
+        actionButtons={
+          <div className="flex items-center gap-0.5">
+            {[
+              { icon: Activity, title: "Recent Activity" },
+              { icon: Video, title: "Video Call" },
+              { icon: Share2, title: "Share" },
+            ].map(({ icon: Icon, title }) => (
+              <button
+                key={title}
+                className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                style={{
+                  background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+                  color: "var(--muted-foreground)",
+                }}
+                title={title}
+              >
+                <Icon className="w-3.5 h-3.5" />
+              </button>
+            ))}
+            <Link to={`/space/${spaceSlug}/subspaces/${subspaceSlug}/settings/about`}>
+              <button
+                className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+                style={{
+                  background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+                  color: "var(--muted-foreground)",
+                }}
+                title="Settings"
+              >
+                <Settings className="w-3.5 h-3.5" />
+              </button>
+            </Link>
+          </div>
+        }
         variant={variant}
       />
 
@@ -307,7 +340,7 @@ export default function SubspacePage() {
           {/* Left Sidebar — shrinks to 1 col when collapsed */}
           <div
             className={cn(
-              "hidden lg:block sticky top-24 self-start transition-all duration-300",
+              "hidden lg:block sticky top-24 self-start max-h-[calc(100vh-6rem)] scrollbar-hide overflow-y-auto transition-all duration-300",
               isSidebarCollapsed
                 ? "lg:col-start-1 col-span-1"
                 : "lg:col-start-2 col-span-2"
@@ -366,39 +399,6 @@ export default function SubspacePage() {
                 activeTab={activeCallout}
                 onTabChange={setActiveCallout}
               />
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-0.5">
-                  {[
-                    { icon: Activity, title: "Recent Activity" },
-                    { icon: Video, title: "Video Call" },
-                    { icon: Share2, title: "Share" },
-                  ].map(({ icon: Icon, title }) => (
-                    <button
-                      key={title}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-                      style={{
-                        background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-                        color: "var(--muted-foreground)",
-                      }}
-                      title={title}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                    </button>
-                  ))}
-                  <Link to={`/space/${spaceSlug}/subspaces/${subspaceSlug}/settings/about`}>
-                    <button
-                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-                      style={{
-                        background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-                        color: "var(--muted-foreground)",
-                      }}
-                      title="Settings"
-                    >
-                      <Settings className="w-3.5 h-3.5" />
-                    </button>
-                  </Link>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -407,6 +407,7 @@ export default function SubspacePage() {
             <div className="mb-4">
               <ReadMoreText
                 maxLines={2}
+                className="text-sm"
                 style={{
                   color: "var(--muted-foreground)",
                   lineHeight: 1.6

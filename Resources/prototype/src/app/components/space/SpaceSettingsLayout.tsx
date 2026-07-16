@@ -47,6 +47,7 @@ import {
   EyeOff as PanelLeftOff,
   AlignLeft,
   Tag,
+  Target,
   Layers as LayersIcon,
   ListOrdered,
   FileEdit,
@@ -342,7 +343,7 @@ const PostCard = ({
 // SECTION 2 — Kanban Column (collapsible, drop target)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
+type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean; intent: boolean };
 type PerTabFeatures = Record<TabId, SidebarFeatureSet>;
 
 const FEATURE_DEFS: Array<{ key: keyof SidebarFeatureSet; icon: React.ElementType; label: string }> = [
@@ -352,6 +353,7 @@ const FEATURE_DEFS: Array<{ key: keyof SidebarFeatureSet; icon: React.ElementTyp
   { key: 'addUser', icon: UserPlus, label: 'Add User' },
   { key: 'createSubspace', icon: Layers, label: 'Create Subspace' },
   { key: 'subspaceLinks', icon: Layers, label: 'Subspace Links' },
+  { key: 'intent', icon: Target, label: 'Intention & Leads' },
   { key: 'index', icon: ListOrdered, label: 'Index' },
 ];
 
@@ -775,7 +777,7 @@ export function SpaceSettingsLayout() {
   });
 
   // Sidebar feature toggles — per tab
-  const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
+  const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true, intent: true };
   const defaultPerTabFeatures: PerTabFeatures = {
     home: { ...defaultFeatureSet },
     community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
@@ -1105,24 +1107,6 @@ export function SpaceSettingsLayout() {
                   </span>
                   <p className="text-body text-muted-foreground">
                     Compact icon-only rail. Expands on hover to show labels.
-                  </p>
-                </div>
-              </label>
-              <label
-                htmlFor="panel-hidden"
-                className={cn(
-                  "flex items-start space-x-3 p-4 rounded-lg border bg-muted/20 hover:bg-muted/40 cursor-pointer transition-colors",
-                  sidebarMode === 'hidden' && "border-primary/40 bg-primary/5"
-                )}
-              >
-                <RadioGroupItem value="hidden" id="panel-hidden" className="mt-0.5" />
-                <div className="flex-1 space-y-1">
-                  <span className="text-body-emphasis flex items-center gap-2">
-                    <PanelLeftOff className="size-4 text-muted-foreground" />
-                    Hidden
-                  </span>
-                  <p className="text-body text-muted-foreground">
-                    No sidebar. Content takes the full width of the page.
                   </p>
                 </div>
               </label>

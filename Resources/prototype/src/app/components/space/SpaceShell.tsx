@@ -35,8 +35,8 @@ export function SpaceShell() {
   const panelMode = (rawPanel === "railed" ? "rail" : rawPanel) as "full" | "rail" | "hidden";
 
   // Admin-configured sidebar features — per tab (from localStorage, set via Settings > Layout)
-  type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
-  const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
+  type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean; intent: boolean };
+  const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true, intent: true };
   const allTabFeatures = (() => {
     try {
       const stored = localStorage.getItem('alkemio-sidebar-features');
@@ -100,6 +100,17 @@ export function SpaceShell() {
   // Compact action icons shown in the tab bar
   const actionIcons = (
     <div className="flex items-center gap-0.5">
+      <IconButton
+        tooltipLabel="About this Space"
+        className="w-7 h-7"
+        onClick={() => setAboutOpen(true)}
+        style={{
+          background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+          color: "var(--muted-foreground)",
+        }}
+      >
+        <Info className="w-3.5 h-3.5" />
+      </IconButton>
       <IconButton
         tooltipLabel="Recent Activity"
         className="w-7 h-7"
@@ -203,7 +214,7 @@ export function SpaceShell() {
               {/* ═══ DEFAULT (m=0): Original behavior — sidebar hidden on mobile ═══ */}
               {mobileStrategy === 0 && effectivePanelMode === "full" && (
                 <>
-                  <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
+                  <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
                     <aside>
                       <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} enabledFeatures={getCurrentTabFeatures()} />
                       {/* User collapse toggle */}
@@ -307,7 +318,7 @@ function MobileSheetDrawer({ slug, sidebarVariant, activeTabDescription, usesSca
   return (
     <>
       {/* Desktop sidebar */}
-      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
+      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
         <aside>
           <SpaceSidebar spaceSlug={slug} variant={sidebarVariant} activeTabDescription={activeTabDescription} />
         </aside>
@@ -385,7 +396,7 @@ function MobileBottomSheet({ slug, sidebarVariant, activeTabDescription, usesSca
   return (
     <>
       {/* Desktop sidebar */}
-      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
+      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
         <aside>
           <SpaceSidebar spaceSlug={slug} variant={sidebarVariant} activeTabDescription={activeTabDescription} />
         </aside>
@@ -508,7 +519,7 @@ function MobileCollapsibleInline({ slug, sidebarVariant, activeTabDescription, u
       </div>
 
       {/* Desktop sidebar */}
-      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
+      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
         <aside>
           <SpaceSidebar spaceSlug={slug} variant={sidebarVariant} activeTabDescription={activeTabDescription} />
         </aside>
@@ -615,7 +626,7 @@ function MobileBottomNavFAB({ slug, sidebarVariant, activeTabDescription, usesSc
       </Sheet>
 
       {/* Desktop sidebar */}
-      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
+      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
         <aside>
           <SpaceSidebar spaceSlug={slug} variant={sidebarVariant} activeTabDescription={activeTabDescription} />
         </aside>
@@ -709,7 +720,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
   return (
     <div className="flex relative">
       {/* Slim icon rail */}
-      <div className="hidden lg:flex flex-col items-center gap-0 shrink-0 sticky top-[8.5rem] self-start">
+      <div className="hidden lg:flex flex-col items-center gap-0 shrink-0 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto">
         {/* Expand sidebar toggle */}
         {onExpand && (
           <Tooltip>
@@ -993,7 +1004,7 @@ function MobileTabBarFilter({ slug, sidebarVariant, activeTabDescription, usesSc
       </div>
 
       {/* Desktop sidebar */}
-      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start ${!usesScaling ? "lg:col-start-2" : ""}`}>
+      <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
         <aside>
           <SpaceSidebar spaceSlug={slug} variant={sidebarVariant} activeTabDescription={activeTabDescription} />
         </aside>
