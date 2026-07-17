@@ -25,6 +25,8 @@ import {
   MediaGalleryFeedGrid,
   type MediaGalleryFeedThumbnail,
 } from '@/app/components/mediaGallery/MediaGalleryFeedGrid';
+
+export type { MediaGalleryFeedThumbnail };
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
 import { Badge } from '@/app/components/ui/badge';
@@ -222,6 +224,12 @@ type PostCardProps = {
    */
   onAddMediaGalleryImages?: () => void;
   /**
+   * Fired when the user requests deletion of a specific image in the media gallery.
+   * When omitted, no delete affordance is shown. Consumer filters/updates the post's
+   * framingMediaGallery in response.
+   */
+  onDeleteMediaGalleryImage?: (thumbnail: MediaGalleryFeedThumbnail) => void;
+  /**
    * Fallback handler for the footer when no `commentsSlot` is provided — e.g.
    * the standalone preview app or future callers that want a dialog-only flow.
    * When `commentsSlot` is supplied the footer becomes a collapsible and this
@@ -271,6 +279,7 @@ export function PostCard({
   onClick,
   onOpenFraming,
   onAddMediaGalleryImages,
+  onDeleteMediaGalleryImage,
   onCommentsClick,
   settingsSlot,
   onExpandClick,
@@ -499,6 +508,7 @@ export function PostCard({
                 thumbnails={post.framingMediaGallery.thumbnails}
                 totalCount={post.framingMediaGallery.totalCount}
                 onOpenAt={onClick}
+                onDeleteThumbnail={onDeleteMediaGalleryImage}
               />
             ) : (
               <div className="rounded-lg overflow-hidden border border-border bg-muted/30 relative aspect-video flex items-center justify-center">

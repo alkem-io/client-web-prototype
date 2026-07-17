@@ -1,7 +1,7 @@
-import { 
- X, Share2, MoreHorizontal, MessageSquare, ThumbsUp, Heart, Smile, 
+import {
+ X, Share2, MoreHorizontal, MessageSquare, ThumbsUp, Heart, Smile,
  FileText, Link as LinkIcon, PenTool, Layout, Send, ChevronRight, Presentation, LayoutGrid,
- FileSpreadsheet, FileImage, Download, ExternalLink
+ FileSpreadsheet, FileImage, Download, ExternalLink, ImagePlus, Images
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
@@ -16,16 +16,19 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ResponseDetailDialog } from "@/app/components/dialogs/ResponseDetailDialog";
 import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
-import { PostProps } from "@/app/components/space/PostCard";
+import { PostProps, type MediaGalleryFeedThumbnail } from "@/app/components/space/PostCard";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import { MediaGalleryDetailView } from "@/app/components/mediaGallery/MediaGalleryDetailView";
 
 interface PostDetailDialogProps {
  open: boolean;
  onOpenChange: (open: boolean) => void;
  post: PostProps | null;
+ onAddMediaGalleryImages?: () => void;
+ onDeleteMediaGalleryImage?: (thumbnail: MediaGalleryFeedThumbnail) => void;
 }
 
-export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogProps) {
+export function PostDetailDialog({ open, onOpenChange, post, onAddMediaGalleryImages, onDeleteMediaGalleryImage }: PostDetailDialogProps) {
  const [commentText, setCommentText] = useState("");
  const [selectedResponseId, setSelectedResponseId] = useState<string | null>(null);
  const [activeDocIndex, setActiveDocIndex] = useState(0);
@@ -252,6 +255,38 @@ export function PostDetailDialog({ open, onOpenChange, post }: PostDetailDialogP
  </div>
  );
  })()}
+
+ {/* Media Gallery Detail View — full-screen carousel */}
+ {post.type === 'mediaGallery' && (
+ <div className="space-y-4">
+ {post.framingMediaGallery && post.framingMediaGallery.thumbnails.length > 0 ? (
+ <MediaGalleryDetailView
+ thumbnails={post.framingMediaGallery.thumbnails}
+ onDeleteThumbnail={onDeleteMediaGalleryImage}
+ />
+ ) : (
+ <div className="rounded-lg overflow-hidden border border-border bg-muted/30 relative aspect-video flex items-center justify-center">
+ <Images className="w-12 h-12 text-muted-foreground/50" aria-hidden="true" />
+ </div>
+ )}
+ {onAddMediaGalleryImages && (
+ <div className="flex justify-end">
+ <Button
+ variant="outline"
+ size="sm"
+ className="gap-2"
+ onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+ event.stopPropagation();
+ onAddMediaGalleryImages();
+ }}
+ >
+ <ImagePlus className="size-4" aria-hidden="true" />
+ Add Images
+ </Button>
+ </div>
+ )}
+ </div>
+ )}
 
  {/* 5. Post Metadata / Reactions */}
  <div className="flex items-center gap-4 py-4 border-y border-border mt-8">

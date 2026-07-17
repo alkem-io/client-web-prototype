@@ -5,8 +5,9 @@ import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { useSpaceFilters } from "./FilterContext";
+import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 
-const COMMUNITY_POSTS: PostProps[] = [
+const INITIAL_COMMUNITY_POSTS: PostProps[] = [
   {
     id: "community-1",
     type: "text",
@@ -64,9 +65,17 @@ const COMMUNITY_POSTS: PostProps[] = [
 export function CommunityFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
+  const [posts, setPosts] = useState<PostProps[]>(INITIAL_COMMUNITY_POSTS);
   const { searchValue } = useSpaceFilters();
 
-  const filteredPosts = COMMUNITY_POSTS.filter((post) => {
+  const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
+    posts,
+    setPosts,
+    currentUser: MOCK_CURRENT_USER,
+    isAdmin: true,
+  });
+
+  const filteredPosts = posts.filter((post) => {
     if (!searchValue) return true;
     const q = searchValue.toLowerCase();
     return (
@@ -100,13 +109,22 @@ export function CommunityFeed() {
         {filteredPosts.map((post) => (
           <PostCard
             key={post.id}
-            post={{
-              ...post,
-              onClick: () => setSelectedPost(post),
-            }}
+            post={post as any}
+            onClick={() => setSelectedPost(post)}
+            onAddMediaGalleryImages={() => openAddDialog(post.id)}
+            onDeleteMediaGalleryImage={(t: any) => deleteImage(post.id, t.id)}
           />
         ))}
       </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={handleFilesSelected}
+      />
 
       {/* Modals */}
       <AddPostModal
@@ -115,8 +133,10 @@ export function CommunityFeed() {
       />
       <PostDetailDialog
         open={!!selectedPost}
-        onOpenChange={(open) => !open && setSelectedPost(null)}
-        post={selectedPost}
+        onOpenChange={(open: boolean) => !open && setSelectedPost(null)}
+        post={selectedPost as any}
+        onAddMediaGalleryImages={selectedPost ? () => openAddDialog(selectedPost.id) : undefined}
+        onDeleteMediaGalleryImage={selectedPost ? (t: any) => deleteImage(selectedPost.id, t.id) : undefined}
       />
     </div>
   );

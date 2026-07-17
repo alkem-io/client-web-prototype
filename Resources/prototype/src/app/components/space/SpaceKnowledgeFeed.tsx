@@ -9,6 +9,7 @@ import { ContributionGrid } from "@/app/components/contribution/ContributionGrid
 import { ContributionWhiteboardCard } from "@/app/components/contribution/ContributionWhiteboardCard";
 import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
 import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
+import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 
 // Whiteboard / visual preview images
@@ -28,38 +29,7 @@ interface PostWithTags extends PostCardData {
   contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards';
 }
 
-export function SpaceKnowledgeFeed() {
-  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
-  const [collapseEnabled, setCollapseEnabled] = useState(() => {
-    const stored = localStorage.getItem('alkemio-collapse-posts');
-    return stored !== null ? stored === 'true' : false;
-  });
-  const { searchValue, activeTags, viewMode } = useSpaceFilters();
-
-  // Persist collapse preference
-  useEffect(() => {
-    localStorage.setItem('alkemio-collapse-posts', String(collapseEnabled));
-  }, [collapseEnabled]);
-
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'alkemio-collapse-posts' && e.newValue !== null) {
-        setCollapseEnabled(e.newValue === 'true');
-      }
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
-
-  // Listen for sidebar "New Post" button event
-  useEffect(() => {
-    const handler = () => setIsPostModalOpen(true);
-    window.addEventListener("open-add-post-modal", handler);
-    return () => window.removeEventListener("open-add-post-modal", handler);
-  }, []);
-
-  const posts: PostWithTags[] = [
+const INITIAL_POSTS: PostWithTags[] = [
     // ═══════════════════════════════════════════════════════════════
     // BASIC FRAMING TYPES (no contributions)
     // ═══════════════════════════════════════════════════════════════
@@ -744,6 +714,45 @@ export function SpaceKnowledgeFeed() {
     },
   ];
 
+export function SpaceKnowledgeFeed() {
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
+  const [posts, setPosts] = useState<PostWithTags[]>(INITIAL_POSTS);
+  const [collapseEnabled, setCollapseEnabled] = useState(() => {
+    const stored = localStorage.getItem('alkemio-collapse-posts');
+    return stored !== null ? stored === 'true' : false;
+  });
+  const { searchValue, activeTags, viewMode } = useSpaceFilters();
+
+  const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
+    posts,
+    setPosts,
+    currentUser: MOCK_CURRENT_USER,
+    isAdmin: true,
+  });
+
+  // Persist collapse preference
+  useEffect(() => {
+    localStorage.setItem('alkemio-collapse-posts', String(collapseEnabled));
+  }, [collapseEnabled]);
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'alkemio-collapse-posts' && e.newValue !== null) {
+        setCollapseEnabled(e.newValue === 'true');
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  // Listen for sidebar "New Post" button event
+  useEffect(() => {
+    const handler = () => setIsPostModalOpen(true);
+    window.addEventListener("open-add-post-modal", handler);
+    return () => window.removeEventListener("open-add-post-modal", handler);
+  }, []);
+
   // Build contribution previews for each post
   function getContributionPreview(post: PostWithTags) {
     if (!post.contributionType) return undefined;
@@ -928,6 +937,8 @@ export function SpaceKnowledgeFeed() {
               }}
               onClick={() => setSelectedPost(post)}
               onExpandClick={() => setSelectedPost(post)}
+              onAddMediaGalleryImages={() => openAddDialog(post.id)}
+              onDeleteMediaGalleryImage={(t) => deleteImage(post.id, t.id)}
               contributionsPreview={getContributionPreview(post)}
             />
           </div>
@@ -940,6 +951,15 @@ export function SpaceKnowledgeFeed() {
         </Button>
       </div>
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={handleFilesSelected}
+      />
+
       <AddPostModal
         open={isPostModalOpen}
         onOpenChange={setIsPostModalOpen}
@@ -947,6 +967,8 @@ export function SpaceKnowledgeFeed() {
       <PostDetailDialog
         open={!!selectedPost}
         onOpenChange={(open) => !open && setSelectedPost(null)}
+        onAddMediaGalleryImages={selectedPost ? () => openAddDialog(selectedPost.id) : undefined}
+        onDeleteMediaGalleryImage={selectedPost ? (t) => deleteImage(selectedPost.id, t.id) : undefined}
         post={selectedPost}
       />
     </div>

@@ -13,6 +13,7 @@ import { ContributionWhiteboardCard } from "@/app/components/contribution/Contri
 import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
 import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
+import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
@@ -25,33 +26,7 @@ interface PostWithTags extends PostCardData {
   contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards';
 }
 
-export function SpaceFeed() {
-  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
-  const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
-  const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
-  const [collapseEnabled, setCollapseEnabled] = useState(() => {
-    const stored = localStorage.getItem('alkemio-collapse-posts');
-    return stored !== null ? stored === 'true' : false;
-  });
-  const { searchValue, activeTags, viewMode } = useSpaceFilters();
-
-  // Persist collapse preference
-  useEffect(() => {
-    localStorage.setItem('alkemio-collapse-posts', String(collapseEnabled));
-  }, [collapseEnabled]);
-
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'alkemio-collapse-posts' && e.newValue !== null) {
-        setCollapseEnabled(e.newValue === 'true');
-      }
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
-
-  const posts: PostWithTags[] = [
+const INITIAL_POSTS: PostWithTags[] = [
     // 1. Plain post (text, no contributions)
     {
       id: "space-1",
@@ -134,7 +109,64 @@ export function SpaceFeed() {
       timestamp: "1 day ago",
       commentCount: 12,
     },
+    // 6. Post with a media gallery
+    {
+      id: "space-6",
+      type: "mediaGallery",
+      tags: ["Documentation", "Progress"],
+      author: {
+        name: "Alex Contributor",
+        role: "Member",
+        avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      },
+      title: "Workshop Photos: Community Engagement Session",
+      snippet: "Great turnout at last week's community engagement workshop! Here are some highlights from the day. Feel free to share your own photos in the gallery below.",
+      timestamp: "3 days ago",
+      framingMediaGallery: {
+        thumbnails: [
+          { id: "mg-sp1", url: wb1 },
+          { id: "mg-sp2", url: wb2 },
+          { id: "mg-sp3", url: wb3 },
+        ],
+        totalCount: 12,
+      },
+      commentCount: 8,
+    },
   ];
+
+export function SpaceFeed() {
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
+  const [posts, setPosts] = useState<PostWithTags[]>(INITIAL_POSTS);
+  const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
+  const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
+  const [collapseEnabled, setCollapseEnabled] = useState(() => {
+    const stored = localStorage.getItem('alkemio-collapse-posts');
+    return stored !== null ? stored === 'true' : false;
+  });
+  const { searchValue, activeTags, viewMode } = useSpaceFilters();
+
+  const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
+    posts,
+    setPosts,
+    currentUser: MOCK_CURRENT_USER,
+    isAdmin: true,
+  });
+
+  // Persist collapse preference
+  useEffect(() => {
+    localStorage.setItem('alkemio-collapse-posts', String(collapseEnabled));
+  }, [collapseEnabled]);
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'alkemio-collapse-posts' && e.newValue !== null) {
+        setCollapseEnabled(e.newValue === 'true');
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
   // Build contribution previews for each post
   function getContributionPreview(post: PostWithTags) {
@@ -310,14 +342,16 @@ export function SpaceFeed() {
 
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
         {filteredPosts.map((post) => (
-          <PostCard 
-            key={post.id} 
+          <PostCard
+            key={post.id}
             post={{
               ...post,
               descriptionExpanded: !collapseEnabled,
             }}
             onClick={() => setSelectedPost(post)}
             onExpandClick={() => setSelectedPost(post)}
+            onAddMediaGalleryImages={() => openAddDialog(post.id)}
+            onDeleteMediaGalleryImage={(t) => deleteImage(post.id, t.id)}
             contributionsPreview={getContributionPreview(post)}
           />
         ))}
@@ -329,14 +363,25 @@ export function SpaceFeed() {
         </Button>
       </div>
 
-      <AddPostModal 
-        open={isPostModalOpen} 
-        onOpenChange={setIsPostModalOpen} 
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={handleFilesSelected}
       />
-      <PostDetailDialog 
-        open={!!selectedPost} 
-        onOpenChange={(open) => !open && setSelectedPost(null)}
+
+      <AddPostModal
+        open={isPostModalOpen}
+        onOpenChange={setIsPostModalOpen}
+      />
+      <PostDetailDialog
+        open={!!selectedPost}
+        onOpenChange={(open: boolean) => !open && setSelectedPost(null)}
         post={selectedPost}
+        onAddMediaGalleryImages={selectedPost ? () => openAddDialog(selectedPost.id) : undefined}
+        onDeleteMediaGalleryImage={selectedPost ? (t) => deleteImage(selectedPost.id, t.id) : undefined}
       />
       <DocumentDetailDialog
         open={!!selectedDocument}

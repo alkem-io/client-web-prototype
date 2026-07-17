@@ -5,12 +5,13 @@ import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
+import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 
 interface PostWithTags extends PostProps {
   tags: string[];
 }
 
-const WORKSPACES_POSTS: PostWithTags[] = [
+const INITIAL_WORKSPACES_POSTS: PostWithTags[] = [
   {
     id: "ws-1",
     type: "text",
@@ -64,7 +65,15 @@ const WORKSPACES_POSTS: PostWithTags[] = [
 export function WorkspacesFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
+  const [posts, setPosts] = useState<PostWithTags[]>(INITIAL_WORKSPACES_POSTS);
   const { searchValue, activeTags } = useSpaceFilters();
+
+  const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
+    posts,
+    setPosts,
+    currentUser: MOCK_CURRENT_USER,
+    isAdmin: true,
+  });
 
   // Listen for sidebar "New Post" button event
   useEffect(() => {
@@ -74,7 +83,7 @@ export function WorkspacesFeed() {
   }, []);
 
   // Filter posts based on search and tag filters
-  const filteredPosts = WORKSPACES_POSTS.filter((post) => {
+  const filteredPosts = posts.filter((post) => {
     const q = searchValue.toLowerCase();
     const matchesSearch = !searchValue || 
       post.title.toLowerCase().includes(q) ||
@@ -110,13 +119,22 @@ export function WorkspacesFeed() {
         {filteredPosts.map((post) => (
           <PostCard
             key={post.id}
-            post={{
-              ...post,
-              onClick: () => setSelectedPost(post),
-            }}
+            post={post as any}
+            onClick={() => setSelectedPost(post)}
+            onAddMediaGalleryImages={() => openAddDialog(post.id)}
+            onDeleteMediaGalleryImage={(t: any) => deleteImage(post.id, t.id)}
           />
         ))}
       </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={handleFilesSelected}
+      />
 
       {/* Modals */}
       <AddPostModal
@@ -125,8 +143,10 @@ export function WorkspacesFeed() {
       />
       <PostDetailDialog
         open={!!selectedPost}
-        onOpenChange={(open) => !open && setSelectedPost(null)}
-        post={selectedPost}
+        onOpenChange={(open: boolean) => !open && setSelectedPost(null)}
+        post={selectedPost as any}
+        onAddMediaGalleryImages={selectedPost ? () => openAddDialog(selectedPost.id) : undefined}
+        onDeleteMediaGalleryImage={selectedPost ? (t: any) => deleteImage(selectedPost.id, t.id) : undefined}
       />
     </div>
   );
