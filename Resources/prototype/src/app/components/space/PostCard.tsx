@@ -4,6 +4,7 @@ import {
   FileText,
   ImagePlus,
   Images,
+  Kanban,
   type LucideIcon,
   Maximize2,
   Megaphone,
@@ -28,13 +29,14 @@ import {
 
 export type { MediaGalleryFeedThumbnail };
 import { cn } from '@/lib/utils';
+import { KanbanPostPreview } from '@/app/components/space/KanbanBoardPost';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/app/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/app/components/ui/collapsible';
 
-export type PostType = 'text' | 'whiteboard' | 'memo' | 'mediaGallery' | 'document' | 'callToAction' | 'poll';
+export type PostType = 'text' | 'whiteboard' | 'memo' | 'mediaGallery' | 'document' | 'callToAction' | 'poll' | 'kanban';
 
 type PostTypeLabelKey =
   | 'callout.post'
@@ -43,7 +45,8 @@ type PostTypeLabelKey =
   | 'callout.mediaGallery'
   | 'callout.document'
   | 'callout.callToAction'
-  | 'callout.poll';
+  | 'callout.poll'
+  | 'callout.kanban';
 
 /**
  * Single source of truth for the icon and translation key per `PostType`.
@@ -61,6 +64,7 @@ export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKe
   mediaGallery: { icon: Images, labelKey: 'callout.mediaGallery', label: 'Media Gallery' },
   callToAction: { icon: Megaphone, labelKey: 'callout.callToAction', label: 'Call to Action' },
   poll: { icon: BarChart3, labelKey: 'callout.poll', label: 'Poll' },
+  kanban: { icon: Kanban, labelKey: 'callout.kanban', label: 'Board' },
 };
 
 /**
@@ -184,6 +188,10 @@ export type PostCardData = {
   framingDocumentType?: CollaboraDocumentPreviewType;
   /** Framing-level call-to-action link (Link framing only). `isValid` is false for non-http(s) or malformed URIs. */
   framingCallToAction?: { uri: string; displayName: string; isExternal: boolean; isValid: boolean };
+  /** Framing-level kanban board (kanban framing only) — column definitions with card items. */
+  framingKanban?: {
+    columns: { id: string; label: string; cards: { id: string; title: string; assignee?: string }[] }[];
+  };
   commentCount?: number;
   /**
    * Mirrors `callout.settings.framing.commentsEnabled`. When `false`:
@@ -551,6 +559,14 @@ export function PostCard({
             isExternal={post.framingCallToAction.isExternal}
             isValid={post.framingCallToAction.isValid}
             className="mt-4"
+          />
+        )}
+
+        {/* Kanban board framing preview — mini column visualization */}
+        {post.type === 'kanban' && post.framingKanban && (
+          <KanbanPostPreview
+            data={post.framingKanban}
+            onClick={onOpenFraming ?? onClick}
           />
         )}
 

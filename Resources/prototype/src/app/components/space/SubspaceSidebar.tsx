@@ -15,14 +15,11 @@ import {
   Info,
   ChevronLeft,
   ChevronDown,
-  Activity,
   CalendarDays,
   List,
   Layers,
   MapPin,
   Bot,
-  Clock,
-  MessageSquare,
   FileText,
   Users,
   Plus,
@@ -175,7 +172,6 @@ export function SubspaceSidebar({
 
           {/* Quick action icons */}
           {[
-            { icon: Activity, label: "Recent Activity", key: "activity" },
             { icon: Users, label: "Community", key: "community" },
             { icon: CalendarDays, label: "Events", key: "events" },
             { icon: List, label: "Index", key: "index" },
@@ -381,7 +377,6 @@ export function SubspaceSidebar({
         {/* ── Quick Actions ── */}
         <div className="space-y-1">
           {[
-            { icon: Activity, label: "Recent Activity", key: "activity" },
             { icon: Users, label: "Community", key: "community" },
             { icon: CalendarDays, label: "Events", key: "events" },
             { icon: List, label: "Index", key: "index" },
@@ -427,50 +422,7 @@ export function SubspaceSidebar({
         onOpenChange={(open) => setOpenDialog(open ? "community" : null)}
       />
 
-      {/* Recent Activity Dialog */}
-      <Dialog open={openDialog === "activity"} onOpenChange={(open) => setOpenDialog(open ? "activity" : null)}>
-        <DialogContent
-          className="max-w-none sm:max-w-none max-h-[85vh] overflow-y-auto"
-          style={{ width: 'calc((100vw - 2 * var(--grid-margin-desktop) - 11 * var(--grid-gutter)) / var(--grid-columns) * 6 + 5 * var(--grid-gutter))' }}
-        >
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5" style={{ color: "var(--primary)" }} />
-              Recent Activity
-            </DialogTitle>
-            <DialogDescription>Latest updates and contributions in this subspace.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 mt-2">
-            {[
-              { user: "Sarah Chen", action: "posted", target: "Kickoff: Municipal Transition Strategy", time: "2 hours ago", icon: FileText },
-              { user: "David Kim", action: "added a whiteboard to", target: "Renewable Grid Architecture", time: "5 hours ago", icon: FileText },
-              { user: "Emily Davis", action: "commented on", target: "Draft: Incentive Framework", time: "1 day ago", icon: MessageSquare },
-              { user: "Alex Torres", action: "created", target: "Call for Ideas: Community Solar", time: "2 days ago", icon: FileText },
-              { user: "Anna Martinez", action: "updated", target: "Stakeholder Contact Directory", time: "3 days ago", icon: FileText },
-            ].map((item, i) => (
-              <div key={i}>
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 p-1.5 rounded-md" style={{ background: "color-mix(in srgb, var(--primary) 10%, transparent)" }}>
-                    <item.icon className="w-3.5 h-3.5" style={{ color: "var(--primary)" }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p style={{ fontSize: "var(--text-sm)", color: "var(--foreground)" }}>
-                      <span style={{ fontWeight: 600 }}>{item.user}</span>{" "}
-                      <span style={{ color: "var(--muted-foreground)" }}>{item.action}</span>{" "}
-                      <span style={{ fontWeight: 500 }}>{item.target}</span>
-                    </p>
-                    <p className="flex items-center gap-1 mt-0.5" style={{ fontSize: "12px", color: "var(--muted-foreground)" }}>
-                      <Clock className="w-3 h-3" />
-                      {item.time}
-                    </p>
-                  </div>
-                </div>
-                {i < 4 && <Separator className="mt-3" />}
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+
 
       {/* Events Dialog */}
       <Dialog open={openDialog === "events"} onOpenChange={(open) => setOpenDialog(open ? "events" : null)}>

@@ -8,7 +8,8 @@ import {
   Globe, Shield, Trash2, Paperclip, Plus, MessageSquare,
   Users, Pencil, Search, Check, ChevronsUpDown,
   FileSpreadsheet, Upload,
-  Zap, UserPlus, Calendar, LayoutGrid, BookOpen, Mail, PlusCircle, CirclePlus
+  Zap, UserPlus, Calendar, LayoutGrid, BookOpen, Mail, PlusCircle, CirclePlus,
+  Building2, Bot, List, Map as MapIcon
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
@@ -51,7 +52,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
   ]);
   
   // Attachments
-  const [activeAttachment, setActiveAttachment] = useState<"none" | "whiteboard" | "memo" | "cta" | "image" | "poll" | "document">("none");
+  const [activeAttachment, setActiveAttachment] = useState<"none" | "whiteboard" | "memo" | "cta" | "image" | "poll" | "document" | "contributors" | "subspaces">("none");
   const [ctaText, setCtaText] = useState("");
   const [ctaLink, setCtaLink] = useState("");
   const [ctaPickerOpen, setCtaPickerOpen] = useState(false);
@@ -142,6 +143,17 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
     setCtaPickerOpen(false);
   };
 
+  // Contributors
+  const [contributorManualSelection, setContributorManualSelection] = useState(false);
+  const [contributorTypes, setContributorTypes] = useState<Set<string>>(new Set(['people', 'organizations', 'virtualContributors']));
+  const [contributorDefaultType, setContributorDefaultType] = useState<string>('people');
+  const [contributorDefaultDisplay, setContributorDefaultDisplay] = useState<'list' | 'map'>('list');
+  const [contributorSearch, setContributorSearch] = useState("");
+
+  // Subspaces
+  const [subspaceManualSelection, setSubspaceManualSelection] = useState(true);
+  const [subspaceSearch, setSubspaceSearch] = useState("");
+
   // Collection type — always visible
   const [collectionType, setCollectionType] = useState<"none" | "links" | "posts" | "memos" | "whiteboards" | "documents">("none");
   const [membersCanAdd, setMembersCanAdd] = useState(true);
@@ -212,8 +224,10 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                     { id: 'memo', label: 'Memo', icon: StickyNote },
                     { id: 'document', label: 'Document', icon: FileSpreadsheet },
                     { id: 'cta', label: 'Call to Action', icon: Megaphone },
-                    { id: 'image', label: 'Image', icon: Image },
+                    { id: 'image', label: 'Media Gallery', icon: Image },
                     { id: 'poll', label: 'Poll', icon: BarChart3 },
+                    { id: 'contributors', label: 'Contributors', icon: Users },
+                    { id: 'subspaces', label: 'Subspaces', icon: LayoutGrid },
                   ].map((item) => (
                     <Tooltip key={item.id}>
                       <TooltipTrigger asChild>
@@ -416,11 +430,186 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                   </div>
                 </div>
              )}
+
+             {activeAttachment === 'contributors' && (
+                <div className="mt-2 p-4 border rounded-xl bg-muted/30 space-y-4 animate-in fade-in slide-in-from-top-2">
+                  {/* Manual selection toggle */}
+                  <div className="flex items-center gap-3">
+                    <Switch checked={contributorManualSelection} onCheckedChange={setContributorManualSelection} />
+                    <Label className="text-body-emphasis">Manual selection</Label>
+                  </div>
+
+                  {!contributorManualSelection && (
+                    <>
+                      <p className="text-caption text-muted-foreground">
+                        Show this community's contributors as a self-updating collection.
+                      </p>
+
+                      {/* Contributor Types */}
+                      <div className="space-y-2">
+                        <Label className="text-label uppercase text-muted-foreground">Contributor Types</Label>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { id: 'people', label: 'People', icon: Users },
+                            { id: 'organizations', label: 'Organizations', icon: Building2 },
+                            { id: 'virtualContributors', label: 'Virtual Contributors', icon: Bot },
+                          ].map((type) => {
+                            const isActive = contributorTypes.has(type.id);
+                            return (
+                              <button
+                                key={type.id}
+                                onClick={() => {
+                                  const next = new Set(contributorTypes);
+                                  if (isActive && next.size > 1) next.delete(type.id);
+                                  else next.add(type.id);
+                                  setContributorTypes(next);
+                                }}
+                                className={cn(
+                                  "flex items-center gap-2 px-3 py-2 rounded-full border text-control transition-all",
+                                  isActive
+                                    ? "bg-primary text-primary-foreground border-primary"
+                                    : "bg-background border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                                )}
+                              >
+                                <type.icon className="w-4 h-4" />
+                                <span>{type.label}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <p className="text-badge text-muted-foreground/60">Select at least one type to include.</p>
+                      </div>
+
+                      {/* Default Type */}
+                      <div className="space-y-2">
+                        <Label className="text-label uppercase text-muted-foreground">Default Type</Label>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { id: 'people', label: 'People' },
+                            { id: 'organizations', label: 'Organizations' },
+                            { id: 'virtualContributors', label: 'Virtual Contributors' },
+                          ].filter(t => contributorTypes.has(t.id)).map((type) => (
+                            <button
+                              key={type.id}
+                              onClick={() => setContributorDefaultType(type.id)}
+                              className={cn(
+                                "flex items-center gap-2 px-3 py-2 rounded-full border text-control transition-all",
+                                contributorDefaultType === type.id
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "bg-background border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                              )}
+                            >
+                              <span>{type.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                        <p className="text-badge text-muted-foreground/60">The type shown first.</p>
+                      </div>
+
+                      {/* Default Display */}
+                      <div className="space-y-2">
+                        <Label className="text-label uppercase text-muted-foreground">Default Display</Label>
+                        <div className="flex gap-2">
+                          {[
+                            { id: 'list' as const, label: 'List', icon: List },
+                            { id: 'map' as const, label: 'Map', icon: MapIcon },
+                          ].map((display) => (
+                            <button
+                              key={display.id}
+                              onClick={() => setContributorDefaultDisplay(display.id)}
+                              className={cn(
+                                "flex items-center gap-2 px-3 py-2 rounded-full border text-control transition-all",
+                                contributorDefaultDisplay === display.id
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "bg-background border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                              )}
+                            >
+                              <display.icon className="w-4 h-4" />
+                              <span>{display.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {contributorManualSelection && (
+                    <>
+                      <p className="text-caption text-muted-foreground">
+                        Shows only the contributors you select.
+                      </p>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          value={contributorSearch}
+                          onChange={e => setContributorSearch(e.target.value)}
+                          placeholder="Search members..."
+                          className="pl-9 h-10 bg-background"
+                        />
+                      </div>
+
+                      {/* Default Display */}
+                      <div className="space-y-2">
+                        <Label className="text-label uppercase text-muted-foreground">Default Display</Label>
+                        <div className="flex gap-2">
+                          {[
+                            { id: 'list' as const, label: 'List', icon: List },
+                            { id: 'map' as const, label: 'Map', icon: MapIcon },
+                          ].map((display) => (
+                            <button
+                              key={display.id}
+                              onClick={() => setContributorDefaultDisplay(display.id)}
+                              className={cn(
+                                "flex items-center gap-2 px-3 py-2 rounded-full border text-control transition-all",
+                                contributorDefaultDisplay === display.id
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "bg-background border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                              )}
+                            >
+                              <display.icon className="w-4 h-4" />
+                              <span>{display.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+             )}
+
+             {activeAttachment === 'subspaces' && (
+                <div className="mt-2 p-4 border rounded-xl bg-muted/30 space-y-4 animate-in fade-in slide-in-from-top-2">
+                  {/* Manual selection toggle */}
+                  <div className="flex items-center gap-3">
+                    <Switch checked={subspaceManualSelection} onCheckedChange={setSubspaceManualSelection} />
+                    <Label className="text-body-emphasis">Manual selection</Label>
+                  </div>
+
+                  {subspaceManualSelection ? (
+                    <>
+                      <p className="text-caption text-muted-foreground">
+                        Shows only the subspaces you select below.
+                      </p>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          value={subspaceSearch}
+                          onChange={e => setSubspaceSearch(e.target.value)}
+                          placeholder="Search subspaces..."
+                          className="pl-9 h-10 bg-background"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-caption text-muted-foreground">
+                      Show all subspaces in this space as a self-updating collection.
+                    </p>
+                  )}
+                </div>
+             )}
           </div>
 
           <Separator />
-
-          {/* ─── Zone 2: Response type (always visible) ─── */}
           <div className="space-y-3">
             <Label className="text-label uppercase text-muted-foreground">Responses</Label>
             <div className="flex flex-wrap gap-2">

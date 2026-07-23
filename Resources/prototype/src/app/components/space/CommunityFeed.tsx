@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Plus } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
@@ -67,6 +67,13 @@ export function CommunityFeed() {
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
   const [posts, setPosts] = useState<PostProps[]>(INITIAL_COMMUNITY_POSTS);
   const { searchValue } = useSpaceFilters();
+
+  // Listen for sidebar "New Post" button event
+  useEffect(() => {
+    const handler = () => setIsPostModalOpen(true);
+    window.addEventListener("open-add-post-modal", handler);
+    return () => window.removeEventListener("open-add-post-modal", handler);
+  }, []);
 
   const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
     posts,

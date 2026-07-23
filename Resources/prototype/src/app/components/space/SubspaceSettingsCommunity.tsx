@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { InviteVCDialog } from "@/app/components/vc/InviteVCDialog";
 import {
  Search,
  Filter,
@@ -219,6 +220,7 @@ export function SubspaceSettingsCommunity() {
  const [filter, setFilter] = useState<"All" | "Active" | "Pending" | "Invited">("All");
  const [page, setPage] = useState(1);
  const pageSize = 10;
+ const [inviteVCOpen, setInviteVCOpen] = useState(false);
  const [sortConfig, setSortConfig] = useState<{ key: keyof Member | null; direction: "asc" | "desc" }>({
  key: null,
  direction: "asc",
@@ -744,12 +746,22 @@ export function SubspaceSettingsCommunity() {
  ))}
  </div>
  <div className="mt-4">
- <Button variant="outline" size="sm" className="gap-2">
+ <Button variant="outline" size="sm" className="gap-2" onClick={() => setInviteVCOpen(true)}>
  <Plus className="w-4 h-4" /> Add Virtual Contributor
  </Button>
  </div>
  </CollapsibleContent>
  </Collapsible>
+
+ <InviteVCDialog
+ open={inviteVCOpen}
+ onOpenChange={setInviteVCOpen}
+ existingVCIds={MOCK_VCS.map(vc => vc.id)}
+ onInvite={(vc, message) => {
+ // In a real app, this would send an invitation to the backend
+ console.log(`Invited ${vc.name} with message: ${message}`);
+ }}
+ />
  </div>
  );
 }

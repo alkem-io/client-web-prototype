@@ -168,6 +168,13 @@ export function SpaceFeed() {
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
+  // Listen for sidebar "New Post" button event
+  useEffect(() => {
+    const handler = () => setIsPostModalOpen(true);
+    window.addEventListener("open-add-post-modal", handler);
+    return () => window.removeEventListener("open-add-post-modal", handler);
+  }, []);
+
   // Build contribution previews for each post
   function getContributionPreview(post: PostWithTags) {
     if (!post.contributionType) return undefined;

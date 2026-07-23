@@ -27,6 +27,8 @@ import {
   Database,
   ShieldCheck,
 } from "lucide-react";
+import { TransparencyCard } from "@/app/components/vc/TransparencyCard";
+import { FunctionalityCard } from "@/app/components/vc/FunctionalityCard";
 
 export default function VCProfilePage() {
   const { vcSlug } = useParams<{ vcSlug: string }>();
@@ -208,74 +210,27 @@ export default function VCProfilePage() {
             <section>
               <h2 className="text-section-title mb-4">Functionality</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Functional Capabilities */}
-                <Card className="text-center">
-                  <CardHeader className="pb-2 pt-5 px-4 flex flex-col items-center">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-2">
-                      <CircuitBoard className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <CardTitle className="text-card-title">Functional Capabilities</CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-4 pb-5 pt-2">
-                    <ul className="space-y-1.5 text-left">
-                      {vc.functionality.capabilities.map((item) => (
-                        <li key={item.label} className="flex items-start gap-2 text-caption">
-                          {item.enabled ? (
-                            <Check className="w-3.5 h-3.5 mt-0.5 text-foreground shrink-0" />
-                          ) : (
-                            <Minus className="w-3.5 h-3.5 mt-0.5 text-muted-foreground shrink-0" />
-                          )}
-                          <span className={item.enabled ? "text-foreground" : "text-muted-foreground"}>
-                            {item.label}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
+                <FunctionalityCard
+                  icon={<CircuitBoard className="w-5 h-5 text-muted-foreground" />}
+                  title="Functional Capabilities"
+                  items={vc.functionality.capabilities}
+                />
 
-                {/* Data Access */}
-                <Card className="text-center">
-                  <CardHeader className="pb-2 pt-5 px-4 flex flex-col items-center">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-2">
-                      <Upload className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <CardTitle className="text-card-title">
-                      Data access from the Space where it is a member
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-4 pb-5 pt-2">
-                    <ul className="space-y-1.5 text-left">
-                      {vc.functionality.dataAccess.map((item) => (
-                        <li key={item.label} className="flex items-start gap-2 text-caption">
-                          {item.enabled ? (
-                            <Check className="w-3.5 h-3.5 mt-0.5 text-foreground shrink-0" />
-                          ) : (
-                            <Minus className="w-3.5 h-3.5 mt-0.5 text-muted-foreground shrink-0" />
-                          )}
-                          <span className={item.enabled ? "text-foreground" : "text-muted-foreground"}>
-                            {item.label}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
+                <FunctionalityCard
+                  icon={<Upload className="w-5 h-5 text-muted-foreground" />}
+                  title="Data access from the Space where it is a member"
+                  items={vc.functionality.dataAccess}
+                />
 
-                {/* Role Requirements */}
-                <Card className="text-center">
-                  <CardHeader className="pb-2 pt-5 px-4 flex flex-col items-center">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-2">
-                      <Users className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <CardTitle className="text-card-title">Role Requirements</CardTitle>
-                  </CardHeader>
-                  <CardContent className="px-4 pb-5 pt-2">
-                    <p className="text-caption text-muted-foreground text-left">
+                <FunctionalityCard
+                  icon={<Users className="w-5 h-5 text-muted-foreground" />}
+                  title="Role Requirements"
+                  bodyText={
+                    <>
                       This VC needs to be granted <strong className="text-foreground">member rights</strong> to function correctly
-                    </p>
-                  </CardContent>
-                </Card>
+                    </>
+                  }
+                />
               </div>
             </section>
 
@@ -367,49 +322,5 @@ export default function VCProfilePage() {
         </div>
       </div>
     </div>
-  );
-}
-
-/* ─── TransparencyCard Sub-component ─── */
-
-interface TransparencyCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  value?: boolean;
-  textValue?: string;
-  noIcon?: React.ReactNode;
-}
-
-function TransparencyCard({ icon, title, description, value, textValue, noIcon }: TransparencyCardProps) {
-  return (
-    <Card className="text-center flex flex-col">
-      <CardHeader className="pb-2 pt-5 px-4 flex flex-col items-center flex-grow">
-        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-2">
-          {icon}
-        </div>
-        <CardTitle className="text-card-title">{title}</CardTitle>
-        <p className="text-caption text-muted-foreground mt-1">{description}</p>
-      </CardHeader>
-      <CardContent className="px-4 pb-5 pt-2">
-        {textValue ? (
-          <span className="text-body-emphasis text-foreground">{textValue}</span>
-        ) : value !== undefined ? (
-          <div className="flex items-center justify-center gap-1.5">
-            {value ? (
-              <>
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span className="text-body-emphasis">Yes</span>
-              </>
-            ) : (
-              <>
-                {noIcon || <XCircle className="w-4 h-4 text-muted-foreground" />}
-                <span className="text-body-emphasis text-muted-foreground">No</span>
-              </>
-            )}
-          </div>
-        ) : null}
-      </CardContent>
-    </Card>
   );
 }

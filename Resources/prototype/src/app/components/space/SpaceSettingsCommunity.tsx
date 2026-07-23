@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { InviteVCDialog } from "@/app/components/vc/InviteVCDialog";
 import {
  Search,
  MoreHorizontal,
@@ -177,6 +178,7 @@ export function SpaceSettingsCommunity() {
  const [searchQuery, setSearchQuery] = useState('');
  const [page, setPage] = useState(1);
  const [pendingSort, setPendingSort] = useState<{ key: 'name' | 'date' | 'status'; dir: 'asc' | 'desc' }>({ key: 'date', dir: 'desc' });
+ const [inviteVCOpen, setInviteVCOpen] = useState(false);
  const pageSize = 10;
 
  const pendingMembers = members.filter(m => m.status === 'Pending' || m.status === 'Invited')
@@ -531,11 +533,21 @@ export function SpaceSettingsCommunity() {
  </IconButton>
  </div>
  ))}
- <Button variant="outline" size="sm" className="gap-2">
+ <Button variant="outline" size="sm" className="gap-2" onClick={() => setInviteVCOpen(true)}>
  <Plus className="w-4 h-4" /> Add Virtual Contributor
  </Button>
  </div>
  </SettingsSection>
+
+ <InviteVCDialog
+ open={inviteVCOpen}
+ onOpenChange={setInviteVCOpen}
+ existingVCIds={MOCK_VCS.map(vc => vc.id)}
+ onInvite={(vc, message) => {
+ // In a real app, this would send an invitation to the backend
+ console.log(`Invited ${vc.name} with message: ${message}`);
+ }}
+ />
  </div>
  );
 }
