@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useParams, useLocation, useSearchParams, Outlet, Link } from "react-router";
 import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
@@ -88,6 +88,21 @@ export function SpaceShell() {
     setActiveTabDescription(description);
   }, []);
 
+  // Track whether the info bar action icons have scrolled off-screen
+  const actionIconsRef = useRef<HTMLDivElement>(null);
+  const [actionIconsHidden, setActionIconsHidden] = useState(false);
+
+  useEffect(() => {
+    const el = actionIconsRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setActionIconsHidden(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   // Determine sidebar variant from current route
   const getSidebarVariant = () => {
     const path = location.pathname;
@@ -167,7 +182,7 @@ export function SpaceShell() {
   return (
     <FilterProvider>
       <div className="flex flex-col bg-background">
-        <SpaceHeader spaceSlug={slug} variant={variant} onInfoClick={() => setAboutOpen(true)} actionButtons={actionIcons} />
+        <SpaceHeader spaceSlug={slug} variant={variant} onInfoClick={() => setAboutOpen(true)} actionButtons={<div ref={actionIconsRef}>{actionIcons}</div>} />
 
         {/* Content area */}
         <div className="w-full px-4 pt-0 pb-8" style={!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : undefined}>
@@ -183,7 +198,7 @@ export function SpaceShell() {
                   WebkitBackdropFilter: "blur(8px)",
                 }}
               >
-                <SpaceNavigationTabs spaceSlug={slug} onActiveTabChange={handleActiveTabChange} />
+                <SpaceNavigationTabs spaceSlug={slug} onActiveTabChange={handleActiveTabChange} actionButton={actionIconsHidden ? actionIcons : undefined} />
               </div>
 
               {/* ═══ MOBILE STRATEGY 1: Sheet / Drawer ═══ */}
@@ -211,9 +226,10 @@ export function SpaceShell() {
                 <MobileTabBarFilter slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} />
               )}
 
-              {/* ═══ DEFAULT (m=0): Original behavior — sidebar hidden on mobile ═══ */}
+              {/* ═══ DEFAULT (m=0): Original behavior ═══ */}
               {mobileStrategy === 0 && effectivePanelMode === "full" && (
                 <>
+                  {/* Full sidebar — lg+ only */}
                   <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
                     <aside>
                       <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} enabledFeatures={getCurrentTabFeatures()} />
@@ -228,6 +244,11 @@ export function SpaceShell() {
                       </button>
                     </aside>
                   </div>
+                  {/* Railed sidebar — md to lg (tablet breakpoint) */}
+                  <div className={`hidden md:block lg:hidden col-span-12 min-w-0`}>
+                    <SidebarIconRail slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} enabledFeatures={getCurrentTabFeatures()} onExpand={() => {}} />
+                  </div>
+                  {/* Content — adjusts based on breakpoint */}
                   <div className={`col-span-12 ${usesScaling ? "lg:col-span-10" : "lg:col-span-8"} min-w-0`}>
                     <Outlet />
                   </div>
@@ -243,7 +264,7 @@ export function SpaceShell() {
 
               {/* ═══ PANEL RAIL: Slim icon rail + expanded content ═══ */}
               {mobileStrategy === 0 && effectivePanelMode === "rail" && (
-                <div className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} min-w-0`}>
+                <div className={`hidden md:block col-span-12 min-w-0`}>
                   <SidebarIconRail slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} enabledFeatures={getCurrentTabFeatures()} onExpand={() => setSidebarCollapsed(false)} />
                 </div>
               )}
@@ -720,7 +741,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
   return (
     <div className="flex relative">
       {/* Slim icon rail */}
-      <div className="hidden lg:flex flex-col items-center gap-0 shrink-0 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto">
+      <div className="hidden md:flex flex-col items-center gap-0 shrink-0 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto">
         {/* Expand sidebar toggle */}
         {onExpand && (
           <Tooltip>
@@ -806,7 +827,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
 
       {/* Popover overlays — floating on top of content */}
       {activePopover && (
-        <div className="hidden lg:block absolute left-10 top-0 w-64 z-20">
+        <div className="hidden md:block absolute left-10 top-0 w-64 z-20">
           <div className="relative rounded-xl border border-border bg-card shadow-lg p-4 animate-in slide-in-from-left-2 duration-200">
             {/* Close button */}
             <Tooltip>

@@ -41,6 +41,12 @@ interface SubspaceSidebarProps {
   className?: string;
   parentSpaceName?: string;
   parentSpaceInitials?: string;
+  /** Depth level: 1 = subspace (shows space card behind), 2 = sub-subspace (shows space + subspace cards behind) */
+  depth?: number;
+  /** For sub-subspaces: the parent subspace name */
+  parentSubspaceName?: string;
+  parentSubspaceInitials?: string;
+  parentSubspaceBanner?: string;
 }
 
 const SUBSPACE_LEAD = {
@@ -119,9 +125,14 @@ export function SubspaceSidebar({
   className,
   parentSpaceName = "The Sandbox",
   parentSpaceInitials = "S",
+  depth = 1,
+  parentSubspaceName = "Renewable Energy Transition",
+  parentSubspaceInitials = "RE",
+  parentSubspaceBanner = "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80",
 }: SubspaceSidebarProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const [railHovered, setRailHovered] = useState(false);
+  const [deepCardHovered, setDeepCardHovered] = useState(false);
 
   return (
     <div
@@ -198,20 +209,69 @@ export function SubspaceSidebar({
             : "opacity-100 visible overflow-visible"
         )}
       >
-        {/* ── Challenge Statement with Parent Stack ── */}
-        <div style={{ marginTop: 26, marginLeft: 16, overflow: "visible" }} className="relative">
-          {/* Parent card — offset behind */}
+        {/* ── Stacked Cards: Parent Space Card(s) behind Subspace Info Card ── */}
+        <div style={{ paddingTop: depth === 2 ? 28 : 14, paddingLeft: depth === 2 ? 20 : 10, marginTop: 4, paddingBottom: 0, overflow: "visible" }} className="relative">
+          {/* Deepest back card — space card (only shown at depth 2) */}
+          {depth === 2 && (
+            <a
+              href={`/space/innovation-lab`}
+              className="absolute block no-underline"
+              style={{
+                top: 0,
+                left: 0,
+                width: "calc(100% - 20px)",
+                height: "calc(100% - 28px)",
+                borderRadius: 12,
+                overflow: "hidden",
+                border: "1px solid var(--border)",
+                background: "var(--card)",
+                boxShadow: deepCardHovered
+                  ? "0 4px 12px rgba(0,0,0,0.08)"
+                  : "0 2px 6px rgba(0,0,0,0.04)",
+                transform: deepCardHovered
+                  ? "translateY(-3px)"
+                  : "translateY(0)",
+                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
+              }}
+              title={`Go to ${parentSpaceName}`}
+              onMouseEnter={() => setDeepCardHovered(true)}
+              onMouseLeave={() => setDeepCardHovered(false)}
+            >
+              <div style={{ aspectRatio: "16 / 9", overflow: "hidden" }}>
+                <img
+                  src="https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400"
+                  alt={parentSpaceName}
+                  className="w-full h-full object-cover"
+                  style={{
+                    display: "block",
+                    filter: deepCardHovered ? "brightness(1.05)" : "brightness(1)",
+                    transition: "filter 0.3s ease",
+                  }}
+                />
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2">
+                <div className="flex items-center justify-center shrink-0" style={{ width: 18, height: 18, borderRadius: 4, background: "var(--primary)" }}>
+                  <span style={{ color: "white", fontSize: "7px", fontWeight: 700 }}>{parentSpaceInitials}</span>
+                </div>
+                <span className="text-xs font-medium truncate" style={{ color: "var(--muted-foreground)" }}>{parentSpaceName}</span>
+                <ArrowUpLeft className="w-3 h-3 shrink-0" style={{ color: "var(--muted-foreground)", opacity: deepCardHovered ? 0.6 : 0, transition: "opacity 0.2s ease" }} />
+              </div>
+            </a>
+          )}
+
+          {/* Middle back card — subspace card (at depth 2) or space card (at depth 1) */}
           <a
-            href="#"
+            href={depth === 2 ? `/space/innovation-lab/subspaces/renewable-energy-transition` : `/space/innovation-lab`}
             className="absolute block no-underline"
             style={{
-              top: -20,
-              left: -16,
-              width: "calc(100% + 4px)",
-              height: "calc(100% + 8px)",
-              background: "white",
+              top: depth === 2 ? 14 : 0,
+              left: depth === 2 ? 10 : 0,
+              width: depth === 2 ? "calc(100% - 20px)" : "calc(100% - 10px)",
+              height: "calc(100% - 28px)",
+              borderRadius: 12,
+              overflow: "hidden",
               border: "1px solid var(--border)",
-              borderRadius: 8,
+              background: "var(--card)",
               boxShadow: railHovered
                 ? "0 4px 12px rgba(0,0,0,0.08)"
                 : "0 2px 6px rgba(0,0,0,0.04)",
@@ -220,40 +280,43 @@ export function SubspaceSidebar({
                 : "translateY(0)",
               transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease",
             }}
-            title={`Go to ${parentSpaceName}`}
+            title={depth === 2 ? `Go to ${parentSubspaceName}` : `Go to ${parentSpaceName}`}
             onMouseEnter={() => setRailHovered(true)}
             onMouseLeave={() => setRailHovered(false)}
           >
-            {/* Parent space name on the exposed top area */}
-            <div
-              className="flex items-center gap-1.5 px-3"
-              style={{
-                height: 20,
-                paddingTop: 4,
-              }}
-            >
-              <span
-                className="text-xs font-medium truncate"
-                style={{ color: "var(--muted-foreground)" }}
-              >
-                {parentSpaceName}
-              </span>
-              <ArrowUpLeft
-                className="w-3 h-3 shrink-0"
+            <div style={{ aspectRatio: "16 / 9", overflow: "hidden" }}>
+              <img
+                src={depth === 2 ? parentSubspaceBanner : "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400"}
+                alt={depth === 2 ? parentSubspaceName : parentSpaceName}
+                className="w-full h-full object-cover"
                 style={{
-                  color: "var(--muted-foreground)",
-                  opacity: railHovered ? 0.6 : 0,
-                  transition: "opacity 0.2s ease",
+                  display: "block",
+                  filter: railHovered ? "brightness(1.05)" : "brightness(1)",
+                  transition: "filter 0.3s ease",
                 }}
               />
             </div>
+            <div className="flex flex-col gap-1 px-3 py-2">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center shrink-0" style={{ width: 20, height: 20, borderRadius: 4, background: depth === 2 ? "#22c55e" : "var(--primary)" }}>
+                  <span style={{ color: "white", fontSize: "8px", fontWeight: 700 }}>{depth === 2 ? parentSubspaceInitials : parentSpaceInitials}</span>
+                </div>
+                <span className="text-xs font-medium truncate" style={{ color: "var(--foreground)" }}>
+                  {depth === 2 ? parentSubspaceName : parentSpaceName}
+                </span>
+                <ArrowUpLeft className="w-3 h-3 shrink-0" style={{ color: "var(--muted-foreground)", opacity: railHovered ? 0.6 : 0, transition: "opacity 0.2s ease" }} />
+              </div>
+              <p className="text-xs text-muted-foreground line-clamp-2" style={{ lineHeight: 1.4 }}>
+                {depth === 2 ? "Developing strategies for municipal energy transition to 100% renewables by 2030." : "The place for all field builders on steward-ownership to learn, connect, discuss and collaborate."}
+              </p>
+            </div>
           </a>
 
-          {/* Front card — elevated challenge statement */}
+          {/* Front card — in normal flow, pushed down+right by parent's padding */}
           <div
-            className="relative rounded-lg overflow-hidden"
+            className="relative rounded-xl overflow-hidden"
             style={{
-              boxShadow: "0 8px 24px -6px rgba(0,0,0,0.18), 0 4px 8px -4px rgba(0,0,0,0.1)",
+              border: "1px solid rgba(255,255,255,0.1)",
             }}
           >
             <div
@@ -264,7 +327,7 @@ export function SubspaceSidebar({
               }}
             >
               <ReadMoreText
-                maxLines={3}
+                maxLines={4}
                 style={{
                   fontSize: "var(--text-sm)",
                   lineHeight: 1.6,
@@ -371,8 +434,29 @@ export function SubspaceSidebar({
           toggleTag={() => {}}
         />
 
-        {/* ── Subspaces ── */}
-        <SubspaceQuickLinks />
+        {/* ── Sub-subspaces ── */}
+        <div className="flex flex-col">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Subspaces</span>
+          <div className="flex flex-col gap-0.5">
+            {SUB_SUBSPACES.map((ss) => (
+              <a
+                key={ss.id}
+                href={`/space/innovation-lab/subspaces/renewable-energy-transition/subspaces/${ss.slug}`}
+                className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left no-underline"
+              >
+                <Avatar className="w-6 h-6 shrink-0 rounded-md">
+                  {ss.bannerImage ? (
+                    <AvatarImage src={ss.bannerImage} alt={ss.name} className="object-cover" />
+                  ) : null}
+                  <AvatarFallback className="rounded-md text-[8px] font-bold text-white" style={{ background: ss.avatarColor }}>
+                    {ss.initials}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-foreground/85 truncate">{ss.name}</span>
+              </a>
+            ))}
+          </div>
+        </div>
 
         {/* ── Quick Actions ── */}
         <div className="space-y-1">

@@ -1,15 +1,21 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
-import { X, Plus, Type, MapPin, Image, FileText, Tag, Link2, Info, Check, Upload } from "lucide-react";
+import { X, Plus, Type, MapPin, Image, FileText, Tag, Link2, Info, Check, Upload, Crop, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/app/components/ui/dialog";
 
 // Mock data for initial state
 const INITIAL_DATA = {
@@ -161,16 +167,7 @@ export function SpaceSettingsAbout() {
             </button>
 
             {/* Banner — fills remaining width, same height */}
-            <button
-              type="button"
-              className="flex flex-col items-center justify-center gap-3 flex-1 h-40 rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-colors cursor-pointer"
-            >
-              <Image className="w-10 h-10 text-muted-foreground/50" />
-              <div className="text-center">
-                <p className="text-body font-medium text-muted-foreground">Banner</p>
-                <p className="text-caption text-muted-foreground/70">1920 × 400px</p>
-              </div>
-            </button>
+            <BannerEditor />
           </div>
         </SettingsSection>
 
@@ -394,6 +391,304 @@ export function SpaceSettingsAbout() {
         onSave={handleSave}
         onDiscard={handleDiscard}
       />
+    </>
+  );
+}
+
+/* ─── Banner Editor: 3-step upload → crop/height → preview ─── */
+
+const SAMPLE_BANNERS = [
+  "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200",
+  "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1200&q=80",
+];
+
+const BANNER_MIN = 80;
+const BANNER_MAX = 256;
+
+function BannerEditor() {
+  // Read existing banner settings from localStorage (shared with SpaceHeader)
+  const stored = (() => {
+    try {
+      const raw = localStorage.getItem('alkemio-banner-settings');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  })();
+  const existingBanner = stored?.image || "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1200";
+  const existingHeight = stored?.height || 160;
+  const existingCropY = stored?.cropY ?? 30;
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [selectedImage, setSelectedImage] = useState<string | null>(existingBanner);
+  const [bannerHeight, setBannerHeight] = useState(existingHeight);
+  const [cropY, setCropY] = useState(existingCropY);
+  const [savedImage, setSavedImage] = useState<string | null>(existingBanner);
+  const [savedHeight, setSavedHeight] = useState(existingHeight);
+  const [savedCropY, setSavedCropY] = useState(existingCropY);
+
+  // Crop drag state
+  const [isDragging, setIsDragging] = useState<false | "move" | "top" | "bottom">(false);
+  const [dragStartY, setDragStartY] = useState(0);
+  const [dragStartCropY, setDragStartCropY] = useState(0);
+  const [dragStartHeight, setDragStartHeight] = useState(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleOpenDialog = () => {
+    setSelectedImage(savedImage);
+    setBannerHeight(savedHeight);
+    setCropY(savedCropY);
+    setStep(savedImage ? 2 : 1);
+    setDialogOpen(true);
+  };
+
+  const handleSelectImage = (url: string) => {
+    setSelectedImage(url);
+    setCropY(30);
+    setBannerHeight(160);
+    setStep(2);
+  };
+
+  const handleSave = () => {
+    setSavedImage(selectedImage);
+    setSavedHeight(bannerHeight);
+    setSavedCropY(cropY);
+    // Persist to localStorage so SpaceHeader reads it
+    localStorage.setItem('alkemio-banner-settings', JSON.stringify({
+      image: selectedImage,
+      height: bannerHeight,
+      cropY: cropY,
+    }));
+    setDialogOpen(false);
+  };
+
+  // Convert banner height to percentage of the image container (400px reference height)
+  const imageDisplayHeight = 400;
+  const cropHeightPercent = Math.max(20, Math.min(64, (bannerHeight / BANNER_MAX) * 64));
+
+  const handleMouseDown = (e: React.MouseEvent, mode: "move" | "top" | "bottom") => {
+    e.preventDefault();
+    setIsDragging(mode);
+    setDragStartY(e.clientY);
+    setDragStartCropY(cropY);
+    setDragStartHeight(bannerHeight);
+  };
+
+  React.useEffect(() => {
+    if (!isDragging) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      const container = containerRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const deltaPercent = ((e.clientY - dragStartY) / rect.height) * 100;
+
+      if (isDragging === "move") {
+        const newY = Math.max(0, Math.min(100 - cropHeightPercent, dragStartCropY + deltaPercent));
+        setCropY(newY);
+      } else if (isDragging === "top") {
+        const newY = Math.max(0, dragStartCropY + deltaPercent);
+        const heightDelta = (dragStartCropY - newY) / 64 * BANNER_MAX;
+        const newHeight = Math.max(BANNER_MIN, Math.min(BANNER_MAX, dragStartHeight + heightDelta));
+        setCropY(newY);
+        setBannerHeight(Math.round(newHeight));
+      } else if (isDragging === "bottom") {
+        const heightDelta = deltaPercent / 64 * BANNER_MAX;
+        const newHeight = Math.max(BANNER_MIN, Math.min(BANNER_MAX, dragStartHeight + heightDelta));
+        setBannerHeight(Math.round(newHeight));
+      }
+    };
+    const handleMouseUp = () => setIsDragging(false);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, dragStartY, dragStartCropY, dragStartHeight, cropHeightPercent]);
+
+  return (
+    <>
+      {/* Trigger button — shows upload placeholder or saved preview */}
+      <button
+        type="button"
+        onClick={handleOpenDialog}
+        className={cn(
+          "flex flex-col items-center justify-center gap-3 flex-1 rounded-xl border-2 transition-colors cursor-pointer overflow-hidden relative",
+          savedImage
+            ? "border-border hover:border-primary/40"
+            : "border-dashed border-muted-foreground/25 bg-muted/20 hover:border-primary/40 hover:bg-primary/5"
+        )}
+        style={{ height: savedImage ? savedHeight : 160 }}
+      >
+        {savedImage ? (
+          <>
+            <img src={savedImage} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors flex items-center justify-center">
+              <span className="text-white text-sm font-medium opacity-0 hover:opacity-100 transition-opacity">
+                Edit banner
+              </span>
+            </div>
+          </>
+        ) : (
+          <>
+            <Image className="w-10 h-10 text-muted-foreground/50" />
+            <div className="text-center">
+              <p className="text-body font-medium text-muted-foreground">Banner</p>
+              <p className="text-caption text-muted-foreground/70">Click to upload</p>
+            </div>
+          </>
+        )}
+      </button>
+
+      {/* Banner editor dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Image className="w-5 h-5" style={{ color: "var(--primary)" }} />
+              {step === 1 ? "Upload Banner Image" : "Adjust Banner"}
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Step 1: Choose image (only shown for new uploads or when changing image) */}
+          {step === 1 && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">Choose an image for your space banner, or upload your own.</p>
+
+              {/* Upload area */}
+              <label className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 flex flex-col items-center gap-3 hover:border-primary/40 hover:bg-primary/5 transition-colors cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const url = URL.createObjectURL(file);
+                      handleSelectImage(url);
+                    }
+                  }}
+                />
+                <Upload className="w-8 h-8 text-muted-foreground/50" />
+                <div className="text-center">
+                  <p className="text-sm font-medium">Drop an image here or click to browse</p>
+                  <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB. Recommended: 1920px wide or larger.</p>
+                </div>
+              </label>
+            </div>
+          )}
+
+          {/* Step 2: Interactive crop & height */}
+          {step === 2 && selectedImage && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">Drag the selection to choose which part of the image to show. Drag the edges to adjust height.</p>
+
+              {/* Crop area — full image with draggable selection box */}
+              <div
+                ref={containerRef}
+                className="relative rounded-lg overflow-hidden border border-border select-none"
+                style={{ height: imageDisplayHeight }}
+              >
+                {/* Full image (dimmed) */}
+                <img
+                  src={selectedImage}
+                  alt="Full image"
+                  className="w-full h-full object-cover"
+                  style={{ display: "block" }}
+                  draggable={false}
+                />
+
+                {/* Dark overlay outside crop area */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: `linear-gradient(to bottom, 
+                    rgba(0,0,0,0.5) 0%, 
+                    rgba(0,0,0,0.5) ${cropY}%, 
+                    transparent ${cropY}%, 
+                    transparent ${cropY + cropHeightPercent}%, 
+                    rgba(0,0,0,0.5) ${cropY + cropHeightPercent}%, 
+                    rgba(0,0,0,0.5) 100%)`,
+                }} />
+
+                {/* Crop selection box */}
+                <div
+                  className="absolute left-0 right-0"
+                  style={{
+                    top: `${cropY}%`,
+                    height: `${cropHeightPercent}%`,
+                    cursor: isDragging === "move" ? "grabbing" : "grab",
+                  }}
+                  onMouseDown={(e) => handleMouseDown(e, "move")}
+                >
+                  {/* Dashed border */}
+                  <div className="absolute inset-0 border-2 border-dashed border-white/80 pointer-events-none" />
+
+                  {/* Corner handles */}
+                  {[
+                    { pos: "top-0 left-0", cursor: "ns-resize", edge: "top" as const },
+                    { pos: "top-0 right-0", cursor: "ns-resize", edge: "top" as const },
+                    { pos: "bottom-0 left-0", cursor: "ns-resize", edge: "bottom" as const },
+                    { pos: "bottom-0 right-0", cursor: "ns-resize", edge: "bottom" as const },
+                  ].map(({ pos, cursor, edge }, i) => (
+                    <div
+                      key={i}
+                      className={`absolute ${pos} w-3 h-3 bg-white border border-gray-400 shadow-sm`}
+                      style={{ cursor, transform: "translate(-50%, -50%)", zIndex: 10 }}
+                      onMouseDown={(e) => { e.stopPropagation(); handleMouseDown(e, edge); }}
+                    />
+                  ))}
+
+                  {/* Center edge handles */}
+                  <div
+                    className="absolute top-0 left-1/2 w-8 h-2 bg-white border border-gray-400 rounded-sm shadow-sm"
+                    style={{ cursor: "ns-resize", transform: "translate(-50%, -50%)", zIndex: 10 }}
+                    onMouseDown={(e) => { e.stopPropagation(); handleMouseDown(e, "top"); }}
+                  />
+                  <div
+                    className="absolute bottom-0 left-1/2 w-8 h-2 bg-white border border-gray-400 rounded-sm shadow-sm"
+                    style={{ cursor: "ns-resize", transform: "translate(-50%, -50%)", zIndex: 10 }}
+                    onMouseDown={(e) => { e.stopPropagation(); handleMouseDown(e, "bottom"); }}
+                  />
+                </div>
+
+                {/* Height label */}
+                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm pointer-events-none">
+                  {bannerHeight}px
+                </div>
+              </div>
+
+              {/* Preview strip — what the banner will actually look like */}
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Preview</p>
+                <div
+                  className="overflow-hidden rounded-lg border border-border"
+                  style={{ height: bannerHeight }}
+                >
+                  <img
+                    src={selectedImage}
+                    alt="Banner preview"
+                    className="w-full object-cover"
+                    style={{
+                      height: "100%",
+                      objectPosition: `center ${cropY + cropHeightPercent / 2}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-between">
+                <Button variant="outline" size="sm" onClick={() => setStep(1)}>
+                  Change Image
+                </Button>
+                <Button size="sm" onClick={handleSave}>
+                  <Check className="w-4 h-4 mr-1.5" />
+                  Save Banner
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

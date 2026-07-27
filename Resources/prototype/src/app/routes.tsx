@@ -143,6 +143,9 @@ export const router = createBrowserRouter([
           /* Subspace pages — dedicated layout with channel tabs & collapsible sidebar */
           { path: "/space/:spaceSlug/subspaces/:subspaceSlug", Component: SubspacePage },
 
+          /* Sub-subspace pages — same layout, deeper nesting */
+          { path: "/space/:spaceSlug/subspaces/:subspaceSlug/subspaces/:subSubspaceSlug", Component: SubspacePage },
+
           /* Subspace settings */
           { path: "/space/:spaceSlug/subspaces/:subspaceSlug/settings", Component: SubspaceSettingsPage },
           { path: "/space/:spaceSlug/subspaces/:subspaceSlug/settings/:tab", Component: SubspaceSettingsPage },
