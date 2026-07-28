@@ -9,6 +9,7 @@ import {
   Maximize2,
   Megaphone,
   MessageSquare,
+  MoreVertical,
   Presentation,
   StickyNote,
 } from 'lucide-react';
@@ -401,20 +402,17 @@ export function PostCard({
           </div>
         </div>
         <div className="relative z-10 flex items-center gap-1">
-          {onExpandClick && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              onClick={e => {
-                e.stopPropagation();
-                onExpandClick();
-              }}
-              aria-label="Expand"
-            >
-              <Maximize2 className="w-4 h-4" aria-hidden="true" />
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={e => {
+              e.stopPropagation();
+            }}
+            aria-label="More options"
+          >
+            <MoreVertical className="w-4 h-4" aria-hidden="true" />
+          </Button>
           {settingsSlot}
         </div>
       </CardHeader>
