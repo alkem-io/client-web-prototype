@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { Button } from "@/app/components/ui/button";
-import { Plus, Pin, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
+import { Plus, Pin, ChevronsDownUp, ChevronsUpDown, Lock, Users } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
@@ -9,11 +9,24 @@ import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
+import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
 import { ContributionWhiteboardCard } from "@/app/components/contribution/ContributionWhiteboardCard";
 import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
 import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
+import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
+import { ContributionFormResponseCard } from "@/app/components/contribution/ContributionFormResponseCard";
+import { FormRespondDialog } from "@/app/components/callout/FormRespondDialog";
+import { FormResponsesDialog } from "@/app/components/callout/FormResponsesDialog";
+import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog";
+import { useCalloutFormMock } from "@/app/components/callout/useCalloutFormMock";
+import { responsesAreRestricted, canSubmitResponse } from "@/app/components/callout/calloutFormTypes";
+import { RichSubspaceCard, type RichSubspaceCardData } from "@/app/components/space/RichSubspaceCard";
+
+/** Prototype viewer role — see the same constant in SpaceKnowledgeFeed. */
+const DEMO_VIEWER_IS_ADMIN = true;
+const DEMO_VIEWER_CAN_CONTRIBUTE = true;
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
@@ -23,10 +36,128 @@ const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=f
 
 interface PostWithTags extends PostCardData {
   tags: string[];
-  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards';
+  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'form' | 'tasks';
+  /** When set, the post body embeds a rich subspace card (What / Why / Who). */
+  embeddedSubspace?: RichSubspaceCardData;
 }
 
+/** Sample subspace embedded in the "come join us" post — mirrors the Figma design. */
+const SAMPLE_SUBSPACE: RichSubspaceCardData = {
+  slug: "renewable-energy-transition",
+  name: "Renewable Energy Transition",
+  parentName: "Sustainable Cities Initiative",
+  parentSlug: "sustainable-cities-initiative",
+  tagline: "Municipal pathways to 100% renewable energy by 2030.",
+  bannerImage: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80&w=800",
+  avatarInitials: "RE",
+  avatarColor: "#059669",
+  isPrivate: false,
+  isMember: true,
+  tags: ["Energy", "Strategy", "2030"],
+  extraTagCount: 2,
+  leads: [
+    { name: "Sarah Chen", initials: "SC", color: "#2563EB", type: "person" },
+    { name: "Green Future Org", initials: "GF", color: "#059669", type: "org" },
+  ],
+  what:
+    "A cross-disciplinary working group turning high-level climate commitments into implementable municipal energy roadmaps. We cover grid modernisation, community-owned solar, district heating, and the financing models that let local governments actually fund the transition.\n\nEach workstream produces something a city can pick up and use — a costed plan, a procurement template, or a pilot design. We meet fortnightly and publish everything openly so other municipalities can reuse it rather than starting from scratch.",
+  why:
+    "Cities account for over 70% of energy-related emissions, yet most climate targets stop at the level of ambition. There is rarely a concrete, fundable path from a 2030 pledge to delivery on the ground, and that gap is where momentum quietly dies.\n\nThis subspace exists to close it — translating political commitments into the practical engineering, procurement, and finance decisions that determine whether the transition actually happens, and doing it in the open so progress is shared.",
+  who:
+    "City energy planners, municipal sustainability officers, utility and grid partners, and researchers working on the practical side of the transition. If you spend your time on the how — not just the why — you'll feel at home here.\n\nNewcomers with a policy, engineering, or community-organising background are especially welcome. A lot of the hardest problems in this space are about people and process, not only technology, so a wide range of experience is genuinely useful.",
+};
+
 const INITIAL_POSTS: PostWithTags[] = [
+    // 0. Post embedding a rich subspace card — first so it's visible on load
+    {
+      id: "space-subspace-embed",
+      type: "text",
+      tags: ["Community", "Updates"],
+      author: {
+        name: "David Kim",
+        role: "Lead",
+        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      },
+      title: "Looking for city energy leads — come join us 👇",
+      snippet:
+        "We just opened the Renewable Energy Transition subspace to new contributors. If you're working on municipal energy planning, here's the full picture of what we're doing and why:",
+      timestamp: "5 hours ago",
+      commentCount: 9,
+      embeddedSubspace: SAMPLE_SUBSPACE,
+    },
+    // 1. Form — the framing is visible in context on load
+    {
+      id: "space-7",
+      type: "text",
+      contributionType: "form",
+      tags: ["Community", "Research"],
+      author: {
+        name: "Sarah Chen",
+        role: "Lead",
+        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      },
+      title: "Q4 Planning — Tell Us Where to Focus",
+      snippet: "We're setting the agenda for next quarter and the steering group wants input from people doing the work, not just leads. Answer the three questions below — it takes about two minutes, and the programme team reads every response before the planning session on the 20th.",
+      timestamp: "6 hours ago",
+      commentCount: 3,
+      contributionForm: {
+        responseVisibility: "admins",
+        allowMultipleResponses: false,
+        questions: [
+          {
+            id: "sp7-q1",
+            question: "Which area should we prioritise next quarter?",
+            sortOrder: 0,
+            answerType: "choice",
+            options: [
+              { id: "sp7-q1-o1", label: "Roof survey backlog" },
+              { id: "sp7-q1-o2", label: "Grid connection studies" },
+              { id: "sp7-q1-o3", label: "Community outreach" },
+              { id: "sp7-q1-o4", label: "Financing models" },
+            ],
+          },
+          {
+            id: "sp7-q2",
+            question: "What is currently blocking you?",
+            explanation: "Anything from missing data to a decision nobody has made yet.",
+            sortOrder: 1,
+            answerType: "long",
+          },
+          {
+            id: "sp7-q3",
+            question: "Anything else the team should know?",
+            sortOrder: 2,
+            answerType: "long",
+          },
+        ],
+        responses: [
+          {
+            id: "sp7-r1",
+            author: {
+              id: "user-psharma",
+              name: "Priya Sharma",
+              avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+            },
+            submittedAt: "2026-08-04T09:20:00.000Z",
+            answers: [
+              { questionId: "sp7-q1", value: "Roof survey backlog" },
+              { questionId: "sp7-q2", value: "We're waiting on the municipality to confirm which buildings are listed. Without that we can't schedule surveys for half the list." },
+              { questionId: "sp7-q3", value: "Happy to take the listed-buildings question if someone can introduce me to the heritage officer." },
+            ],
+          },
+          {
+            id: "sp7-r2",
+            author: { id: "user-dmiller", name: "David Miller" },
+            submittedAt: "2026-08-04T15:45:00.000Z",
+            answers: [
+              { questionId: "sp7-q1", value: "Grid connection studies" },
+              { questionId: "sp7-q2", value: "The DNO quote turnaround is eight weeks and we keep starting the clock late. This is a process problem, not a technical one." },
+              { questionId: "sp7-q3", value: "" },
+            ],
+          },
+        ],
+      },
+    },
     // 1. Plain post (text, no contributions)
     {
       id: "space-1",
@@ -109,7 +240,23 @@ const INITIAL_POSTS: PostWithTags[] = [
       timestamp: "1 day ago",
       commentCount: 12,
     },
-    // 6. Post with a media gallery
+    // 6. Sprint board — tasks response type
+    {
+      id: "space-tasks",
+      type: "text",
+      tags: ["Sprint", "Planning"],
+      contributionType: "tasks",
+      author: {
+        name: "Sarah Chen",
+        role: "Scrum Master",
+        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+      },
+      title: "Sprint 4 — Grid Modernisation Workstream",
+      snippet: "Sprint board for the current two-week cycle. Add tasks, assign yourself, and drag to update status as you work.",
+      timestamp: "3 hours ago",
+      commentCount: 6,
+    },
+    // 7. Post with a media gallery
     {
       id: "space-6",
       type: "mediaGallery",
@@ -137,6 +284,7 @@ const INITIAL_POSTS: PostWithTags[] = [
 export function SpaceFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
+  const [contributionsDialogPostId, setContributionsDialogPostId] = useState<string | null>(null);
   const [posts, setPosts] = useState<PostWithTags[]>(INITIAL_POSTS);
   const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
   const [selectedDocAuthor, setSelectedDocAuthor] = useState<{ name: string; avatarUrl?: string; role: string } | undefined>(undefined);
@@ -152,6 +300,29 @@ export function SpaceFeed() {
     currentUser: MOCK_CURRENT_USER,
     isAdmin: true,
   });
+
+  const forms = useCalloutFormMock({
+    posts,
+    setPosts: (next) => setPosts(next as PostWithTags[]),
+    currentUser: MOCK_CURRENT_USER,
+    isAdmin: DEMO_VIEWER_IS_ADMIN,
+  });
+
+  const formDialogPost = forms.dialogTarget
+    ? posts.find((p) => p.id === forms.dialogTarget?.postId)
+    : undefined;
+  const formDialogResponse =
+    formDialogPost?.contributionForm && forms.dialogTarget?.responseId
+      ? formDialogPost.contributionForm.responses.find((r) => r.id === forms.dialogTarget?.responseId)
+      : undefined;
+
+  const responsesDialogPost = forms.responsesDialogPostId
+    ? posts.find((p) => p.id === forms.responsesDialogPostId)
+    : undefined;
+
+  const settingsDialogPost = forms.settingsDialogPostId
+    ? posts.find((p) => p.id === forms.settingsDialogPostId)
+    : undefined;
 
   // Persist collapse preference
   useEffect(() => {
@@ -175,159 +346,318 @@ export function SpaceFeed() {
     return () => window.removeEventListener("open-add-post-modal", handler);
   }, []);
 
-  // Build contribution previews for each post
-  function getContributionPreview(post: PostWithTags) {
-    if (!post.contributionType) return undefined;
-
+  /**
+   * A callout's contribution cards, built once and rendered twice — collapsed
+   * in the feed, and in full inside ContributionsDialog. One source means the
+   * dialog can never drift from the preview.
+   */
+  function contributionCardsFor(post: PostWithTags):
+    | { typeLabel: string; addLabel: string; layout: 'grid' | 'list'; total: number; cards: ReactNode[] }
+    | undefined {
     switch (post.contributionType) {
       case 'links':
-        return (
-          <div className="mt-6 space-y-3 pt-6 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (3)</span>
-              <button className="inline-flex items-center gap-1.5 text-label font-semibold text-muted-foreground hover:text-foreground transition-colors">
-                + ADD LINK OR FILE
-              </button>
-            </div>
-            <div className="space-y-2">
-              <ContributionLinkCard
-                title="IEEE Smart Grid Standards"
-                description="Comprehensive standards for smart grid interoperability"
-              />
-              <ContributionLinkCard
-                title="Grid Modernisation Report 2026.pdf"
-                description="Annual report on grid infrastructure upgrades"
-                isFile={true}
-              />
-              <ContributionLinkCard
-                title="Battery Storage Regulations EU"
-                description="European Commission energy storage regulatory framework"
-              />
-            </div>
-            <button className="text-label font-semibold text-muted-foreground hover:text-foreground transition-colors">
-              +3 MORE
-            </button>
-          </div>
-        );
+        return {
+          typeLabel: 'Links & Files',
+          addLabel: '+ Add Link or File',
+          layout: 'list',
+          total: 3,
+          cards: [
+            <ContributionLinkCard key="c1"
+              title="IEEE Smart Grid Standards"
+              description="Comprehensive standards for smart grid interoperability"
+            />,
+            <ContributionLinkCard key="c2"
+              title="Grid Modernisation Report 2026.pdf"
+              description="Annual report on grid infrastructure upgrades"
+              isFile={true}
+            />,
+            <ContributionLinkCard key="c3"
+              title="Battery Storage Regulations EU"
+              description="European Commission energy storage regulatory framework"
+            />
+          ],
+        };
       case 'posts':
-        return (
-          <div className="mt-6 space-y-3 pt-6 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (5)</span>
-            </div>
-            <ContributionGrid totalCount={5} onAddClick={() => {}} addLabel="+ Add Post">
-              <ContributionPostCard
-                title="How Our Community Powered 200 Homes with Solar"
-                author={{ name: "James Wilson" }}
-                createdDate="03/12/2026"
-                description="A practical story of how we navigated permits, funding, and installation to bring solar to a low-income housing estate."
-                tags={["community", "solar", "case-study"]}
-                commentCount={6}
-              />
-              <ContributionPostCard
-                title="Lessons Learned: Our First Municipal Solar Farm"
-                author={{ name: "Priya Sharma" }}
-                createdDate="02/28/2026"
-                description="Three years in, here's what we'd do differently — from vendor selection to community engagement."
-                tags={["lessons", "solar-farm"]}
-                commentCount={4}
-              />
-              <ContributionPostCard
-                title="The Case for Community Ownership"
-                author={{ name: "Elena Rodriguez" }}
-                createdDate="02/15/2026"
-                description="Why community-owned solar cooperatives outperform developer-led models in long-term community value."
-                tags={["ownership", "cooperatives"]}
-                commentCount={3}
-              />
-              <ContributionPostCard
-                title="Grid Integration Challenges We Faced"
-                author={{ name: "David Miller" }}
-                createdDate="02/01/2026"
-                description="Technical hurdles we encountered connecting our 2MW community array to the municipal distribution grid."
-                tags={["grid", "technical", "integration"]}
-                commentCount={7}
-              />
-              <ContributionPostCard
-                title="Financing Models That Work"
-                author={{ name: "Nina Petrova" }}
-                createdDate="01/20/2026"
-                description="Comparing PPAs, community bonds, and municipal green bonds for funding distributed solar projects."
-                tags={["finance", "bonds", "PPA"]}
-                commentCount={2}
-              />
-            </ContributionGrid>
-          </div>
-        );
+        return {
+          typeLabel: 'Posts',
+          addLabel: '+ Add Post',
+          layout: 'grid',
+          total: 5,
+          cards: [
+            <ContributionPostCard key="c1"
+              title="How Our Community Powered 200 Homes with Solar"
+              author={{ name: "James Wilson" }}
+              createdDate="03/12/2026"
+              description="A practical story of how we navigated permits, funding, and installation to bring solar to a low-income housing estate."
+              tags={["community", "solar", "case-study"]}
+              commentCount={6}
+            />,
+            <ContributionPostCard key="c2"
+              title="Lessons Learned: Our First Municipal Solar Farm"
+              author={{ name: "Priya Sharma" }}
+              createdDate="02/28/2026"
+              description="Three years in, here's what we'd do differently — from vendor selection to community engagement."
+              tags={["lessons", "solar-farm"]}
+              commentCount={4}
+            />,
+            <ContributionPostCard key="c3"
+              title="The Case for Community Ownership"
+              author={{ name: "Elena Rodriguez" }}
+              createdDate="02/15/2026"
+              description="Why community-owned solar cooperatives outperform developer-led models in long-term community value."
+              tags={["ownership", "cooperatives"]}
+              commentCount={3}
+            />,
+            <ContributionPostCard key="c4"
+              title="Grid Integration Challenges We Faced"
+              author={{ name: "David Miller" }}
+              createdDate="02/01/2026"
+              description="Technical hurdles we encountered connecting our 2MW community array to the municipal distribution grid."
+              tags={["grid", "technical", "integration"]}
+              commentCount={7}
+            />,
+            <ContributionPostCard key="c5"
+              title="Financing Models That Work"
+              author={{ name: "Nina Petrova" }}
+              createdDate="01/20/2026"
+              description="Comparing PPAs, community bonds, and municipal green bonds for funding distributed solar projects."
+              tags={["finance", "bonds", "PPA"]}
+              commentCount={2}
+            />
+          ],
+        };
       case 'memos':
-        return (
-          <div className="mt-6 space-y-3 pt-6 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (3)</span>
-            </div>
-            <ContributionGrid totalCount={3} onAddClick={() => {}} addLabel="+ Add Memo">
-              <ContributionMemoCard
-                title="Commercial Building Audit Checklist"
-                author="David Miller"
-                markdownContent="## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"
-              />
-              <ContributionMemoCard
-                title="Residential Audit Quick Guide"
-                author="Sarah Chen"
-                markdownContent="## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"
-              />
-              <ContributionMemoCard
-                title="Post-Audit Reporting Template"
-                author="Alex Contributor"
-                markdownContent="## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"
-              />
-            </ContributionGrid>
-          </div>
-        );
+        return {
+          typeLabel: 'Memos',
+          addLabel: '+ Add Memo',
+          layout: 'grid',
+          total: 3,
+          cards: [
+            <ContributionMemoCard key="c1"
+              title="Commercial Building Audit Checklist"
+              author="David Miller"
+              markdownContent="## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"
+            />,
+            <ContributionMemoCard key="c2"
+              title="Residential Audit Quick Guide"
+              author="Sarah Chen"
+              markdownContent="## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"
+            />,
+            <ContributionMemoCard key="c3"
+              title="Post-Audit Reporting Template"
+              author="Alex Contributor"
+              markdownContent="## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"
+            />
+          ],
+        };
       case 'whiteboards':
-        return (
-          <div className="mt-6 space-y-3 pt-6 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (6)</span>
-            </div>
-            <ContributionGrid totalCount={6} onAddClick={() => {}} addLabel="+ Add Whiteboard">
-              <ContributionWhiteboardCard
-                title="Public Library Solar Roof"
-                author="Sarah Chen"
-                previewUrl={wb1}
-              />
-              <ContributionWhiteboardCard
-                title="Parking Lot Canopies"
-                author="David Miller"
-                previewUrl={wb2}
-              />
-              <ContributionWhiteboardCard
-                title="School Microgrids"
-                author="Elena Rodriguez"
-                previewUrl={wb3}
-              />
-              <ContributionWhiteboardCard
-                title="Bus Stop Solar Stations"
-                author="Michael Chang"
-                previewUrl={wb4}
-              />
-              <ContributionWhiteboardCard
-                title="Town Hall Retrofit"
-                author="James Wilson"
-                previewUrl={wb1}
-              />
-              <ContributionWhiteboardCard
-                title="Park Lighting Solar"
-                author="Lisa Park"
-                previewUrl={wb2}
-              />
-            </ContributionGrid>
+        return {
+          typeLabel: 'Whiteboards',
+          addLabel: '+ Add Whiteboard',
+          layout: 'grid',
+          total: 6,
+          cards: [
+            <ContributionWhiteboardCard key="c1"
+              title="Public Library Solar Roof"
+              author="Sarah Chen"
+              previewUrl={wb1}
+            />,
+            <ContributionWhiteboardCard key="c2"
+              title="Parking Lot Canopies"
+              author="David Miller"
+              previewUrl={wb2}
+            />,
+            <ContributionWhiteboardCard key="c3"
+              title="School Microgrids"
+              author="Elena Rodriguez"
+              previewUrl={wb3}
+            />,
+            <ContributionWhiteboardCard key="c4"
+              title="Bus Stop Solar Stations"
+              author="Michael Chang"
+              previewUrl={wb4}
+            />,
+            <ContributionWhiteboardCard key="c5"
+              title="Town Hall Retrofit"
+              author="James Wilson"
+              previewUrl={wb1}
+            />,
+            <ContributionWhiteboardCard key="c6"
+              title="Park Lighting Solar"
+              author="Lisa Park"
+              previewUrl={wb2}
+            />
+          ],
+        };
+      default:
+        return undefined;
+    }
+  }
+
+  // Build contribution previews for each post
+  function getContributionPreview(post: PostWithTags) {
+    // Embedded subspace card (rich What / Why / Who) — rendered in the post body.
+    if (post.embeddedSubspace) {
+      return (
+        <div className="mt-4">
+          <RichSubspaceCard subspace={post.embeddedSubspace} />
+        </div>
+      );
+    }
+
+    // The `form` response type. Rendered with exactly the same furniture as a
+    // call for posts — CONTRIBUTIONS header, ContributionGrid, and the standard
+    // "+ Add" placeholder card — so contributing to a form feels like
+    // contributing anything else. The card opens FormRespondDialog instead of a
+    // post composer; that is the only difference.
+    if (post.contributionForm) {
+      const form = post.contributionForm;
+      const visible = forms.visibleResponsesFor(form);
+      const restricted = responsesAreRestricted(form, forms.isAdmin);
+      const questionCount = form.questions.length;
+      // No add affordance when the viewer can't act — a single-response form
+      // they've already answered, or someone without contribution rights.
+      const canAdd = canSubmitResponse(form, forms.currentUser.id, DEMO_VIEWER_CAN_CONTRIBUTE);
+
+      return (
+        <div className="mt-6 space-y-3 pt-6 border-t">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-label font-semibold text-muted-foreground">
+              {restricted ? `YOUR RESPONSE (${visible.length})` : `CONTRIBUTIONS (${visible.length})`}
+            </span>
+            <span className="inline-flex items-center gap-1.5 text-caption text-muted-foreground">
+              {form.responseVisibility === 'admins' ? (
+                <>
+                  <Lock className="w-3 h-3" aria-hidden="true" />
+                  Admins only
+                </>
+              ) : (
+                <>
+                  <Users className="w-3 h-3" aria-hidden="true" />
+                  Space members
+                </>
+              )}
+            </span>
           </div>
+
+          <ContributionGrid
+            totalCount={visible.length}
+            onAddClick={canAdd ? () => forms.openRespond(post.id) : undefined}
+            addLabel="Add Form Response"
+            addDescription={`${questionCount} ${questionCount === 1 ? 'question' : 'questions'}`}
+          >
+            {visible.map((response) => {
+              const firstAnswer = response.answers.find((a) => a.value.trim())?.value;
+              return (
+                <ContributionFormResponseCard
+                  key={response.id}
+                  author={response.author}
+                  submittedDate={new Date(response.submittedAt).toLocaleDateString(undefined, {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                  snippet={firstAnswer}
+                  answerCount={response.answers.filter((a) => a.value.trim()).length}
+                  isOwn={response.author.id === forms.currentUser.id}
+                  onClick={() => forms.openResponse(post.id, response.id)}
+                />
+              );
+            })}
+          </ContributionGrid>
+
+          {visible.length > 0 && (
+            <Button
+              variant="link"
+              size="sm"
+              className="h-auto p-0 text-muted-foreground hover:text-foreground"
+              onClick={() => forms.openResponsesDialog(post.id)}
+            >
+              View all responses
+            </Button>
+          )}
+        </div>
+      );
+    }
+
+    if (!post.contributionType) return undefined;
+
+    const contributions = contributionCardsFor(post);
+    if (contributions) {
+      const { typeLabel, addLabel, layout, total, cards } = contributions;
+      return (
+        <div className="mt-6 space-y-3 pt-6 border-t">
+          <div className="flex items-center justify-between">
+            <span className="text-label font-semibold text-muted-foreground">
+              CONTRIBUTIONS ({total})
+            </span>
+          </div>
+
+          {layout === 'list' ? (
+            <>
+              <div className="space-y-2">{cards}</div>
+              {total > cards.length && (
+                <button className="text-label font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                  +{total - cards.length} MORE
+                </button>
+              )}
+            </>
+          ) : (
+            /* `+N MORE` stays the grid's own inline expansion — it loads more
+               contributions in place at feed level. The link below is a
+               separate affordance that opens the full set in a dialog. */
+            <ContributionGrid totalCount={total} onAddClick={() => {}} addLabel={addLabel}>
+              {cards}
+            </ContributionGrid>
+          )}
+
+          <Button
+            variant="link"
+            size="sm"
+            className="h-auto p-0 text-muted-foreground hover:text-foreground"
+            onClick={() => setContributionsDialogPostId(post.id)}
+          >
+            View all contributions
+          </Button>
+        </div>
+      );
+    }
+
+    switch (post.contributionType) {
+      case 'tasks':
+        return (
+          <TaskBoardPreview
+            columns={[
+              { id: "backlog", label: "Backlog", color: "#6b7280" },
+              { id: "todo", label: "To Do", color: "#2563eb" },
+              { id: "in-progress", label: "In Progress", color: "#d97706" },
+              { id: "done", label: "Done", color: "#16a34a" },
+            ]}
+            tasks={[
+              { id: "st1", status: "backlog", title: "Research smart meter API specifications", description: "Review vendor docs for Landis+Gyr and Itron meter APIs.", tags: ["research"], commentCount: 0, author: "David Miller", createdDate: "2d ago" },
+              { id: "st2", status: "backlog", title: "Draft RFP for battery storage vendor", tags: ["procurement"], commentCount: 1, author: "Elena Rodriguez", createdDate: "2d ago", comments: [{ id: "sc1", author: "Sarah Chen", text: "Template from last RFP is in the shared drive.", time: "1d ago" }] },
+              { id: "st3", status: "backlog", title: "Map transformer locations in pilot district", tags: ["data", "GIS"], commentCount: 0, author: "Alex Torres", createdDate: "1d ago" },
+              { id: "st4", status: "todo", title: "Set up monitoring dashboard for pilot substations", description: "Deploy Grafana instance and connect to SCADA data feeds.", tags: ["infra", "monitoring"], commentCount: 2, author: "Michael Chang", createdDate: "3d ago", comments: [{ id: "sc2", author: "David Miller", text: "I have the SCADA credentials — ping me.", time: "2d ago" }, { id: "sc3", author: "Michael Chang", text: "Got them, thanks. Setting up test connection now.", time: "1d ago" }] },
+              { id: "st5", status: "todo", title: "Prepare load-balancing simulation parameters", tags: ["analysis"], commentCount: 0, author: "Sarah Chen", createdDate: "1d ago" },
+              { id: "st6", status: "in-progress", title: "Install smart meters at 3 pilot sites", description: "Coordinate with building managers for access windows.", tags: ["installation", "on-site"], commentCount: 3, author: "Alex Torres", createdDate: "5d ago", comments: [{ id: "sc4", author: "Alex Torres", text: "Site 1 done. Site 2 scheduled for Thursday.", time: "2d ago" }, { id: "sc5", author: "Elena Rodriguez", text: "Building manager for site 3 needs 48h notice.", time: "1d ago" }, { id: "sc6", author: "Alex Torres", text: "Noted — will call them Monday.", time: "12h ago" }] },
+              { id: "st7", status: "in-progress", title: "Write data pipeline for meter readings", tags: ["backend", "data"], commentCount: 1, author: "Michael Chang", createdDate: "4d ago", comments: [{ id: "sc7", author: "David Miller", text: "Use the existing ETL framework — no need to build from scratch.", time: "3d ago" }] },
+              { id: "st8", status: "done", title: "Finalise pilot site selection", tags: ["planning"], commentCount: 4, author: "Sarah Chen", createdDate: "2w ago" },
+              { id: "st9", status: "done", title: "Procure 15 smart meters", tags: ["procurement"], commentCount: 2, author: "Elena Rodriguez", createdDate: "1w ago" },
+              { id: "st10", status: "done", title: "Sign access agreements with building owners", tags: ["legal"], commentCount: 1, author: "David Miller", createdDate: "1w ago" },
+            ]}
+          />
         );
       default:
         return undefined;
     }
   }
+
+  const contributionsDialogPost = contributionsDialogPostId
+    ? posts.find((p) => p.id === contributionsDialogPostId)
+    : undefined;
+  const contributionsDialogData = contributionsDialogPost
+    ? contributionCardsFor(contributionsDialogPost)
+    : undefined;
 
   // Filter posts based on search and tag filters
   const filteredPosts = posts.filter((post) => {
@@ -359,6 +689,7 @@ export function SpaceFeed() {
             onExpandClick={() => setSelectedPost(post)}
             onAddMediaGalleryImages={() => openAddDialog(post.id)}
             onDeleteMediaGalleryImage={(t) => deleteImage(post.id, t.id)}
+            onOpenFormSettings={forms.isAdmin ? () => forms.openSettingsDialog(post.id) : undefined}
             contributionsPreview={getContributionPreview(post)}
           />
         ))}
@@ -383,12 +714,29 @@ export function SpaceFeed() {
         open={isPostModalOpen}
         onOpenChange={setIsPostModalOpen}
       />
+      {contributionsDialogPost && contributionsDialogData && (
+        <ContributionsDialog
+          open={true}
+          onOpenChange={(open) => !open && setContributionsDialogPostId(null)}
+          calloutTitle={contributionsDialogPost.title}
+          typeLabel={contributionsDialogData.typeLabel}
+          count={contributionsDialogData.cards.length}
+          layout={contributionsDialogData.layout}
+          addLabel={contributionsDialogData.addLabel}
+          onAddClick={() => {}}
+        >
+          {contributionsDialogData.cards}
+        </ContributionsDialog>
+      )}
+
       <PostDetailDialog
         open={!!selectedPost}
         onOpenChange={(open: boolean) => !open && setSelectedPost(null)}
         post={selectedPost}
         onAddMediaGalleryImages={selectedPost ? () => openAddDialog(selectedPost.id) : undefined}
         onDeleteMediaGalleryImage={selectedPost ? (t) => deleteImage(selectedPost.id, t.id) : undefined}
+        formViewer={{ userId: forms.currentUser.id, isAdmin: forms.isAdmin }}
+        contributionsPreview={selectedPost ? getContributionPreview(selectedPost) : undefined}
       />
       <DocumentDetailDialog
         open={!!selectedDocument}
@@ -396,6 +744,39 @@ export function SpaceFeed() {
         document={selectedDocument}
         author={selectedDocAuthor}
       />
+
+      {formDialogPost?.contributionForm && forms.dialogTarget && (
+        <FormRespondDialog
+          open={true}
+          onOpenChange={(open) => !open && forms.closeDialog()}
+          calloutTitle={formDialogPost.title}
+          form={formDialogPost.contributionForm}
+          mode={forms.dialogTarget.mode}
+          response={formDialogResponse}
+          onSubmit={(answers) => forms.submitResponse(formDialogPost.id, answers)}
+        />
+      )}
+
+      {responsesDialogPost?.contributionForm && (
+        <FormResponsesDialog
+          open={true}
+          onOpenChange={(open) => !open && forms.closeResponsesDialog()}
+          calloutTitle={responsesDialogPost.title}
+          form={responsesDialogPost.contributionForm}
+          responses={forms.visibleResponsesFor(responsesDialogPost.contributionForm)}
+          currentUserId={forms.currentUser.id}
+          isRestricted={responsesAreRestricted(responsesDialogPost.contributionForm, forms.isAdmin)}
+        />
+      )}
+
+      {settingsDialogPost?.contributionForm && (
+        <FormSettingsDialog
+          open={true}
+          onOpenChange={(open) => !open && forms.closeSettingsDialog()}
+          form={settingsDialogPost.contributionForm}
+          onChange={(settings) => forms.updateFormSettings(settingsDialogPost.id, settings)}
+        />
+      )}
     </div>
   );
 }

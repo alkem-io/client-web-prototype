@@ -1,0 +1,170 @@
+You are designing video call backgrounds for Alkemio — a European, steward-owned, open-source platform for collaboration between organisations on complex public challenges. The primary positioning line is "Collaboration in the spaces between organisations." These backgrounds will be used by the team on Microsoft Teams calls with Dutch public-sector partners. They need to feel institutional, restrained, and European — not startup-flashy. The logo (SVG) and any tagline will be placed manually afterwards; do not include any text or logos in the artwork.
+
+The five concepts each express a different facet of Alkemio's positioning: the space between organisations, shared ground, multi-stakeholder convergence, open infrastructure, and steward-ownership as institutional trust. Each concept comes in a light and a dark variant using the same design system.
+
+Create a Figma file with 10 separate pages. Each page contains a single 1920 × 1080 px frame. The first 5 pages are light variants, the last 5 are dark variants of the same designs. All artwork is vector shapes and gradients only — no images, no raster, no text, no logos.
+
+Colour tokens used throughout:
+- INK: #1D384A
+- CYAN: #09BCD4
+- CYAN-DEEP: #0787A5
+- SLATE: #2D546A
+- TINT: #F1F5F9
+- WHITE: #FFFFFF
+- DARK-BASE: #162D3B
+
+---
+
+PAGE 1: "The Space Between — Light"
+
+Frame: 1920 × 1080 px. Background fill: linear gradient 135° from #FFFFFF (top-left) to #F1F5F9 (bottom-right).
+
+Layer "Left Landmass": A large rounded organic shape (superellipse / squircle, not a perfect circle). Centre at x:280, y:540. Width 720px, height 880px. Corner radius 180px. Rotation -8°. Fill: solid #1D384A at 6% opacity. No stroke. Gaussian blur 40px.
+
+Layer "Right Landmass": A large rounded organic shape. Centre at x:1640, y:540. Width 680px, height 820px. Corner radius 200px. Rotation 5°. Fill: solid #1D384A at 5% opacity. No stroke. Gaussian blur 48px.
+
+Layer "Glow": An ellipse centred at x:960, y:540. Width 600px, height 900px. Fill: radial gradient from #09BCD4 at 3% opacity (centre) to transparent (edge). Gaussian blur 80px. Blend mode Screen.
+
+The centre band (x:580 to x:1340, full height) must remain open and nearly featureless. The bottom-left corner (x:0–480, y:800–1080) must be completely quiet — no shapes, no edges.
+
+---
+
+PAGE 2: "Common Ground — Light"
+
+Frame: 1920 × 1080 px. Background fill: solid #FFFFFF.
+
+Layer "Ground Plane": A rectangle spanning full width. Position: x:0, y:740, width:1920, height:340. Fill: linear gradient 90° (left to right) with three stops — #1D384A at 4% opacity (left edge), #0787A5 at 3% opacity (centre), #1D384A at 4% opacity (right edge). Gaussian blur 24px.
+
+Layer "Horizon Line": A horizontal line from (0, 738) to (1920, 738). Stroke 1px, colour #1D384A at 5% opacity. Gaussian blur 2px.
+
+Layer "Sky Wash": An ellipse centred at x:960, y:200. Width 1400px, height 500px. Fill: radial gradient from #F1F5F9 at 60% opacity (centre) to transparent (edge). Gaussian blur 100px.
+
+The upper two-thirds of the frame is open quiet space. The lower third carries the only colour weight. The centre band (x:580–1340) is uninterrupted. Bottom-left corner (x:0–400, y:900–1080) must be completely quiet.
+
+---
+
+PAGE 3: "Confluence — Light"
+
+Frame: 1920 × 1080 px. Background fill: solid #FFFFFF.
+
+Layer "Field A": An ellipse. Centre x:320, y:180. Width 1100px, height 700px. Rotation -12°. Fill: solid #1D384A at 4% opacity. No stroke. Gaussian blur 90px. Blend mode Multiply.
+
+Layer "Field B": An ellipse. Centre x:1600, y:240. Width 1000px, height 650px. Rotation 8°. Fill: solid #0787A5 at 3% opacity. No stroke. Gaussian blur 90px. Blend mode Multiply.
+
+Layer "Field C": An ellipse. Centre x:960, y:920. Width 1300px, height 600px. Rotation 0°. Fill: solid #2D546A at 3% opacity. No stroke. Gaussian blur 100px. Blend mode Multiply.
+
+Layer "Convergence Accent": An ellipse. Centre x:880, y:480. Width 300px, height 300px. Fill: radial gradient from #09BCD4 at 2% opacity (centre) to transparent (edge). Gaussian blur 60px. Blend mode Screen.
+
+The three fields overlap gently near frame centre but at such low opacity and high blur they read as atmosphere, not as visible circles. Bottom-left corner (x:0–400, y:800–1080) must be quiet.
+
+---
+
+PAGE 4: "Open Infrastructure — Light"
+
+Frame: 1920 × 1080 px. Background fill: solid #F1F5F9.
+
+Layer "Grid Left": 12 vertical lines spaced 32px apart, from x:32 to x:384. Each line is full height (1080px), stroke 0.5px, colour #1D384A at 3% opacity. The group has a gradient opacity mask that fades from full opacity at x:0 to 0% at x:480.
+
+Layer "Grid Right": 12 vertical lines spaced 32px apart, from x:1536 to x:1888. Same stroke and colour. Gradient opacity mask: full at x:1920, fading to 0% at x:1440.
+
+Layer "Grid Top": 8 horizontal lines spaced 32px apart, from y:32 to y:256. Full width, stroke 0.5px, colour #1D384A at 3% opacity. Gradient opacity mask: full at y:0, fading to 0% at y:360.
+
+Layer "Anchor Line": A single horizontal line at y:820, from x:64 to x:400. Stroke 1.5px, colour #0787A5 at 20% opacity.
+
+Layer "Corner Mark": A crosshair at position (64, 64) — two lines each 16px long, intersecting at centre. Stroke 0.75px, colour #1D384A at 8% opacity.
+
+The entire centre zone (x:480 to x:1440, y:360 to y:820) is completely empty. All structural detail fades before reaching the person zone. Bottom-left has only the anchor line.
+
+---
+
+PAGE 5: "Steward's Mark — Light"
+
+Frame: 1920 × 1080 px. Background fill: linear gradient 180° from #FFFFFF (top) to #F1F5F9 (bottom).
+
+Layer "Outer Hexagon": A regular hexagon (flat top), centred at x:1050, y:520. Size 800px point-to-point. Rotation 0°. No fill. Stroke 2px, colour #1D384A at 4% opacity. Gaussian blur 6px.
+
+Layer "Middle Hexagon": A regular hexagon, same centre. Size 520px point-to-point. Rotation 30°. No fill. Stroke 1.5px, colour #1D384A at 3% opacity. Gaussian blur 4px.
+
+Layer "Inner Hexagon": A regular hexagon, same centre. Size 280px point-to-point. Rotation 0°. No fill. Stroke 1px, colour #0787A5 at 4% opacity. Gaussian blur 3px.
+
+Layer "Warm Corner": An ellipse at x:200, y:880. Width 600px, height 400px. Fill: radial gradient from #1D384A at 2% opacity (centre) to transparent (edge). Gaussian blur 80px.
+
+The hexagons are centred slightly right of frame centre so they sit behind a person's head. They function as a watermark — visible if you look, invisible if you don't. Bottom-left (x:0–480, y:800–1080) is quiet.
+
+---
+
+PAGE 6: "The Space Between — Dark"
+
+Frame: 1920 × 1080 px. Background fill: linear gradient 135° from #1D384A (top-left) to #162D3B (bottom-right).
+
+Layer "Left Landmass": Same shape as Page 1. Fill: solid #2D546A at 18% opacity. Gaussian blur 40px.
+
+Layer "Right Landmass": Same shape as Page 1. Fill: solid #2D546A at 14% opacity. Gaussian blur 48px.
+
+Layer "Glow": Same ellipse as Page 1. Fill: radial gradient from #09BCD4 at 6% opacity (centre) to transparent (edge). Gaussian blur 80px. Blend mode Screen.
+
+Same composition rules: centre clear, bottom-left quiet.
+
+---
+
+PAGE 7: "Common Ground — Dark"
+
+Frame: 1920 × 1080 px. Background fill: solid #1D384A.
+
+Layer "Ground Plane": Same rectangle as Page 2. Fill: linear gradient 90° — #2D546A at 20% opacity (left), #0787A5 at 12% opacity (centre), #2D546A at 20% opacity (right). Gaussian blur 24px.
+
+Layer "Horizon Line": Same position. Stroke 1px, colour #F1F5F9 at 6% opacity. Gaussian blur 2px.
+
+Layer "Sky Wash": Same ellipse as Page 2. Fill: radial gradient from #2D546A at 8% opacity (centre) to transparent (edge). Gaussian blur 100px.
+
+Same composition rules.
+
+---
+
+PAGE 8: "Confluence — Dark"
+
+Frame: 1920 × 1080 px. Background fill: solid #1D384A.
+
+Layer "Field A": Same shape as Page 3. Fill: solid #2D546A at 10% opacity. Gaussian blur 90px. Blend mode Multiply.
+
+Layer "Field B": Same shape. Fill: solid #09BCD4 at 6% opacity. Gaussian blur 90px. Blend mode Multiply.
+
+Layer "Field C": Same shape. Fill: solid #2D546A at 8% opacity. Gaussian blur 100px. Blend mode Multiply.
+
+Layer "Convergence Accent": Same shape. Fill: radial gradient from #09BCD4 at 4% opacity (centre) to transparent (edge). Gaussian blur 60px. Blend mode Screen.
+
+Same composition rules.
+
+---
+
+PAGE 9: "Open Infrastructure — Dark"
+
+Frame: 1920 × 1080 px. Background fill: solid #1D384A.
+
+Layer "Grid Left": Same 12 vertical lines. Stroke 0.5px, colour #F1F5F9 at 4% opacity. Same gradient mask fade.
+
+Layer "Grid Right": Same. Colour #F1F5F9 at 4% opacity.
+
+Layer "Grid Top": Same 8 horizontal lines. Colour #F1F5F9 at 4% opacity. Same mask.
+
+Layer "Anchor Line": Same position. Stroke 1.5px, colour #09BCD4 at 25% opacity.
+
+Layer "Corner Mark": Same position. Stroke 0.75px, colour #F1F5F9 at 10% opacity.
+
+Same composition rules: centre empty, edges only.
+
+---
+
+PAGE 10: "Steward's Mark — Dark"
+
+Frame: 1920 × 1080 px. Background fill: linear gradient 180° from #1D384A (top) to #162D3B (bottom).
+
+Layer "Outer Hexagon": Same shape. Stroke 2px, colour #F1F5F9 at 5% opacity. Gaussian blur 6px.
+
+Layer "Middle Hexagon": Same shape. Stroke 1.5px, colour #F1F5F9 at 3.5% opacity. Gaussian blur 4px.
+
+Layer "Inner Hexagon": Same shape. Stroke 1px, colour #09BCD4 at 5% opacity. Gaussian blur 3px.
+
+Layer "Warm Corner": Same ellipse. Fill: radial gradient from #2D546A at 6% opacity (centre) to transparent (edge). Gaussian blur 80px.
+
+Same composition rules.

@@ -22,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/components/ui/tooltip";
+import { Badge } from "@/app/components/ui/badge";
 import {
   X,
   Pencil,
@@ -32,6 +33,7 @@ import {
   Mail,
   BookOpen,
   ExternalLink,
+  Tags,
 } from "lucide-react";
 
 /* ─── Types ──────────────────────────────────────────────── */
@@ -113,6 +115,16 @@ Strive to provide thoughtful and well-researched contributions. Cite sources whe
       title: "2030 Transition Roadmap (PDF)",
       url: "https://docs.greenfield.gov/transition-roadmap-2030.pdf",
       description: "The approved roadmap document with phased milestones and budget allocations.",
+    },
+  ],
+  classifications: [
+    {
+      name: "UN Sustainable Development Goals",
+      values: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"],
+    },
+    {
+      name: "Sector",
+      values: ["Energy", "Environment"],
     },
   ],
 };
@@ -358,6 +370,58 @@ export function AboutThisSpaceDialog({
                   {SPACE_DATA.whoText}
                 </p>
               </ContextSection>
+
+              {/* ── Classifications section ── */}
+              {SPACE_DATA.classifications.length > 0 && (
+                <div
+                  className="rounded-lg overflow-hidden"
+                  style={{
+                    border: "1px solid var(--border)",
+                    background: "var(--card)",
+                  }}
+                >
+                  <div className="p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Tags
+                          className="w-4 h-4"
+                          style={{ color: "var(--muted-foreground)" }}
+                        />
+                        <h3
+                          className="text-card-title"
+                          style={{ color: "var(--foreground)" }}
+                        >
+                          Classifications
+                        </h3>
+                      </div>
+                      {isAdmin && <EditButton tooltip="Edit classifications" onClick={() => goToSettings("about")} />}
+                    </div>
+                    <div className="space-y-3">
+                      {SPACE_DATA.classifications.map((cls, i) => (
+                        <div key={i}>
+                          <p
+                            className="text-caption font-medium mb-1.5"
+                            style={{ color: "var(--foreground)" }}
+                          >
+                            {cls.name}
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {cls.values.map((val) => (
+                              <Badge
+                                key={val}
+                                variant="secondary"
+                                className="text-caption font-normal px-2 py-0.5"
+                              >
+                                {val}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* ── Guidelines section ── */}
               <div

@@ -6,9 +6,11 @@ import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
+import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 
 interface PostWithTags extends PostProps {
   tags: string[];
+  contributionType?: 'tasks';
 }
 
 const INITIAL_WORKSPACES_POSTS: PostWithTags[] = [
@@ -60,6 +62,20 @@ const INITIAL_WORKSPACES_POSTS: PostWithTags[] = [
     stats: { likes: 37, comments: 16 },
     commentTexts: ["Great idea — open data platforms are a big gap right now.", "I'd be happy to co-lead this with someone from the tech side.", "We should align with the EU interoperability framework.", "Smart-city APIs are essential for our monitoring dashboard.", "Let's not make scope too broad — focus on municipal data first."],
   },
+  {
+    id: "ws-tasks",
+    type: "text",
+    tags: ["Active", "Sprint"],
+    contributionType: "tasks",
+    author: {
+      name: "David Kim",
+      avatarUrl: "https://images.unsplash.com/photo-1723537742563-15c3d351dbf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdCUyMGJ1c2luZXNzfGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256",
+    },
+    title: "Workstream Tasks — Week 12",
+    snippet: "Weekly task board. Add items and move them as you complete work.",
+    timestamp: "1 hour ago",
+    stats: { likes: 5, comments: 3 },
+  },
 ];
 
 export function WorkspacesFeed() {
@@ -74,6 +90,27 @@ export function WorkspacesFeed() {
     currentUser: MOCK_CURRENT_USER,
     isAdmin: true,
   });
+
+  function getContributionPreview(post: PostWithTags) {
+    if (post.contributionType !== 'tasks') return undefined;
+    return (
+      <TaskBoardPreview
+        columns={[
+          { id: "todo", label: "To Do", color: "#6b7280" },
+          { id: "doing", label: "Doing", color: "#2563eb" },
+          { id: "done", label: "Done", color: "#16a34a" },
+        ]}
+        tasks={[
+          { id: "wt1", status: "todo", title: "Review digital infra proposal feedback", tags: ["planning"], commentCount: 2, author: "Sophia Li", createdDate: "1d ago", comments: [{ id: "wc1", author: "David Kim", text: "I'll consolidate the comments by EOD.", time: "12h ago" }, { id: "wc2", author: "Sophia Li", text: "Thanks — also check the Slack thread.", time: "6h ago" }] },
+          { id: "wt2", status: "todo", title: "Update Q2 milestone tracker", author: "David Kim", createdDate: "2d ago" },
+          { id: "wt3", status: "doing", title: "Draft contributor onboarding guide", description: "Short guide for new subspace contributors.", tags: ["docs"], commentCount: 1, author: "Sophia Li", createdDate: "3d ago", comments: [{ id: "wc3", author: "David Kim", text: "Use the template from last quarter.", time: "2d ago" }] },
+          { id: "wt4", status: "doing", title: "Prepare sprint demo slides", tags: ["sprint"], author: "David Kim", createdDate: "1d ago" },
+          { id: "wt5", status: "done", title: "Send meeting invites for leads sync", author: "David Kim", createdDate: "3d ago", commentCount: 1 },
+          { id: "wt6", status: "done", title: "Publish workspace update post", author: "Sophia Li", createdDate: "4d ago" },
+        ]}
+      />
+    );
+  }
 
   // Listen for sidebar "New Post" button event
   useEffect(() => {
@@ -123,6 +160,7 @@ export function WorkspacesFeed() {
             onClick={() => setSelectedPost(post)}
             onAddMediaGalleryImages={() => openAddDialog(post.id)}
             onDeleteMediaGalleryImage={(t: any) => deleteImage(post.id, t.id)}
+            contributionsPreview={getContributionPreview(post)}
           />
         ))}
       </div>
@@ -147,6 +185,7 @@ export function WorkspacesFeed() {
         post={selectedPost as any}
         onAddMediaGalleryImages={selectedPost ? () => openAddDialog(selectedPost.id) : undefined}
         onDeleteMediaGalleryImage={selectedPost ? (t: any) => deleteImage(selectedPost.id, t.id) : undefined}
+        contributionsPreview={selectedPost ? getContributionPreview(selectedPost as PostWithTags) : undefined}
       />
     </div>
   );

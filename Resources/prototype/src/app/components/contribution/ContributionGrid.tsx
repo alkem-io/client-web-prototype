@@ -8,7 +8,19 @@ type ContributionGridProps = {
   totalCount: number;
   onAddClick?: () => void;
   addLabel?: string;
+  /**
+   * Optional second line on the add card — for contribution types where the
+   * cost of contributing isn't obvious from the label alone (e.g. a form's
+   * question count). `PlaceholderCard` has always supported this; the grid
+   * simply never passed it through.
+   */
+  addDescription?: string;
   addCardClassName?: string;
+  /**
+   * Overrides the default inline expansion of "+N MORE". Leave unset so the
+   * grid expands in place — that's the point of the control. A parent's
+   * "View all" dialog is a *separate* affordance, not a replacement.
+   */
   onShowMore?: () => void;
   className?: string;
 };
@@ -18,6 +30,7 @@ export function ContributionGrid({
   totalCount,
   onAddClick,
   addLabel = "+ Add",
+  addDescription,
   addCardClassName,
   onShowMore,
   className
@@ -42,6 +55,7 @@ export function ContributionGrid({
           <PlaceholderCard
             size="sm"
             label={addLabel}
+            description={addDescription}
             onClick={onAddClick}
             className={addCardClassName}
           />

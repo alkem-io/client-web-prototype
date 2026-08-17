@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { ChevronsRight } from "lucide-react";
 
 export interface CalloutTab {
   id: string;
@@ -7,6 +8,12 @@ export interface CalloutTab {
   count?: number;
   pinned?: boolean;
   linkedToNext?: boolean;
+}
+
+function FlowArrow() {
+  return (
+    <ChevronsRight className="w-3.5 h-3.5 text-muted-foreground/40 mt-[3px] -ml-[13px] mr-[7px]" />
+  );
 }
 
 interface CalloutTabsProps {
@@ -26,10 +33,13 @@ export function CalloutTabs({
         className="flex items-center gap-6 overflow-x-auto scrollbar-hide [-ms-overflow-style:none] [scrollbar-width:none] overscroll-x-contain"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
-        {tabs.map((tab) => {
+        {tabs.map((tab, index) => {
           const isActive = activeTab === tab.id;
           return (
             <div key={tab.id} className="inline-flex items-start shrink-0">
+              {index > 0 && tabs[index - 1]?.linkedToNext && (
+                <FlowArrow />
+              )}
               <button
                 onClick={() => onTabChange(tab.id)}
                 className={cn(

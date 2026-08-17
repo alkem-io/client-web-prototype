@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
-import { Mail, MapPin, Settings } from "lucide-react";
+import { Mail, MapPin, Send, Settings } from "lucide-react";
 
 interface UserProfileHeaderProps {
  user: {
@@ -41,11 +41,14 @@ export function UserProfileHeader({ user }: UserProfileHeaderProps) {
  </div>
  </div>
 
- <div className="flex gap-3 mt-4 md:mt-0">
+ <div className="flex gap-2 mt-4 md:mt-0">
  <Button className="gap-2 shadow-sm">
- <Mail className="w-4 h-4" />
+ <Send className="w-4 h-4" />
  Message
  </Button>
+ <IconButton variant="outline" tooltipLabel="Send Email" className="shadow-sm">
+ <Mail className="w-4 h-4" />
+ </IconButton>
  {user.isOwnProfile && (
  <Link to={`/user/${userSlug}/settings/account`}>
  <IconButton variant="ghost" tooltipLabel="Settings" className="shadow-sm">

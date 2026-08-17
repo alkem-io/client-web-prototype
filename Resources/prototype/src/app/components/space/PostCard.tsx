@@ -4,20 +4,20 @@ import {
   FileText,
   ImagePlus,
   Images,
-  Kanban,
   type LucideIcon,
   Maximize2,
   Megaphone,
   MessageSquare,
-  MoreVertical,
   Presentation,
+  Settings,
   StickyNote,
 } from 'lucide-react';
-import { type ReactNode, useState, useRef, useEffect, useCallback } from 'react';
+import { type MouseEvent as ReactMouseEvent, type ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import {
   CalloutCollaboraPreview,
   type CollaboraDocumentPreviewType,
 } from '@/app/components/callout/CalloutCollaboraPreview';
+import type { CalloutFormData } from '@/app/components/callout/calloutFormTypes';
 import { CalloutLinkAction } from '@/app/components/callout/CalloutLinkAction';
 import {
   ReferencesAndTagsStrip,
@@ -30,14 +30,19 @@ import {
 
 export type { MediaGalleryFeedThumbnail };
 import { cn } from '@/lib/utils';
-import { KanbanPostPreview } from '@/app/components/space/KanbanBoardPost';
+import { PostReactions } from '@/app/components/space/PostReactions';
+import {
+  type PostReaction,
+  seedDemoReactions,
+  toggleReaction,
+} from '@/app/components/space/post-reactions-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/app/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/app/components/ui/collapsible';
 
-export type PostType = 'text' | 'whiteboard' | 'memo' | 'mediaGallery' | 'document' | 'callToAction' | 'poll' | 'kanban';
+export type PostType = 'text' | 'whiteboard' | 'memo' | 'mediaGallery' | 'document' | 'callToAction' | 'poll';
 
 type PostTypeLabelKey =
   | 'callout.post'
@@ -46,8 +51,7 @@ type PostTypeLabelKey =
   | 'callout.mediaGallery'
   | 'callout.document'
   | 'callout.callToAction'
-  | 'callout.poll'
-  | 'callout.kanban';
+  | 'callout.poll';
 
 /**
  * Single source of truth for the icon and translation key per `PostType`.
@@ -65,7 +69,6 @@ export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKe
   mediaGallery: { icon: Images, labelKey: 'callout.mediaGallery', label: 'Media Gallery' },
   callToAction: { icon: Megaphone, labelKey: 'callout.callToAction', label: 'Call to Action' },
   poll: { icon: BarChart3, labelKey: 'callout.poll', label: 'Poll' },
-  kanban: { icon: Kanban, labelKey: 'callout.kanban', label: 'Board' },
 };
 
 /**
@@ -189,11 +192,30 @@ export type PostCardData = {
   framingDocumentType?: CollaboraDocumentPreviewType;
   /** Framing-level call-to-action link (Link framing only). `isValid` is false for non-http(s) or malformed URIs. */
   framingCallToAction?: { uri: string; displayName: string; isExternal: boolean; isValid: boolean };
-  /** Framing-level kanban board (kanban framing only) — column definitions with card items. */
-  framingKanban?: {
-    columns: { id: string; label: string; cards: { id: string; title: string; assignee?: string }[] }[];
-  };
+  /**
+   * Contribution-level form (`contributionType: 'form'` only) — the ordered
+   * question list that defines the shape of a response, plus the responses
+   * collected so far and the two per-form settings.
+   *
+   * Deliberately NOT a `framing*` field: the questions are a schema for what
+   * contributors submit, not the callout's head content, so the callout keeps
+   * its own framing (text, whiteboard, …) and the whole thing renders through
+   * `contributionsPreview`. The card itself only reads it to decide whether to
+   * show the form settings gear.
+   */
+  contributionForm?: CalloutFormData;
   commentCount?: number;
+  /**
+   * Emoji responses on this post. Omit and the card seeds a deterministic demo
+   * set from the post id so existing feeds show the feature without being
+   * rewritten; pass `[]` for a post that genuinely has none.
+   */
+  reactions?: PostReaction[];
+  /**
+   * The emoji this space offers. Set by a space lead from a platform pool.
+   * Omit to use the platform default set.
+   */
+  reactionOptions?: readonly string[];
   /**
    * Mirrors `callout.settings.framing.commentsEnabled`. When `false`:
    *  - the comments footer is hidden entirely if there are no existing messages
@@ -251,6 +273,13 @@ type PostCardProps = {
    * button — this card never renders a standalone settings button (plan D8 / T060).
    */
   settingsSlot?: ReactNode;
+  /**
+   * Opens the form settings dialog (response visibility, multiple responses).
+   * Only meaningful when the post carries a `contributionForm`. When omitted
+   * the gear is hidden — the consumer passes it only for viewers allowed to
+   * change settings, so the button's presence is itself the permission check.
+   */
+  onOpenFormSettings?: () => void;
   onExpandClick?: () => void;
   /** Opens the Collabora editor directly from the feed preview (document framing only).
    *  Distinct from `onClick`, which opens the callout dialog via the title link. */
@@ -276,6 +305,15 @@ type PostCardProps = {
    * `CalloutCommentsConnector.skipSubscription`).
    */
   onCommentsExpandedChange?: (expanded: boolean) => void;
+  /**
+   * Emitted whenever the viewer adds, changes or removes their reaction. The
+   * card keeps its own optimistic copy, so this is for persistence only.
+   */
+  onReactionsChange?: (reactions: PostReaction[]) => void;
+  /** Hides the reaction cluster entirely (read-only surfaces, previews). */
+  reactionsEnabled?: boolean;
+  /** Whether the viewer may react. Reactions stay visible when `false`. */
+  canReact?: boolean;
   className?: string;
 };
 
@@ -291,6 +329,7 @@ export function PostCard({
   onDeleteMediaGalleryImage,
   onCommentsClick,
   settingsSlot,
+  onOpenFormSettings,
   onExpandClick,
   onOpenFramingDocument,
   contributionsPreview,
@@ -298,11 +337,28 @@ export function PostCard({
   commentsSlot,
   commentInputSlot,
   onCommentsExpandedChange,
+  onReactionsChange,
+  reactionsEnabled = true,
+  canReact = true,
   className,
 }: PostCardProps) {
   const TypeIcon = post.type && POST_TYPE_DESCRIPTORS[post.type] ? POST_TYPE_DESCRIPTORS[post.type].icon : FileText;
   const hasCollapsibleComments = commentsSlot !== undefined;
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+
+  // Seeded once per post id. A caller that owns the data passes `post.reactions`
+  // and drives updates through `onReactionsChange`.
+  const [reactions, setReactions] = useState<PostReaction[]>(
+    () => post.reactions ?? seedDemoReactions(post.id, post.reactionOptions),
+  );
+
+  const handleToggleReaction = (emoji: string) => {
+    setReactions(current => {
+      const next = toggleReaction(current, emoji);
+      onReactionsChange?.(next);
+      return next;
+    });
+  };
 
   const handleCommentsOpenChange = (open: boolean) => {
     setIsCommentsOpen(open);
@@ -312,6 +368,19 @@ export function PostCard({
   const commentLabel = post.commentCount
     ? `${post.commentCount} Comment${post.commentCount !== 1 ? 's' : ''}`
     : 'No comments';
+
+  // Comments and reactions gate independently: a post with commenting switched
+  // off still shows the responses it already has.
+  const showComments = post.commentsEnabled !== false || (post.commentCount ?? 0) > 0;
+  const showReactions = reactionsEnabled;
+  const reactionCluster = showReactions ? (
+    <PostReactions
+      reactions={reactions}
+      options={post.reactionOptions}
+      onToggle={handleToggleReaction}
+      canReact={canReact}
+    />
+  ) : null;
 
   return (
     <Card
@@ -402,17 +471,39 @@ export function PostCard({
           </div>
         </div>
         <div className="relative z-10 flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={e => {
-              e.stopPropagation();
-            }}
-            aria-label="More options"
-          >
-            <MoreVertical className="w-4 h-4" aria-hidden="true" />
-          </Button>
+          {/* Form settings — response visibility is the setting most likely to
+              need changing after the fact, so it gets a labelled control of its
+              own. Only rendered when the consumer supplies the handler, which is
+              how the admin-only permission is expressed. */}
+          {post.contributionForm && onOpenFormSettings && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={e => {
+                e.stopPropagation();
+                onOpenFormSettings();
+              }}
+              aria-label="Form settings"
+              title="Form settings"
+            >
+              <Settings className="w-4 h-4" aria-hidden="true" />
+            </Button>
+          )}
+          {onExpandClick && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              onClick={e => {
+                e.stopPropagation();
+                onExpandClick();
+              }}
+              aria-label="Expand"
+            >
+              <Maximize2 className="w-4 h-4" aria-hidden="true" />
+            </Button>
+          )}
           {settingsSlot}
         </div>
       </CardHeader>
@@ -560,14 +651,6 @@ export function PostCard({
           />
         )}
 
-        {/* Kanban board framing preview — mini column visualization */}
-        {post.type === 'kanban' && post.framingKanban && (
-          <KanbanPostPreview
-            data={post.framingKanban}
-            onClick={onOpenFraming ?? onClick}
-          />
-        )}
-
         {/* Contribution previews — rendered by integration layer */}
         {contributionsPreview}
       </CardContent>
@@ -577,25 +660,31 @@ export function PostCard({
       {/* Footer is hidden entirely when comments are disabled AND there are no existing messages —
           mirrors the MUI behavior. When messages exist, the thread stays visible (read-only via
           consumer-gated `commentInputSlot`) even after the admin disables further commenting. */}
-      {(post.commentsEnabled !== false || (post.commentCount ?? 0) > 0) &&
-        (hasCollapsibleComments ? (
+      {(showComments || showReactions) &&
+        (showComments && hasCollapsibleComments ? (
           <CardFooter className="!p-0 flex-col items-stretch gap-0 border-t bg-muted/5">
             <Collapsible open={isCommentsOpen} onOpenChange={handleCommentsOpenChange}>
-              <CollapsibleTrigger asChild={true}>
-                <button
-                  type="button"
-                  className="group/comments flex w-full items-center gap-2 px-6 py-3 text-caption text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label={isCommentsOpen ? 'Collapse comments' : 'Expand comments'}
-                >
-                  <ChevronDown
-                    className="size-4 transition-transform duration-200 group-data-[state=open]/comments:rotate-180"
-                    aria-hidden="true"
-                  />
-                  <MessageSquare className="size-4" aria-hidden="true" />
-                  <span>{commentLabel}</span>
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-6 pt-4 pb-4">
+              {/* The count and the reactions share one row: comments left,
+                  responses right. The trigger can no longer be full-width
+                  because a button may not contain the reaction buttons. */}
+              <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-3">
+                <CollapsibleTrigger asChild={true}>
+                  <button
+                    type="button"
+                    className="group/comments flex items-center gap-2 text-caption text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={isCommentsOpen ? 'Collapse comments' : 'Expand comments'}
+                  >
+                    <ChevronDown
+                      className="size-4 transition-transform duration-200 group-data-[state=open]/comments:rotate-180"
+                      aria-hidden="true"
+                    />
+                    <MessageSquare className="size-4" aria-hidden="true" />
+                    <span>{commentLabel}</span>
+                  </button>
+                </CollapsibleTrigger>
+                {reactionCluster}
+              </div>
+              <CollapsibleContent className="px-6 pb-4">
                 <div className="flex flex-col gap-3">
                   {commentInputSlot}
                   <div className="max-h-[400px] overflow-y-auto pr-2">{commentsSlot}</div>
@@ -604,19 +693,24 @@ export function PostCard({
             </Collapsible>
           </CardFooter>
         ) : (
-          <CardFooter className="!py-3 flex items-center gap-4 border-t bg-muted/5 px-6">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 gap-2 text-muted-foreground hover:text-foreground pl-0 hover:bg-transparent"
-              onClick={event => {
-                event.stopPropagation();
-                onCommentsClick?.();
-              }}
-            >
-              <MessageSquare className="w-4 h-4" aria-hidden="true" />
-              <span className="text-caption">{commentLabel}</span>
-            </Button>
+          <CardFooter className="!py-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t bg-muted/5 px-6">
+            {showComments ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 gap-2 text-muted-foreground hover:text-foreground pl-0 hover:bg-transparent"
+                onClick={(event: ReactMouseEvent<HTMLButtonElement>) => {
+                  event.stopPropagation();
+                  onCommentsClick?.();
+                }}
+              >
+                <MessageSquare className="w-4 h-4" aria-hidden="true" />
+                <span className="text-caption">{commentLabel}</span>
+              </Button>
+            ) : (
+              <span />
+            )}
+            {reactionCluster}
           </CardFooter>
         ))}
     </Card>

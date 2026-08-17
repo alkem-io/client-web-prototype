@@ -33,6 +33,8 @@ export interface SpaceCardData {
     initials: string;
     avatarColor: string;
   };
+  /** Applied classifications */
+  classifications?: { name: string; values: string[] }[];
 }
 
 interface SpaceCardProps {

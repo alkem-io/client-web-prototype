@@ -25,7 +25,7 @@ export function ContributionMemoCard({
         'group/memo relative w-full rounded-lg overflow-hidden border border-border bg-card min-h-[180px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left',
         className
       )}
-      onClick={onClick}
+      onClick={onClick ? (e) => { e.stopPropagation(); onClick(); } : undefined}
     >
       <div className="w-full h-full p-4">
         {markdownContent ? (

@@ -1,0 +1,265 @@
+You are designing video call backgrounds for Alkemio — a European, steward-owned, open-source platform for collaboration between organisations on complex public challenges. These will be used on Microsoft Teams calls with Dutch public-sector partners.
+
+The messaging that shapes these concepts:
+- "Collaboration in the space between organisations." (primary)
+- Spaces to power your collaboration.
+- Coordinate. Co-create. Collaborate.
+- Shared workspaces for shared challenges.
+- European. Steward-owned. Open-source.
+
+Each concept must visually express one of these ideas — not just look nice. Use rich gradients, confident shapes, and the Alkemio palette at full strength. The logo will be placed manually afterwards — no text or logos in the artwork.
+
+Palette:
+- INK (deep navy): #1D384A
+- CYAN (brand accent): #09BCD4
+- CYAN-DEEP: #0787A5
+- SLATE: #2D546A
+- TINT: #F1F5F9
+
+Constraints: The vertical centre band (x:580–1340) stays breathable for the person. Bottom-left corner (x:0–400, y:880–1080) stays calm for logo placement.
+
+Create a Figma file with 10 pages. Pages 1–5 are light variants, pages 6–10 are dark variants.
+
+---
+
+PAGE 1: "The Bridge — Light"
+
+CONCEPT: "Collaboration in the space between organisations." Two distinct, solid forms on opposite sides of the frame with a luminous connecting element between them — a bridge of light. The bridge IS the product; the value lives in the connection, not in either side alone.
+
+Frame: 1920 × 1080 px. Background: solid #FFFFFF.
+
+Layer "Entity Left": A tall, vertical rounded rectangle (like a monolith or building face). Position: x:40, y:80, width:380, height:920. Corner radius: 24px. Fill: linear gradient 180° from #1D384A at 90% (top) to #2D546A at 75% (bottom). This is a solid, confident presence — an organisation.
+
+Layer "Entity Right": A tall, vertical rounded rectangle. Position: x:1500, y:120, width:380, height:880. Corner radius: 24px. Fill: linear gradient 180° from #2D546A at 80% (top) to #1D384A at 90% (bottom). Slightly different proportions than the left — these are different organisations, not clones.
+
+Layer "Bridge Glow": A wide horizontal ellipse spanning the gap between the two entities. Centre: x:960, y:540. Width: 800px, height: 200px. Fill: linear gradient 90° from #09BCD4 at 50% opacity (left) fading to #09BCD4 at 70% opacity (centre) fading to #09BCD4 at 50% opacity (right). Gaussian blur: 40px. This is the luminous connection — the "space between" made visible and valuable.
+
+Layer "Bridge Core": A thinner horizontal ellipse at same centre. Width: 600px, height: 60px. Fill: solid #09BCD4 at 80% opacity. Gaussian blur: 12px. A brighter, tighter core to the connection — gives it energy.
+
+Layer "Light Spill Top": An ellipse at x:960, y:350. Width: 500px, height: 250px. Fill: radial gradient from #09BCD4 at 20% opacity to transparent. Gaussian blur: 50px. The bridge radiates upward.
+
+Layer "Light Spill Bottom": An ellipse at x:960, y:730. Width: 500px, height: 250px. Fill: radial gradient from #0787A5 at 15% opacity to transparent. Gaussian blur: 50px.
+
+Layer "Ground shadow": A rectangle at x:0, y:980, width:1920, height:100. Fill: linear gradient 180° from #1D384A at 8% opacity to transparent. Subtle grounding.
+
+The person sits IN the bridge — they ARE the collaboration. The two organisations flank them, and the cyan light connecting them flows through where the person stands.
+
+---
+
+PAGE 2: "The Threshold — Light"
+
+CONCEPT: "Spaces to power your collaboration." An open doorway or portal — the view into a Space. The frame suggests you're looking through an architectural opening into a bright, expansive interior. You're being invited in.
+
+Frame: 1920 × 1080 px. Background: solid #F1F5F9.
+
+Layer "Wall Left": A tall vertical rectangle. Position: x:0, y:0, width:520, height:1080. Fill: solid #1D384A at 85% opacity. This is the wall beside the doorway.
+
+Layer "Wall Right": A tall vertical rectangle. Position: x:1400, y:0, width:520, height:1080. Fill: solid #1D384A at 85% opacity.
+
+Layer "Lintel": A horizontal rectangle across the top. Position: x:0, y:0, width:1920, height:160. Fill: solid #1D384A at 80% opacity. The top of the doorway.
+
+Layer "Reveal Left": A vertical strip along the inner edge of Wall Left. Position: x:520, y:160, width:40, height:920. Fill: linear gradient 90° from #2D546A at 60% to #1D384A at 30%. The bevelled reveal of the doorframe — architectural depth.
+
+Layer "Reveal Right": Same on right side. Position: x:1360, y:160, width:40, height:920. Fill: linear gradient 270° from #2D546A at 60% to #1D384A at 30%.
+
+Layer "Interior Light": A large ellipse filling the open doorway space. Centre: x:960, y:600. Width: 700px, height: 800px. Fill: radial gradient from #FFFFFF at 70% (centre) to #F1F5F9 at 40% (middle) to #09BCD4 at 15% (edge). Gaussian blur: 30px. The light inside the Space — warm, inviting, expansive.
+
+Layer "Floor reflection": A horizontal ellipse at x:960, y:950. Width:600px, height:150px. Fill: radial gradient from #09BCD4 at 25% to transparent. Gaussian blur: 20px. Light spilling onto the floor from inside.
+
+Layer "Threshold line": A horizontal line at y:1000, from x:520 to x:1400. Stroke: 2px, colour #09BCD4 at 50% opacity. The literal threshold you're stepping across.
+
+The person is framed by the doorway — the architecture gives them gravitas. They appear to be standing at the entrance to a Space. The framing is cinematic: wide, inviting, with depth.
+
+---
+
+PAGE 3: "Confluence — Light"
+
+CONCEPT: "Coordinate. Co-create. Collaborate." Three distinct flowing streams that converge into one. Each stream is a different visual weight, representing different actors (public, private, civil society). Where they meet — at the centre — something new emerges.
+
+Frame: 1920 × 1080 px. Background: linear gradient 180° from #FFFFFF (top) to #F1F5F9 (bottom).
+
+Layer "Stream 1 — Public": A wide flowing ribbon entering from the top-left corner. Path curves from (-50, -50) through (300, 300) to (750, 540) where it joins the confluence. Width: 200px, tapering to 120px at confluence. Fill: linear gradient along path from #1D384A at 75% to #1D384A at 50%. Gaussian blur: 6px on edges only (feathered edges, solid core).
+
+Layer "Stream 2 — Private": A flowing ribbon from the bottom-left. Path: (-50, 1130) through (350, 800) to (750, 580). Width: 160px tapering to 100px. Fill: linear gradient along path from #2D546A at 65% to #2D546A at 45%.  Gaussian blur: 6px edges.
+
+Layer "Stream 3 — Civil": A flowing ribbon from the top-right. Path: (1970, -50) through (1600, 300) to (1150, 540). Width: 140px tapering to 90px. Fill: linear gradient along path from #0787A5 at 60% to #0787A5 at 40%. Gaussian blur: 6px edges.
+
+Layer "Confluence point": Where the three streams meet (roughly x:900, y:560), they merge into a broader, unified flow. An ellipse at x:950, y:560, width:350px, height:250px. Fill: radial gradient from #09BCD4 at 55% (centre) to transparent (edge). Gaussian blur: 25px. This is where the magic happens — the co-creation point.
+
+Layer "Outflow": A broad ribbon flowing from the confluence toward the bottom-right. Path from (1000, 600) through (1400, 800) to (1970, 1000). Width: 280px. Fill: linear gradient from #09BCD4 at 40% to #0787A5 at 25%. Gaussian blur: 10px. What emerges is bigger than what went in.
+
+Layer "Particles": 5–6 small circles (8–12px) scattered around the confluence point. Fill: #09BCD4 at 60% opacity. Gaussian blur: 3px. Energy and activity at the meeting point.
+
+The person sits near the confluence — where coordination becomes co-creation becomes collaboration. The three inputs make the person look like a facilitator at the centre of converging forces.
+
+---
+
+PAGE 4: "The Commons — Light"
+
+CONCEPT: "Shared workspaces for shared challenges." An aerial/plan view of a shared space — like looking down at a table, a plaza, or a commons. Multiple areas of activity connected by open ground. The metaphor is the Dutch tradition of shared public space — the plein, the commons.
+
+Frame: 1920 × 1080 px. Background: solid #F1F5F9.
+
+Layer "Ground plane": Full frame rectangle. Fill: solid #F1F5F9.
+
+Layer "Zone A": A large rounded rectangle, top-left area. Position: x:60, y:60, width:440, height:380. Corner radius: 40px. Fill: solid #1D384A at 12% opacity. Stroke: 2px, #1D384A at 25% opacity. A workspace — a zone of activity.
+
+Layer "Zone B": A rounded rectangle, bottom-left. Position: x:80, y:620, width:360, height:340. Corner radius: 40px. Fill: solid #2D546A at 10% opacity. Stroke: 2px, #2D546A at 20% opacity.
+
+Layer "Zone C": A rounded rectangle, top-right. Position: x:1440, y:80, width:420, height:360. Corner radius: 40px. Fill: solid #0787A5 at 10% opacity. Stroke: 2px, #0787A5 at 20% opacity.
+
+Layer "Zone D": A rounded rectangle, bottom-right. Position: x:1480, y:640, width:380, height:320. Corner radius: 40px. Fill: solid #1D384A at 8% opacity. Stroke: 2px, #1D384A at 15% opacity.
+
+Layer "Connection paths": Thin lines (stroke 2px, #09BCD4 at 40% opacity) connecting the zones through the centre — from Zone A's right edge to Zone C's left edge, from Zone B's top to Zone A's bottom, from Zone C's bottom to Zone D's top. Lines have rounded caps and gentle curves (cubic bezier). They form a subtle network through the open centre.
+
+Layer "Centre marker": A circle at x:960, y:540, diameter 80px. Fill: radial gradient from #09BCD4 at 35% to transparent. Stroke: 2px, #09BCD4 at 50%. This is the commons — the shared centre where all zones connect.
+
+Layer "Activity dots": 3–4 small filled circles (10–14px) positioned along the connection paths. Fill: #09BCD4 at 55%. These suggest activity, data flowing between spaces.
+
+The person occupies the commons — the shared centre. The surrounding zones are the workspaces; the lines between them pass through where the person sits. They are literally at the crossroads of collaboration.
+
+---
+
+PAGE 5: "Roots — Light"
+
+CONCEPT: "European. Steward-owned. Open-source." Something built to last — deep foundations, permanence, trust. Inspired by the root systems of old European trees: what you see above ground is supported by something vast and stable below the surface. The platform is infrastructure you can count on.
+
+Frame: 1920 × 1080 px. Background: linear gradient 180° from #FFFFFF (top) to #F1F5F9 (bottom).
+
+Layer "Horizon": A subtle horizontal divide at y:580. A line from x:0 to x:1920, stroke 1px, #1D384A at 15% opacity. Above is sky; below is earth. The person stands at the surface.
+
+Layer "Root 1": A thick organic path starting at x:800, y:580, curving downward and leftward to x:200, y:1050. Width tapers from 60px at top to 20px at end. Fill: linear gradient along path from #1D384A at 55% (top) to #1D384A at 30% (end). Gaussian blur: 4px on edges.
+
+Layer "Root 2": A thick path from x:1000, y:580, curving down and right to x:1700, y:1000. Width: 50px tapering to 16px. Fill: linear gradient from #2D546A at 50% to #2D546A at 25%. Gaussian blur: 4px edges.
+
+Layer "Root 3": A path from x:900, y:580 going straight down, branching slightly. To x:850, y:1050. Width: 40px tapering to 12px. Fill: solid #0787A5 at 40%. Gaussian blur: 3px edges.
+
+Layer "Root 4 & 5": Two thinner roots branching off Root 1 and Root 2. Width: 20px tapering to 8px. Fill: #2D546A at 30%. Gaussian blur: 3px.
+
+Layer "Crown glow": An ellipse above the horizon, centred at x:920, y:350. Width:500px, height:350px. Fill: radial gradient from #09BCD4 at 20% to transparent. Gaussian blur: 50px. What the roots support — growth, vitality above ground.
+
+Layer "Earth tone": A rectangle from x:0, y:580 to x:1920, y:1080. Fill: linear gradient 180° from #1D384A at 5% (top) to #1D384A at 12% (bottom). The ground layer — subtle but present.
+
+Layer "Surface nodes": 3 small circles at y:580 (at x:800, x:900, x:1000), diameter 12px. Fill: #09BCD4 at 50%. Where roots meet surface — points of connection, access points to the deep infrastructure.
+
+The person stands at the surface, with the root system spreading beneath them. The message: you're supported by something deep, permanent, and trustworthy. This isn't a startup that might disappear — it's rooted.
+
+---
+
+PAGE 6: "The Bridge — Dark"
+
+Frame: 1920 × 1080 px. Background: solid #0F1F2A.
+
+Layer "Entity Left": Same shape. Fill: linear gradient 180° from #2D546A at 95% to #1D384A at 85%.
+
+Layer "Entity Right": Same shape. Fill: linear gradient 180° from #1D384A at 90% to #2D546A at 95%.
+
+Layer "Bridge Glow": Same shape. Fill: linear gradient 90° — #09BCD4 at 60% (left) to 80% (centre) to 60% (right). Gaussian blur: 40px. Much more luminous on dark — the bridge GLOWS.
+
+Layer "Bridge Core": Same. Fill: #09BCD4 at 90%. Gaussian blur: 12px.
+
+Layer "Light Spill Top": Same. Fill: radial gradient from #09BCD4 at 30% to transparent. Gaussian blur: 50px.
+
+Layer "Light Spill Bottom": Same. Fill: radial gradient from #0787A5 at 25% to transparent. Gaussian blur: 50px.
+
+Layer "Entity edge glow": Two thin vertical lines — one at x:420 (right edge of Entity Left), one at x:1500 (left edge of Entity Right). Height: 800px centred vertically. Stroke: 2px, #09BCD4 at 40%. Gaussian blur: 4px. The edges of the organisations facing the bridge catch its light.
+
+The dark version makes the bridge the star — glowing cyan connection between two solid dark forms. Dramatic, confident, alive.
+
+---
+
+PAGE 7: "The Threshold — Dark"
+
+Frame: 1920 × 1080 px. Background: solid #0F1F2A.
+
+Layer "Wall Left": Same shape. Fill: solid #1D384A at 95%.
+
+Layer "Wall Right": Same shape. Fill: solid #1D384A at 95%.
+
+Layer "Lintel": Same. Fill: solid #1D384A at 90%.
+
+Layer "Reveal Left": Same. Fill: linear gradient from #2D546A at 70% to #0787A5 at 30%. The reveal catches light on dark.
+
+Layer "Reveal Right": Same. Fill: linear gradient from #2D546A at 70% to #0787A5 at 30%.
+
+Layer "Interior Light": Same ellipse. Fill: radial gradient from #09BCD4 at 50% (centre) to #0787A5 at 25% (middle) to transparent (edge). Gaussian blur: 30px. On dark, the Space inside glows cyan — inviting, warm, clearly a place worth entering.
+
+Layer "Floor reflection": Same. Fill: radial gradient from #09BCD4 at 35% to transparent. Gaussian blur: 20px.
+
+Layer "Threshold line": Same. Stroke: 2px, #09BCD4 at 70%.
+
+Layer "Ambient": A full-frame rectangle. Fill: radial gradient from #1D384A at 0% (centre) to #0F1F2A at 30% (edges). Adds subtle vignette.
+
+Cinematic. The doorway to a Space glows with cyan light against deep dark walls. The person stands framed at the threshold.
+
+---
+
+PAGE 8: "Confluence — Dark"
+
+Frame: 1920 × 1080 px. Background: linear gradient 180° from #0F1F2A (top) to #1D384A (bottom).
+
+Layer "Stream 1": Same path. Fill: linear gradient from #2D546A at 70% to #2D546A at 45%.
+
+Layer "Stream 2": Same path. Fill: linear gradient from #1D384A at 75% to #1D384A at 50%.
+
+Layer "Stream 3": Same path. Fill: linear gradient from #0787A5 at 55% to #0787A5 at 35%.
+
+Layer "Confluence point": Same. Fill: radial gradient from #09BCD4 at 70% to transparent. Gaussian blur: 25px. Brighter on dark — the moment of creation luminates.
+
+Layer "Outflow": Same. Fill: linear gradient from #09BCD4 at 50% to #0787A5 at 30%.
+
+Layer "Particles": Same positions. Fill: #09BCD4 at 75%. Gaussian blur: 3px.
+
+Layer "Stream edges": Thin glowing lines (1px, #09BCD4 at 30%) along the top edge of each stream. Gives them a lit-edge feeling against the dark background.
+
+Three forces converge and something luminous emerges. The person is at the centre of that energy.
+
+---
+
+PAGE 9: "The Commons — Dark"
+
+Frame: 1920 × 1080 px. Background: solid #0F1F2A.
+
+Layer "Zone A": Same position. Fill: solid #1D384A at 40%. Stroke: 1.5px, #09BCD4 at 20%.
+
+Layer "Zone B": Same position. Fill: solid #1D384A at 35%. Stroke: 1.5px, #0787A5 at 18%.
+
+Layer "Zone C": Same position. Fill: solid #2D546A at 30%. Stroke: 1.5px, #09BCD4 at 20%.
+
+Layer "Zone D": Same position. Fill: solid #1D384A at 30%. Stroke: 1.5px, #0787A5 at 15%.
+
+Layer "Connection paths": Same paths. Stroke: 2px, #09BCD4 at 50%.
+
+Layer "Centre marker": Same. Fill: radial gradient from #09BCD4 at 50% to transparent. Stroke: 2px, #09BCD4 at 60%.
+
+Layer "Activity dots": Same. Fill: #09BCD4 at 70%.
+
+Layer "Zone glow": Inside each zone, a small radial glow — ellipse filling 50% of the zone, centred within it. Fill: radial gradient from #09BCD4 at 8% to transparent. Suggests activity inside each workspace.
+
+The commons at night — workspaces glow with internal activity, paths between them lit in cyan. Feels like a city seen from above.
+
+---
+
+PAGE 10: "Roots — Dark"
+
+Frame: 1920 × 1080 px. Background: linear gradient 180° from #1D384A (top) to #0F1F2A (bottom).
+
+Layer "Horizon": Same. Stroke: 1px, #F1F5F9 at 12%.
+
+Layer "Root 1": Same path. Fill: linear gradient from #2D546A at 65% to #2D546A at 40%.
+
+Layer "Root 2": Same path. Fill: linear gradient from #1D384A at 70% to #2D546A at 40%.
+
+Layer "Root 3": Same path. Fill: solid #0787A5 at 50%.
+
+Layer "Root 4 & 5": Same. Fill: #2D546A at 40%.
+
+Layer "Crown glow": Same. Fill: radial gradient from #09BCD4 at 35% to transparent. Gaussian blur: 50px. Stronger on dark — the growth above ground shines.
+
+Layer "Earth tone": Same rectangle below horizon. Fill: linear gradient from #0F1F2A at 20% to #0F1F2A at 40%.
+
+Layer "Surface nodes": Same. Fill: #09BCD4 at 65%. Glow: add a second circle behind each, 24px diameter, #09BCD4 at 20%, blur 6px.
+
+Layer "Root veins": Very thin lines (0.5px, #09BCD4 at 20%) running along the centre of each root. The internal life of the system — open source, transparent, you can see how it works.
+
+Deep, permanent, trustworthy. The infrastructure glows from within — open-source means you can see the veins. What's above ground is supported by something vast below.

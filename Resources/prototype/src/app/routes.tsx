@@ -12,6 +12,7 @@ import { SpaceSettingsPage } from "./pages/SpaceSettingsPage";
 import SubspacePage from "./pages/SubspacePage";
 import SubspaceSettingsPage from "./pages/SubspaceSettingsPage";
 import UserProfilePage from "./pages/UserProfilePage";
+import UserSettingsPage from "./pages/UserSettingsPage";
 import UserAccountPage from "./pages/UserAccountPage";
 import UserProfileSettingsPage from "./pages/UserProfileSettingsPage";
 import UserMembershipPage from "./pages/UserMembershipPage";
@@ -35,6 +36,8 @@ import AuthPageV3 from "./pages/AuthPageV3";
 import PackSettingsPage from "./pages/PackSettingsPage";
 import TemplateSettingsPage from "./pages/TemplateSettingsPage";
 import VCProfilePage from "./pages/VCProfilePage";
+import OrgProfilePage from "./pages/OrgProfilePage";
+import OrgSettingsPage from "./pages/OrgSettingsPage";
 import ForumPage from "./pages/ForumPage";
 import InnovationHubPage from "./pages/InnovationHubPage";
 import InnovationHubSettingsPage from "./pages/InnovationHubSettingsPage";
@@ -93,23 +96,20 @@ export const router = createBrowserRouter([
 
           /* ─── Virtual Contributor Routes ─── */
           { path: "vc/:vcSlug", Component: VCProfilePage },
+
+          /* ─── Organization Routes ─── */
+          { path: "organization/:orgSlug", Component: OrgProfilePage },
+          {
+            path: "organization/:orgSlug/settings",
+            element: <Navigate to="profile" replace />,
+          },
+          { path: "organization/:orgSlug/settings/:tab", Component: OrgSettingsPage },
+
           {
             path: "user/:userSlug/settings",
             element: <Navigate to="profile" replace />,
           },
-          { path: "user/:userSlug/settings/profile", Component: UserProfileSettingsPage },
-          { path: "user/:userSlug/settings/account", Component: UserAccountPage },
-          { path: "user/:userSlug/settings/membership", Component: UserMembershipPage },
-          { path: "user/:userSlug/settings/organizations", Component: UserOrganizationsPage },
-          { path: "user/:userSlug/settings/notifications", Component: UserNotificationsPage },
-          {
-            path: "user/:userSlug/settings/general",
-            element: <UserGenericSettingsPage title="General Settings" />,
-          },
-          {
-            path: "user/:userSlug/settings/*",
-            element: <UserGenericSettingsPage title="Account Settings" />,
-          },
+          { path: "user/:userSlug/settings/:tab", Component: UserSettingsPage },
 
           /* 404 catch-all (within MainLayout) */
           { path: "*", Component: NotFoundPage },

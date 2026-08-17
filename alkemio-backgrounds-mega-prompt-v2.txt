@@ -1,0 +1,228 @@
+You are designing video call backgrounds for Alkemio — a European, steward-owned, open-source platform for collaboration between organisations on complex public challenges. The positioning line is "Collaboration in the spaces between organisations." These will be used on Microsoft Teams calls with Dutch public-sector partners. They should feel premium, modern, and confident — not generic corporate, not startup-noisy. The logo will be placed manually; do not include text or logos.
+
+These are artistic, visually rich compositions. Use bold gradients, saturated colour, layered depth, and confident shapes. The palette is built from Alkemio's brand:
+- INK (deep navy): #1D384A
+- CYAN (brand accent): #09BCD4
+- CYAN-DEEP: #0787A5
+- SLATE: #2D546A
+- TINT: #F1F5F9
+
+Key constraints: The vertical centre band (roughly x:580–1340) should stay relatively open (a person sits there), and the bottom-left corner (x:0–400, y:880–1080) should be a calm zone for the logo. Beyond that, be bold.
+
+Create a Figma file with 10 pages. Pages 1–5 are light variants, pages 6–10 are dark variants.
+
+---
+
+PAGE 1: "Aurora — Light"
+
+Frame: 1920 × 1080 px.
+
+Background: solid #F1F5F9.
+
+Layer "Wash Base": A full-frame rectangle. Fill: linear gradient 160° — #FFFFFF at 0%, #E8F4F8 at 50%, #F1F5F9 at 100%.
+
+Layer "Flow 1": A large organic blob shape (like a stretched, melted ellipse — think lava lamp). Positioned at the top-right: centre x:1500, y:200. Width ~900px, height ~500px. Fill: linear gradient 45° from #09BCD4 at 60% opacity to #0787A5 at 40% opacity. Gaussian blur 60px. The shape should have irregular, smooth edges — not a perfect ellipse.
+
+Layer "Flow 2": Another organic blob. Positioned at bottom-left: centre x:350, y:850. Width ~700px, height ~450px. Fill: linear gradient 200° from #2D546A at 50% opacity to #1D384A at 35% opacity. Gaussian blur 50px.
+
+Layer "Flow 3": A thin, elongated organic streak (like a ribbon or aurora band). Runs diagonally from upper-left (x:100, y:300) to lower-right (x:1800, y:700). Width varies from 80px to 200px along its length. Fill: linear gradient along its length from #09BCD4 at 30% opacity to #0787A5 at 15% opacity. Gaussian blur 30px.
+
+Layer "Highlight": A small ellipse at x:1600, y:150. Width 300px, height 200px. Fill: radial gradient from #09BCD4 at 40% to transparent. Gaussian blur 40px. Blend mode Screen.
+
+The composition sweeps colour from top-right toward bottom-left, with the centre staying open and breathable. The flows overlap at the edges creating depth.
+
+---
+
+PAGE 2: "Terrain — Light"
+
+Frame: 1920 × 1080 px.
+
+Background: linear gradient 180° from #FFFFFF (top) to #E2EDF2 (bottom).
+
+This concept uses layered, curved horizontal bands — like a topographic cross-section or abstract hills — stacked from bottom to top with decreasing opacity, creating depth and a sense of landscape.
+
+Layer "Hill 1" (foreground, bottom): A shape filling the bottom portion of the frame. Top edge is a smooth, gentle wave curve (cubic bezier) starting at (0, 820), peaking at around (500, 780), dipping to (960, 850), rising to (1400, 790), ending at (1920, 830). Bottom edge is the frame bottom. Fill: solid #1D384A at 85% opacity.
+
+Layer "Hill 2": Top edge is a wave curve approximately 100px above Hill 1: (0, 720), (400, 680), (900, 730), (1500, 670), (1920, 710). Extends down to frame bottom. Fill: solid #2D546A at 60% opacity.
+
+Layer "Hill 3": Top edge wave: (0, 600), (350, 560), (800, 610), (1300, 550), (1920, 590). Fill: solid #0787A5 at 35% opacity.
+
+Layer "Hill 4" (most distant): Top edge wave: (0, 480), (500, 450), (1000, 490), (1600, 440), (1920, 470). Fill: solid #09BCD4 at 20% opacity.
+
+Layer "Sky glow": Ellipse at x:960, y:200, width 1200px, height 500px. Fill: radial gradient from #09BCD4 at 12% opacity to transparent. Gaussian blur 80px.
+
+The person sits in the open sky area. The layered hills give a sense of shared landscape — "common ground" — with rich colour and depth but all weight at the bottom half.
+
+---
+
+PAGE 3: "Mesh — Light"
+
+Frame: 1920 × 1080 px.
+
+This is a modern mesh gradient — multiple overlapping colour fields creating a rich, vibrant, blended surface (think Apple wallpaper / Linear brand aesthetic).
+
+Background: solid #FFFFFF.
+
+Layer "Mesh A": Large ellipse, centre x:300, y:200. Width 1000px, height 800px. Fill: radial gradient from #09BCD4 at 50% opacity (centre) to transparent (edge). Gaussian blur 120px.
+
+Layer "Mesh B": Large ellipse, centre x:1650, y:350. Width 900px, height 700px. Fill: radial gradient from #1D384A at 45% opacity (centre) to transparent (edge). Gaussian blur 100px.
+
+Layer "Mesh C": Large ellipse, centre x:1200, y:900. Width 1100px, height 600px. Fill: radial gradient from #0787A5 at 40% opacity (centre) to transparent (edge). Gaussian blur 130px.
+
+Layer "Mesh D": Large ellipse, centre x:200, y:800. Width 800px, height 500px. Fill: radial gradient from #2D546A at 35% opacity (centre) to transparent (edge). Gaussian blur 90px.
+
+Layer "Bright spot": Ellipse, centre x:500, y:300. Width 400px, height 400px. Fill: radial gradient from #FFFFFF at 60% opacity to transparent. Gaussian blur 60px. This creates a luminous break in the mesh.
+
+The mesh blends smoothly across the frame. The centre area (where the person sits) should be lighter and less saturated than the edges due to the positioning of the mesh nodes away from centre. The overall effect is lush and modern.
+
+---
+
+PAGE 4: "Planes — Light"
+
+Frame: 1920 × 1080 px.
+
+Overlapping geometric planes at different angles, creating an architectural sense of depth and open space. Bold, confident shapes.
+
+Background: solid #F1F5F9.
+
+Layer "Plane 1": A large rectangle, 1400 × 600px, centred at x:400, y:300. Rotation: -6°. Fill: linear gradient 90° from #1D384A at 70% opacity (left) to #1D384A at 30% opacity (right). Corner radius: 16px.
+
+Layer "Plane 2": A rectangle, 1200 × 500px, centred at x:1550, y:750. Rotation: 4°. Fill: linear gradient 270° from #0787A5 at 50% opacity (left) to #09BCD4 at 25% opacity (right). Corner radius: 16px.
+
+Layer "Plane 3": A rectangle, 800 × 400px, centred at x:250, y:800. Rotation: -3°. Fill: solid #2D546A at 40% opacity. Corner radius: 12px.
+
+Layer "Accent stripe": A thin rectangle, 1920 × 6px, centred at y:540, full width. Fill: linear gradient 90° from transparent (left 20%) to #09BCD4 at 60% opacity (centre) to transparent (right 20%). This cuts across the composition as a horizontal datum.
+
+Layer "Shadow": Under each plane, a subtle drop shadow — offset y:8px, blur 24px, colour #1D384A at 15% opacity.
+
+The planes overlap at the frame edges but the centre remains open. The accent stripe ties the composition together. Reads as "open infrastructure" — architectural, structured, but airy.
+
+---
+
+PAGE 5: "Tide — Light"
+
+Frame: 1920 × 1080 px.
+
+Flowing, organic curves that sweep across the frame — like currents of water or ribbons of wind. Multiple layers create rhythm and movement.
+
+Background: linear gradient 135° from #FFFFFF (top-left) to #EDF5F7 (bottom-right).
+
+Layer "Current 1": A wide flowing ribbon shape. Path starts at (-100, 900), curves through (400, 700), (960, 750), (1500, 600), ends at (2020, 650). Width of the ribbon: ~180px. Fill: linear gradient along path from #1D384A at 70% opacity to #2D546A at 40% opacity. Gaussian blur 8px.
+
+Layer "Current 2": A flowing ribbon. Path: (-100, 700), (300, 550), (800, 600), (1300, 450), (1920, 500). Width: ~140px. Fill: linear gradient along path from #0787A5 at 55% opacity to #09BCD4 at 30% opacity. Gaussian blur 6px.
+
+Layer "Current 3": A thinner ribbon. Path: (0, 500), (500, 400), (1100, 450), (1700, 350), (1920, 370). Width: ~80px. Fill: solid #09BCD4 at 25% opacity. Gaussian blur 12px.
+
+Layer "Current 4": Wide, faint ribbon. Path: (0, 1000), (600, 880), (1200, 920), (1920, 850). Width: ~250px. Fill: solid #1D384A at 20% opacity. Gaussian blur 20px.
+
+Layer "Foam highlight": Small ellipses scattered along Current 1 (3-4 of them, each ~60×40px). Fill: #FFFFFF at 40% opacity. Gaussian blur 15px. These create luminous highlights on the flow.
+
+The currents sweep from left to right with a gentle upward drift, creating a sense of movement and connection. They stay in the lower half and edges, leaving the upper-centre open for the person.
+
+---
+
+PAGE 6: "Aurora — Dark"
+
+Frame: 1920 × 1080 px.
+
+Background: solid #1D384A.
+
+Layer "Deep base": Full-frame rectangle. Fill: linear gradient 160° from #1D384A at 100% (top-left) to #0F1F2A at 100% (bottom-right).
+
+Layer "Flow 1": Same organic blob as Page 1, top-right area. Fill: linear gradient 45° from #09BCD4 at 70% opacity to #0787A5 at 50% opacity. Gaussian blur 60px.
+
+Layer "Flow 2": Same blob shape, bottom-left. Fill: linear gradient 200° from #2D546A at 65% opacity to #1D384A at 80% opacity. Gaussian blur 50px.
+
+Layer "Flow 3": Same diagonal ribbon/streak. Fill: linear gradient from #09BCD4 at 45% opacity to #0787A5 at 25% opacity. Gaussian blur 30px.
+
+Layer "Highlight": Same position. Fill: radial gradient from #09BCD4 at 55% to transparent. Gaussian blur 40px. Blend mode Screen.
+
+Layer "Edge glow": A very wide, thin ellipse along the top edge: x:960, y:-50, width:1920, height:200. Fill: radial gradient from #09BCD4 at 20% to transparent. Gaussian blur 40px.
+
+Rich, glowing, dramatic. The cyan luminates against the deep navy like actual northern lights.
+
+---
+
+PAGE 7: "Terrain — Dark"
+
+Frame: 1920 × 1080 px.
+
+Background: linear gradient 180° from #1D384A (top) to #0F1F2A (bottom).
+
+Layer "Hill 1" (foreground): Same wave shape. Fill: solid #0F1F2A at 95% opacity.
+
+Layer "Hill 2": Same wave shape. Fill: solid #1D384A at 80% opacity.
+
+Layer "Hill 3": Same wave. Fill: solid #2D546A at 60% opacity.
+
+Layer "Hill 4" (most distant): Same wave. Fill: solid #0787A5 at 35% opacity.
+
+Layer "Sky glow": Same position. Fill: radial gradient from #09BCD4 at 25% opacity to transparent. Gaussian blur 80px.
+
+Layer "Stars" (optional): 6–8 small circles (3–5px diameter) scattered in the upper portion (above y:400). Fill: #FFFFFF at 20–40% opacity. Gaussian blur 1px. Subtle, not literal.
+
+Dark, moody, layered. The terrain reads as a nighttime landscape with a subtle cyan glow on the horizon.
+
+---
+
+PAGE 8: "Mesh — Dark"
+
+Frame: 1920 × 1080 px.
+
+Background: solid #0F1F2A.
+
+Layer "Mesh A": Same position. Fill: radial gradient from #09BCD4 at 55% opacity to transparent. Gaussian blur 120px.
+
+Layer "Mesh B": Same position. Fill: radial gradient from #2D546A at 60% opacity to transparent. Gaussian blur 100px.
+
+Layer "Mesh C": Same position. Fill: radial gradient from #0787A5 at 50% opacity to transparent. Gaussian blur 130px.
+
+Layer "Mesh D": Same position. Fill: radial gradient from #1D384A at 55% opacity to transparent. Gaussian blur 90px.
+
+Layer "Dark spot": Ellipse at centre x:960, y:540, width 600px, height 600px. Fill: radial gradient from #0F1F2A at 50% to transparent. Gaussian blur 60px. This keeps the centre darker/clearer for the person.
+
+Vibrant, saturated, deep. The mesh glows against the dark canvas — think nebula colours.
+
+---
+
+PAGE 9: "Planes — Dark"
+
+Frame: 1920 × 1080 px.
+
+Background: solid #1D384A.
+
+Layer "Plane 1": Same shape/position. Fill: linear gradient 90° from #0F1F2A at 80% opacity to #1D384A at 50% opacity. Corner radius: 16px.
+
+Layer "Plane 2": Same shape/position. Fill: linear gradient 270° from #09BCD4 at 40% opacity to #0787A5 at 20% opacity. Corner radius: 16px.
+
+Layer "Plane 3": Same shape/position. Fill: solid #2D546A at 50% opacity. Corner radius: 12px.
+
+Layer "Accent stripe": Same position. Fill: linear gradient 90° from transparent to #09BCD4 at 70% opacity to transparent.
+
+Layer "Edge light": Thin glowing line (2px stroke) along the top edge of Plane 2. Colour: #09BCD4 at 60% opacity. Gaussian blur 3px. This gives the plane a lit edge.
+
+Layer "Shadow": Under each plane, drop shadow — offset y:8px, blur 24px, colour #000000 at 30% opacity.
+
+Dark, architectural, with the cyan accents glowing as if lit. Modern and bold.
+
+---
+
+PAGE 10: "Tide — Dark"
+
+Frame: 1920 × 1080 px.
+
+Background: linear gradient 135° from #1D384A (top-left) to #0F1F2A (bottom-right).
+
+Layer "Current 1": Same flowing ribbon. Fill: linear gradient from #2D546A at 80% to #1D384A at 60%. Gaussian blur 8px.
+
+Layer "Current 2": Same ribbon. Fill: linear gradient from #09BCD4 at 60% to #0787A5 at 35%. Gaussian blur 6px.
+
+Layer "Current 3": Same ribbon. Fill: solid #09BCD4 at 35% opacity. Gaussian blur 12px.
+
+Layer "Current 4": Same ribbon. Fill: solid #0F1F2A at 50% opacity. Gaussian blur 20px.
+
+Layer "Glow highlights": Small ellipses along Current 2 (3-4, each ~80×50px). Fill: #09BCD4 at 45% opacity. Gaussian blur 20px. Blend mode Screen. These make the cyan current luminous.
+
+Layer "Depth shadow": Ellipse at x:960, y:540, width 800px, height 600px. Fill: radial gradient from #0F1F2A at 40% to transparent. Gaussian blur 60px. Keeps centre slightly darker/cleared.
+
+Deep, flowing, alive. The cyan currents glow against the navy like bioluminescence.

@@ -37,8 +37,8 @@ export const PACK_NAMES = [
 ];
 
 export const AUTHORS = ["Google Ventures", "Atlassian", "HBR", "Nielsen Norman", "Y Combinator", "Miro", "Figma", "Notion", "Slack", "Salesforce"];
-export const CATEGORIES = ["All", "Subspace", "Collaboration Tool", "Community Guidelines", "Post", "Space", "Whiteboard"];
-export const TEMPLATE_TYPES = ["Subspace", "Collaboration Tool", "Community Guidelines", "Post", "Space", "Whiteboard"];
+export const CATEGORIES = ["All", "Subspace", "Collaboration Tool", "Community Guidelines", "Classification", "Post", "Space", "Whiteboard"];
+export const TEMPLATE_TYPES = ["Subspace", "Collaboration Tool", "Community Guidelines", "Classification", "Post", "Space", "Whiteboard"];
 
 // Generate 30 Packs
 export const TEMPLATE_PACKS = Array.from({ length: 30 }).map((_, i) => ({
@@ -137,6 +137,20 @@ export const INDIVIDUAL_TEMPLATES = Array.from({ length: 100 }).map((_, i) => {
               { name: "Communication Norms", preview: "Use threads for discussions..." },
               { name: "Conflict Resolution", preview: "Escalate to admins if needed..." }
           ]
+      };
+  } else if (type === "Classification") {
+      const classificationVariants = [
+          { name: "UN SDGs", values: ["No Poverty", "Zero Hunger", "Good Health", "Quality Education", "Gender Equality", "Clean Water"] },
+          { name: "Sector", values: ["Energy", "Healthcare", "Education", "Agriculture", "Finance", "Technology"] },
+          { name: "Impact Level", values: ["Local", "Regional", "National", "International"] },
+          { name: "Language", values: ["Dutch", "English", "French", "German", "Spanish"] },
+          { name: "Project Phase", values: ["Discovery", "Design", "Pilot", "Scale", "Completed"] },
+      ];
+      const variant = classificationVariants[i % classificationVariants.length];
+      structure = {
+          classificationName: variant.name,
+          cardinality: i % 2 === 0 ? "multi" : "single",
+          values: variant.values,
       };
   }
 
@@ -380,6 +394,60 @@ export const PACK_SPECIFIC_TEMPLATES = [
         ]
     },
     instructions: "<h2>Setting Guidelines</h2><p>Review these rules at the start of the sprint. Post them visibly in the room.</p>"
+  },
+  {
+    id: "temp-cls-1",
+    name: "UN Sustainable Development Goals",
+    description: "The 17 UN SDGs for classifying space impact areas and alignment.",
+    type: "Classification",
+    category: "Classification",
+    previewContent: null,
+    tags: ["SDG", "Impact", "UN"],
+    usageCount: 842,
+    author: "Alkemio",
+    complexity: "Beginner",
+    structure: {
+        classificationName: "UN Sustainable Development Goals",
+        cardinality: "multi",
+        values: ["SDG 1 – No Poverty", "SDG 2 – Zero Hunger", "SDG 3 – Good Health and Well-Being", "SDG 4 – Quality Education", "SDG 5 – Gender Equality", "SDG 6 – Clean Water and Sanitation", "SDG 7 – Affordable and Clean Energy", "SDG 8 – Decent Work and Economic Growth", "SDG 9 – Industry, Innovation and Infrastructure", "SDG 10 – Reduced Inequalities", "SDG 11 – Sustainable Cities and Communities", "SDG 12 – Responsible Consumption and Production", "SDG 13 – Climate Action", "SDG 14 – Life Below Water", "SDG 15 – Life on Land", "SDG 16 – Peace, Justice and Strong Institutions", "SDG 17 – Partnerships for the Goals"],
+    },
+    instructions: "<h2>Using SDG Classifications</h2><p>Apply this classification to your space to indicate which UN Sustainable Development Goals your work addresses. Select all that apply — most spaces align with 2–4 goals.</p>"
+  },
+  {
+    id: "temp-cls-2",
+    name: "Sector",
+    description: "Industry sector classification for cross-portfolio reporting.",
+    type: "Classification",
+    category: "Classification",
+    previewContent: null,
+    tags: ["Sector", "Industry", "Reporting"],
+    usageCount: 523,
+    author: "VNG Innovation Hub",
+    complexity: "Beginner",
+    structure: {
+        classificationName: "Sector",
+        cardinality: "multi",
+        values: ["Energy", "Healthcare", "Education", "Agriculture", "Finance", "Technology", "Transportation", "Government", "Environment", "Social Services"],
+    },
+    instructions: "<h2>Sector Classification</h2><p>Tag your space with one or more relevant industry sectors. This enables portfolio-level reporting across your organization's spaces.</p>"
+  },
+  {
+    id: "temp-cls-3",
+    name: "Language",
+    description: "Primary language(s) used in this space.",
+    type: "Classification",
+    category: "Classification",
+    previewContent: null,
+    tags: ["Language", "Localization"],
+    usageCount: 312,
+    author: "Alkemio",
+    complexity: "Beginner",
+    structure: {
+        classificationName: "Language",
+        cardinality: "multi",
+        values: ["Dutch", "English", "French", "German", "Spanish", "Portuguese", "Arabic", "Mandarin"],
+    },
+    instructions: "<h2>Language Classification</h2><p>Indicate the primary language(s) used in this space to help users find spaces in their preferred language.</p>"
   }
 ];
 

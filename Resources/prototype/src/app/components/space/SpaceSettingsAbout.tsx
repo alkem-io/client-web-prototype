@@ -5,7 +5,7 @@ import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
-import { X, Plus, Type, MapPin, Image, FileText, Tag, Link2, Info, Check, Upload, Crop, Minus } from "lucide-react";
+import { X, Plus, Type, MapPin, Image, FileText, Tag, Link2, Info, Check, Upload, Crop, Minus, Tags, MoreHorizontal, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
@@ -16,6 +16,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog";
+import { Badge } from "@/app/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/app/components/ui/dropdown-menu";
+import {
+  ClassificationPickerDialog,
+  AppliedClassification,
+} from "@/app/components/classifications/ClassificationPickerDialog";
 
 // Mock data for initial state
 const INITIAL_DATA = {
@@ -39,6 +50,29 @@ export function SpaceSettingsAbout() {
   const [tagInput, setTagInput] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
+  // Classifications state
+  const [classifications, setClassifications] = useState<AppliedClassification[]>([
+    {
+      id: "cls-1",
+      templateId: "ct-sdg",
+      templateName: "UN Sustainable Development Goals",
+      selectedValues: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"],
+      cardinality: "multi",
+      allValues: [],
+    },
+  ]);
+  const [savedClassifications, setSavedClassifications] = useState<AppliedClassification[]>([
+    {
+      id: "cls-1",
+      templateId: "ct-sdg",
+      templateName: "UN Sustainable Development Goals",
+      selectedValues: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"],
+      cardinality: "multi",
+      allValues: [],
+    },
+  ]);
+  const [classificationPickerOpen, setClassificationPickerOpen] = useState(false);
+
   // Global dirty check
   const isDirty =
     formData.name !== savedData.name ||
@@ -49,18 +83,21 @@ export function SpaceSettingsAbout() {
     formData.why !== savedData.why ||
     formData.who !== savedData.who ||
     JSON.stringify(formData.tags) !== JSON.stringify(savedData.tags) ||
-    JSON.stringify(formData.references) !== JSON.stringify(savedData.references);
+    JSON.stringify(formData.references) !== JSON.stringify(savedData.references) ||
+    JSON.stringify(classifications) !== JSON.stringify(savedClassifications);
 
   const handleSave = () => {
     setIsSaving(true);
     setTimeout(() => {
       setSavedData({ ...formData });
+      setSavedClassifications([...classifications]);
       setIsSaving(false);
     }, 800);
   };
 
   const handleDiscard = () => {
     setFormData({ ...savedData });
+    setClassifications([...savedClassifications]);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -269,6 +306,99 @@ export function SpaceSettingsAbout() {
           </div>
         </SettingsSection>
 
+        {/* ── Classifications ── */}
+        <SettingsSection
+          title="Classifications"
+          icon={<Tags className="w-4 h-4" />}
+          iconColor="purple"
+          defaultOpen={true}
+        >
+          <div className="space-y-4">
+            <p className="text-caption text-muted-foreground">
+              Classify your space with structured vocabularies (e.g. SDGs, Sector) for discoverability and reporting.
+            </p>
+
+            {/* Applied Classifications */}
+            {classifications.length > 0 && (
+              <div className="space-y-3">
+                {classifications.map((cls) => (
+                  <div
+                    key={cls.id}
+                    className="border border-border rounded-lg p-4 bg-background"
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-md bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center shrink-0">
+                          <Tags className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <div>
+                          <h4 className="text-body font-medium leading-tight">{cls.templateName}</h4>
+                          <p className="text-[11px] text-muted-foreground">
+                            {cls.cardinality === "multi" ? "Multi-select" : "Single-select"} · {cls.selectedValues.length} selected
+                          </p>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <IconButton variant="ghost" tooltipLabel="Options" className="h-7 w-7">
+                            <MoreHorizontal className="w-3.5 h-3.5" />
+                          </IconButton>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => {/* edit values */}}>
+                            <Pencil className="w-4 h-4 mr-2" /> Edit Values
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => setClassifications((prev) => prev.filter((c) => c.id !== cls.id))}
+                          >
+                            <X className="w-4 h-4 mr-2" /> Remove
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {cls.selectedValues.map((val) => (
+                        <Badge
+                          key={val}
+                          variant="secondary"
+                          className="text-caption font-normal gap-1 pl-2 pr-1.5 py-0.5"
+                        >
+                          {val}
+                          <button
+                            onClick={() => {
+                              setClassifications((prev) =>
+                                prev.map((c) =>
+                                  c.id === cls.id
+                                    ? { ...c, selectedValues: c.selectedValues.filter((v) => v !== val) }
+                                    : c
+                                )
+                              );
+                            }}
+                            className="text-muted-foreground hover:text-foreground ml-0.5"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Add button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setClassificationPickerOpen(true)}
+              className="gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Classification
+            </Button>
+          </div>
+        </SettingsSection>
+
         {/* ── References ── */}
         <SettingsSection
           title="References & Links"
@@ -390,6 +520,21 @@ export function SpaceSettingsAbout() {
         isSaving={isSaving}
         onSave={handleSave}
         onDiscard={handleDiscard}
+      />
+
+      {/* Classification Picker Dialog */}
+      <ClassificationPickerDialog
+        open={classificationPickerOpen}
+        onOpenChange={setClassificationPickerOpen}
+        onAdd={(cls) => setClassifications((prev) => [...prev, cls])}
+        onGoToTemplates={() => {
+          // In a real app this would navigate to the Templates tab
+          window.location.hash = "";
+          const path = window.location.pathname.replace(/\/about$/, "/templates");
+          window.history.pushState({}, "", path);
+          window.location.reload();
+        }}
+        existingClassificationIds={classifications.map((c) => c.templateId)}
       />
     </>
   );

@@ -24,6 +24,12 @@ export function ContributionPostCard({
   onClick,
   className,
 }: ContributionPostCardProps) {
+  const handleClick = (event: React.MouseEvent) => {
+    if (!onClick) return;
+    event.stopPropagation();
+    onClick();
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!onClick) return;
     if (event.key === 'Enter' || event.key === ' ') {
@@ -42,7 +48,7 @@ export function ContributionPostCard({
         'flex flex-col h-[180px]',
         className
       )}
-      onClick={onClick}
+      onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
       <p className="text-card-title text-foreground truncate">{title}</p>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Plus, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
@@ -6,11 +6,13 @@ import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
+import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
 import { ContributionWhiteboardCard } from "@/app/components/contribution/ContributionWhiteboardCard";
 import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
 import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
+import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 
 // Whiteboard / visual preview images
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
@@ -26,7 +28,7 @@ const mg4 = "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?auto=f
 
 interface PostWithTags extends PostCardData {
   tags: string[];
-  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards';
+  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'tasks';
 }
 
 const INITIAL_POSTS: PostWithTags[] = [
@@ -180,19 +182,19 @@ const INITIAL_POSTS: PostWithTags[] = [
       commentCount: 7,
     },
 
-    // 9. Post with a call for posts
+    // 9. Post with tasks (task board)
     {
       id: "kb-09",
       type: "text",
       tags: ["Community", "Education"],
-      contributionType: "posts",
+      contributionType: "tasks",
       author: {
         name: "James Wilson",
         role: "Community Lead",
         avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
-      title: "Share: Your Neighbourhood's Transition Experience",
-      snippet: "Tell us about your community's journey. What challenges did you face? What support did you receive? Your stories help us design better programs.",
+      title: "Community Outreach Programme — Task Tracker",
+      snippet: "Track all tasks for the community outreach programme. Add new tasks and drag them between columns as they progress.",
       timestamp: "2 months ago",
       commentCount: 18,
     },
@@ -717,6 +719,7 @@ const INITIAL_POSTS: PostWithTags[] = [
 export function SpaceKnowledgeFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
+  const [contributionsDialogPostId, setContributionsDialogPostId] = useState<string | null>(null);
   const [posts, setPosts] = useState<PostWithTags[]>(INITIAL_POSTS);
   const [collapseEnabled, setCollapseEnabled] = useState(() => {
     const stored = localStorage.getItem('alkemio-collapse-posts');
@@ -753,164 +756,264 @@ export function SpaceKnowledgeFeed() {
     return () => window.removeEventListener("open-add-post-modal", handler);
   }, []);
 
+  /**
+   * A callout's contribution cards, built once and rendered twice — collapsed
+   * in the feed, and in full inside ContributionsDialog. One source means the
+   * dialog can never drift from the preview.
+   */
+  function contributionCardsFor(post: PostWithTags):
+    | { typeLabel: string; addLabel: string; layout: 'grid' | 'list'; total: number; cards: ReactNode[] }
+    | undefined {
+    switch (post.contributionType) {
+      case 'links':
+        return {
+          typeLabel: 'Links & Files',
+          addLabel: '+ Add Link or File',
+          layout: 'list',
+          total: 9,
+          cards: [
+            <ContributionLinkCard key="c1"
+              title="IEEE Smart Grid Standards"
+              description="Comprehensive standards for smart grid interoperability and communication protocols"
+            />,
+            <ContributionLinkCard key="c2"
+              title="Energy Transition Toolkit.pdf"
+              description="A practical guide for municipalities planning renewable transitions"
+              isFile={true}
+            />,
+            <ContributionLinkCard key="c3"
+              title="EU Clean Energy Package"
+              description="European Commission clean energy legislative package overview"
+            />,
+            <ContributionLinkCard key="c-l4"
+              title="Municipal Energy Benchmarking Tool"
+              description="Compare consumption across comparable municipalities using open CBS data"
+            />,
+            <ContributionLinkCard key="c-l5"
+              title="Retrofit Cost Database 2026.xlsx"
+              description="Per-measure cost ranges collected from 340 completed projects"
+              isFile={true}
+            />,
+            <ContributionLinkCard key="c-l6"
+              title="TenneT Grid Capacity Map"
+              description="Live view of available connection capacity by postcode area"
+            />,
+            <ContributionLinkCard key="c-l7"
+              title="Heat Transition Standard (Dutch)"
+              description="The national standard municipalities must follow when drafting heat plans"
+            />,
+            <ContributionLinkCard key="c-l8"
+              title="Community Energy Legal Templates.zip"
+              description="Cooperative statutes, member agreements and PPA templates"
+              isFile={true}
+            />,
+            <ContributionLinkCard key="c-l9"
+              title="IEA District Heating Case Studies"
+              description="Fifteen European district heating retrofits with outcome data"
+            />
+          ],
+        };
+      case 'posts':
+        return {
+          typeLabel: 'Posts',
+          addLabel: '+ Add Post',
+          layout: 'grid',
+          total: 5,
+          cards: [
+            <ContributionPostCard key="c1"
+              title="Our District's Solar Journey: Year One"
+              author={{ name: "James Wilson" }}
+              createdDate="04/10/2026"
+              description="How we went from scepticism to 40% solar adoption in our neighbourhood through peer education and community financing."
+              tags={["community", "solar", "adoption"]}
+              commentCount={8}
+            />,
+            <ContributionPostCard key="c2"
+              title="Lessons from the Nordic Model"
+              author={{ name: "Priya Sharma" }}
+              createdDate="03/22/2026"
+              description="What we can learn from Denmark and Norway about community ownership and distributed generation."
+              tags={["nordic", "ownership", "research"]}
+              commentCount={5}
+            />,
+            <ContributionPostCard key="c3"
+              title="The Business Case for Municipal Solar"
+              author={{ name: "Nina Petrova" }}
+              createdDate="03/05/2026"
+              description="Financial analysis showing 7-year payback on municipal solar installations with current incentive structures."
+              tags={["finance", "ROI", "municipal"]}
+              commentCount={3}
+            />,
+            <ContributionPostCard key="c4"
+              title="Grid Integration Challenges We Faced"
+              author={{ name: "David Miller" }}
+              createdDate="02/18/2026"
+              description="Technical hurdles we encountered connecting our 2MW community array to the municipal distribution grid."
+              tags={["grid", "technical"]}
+              commentCount={7}
+            />,
+            <ContributionPostCard key="c5"
+              title="Financing Models That Work"
+              author={{ name: "Tom Bradley" }}
+              createdDate="02/01/2026"
+              description="Comparing PPAs, community bonds, and municipal green bonds for funding distributed solar projects."
+              tags={["finance", "bonds", "PPA"]}
+              commentCount={2}
+            />
+          ],
+        };
+      case 'memos':
+        return {
+          typeLabel: 'Memos',
+          addLabel: '+ Add Memo',
+          layout: 'grid',
+          total: 4,
+          cards: [
+            <ContributionMemoCard key="c1"
+              title="Site Assessment Procedure"
+              author="Tom Bradley"
+              markdownContent="## Site Assessment Steps\n\n1. Initial desk review\n2. Solar irradiance analysis\n3. Structural assessment\n4. Grid connection feasibility\n5. Environmental screening\n\n### Required Equipment\n- Drone for aerial survey\n- Irradiance meter\n- Structural testing kit"
+            />,
+            <ContributionMemoCard key="c2"
+              title="Safety Protocols for Installation"
+              author="David Miller"
+              markdownContent="## Safety Protocols\n\n### Before Work Begins\n- [ ] Risk assessment complete\n- [ ] Permits obtained\n- [ ] Team briefing done\n\n### During Installation\n- Hard hats mandatory\n- Harness required above 2m\n- Electrical isolation verified\n\n### Post-Installation\n- Final inspection checklist\n- Commissioning tests"
+            />,
+            <ContributionMemoCard key="c3"
+              title="Commissioning Checklist"
+              author="Sarah Chen"
+              markdownContent="## Commissioning Steps\n\n1. Visual inspection\n2. Electrical testing\n3. Performance verification\n4. Documentation\n5. Handover\n\n### Sign-Off\n- Engineer approval\n- Client acceptance"
+            />,
+            <ContributionMemoCard key="c4"
+              title="Maintenance Schedule Template"
+              author="Alex Contributor"
+              markdownContent="## Quarterly Maintenance\n\n- Panel cleaning\n- Inverter check\n- Wiring inspection\n- Performance data review\n\n## Annual Maintenance\n- Full system audit\n- Thermal imaging\n- Degradation assessment"
+            />
+          ],
+        };
+      case 'whiteboards':
+        return {
+          typeLabel: 'Whiteboards',
+          addLabel: '+ Add Whiteboard',
+          layout: 'grid',
+          total: 6,
+          cards: [
+            <ContributionWhiteboardCard key="c1"
+              title="Rooftop Array Design A"
+              author="David Miller"
+              previewUrl={wb1}
+            />,
+            <ContributionWhiteboardCard key="c2"
+              title="Ground-Mount Concept"
+              author="Tom Bradley"
+              previewUrl={wb2}
+            />,
+            <ContributionWhiteboardCard key="c3"
+              title="Carpark Canopy Layout"
+              author="Alex Contributor"
+              previewUrl={wb3}
+            />,
+            <ContributionWhiteboardCard key="c4"
+              title="Facade Integration Sketch"
+              author="Sarah Chen"
+              previewUrl={wb4}
+            />,
+            <ContributionWhiteboardCard key="c5"
+              title="Community Centre Retrofit"
+              author="Elena Rodriguez"
+              previewUrl={wb1}
+            />,
+            <ContributionWhiteboardCard key="c6"
+              title="Sports Centre Array"
+              author="Michael Chang"
+              previewUrl={wb3}
+            />
+          ],
+        };
+      default:
+        return undefined;
+    }
+  }
+
   // Build contribution previews for each post
   function getContributionPreview(post: PostWithTags) {
     if (!post.contributionType) return undefined;
 
+    const contributions = contributionCardsFor(post);
+    if (contributions) {
+      const { typeLabel, addLabel, layout, total, cards } = contributions;
+      return (
+        <div className="mt-6 space-y-3 pt-6 border-t">
+          <div className="flex items-center justify-between">
+            <span className="text-label font-semibold text-muted-foreground">
+              CONTRIBUTIONS ({total})
+            </span>
+          </div>
+
+          {layout === 'list' ? (
+            <>
+              <div className="space-y-2">{cards}</div>
+              {total > cards.length && (
+                <button className="text-label font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                  +{total - cards.length} MORE
+                </button>
+              )}
+            </>
+          ) : (
+            /* `+N MORE` stays the grid's own inline expansion — it loads more
+               contributions in place at feed level. The link below is a
+               separate affordance that opens the full set in a dialog. */
+            <ContributionGrid totalCount={total} onAddClick={() => {}} addLabel={addLabel}>
+              {cards}
+            </ContributionGrid>
+          )}
+
+          <Button
+            variant="link"
+            size="sm"
+            className="h-auto p-0 text-muted-foreground hover:text-foreground"
+            onClick={() => setContributionsDialogPostId(post.id)}
+          >
+            View all contributions
+          </Button>
+        </div>
+      );
+    }
+
     switch (post.contributionType) {
-      case 'links':
+      case 'tasks':
         return (
-          <div className="mt-6 space-y-3 pt-6 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (9)</span>
-              <button className="inline-flex items-center gap-1.5 text-label font-semibold text-muted-foreground hover:text-foreground transition-colors">
-                + ADD LINK OR FILE
-              </button>
-            </div>
-            <div className="space-y-2">
-              <ContributionLinkCard
-                title="IEEE Smart Grid Standards"
-                description="Comprehensive standards for smart grid interoperability and communication protocols"
-              />
-              <ContributionLinkCard
-                title="Energy Transition Toolkit.pdf"
-                description="A practical guide for municipalities planning renewable transitions"
-                isFile={true}
-              />
-              <ContributionLinkCard
-                title="EU Clean Energy Package"
-                description="European Commission clean energy legislative package overview"
-              />
-            </div>
-            <button className="text-label font-semibold text-muted-foreground hover:text-foreground transition-colors">
-              +6 MORE
-            </button>
-          </div>
-        );
-      case 'posts':
-        return (
-          <div className="mt-6 space-y-3 pt-6 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (5)</span>
-            </div>
-            <ContributionGrid totalCount={5} onAddClick={() => {}} addLabel="+ Add Post">
-              <ContributionPostCard
-                title="Our District's Solar Journey: Year One"
-                author={{ name: "James Wilson" }}
-                createdDate="04/10/2026"
-                description="How we went from scepticism to 40% solar adoption in our neighbourhood through peer education and community financing."
-                tags={["community", "solar", "adoption"]}
-                commentCount={8}
-              />
-              <ContributionPostCard
-                title="Lessons from the Nordic Model"
-                author={{ name: "Priya Sharma" }}
-                createdDate="03/22/2026"
-                description="What we can learn from Denmark and Norway about community ownership and distributed generation."
-                tags={["nordic", "ownership", "research"]}
-                commentCount={5}
-              />
-              <ContributionPostCard
-                title="The Business Case for Municipal Solar"
-                author={{ name: "Nina Petrova" }}
-                createdDate="03/05/2026"
-                description="Financial analysis showing 7-year payback on municipal solar installations with current incentive structures."
-                tags={["finance", "ROI", "municipal"]}
-                commentCount={3}
-              />
-              <ContributionPostCard
-                title="Grid Integration Challenges We Faced"
-                author={{ name: "David Miller" }}
-                createdDate="02/18/2026"
-                description="Technical hurdles we encountered connecting our 2MW community array to the municipal distribution grid."
-                tags={["grid", "technical"]}
-                commentCount={7}
-              />
-              <ContributionPostCard
-                title="Financing Models That Work"
-                author={{ name: "Tom Bradley" }}
-                createdDate="02/01/2026"
-                description="Comparing PPAs, community bonds, and municipal green bonds for funding distributed solar projects."
-                tags={["finance", "bonds", "PPA"]}
-                commentCount={2}
-              />
-            </ContributionGrid>
-          </div>
-        );
-      case 'memos':
-        return (
-          <div className="mt-6 space-y-3 pt-6 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (4)</span>
-            </div>
-            <ContributionGrid totalCount={4} onAddClick={() => {}} addLabel="+ Add Memo">
-              <ContributionMemoCard
-                title="Site Assessment Procedure"
-                author="Tom Bradley"
-                markdownContent="## Site Assessment Steps\n\n1. Initial desk review\n2. Solar irradiance analysis\n3. Structural assessment\n4. Grid connection feasibility\n5. Environmental screening\n\n### Required Equipment\n- Drone for aerial survey\n- Irradiance meter\n- Structural testing kit"
-              />
-              <ContributionMemoCard
-                title="Safety Protocols for Installation"
-                author="David Miller"
-                markdownContent="## Safety Protocols\n\n### Before Work Begins\n- [ ] Risk assessment complete\n- [ ] Permits obtained\n- [ ] Team briefing done\n\n### During Installation\n- Hard hats mandatory\n- Harness required above 2m\n- Electrical isolation verified\n\n### Post-Installation\n- Final inspection checklist\n- Commissioning tests"
-              />
-              <ContributionMemoCard
-                title="Commissioning Checklist"
-                author="Sarah Chen"
-                markdownContent="## Commissioning Steps\n\n1. Visual inspection\n2. Electrical testing\n3. Performance verification\n4. Documentation\n5. Handover\n\n### Sign-Off\n- Engineer approval\n- Client acceptance"
-              />
-              <ContributionMemoCard
-                title="Maintenance Schedule Template"
-                author="Alex Contributor"
-                markdownContent="## Quarterly Maintenance\n\n- Panel cleaning\n- Inverter check\n- Wiring inspection\n- Performance data review\n\n## Annual Maintenance\n- Full system audit\n- Thermal imaging\n- Degradation assessment"
-              />
-            </ContributionGrid>
-          </div>
-        );
-      case 'whiteboards':
-        return (
-          <div className="mt-6 space-y-3 pt-6 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-label font-semibold text-muted-foreground">CONTRIBUTIONS (6)</span>
-            </div>
-            <ContributionGrid totalCount={6} onAddClick={() => {}} addLabel="+ Add Whiteboard">
-              <ContributionWhiteboardCard
-                title="Rooftop Array Design A"
-                author="David Miller"
-                previewUrl={wb1}
-              />
-              <ContributionWhiteboardCard
-                title="Ground-Mount Concept"
-                author="Tom Bradley"
-                previewUrl={wb2}
-              />
-              <ContributionWhiteboardCard
-                title="Carpark Canopy Layout"
-                author="Alex Contributor"
-                previewUrl={wb3}
-              />
-              <ContributionWhiteboardCard
-                title="Facade Integration Sketch"
-                author="Sarah Chen"
-                previewUrl={wb4}
-              />
-              <ContributionWhiteboardCard
-                title="Community Centre Retrofit"
-                author="Elena Rodriguez"
-                previewUrl={wb1}
-              />
-              <ContributionWhiteboardCard
-                title="Sports Centre Array"
-                author="Michael Chang"
-                previewUrl={wb3}
-              />
-            </ContributionGrid>
-          </div>
+          <TaskBoardPreview
+            columns={[
+              { id: "todo", label: "To Do", color: "#6b7280" },
+              { id: "in-progress", label: "In Progress", color: "#2563eb" },
+              { id: "review", label: "Review", color: "#d97706" },
+              { id: "done", label: "Done", color: "#16a34a" },
+            ]}
+            tasks={[
+              { id: "t1", status: "todo", title: "Review stakeholder input survey results", description: "Summarize key themes from the 24 completed interviews.", tags: ["research"], commentCount: 2, author: "David Kim", createdDate: "3d ago", comments: [{ id: "c1", author: "Sarah Chen", text: "Prioritize Noord-Holland responses.", time: "2d ago" }, { id: "c2", author: "Alex Torres", text: "Draft summary in progress.", time: "1d ago" }] },
+              { id: "t2", status: "todo", title: "Map existing municipal energy contracts", tags: ["data", "contracts"], commentCount: 0, author: "Emily Davis", createdDate: "2d ago" },
+              { id: "t3", status: "todo", title: "Draft cost-benefit analysis template", author: "Sarah Chen", createdDate: "1d ago" },
+              { id: "t4", status: "in-progress", title: "Wind capacity assessment for northern corridor", description: "Analyze wind measurement data from 3 monitoring stations.", tags: ["wind", "analysis"], commentCount: 4, author: "Alex Torres", createdDate: "1w ago", comments: [{ id: "c3", author: "Emily Davis", text: "Wieringermeer station has Q2 data gaps.", time: "5d ago" }, { id: "c4", author: "Alex Torres", text: "Requested raw logs from operator.", time: "4d ago" }, { id: "c5", author: "Sarah Chen", text: "Cross-reference with KNMI dataset.", time: "3d ago" }, { id: "c6", author: "Robert Fox", text: "I can help with grid capacity once ready.", time: "2d ago" }] },
+              { id: "t5", status: "in-progress", title: "Solar panel feasibility study — urban rooftops", tags: ["solar", "GIS"], commentCount: 7, author: "Sarah Chen", createdDate: "5d ago" },
+              { id: "t6", status: "review", title: "Grid interconnection proposal v2", description: "Updated proposal ready for lead review.", tags: ["grid", "proposal"], commentCount: 3, author: "Robert Fox", createdDate: "2d ago", comments: [{ id: "c7", author: "Sarah Chen", text: "Section 4.2 needs TenneT requirements.", time: "1d ago" }, { id: "c8", author: "Robert Fox", text: "Added — see appendix B.", time: "18h ago" }, { id: "c9", author: "Emily Davis", text: "Approved from financial side.", time: "6h ago" }] },
+              { id: "t7", status: "done", title: "Stakeholder mapping complete", tags: ["stakeholders"], commentCount: 2, author: "Anna Martinez", createdDate: "2w ago" },
+              { id: "t8", status: "done", title: "Kickoff meeting held", commentCount: 5, author: "Sarah Chen", createdDate: "3w ago" },
+              { id: "t9", status: "done", title: "EU directive compliance checklist finalized", tags: ["EU", "compliance"], commentCount: 1, author: "Robert Fox", createdDate: "2w ago" },
+            ]}
+          />
         );
       default:
         return undefined;
     }
   }
+
+  const contributionsDialogPost = contributionsDialogPostId
+    ? posts.find((p) => p.id === contributionsDialogPostId)
+    : undefined;
+  const contributionsDialogData = contributionsDialogPost
+    ? contributionCardsFor(contributionsDialogPost)
+    : undefined;
 
   // Filter posts based on search and tag filters
   const filteredPosts = posts.filter((post) => {
@@ -964,12 +1067,28 @@ export function SpaceKnowledgeFeed() {
         open={isPostModalOpen}
         onOpenChange={setIsPostModalOpen}
       />
+      {contributionsDialogPost && contributionsDialogData && (
+        <ContributionsDialog
+          open={true}
+          onOpenChange={(open) => !open && setContributionsDialogPostId(null)}
+          calloutTitle={contributionsDialogPost.title}
+          typeLabel={contributionsDialogData.typeLabel}
+          count={contributionsDialogData.cards.length}
+          layout={contributionsDialogData.layout}
+          addLabel={contributionsDialogData.addLabel}
+          onAddClick={() => {}}
+        >
+          {contributionsDialogData.cards}
+        </ContributionsDialog>
+      )}
+
       <PostDetailDialog
         open={!!selectedPost}
         onOpenChange={(open) => !open && setSelectedPost(null)}
         onAddMediaGalleryImages={selectedPost ? () => openAddDialog(selectedPost.id) : undefined}
         onDeleteMediaGalleryImage={selectedPost ? (t) => deleteImage(selectedPost.id, t.id) : undefined}
         post={selectedPost}
+        contributionsPreview={selectedPost ? getContributionPreview(selectedPost) : undefined}
       />
     </div>
   );

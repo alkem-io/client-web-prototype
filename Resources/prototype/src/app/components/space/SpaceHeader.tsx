@@ -2,86 +2,56 @@ import { Link } from "react-router";
 
 const BANNER_IMAGE = "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBjaGFsbGVuZ2UlMjBjcmVhdGl2ZSUyMHdvcmtzaG9wJTIwdGVhbSUyMGNvbGxhYm9yYXRpb24lMjBpbm5vdmF0aW9uJTIwc3ByaW50JTIwZGVzaWduJTIwc3ByaW50fGVufDF8fHx8MTc2OTA5NDMxMHww&ixlib=rb-4.1.0&q=80&w=1920";
 
-/** Banner height range: 80px (min) – 256px (max). Admin-configurable per space. */
-const BANNER_MIN_HEIGHT = 80;
-const BANNER_MAX_HEIGHT = 256;
-
 interface SpaceHeaderProps {
   spaceSlug: string;
   spaceName?: string;
   variant?: 1 | 2 | 3 | 4 | 5;
   onInfoClick?: () => void;
   actionButtons?: React.ReactNode;
-  /** Admin-configured banner height (80–256px). Defaults to 160px. */
-  bannerHeight?: number;
 }
 
-export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick, actionButtons, bannerHeight = 160 }: SpaceHeaderProps) {
+export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick, actionButtons }: SpaceHeaderProps) {
 
   // V2+ use a max-width container so content scales into margins on zoom
   const scaledContainer = { maxWidth: 1536, margin: "0 auto", width: "100%" };
   const usesScaling = variant !== 1;
 
-  // Read admin-configured banner settings from localStorage
+  // Read admin-configured banner settings
   const bannerSettings = (() => {
     try {
-      const raw = localStorage.getItem('alkemio-banner-settings');
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
+      const stored = localStorage.getItem('alkemio-banner-settings');
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return null;
   })();
   const bannerImage = bannerSettings?.image || BANNER_IMAGE;
-  const effectiveHeight = bannerSettings?.height || bannerHeight;
-  const cropY = bannerSettings?.cropY ?? 50;
-
-  // Clamp banner height to valid range
-  const clampedHeight = Math.max(BANNER_MIN_HEIGHT, Math.min(BANNER_MAX_HEIGHT, effectiveHeight));
-  const cropHeightPercent = (clampedHeight / BANNER_MAX_HEIGHT) * 64;
-  const objectPosition = `center ${cropY + cropHeightPercent / 2}%`;
+  const bannerHeight = bannerSettings?.height || 160;
+  const bannerCropY = bannerSettings?.cropY ?? 30;
 
   return (
     <div className="flex flex-col">
-      {/* Banner — admin-configurable height, inside grid with margins, slides under nav bar */}
+      {/* Banner */}
       {variant === 4 ? (
         <div style={{ marginTop: "-64px", height: "64px" }} />
       ) : (
         <div
           className="w-full px-4"
-          style={{
-            marginTop: "-64px",
-            paddingTop: 0,
-            ...(!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : {}),
-          }}
+          style={{ marginTop: "-64px" }}
         >
-          <div style={usesScaling ? scaledContainer : undefined}>
-            {usesScaling ? (
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-12 lg:col-start-2 lg:col-span-10">
               <div
-                className="relative overflow-hidden rounded-lg"
-                style={{ height: `${clampedHeight + 64}px`, width: "100%" }}
+                className="relative overflow-hidden rounded-b-lg"
+                style={{ height: bannerHeight, width: "100%" }}
               >
                 <img
                   src={bannerImage}
                   alt="Space banner"
                   className="w-full h-full object-cover"
-                  style={{ display: "block", objectPosition }}
+                  style={{ display: "block", objectPosition: `center ${bannerCropY}%` }}
                 />
               </div>
-            ) : (
-              <div className="grid grid-cols-12 gap-6">
-                <div className="col-span-12 lg:col-start-2 lg:col-span-10">
-                  <div
-                    className="relative overflow-hidden rounded-lg"
-                    style={{ height: `${clampedHeight + 64}px`, width: "100%" }}
-                  >
-                    <img
-                      src={bannerImage}
-                      alt="Space banner"
-                      className="w-full h-full object-cover"
-                      style={{ display: "block", objectPosition }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </div>
       )}

@@ -13,8 +13,17 @@ import {
  FileText,
  Users,
  PenTool,
- BookText
+ BookText,
+ Tags
 } from "lucide-react";
+import { CreateClassificationTemplateDialog } from "@/app/components/classifications/CreateClassificationTemplateDialog";
+import { AVAILABLE_CLASSIFICATION_TEMPLATES } from "@/app/components/classifications/ClassificationPickerDialog";
+import {
+ Dialog,
+ DialogContent,
+ DialogHeader,
+ DialogTitle,
+} from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
 import { Input } from "@/app/components/ui/input";
@@ -35,7 +44,7 @@ import { cn } from "@/lib/utils";
 
 // --- Types ---
 
-type TemplateCategory = 'Space' | 'Collaboration' | 'Whiteboard' | 'Post' | 'CommunityGuidelines';
+type TemplateCategory = 'Space' | 'Collaboration' | 'Whiteboard' | 'Post' | 'Classification' | 'CommunityGuidelines';
 
 interface Template {
  id: string;
@@ -80,6 +89,12 @@ const SECTIONS: TemplateSection[] = [
  title: 'Post Templates', 
  description: 'Standardized documents for projects and decisions.',
  icon: FileText
+ },
+ { 
+ id: 'Classification', 
+ title: 'Classification Templates', 
+ description: 'Structured vocabularies for tagging and reporting (e.g. SDGs, Sector).',
+ icon: Tags
  },
  { 
  id: 'CommunityGuidelines', 
@@ -152,6 +167,26 @@ const MOCK_TEMPLATES: Template[] = [
  tags: ["Product", "Doc"]
  },
 
+ // Classification Templates
+ {
+ id: 't8',
+ name: "UN Sustainable Development Goals",
+ description: "The 17 UN SDGs for classifying space impact areas.",
+ image: "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+ category: "Classification",
+ isCustom: false,
+ tags: ["SDG", "Impact"]
+ },
+ {
+ id: 't9c',
+ name: "Sector",
+ description: "Industry sector classification for cross-portfolio reporting.",
+ image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+ category: "Classification",
+ isCustom: false,
+ tags: ["Sector", "Reporting"]
+ },
+
  // Guidelines Templates
  {
  id: 't7',
@@ -166,10 +201,98 @@ const MOCK_TEMPLATES: Template[] = [
 
 // --- Components ---
 
+function ClassificationTemplateCard({ template, onAction }: {
+ template: Template,
+ onAction: (action: string, id: string) => void
+}) {
+ // Mock values for display
+ const MOCK_VALUES: Record<string, string[]> = {
+ "UN Sustainable Development Goals": ["SDG 1 – No Poverty", "SDG 2 – Zero Hunger", "SDG 3 – Good Health", "SDG 7 – Clean Energy", "SDG 13 – Climate Action"],
+ "Sector": ["Energy", "Healthcare", "Education", "Agriculture", "Finance", "Technology"],
+ };
+ const values = MOCK_VALUES[template.name] || ["Value 1", "Value 2", "Value 3"];
+
+ return (
+ <div className={cn(
+ "group relative flex flex-col border rounded-lg overflow-hidden bg-card hover:shadow-md transition-all duration-300"
+ )}>
+ {/* Classification Preview */}
+ <div className="p-4 bg-muted/30 border-b border-border">
+ <div className="flex items-center gap-2 mb-3">
+ <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center shrink-0">
+ <Tags className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+ </div>
+ <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+ Multi-select
+ </Badge>
+ </div>
+ <div className="flex flex-wrap gap-1">
+ {values.slice(0, 4).map((val, i) => (
+ <span key={i} className="inline-block bg-background border border-border px-2 py-0.5 rounded text-[10px] text-muted-foreground truncate max-w-[120px]">
+ {val}
+ </span>
+ ))}
+ {values.length > 4 && (
+ <span className="inline-block bg-background border border-border px-2 py-0.5 rounded text-[10px] text-muted-foreground">
+ +{values.length - 4}
+ </span>
+ )}
+ </div>
+ </div>
+
+ {/* Content */}
+ <div className="flex-1 p-4 flex flex-col gap-3">
+ <div>
+ <h4 className="font-semibold leading-none mb-1.5">{template.name}</h4>
+ <p className="text-body text-muted-foreground line-clamp-2">
+ {template.description}
+ </p>
+ </div>
+ 
+ <div className="mt-auto flex items-center justify-end pt-2">
+ <DropdownMenu>
+ <DropdownMenuTrigger asChild>
+ <IconButton variant="ghost" tooltipLabel="More options">
+ <MoreHorizontal className="w-4 h-4" />
+ </IconButton>
+ </DropdownMenuTrigger>
+ <DropdownMenuContent align="end">
+ <DropdownMenuItem onClick={() => onAction('preview', template.id)}>
+ <Eye className="w-4 h-4 mr-2" />
+ Preview
+ </DropdownMenuItem>
+ <DropdownMenuItem onClick={() => onAction('duplicate', template.id)}>
+ <Copy className="w-4 h-4 mr-2" />
+ Duplicate
+ </DropdownMenuItem>
+ <DropdownMenuSeparator />
+ <DropdownMenuItem onClick={() => onAction('edit', template.id)}>
+ <Pencil className="w-4 h-4 mr-2" />
+ Edit
+ </DropdownMenuItem>
+ <DropdownMenuItem 
+ className="text-destructive focus:text-destructive"
+ onClick={() => onAction('delete', template.id)}
+ >
+ <Trash2 className="w-4 h-4 mr-2" />
+ Delete
+ </DropdownMenuItem>
+ </DropdownMenuContent>
+ </DropdownMenu>
+ </div>
+ </div>
+ </div>
+ );
+}
+
 function TemplateCard({ template, onAction }: { 
  template: Template, 
  onAction: (action: string, id: string) => void 
 }) {
+ if (template.category === "Classification") {
+ return <ClassificationTemplateCard template={template} onAction={onAction} />;
+ }
+
  return (
  <div className={cn(
  "group relative flex flex-col border rounded-lg overflow-hidden bg-card hover:shadow-md transition-all duration-300"
@@ -229,6 +352,95 @@ function TemplateCard({ template, onAction }: {
  );
 }
 
+function SelectFromLibraryContent({ onSelect }: { onSelect: (template: typeof AVAILABLE_CLASSIFICATION_TEMPLATES[0]) => void }) {
+ const [search, setSearch] = useState("");
+ const platformTemplates = AVAILABLE_CLASSIFICATION_TEMPLATES.filter(t => t.source === "platform");
+ const personalTemplates = AVAILABLE_CLASSIFICATION_TEMPLATES.filter(t => t.source === "personal");
+ const allTemplates = [...platformTemplates, ...personalTemplates];
+ const filtered = allTemplates.filter(t =>
+ t.name.toLowerCase().includes(search.toLowerCase()) ||
+ t.description.toLowerCase().includes(search.toLowerCase())
+ );
+ const filteredPlatform = filtered.filter(t => t.source === "platform");
+ const filteredPersonal = filtered.filter(t => t.source === "personal");
+
+ const renderTemplate = (template: typeof AVAILABLE_CLASSIFICATION_TEMPLATES[0]) => (
+ <button
+ key={template.id}
+ onClick={() => onSelect(template)}
+ className="w-full flex items-center gap-3 p-3 rounded-lg border border-transparent hover:border-border hover:bg-muted/50 transition-colors text-left group"
+ >
+ <div className="w-9 h-9 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center shrink-0">
+ <Tags className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+ </div>
+ <div className="flex-1 min-w-0">
+ <div className="flex items-center gap-2">
+ <span className="font-medium text-body truncate">{template.name}</span>
+ <Badge variant="secondary" className="text-[10px] h-4 px-1.5 shrink-0">
+ {template.cardinality === "multi" ? "Multi" : "Single"}
+ </Badge>
+ </div>
+ <p className="text-caption text-muted-foreground truncate">{template.description}</p>
+ {template.packName && (
+ <p className="text-[10px] text-muted-foreground/70 mt-0.5">from {template.packName}</p>
+ )}
+ </div>
+ <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+ </button>
+ );
+
+ return (
+ <div className="space-y-4">
+ <p className="text-caption text-muted-foreground">
+ Choose a classification template to add to your space.
+ </p>
+ <div className="relative">
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+ <input
+ className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 pl-9 text-body shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+ placeholder="Search templates…"
+ value={search}
+ onChange={(e) => setSearch(e.target.value)}
+ />
+ </div>
+ <div className="max-h-[380px] overflow-y-auto space-y-4 pr-1">
+ {/* Platform Library */}
+ {filteredPlatform.length > 0 && (
+ <div>
+ <div className="flex items-center gap-2 mb-2 px-1">
+ <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Platform Library</span>
+ <span className="text-[10px] text-muted-foreground/60">({filteredPlatform.length})</span>
+ </div>
+ <div className="space-y-1">
+ {filteredPlatform.map(renderTemplate)}
+ </div>
+ </div>
+ )}
+
+ {/* Your Template Packs */}
+ {filteredPersonal.length > 0 && (
+ <div>
+ <div className="flex items-center gap-2 mb-2 px-1">
+ <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Your Template Packs</span>
+ <span className="text-[10px] text-muted-foreground/60">({filteredPersonal.length})</span>
+ </div>
+ <div className="space-y-1">
+ {filteredPersonal.map(renderTemplate)}
+ </div>
+ </div>
+ )}
+
+ {filtered.length === 0 && (
+ <div className="text-center py-8 text-muted-foreground">
+ <Tags className="w-8 h-8 mx-auto mb-2 opacity-40" />
+ <p className="text-body">No matching templates found</p>
+ </div>
+ )}
+ </div>
+ </div>
+ );
+}
+
 export function SpaceSettingsTemplates() {
  const [templates, setTemplates] = useState<Template[]>(MOCK_TEMPLATES);
  const [searchQuery, setSearchQuery] = useState('');
@@ -237,8 +449,11 @@ export function SpaceSettingsTemplates() {
  Collaboration: true,
  Whiteboard: true,
  Post: true,
+ Classification: true,
  CommunityGuidelines: true,
  });
+ const [createClassificationOpen, setCreateClassificationOpen] = useState(false);
+ const [selectFromLibraryOpen, setSelectFromLibraryOpen] = useState(false);
 
  const toggleSection = (id: string) => {
  setOpenSections(prev => ({ ...prev, [id]: !prev[id] }));
@@ -249,7 +464,12 @@ export function SpaceSettingsTemplates() {
  if (action === 'delete') {
  setTemplates(prev => prev.filter(t => t.id !== id));
  }
- // Implement other actions as needed
+ if (action === 'create_new' && id === 'Classification') {
+ setCreateClassificationOpen(true);
+ }
+ if (action === 'select_library' && id === 'Classification') {
+ setSelectFromLibraryOpen(true);
+ }
  };
 
  // Filter Logic
@@ -402,6 +622,45 @@ export function SpaceSettingsTemplates() {
  </div>
  )}
  </div>
+
+ <CreateClassificationTemplateDialog
+ open={createClassificationOpen}
+ onOpenChange={setCreateClassificationOpen}
+ onCreated={(template) => {
+ setTemplates(prev => [...prev, {
+ id: `t-new-${Date.now()}`,
+ name: template.name,
+ description: template.description,
+ image: "",
+ category: "Classification",
+ isCustom: true,
+ tags: [template.cardinality === "multi" ? "Multi-select" : "Single-select"],
+ }]);
+ }}
+ />
+
+ {/* Select from Platform Library dialog */}
+ <Dialog open={selectFromLibraryOpen} onOpenChange={setSelectFromLibraryOpen}>
+ <DialogContent className="sm:max-w-[520px]">
+ <DialogHeader>
+ <DialogTitle>Select from Platform Library</DialogTitle>
+ </DialogHeader>
+ <SelectFromLibraryContent
+ onSelect={(template) => {
+ setTemplates(prev => [...prev, {
+ id: `t-lib-${Date.now()}`,
+ name: template.name,
+ description: template.description,
+ image: "",
+ category: "Classification" as TemplateCategory,
+ isCustom: false,
+ tags: [template.cardinality === "multi" ? "Multi-select" : "Single-select"],
+ }]);
+ setSelectFromLibraryOpen(false);
+ }}
+ />
+ </DialogContent>
+ </Dialog>
  </div>
  );
 }

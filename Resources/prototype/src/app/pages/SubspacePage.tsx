@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router";
-import { Plus, Layout, Activity, Video, FileText, Share2, Settings, List, Columns3 } from "lucide-react";
+import { Plus, Layout, Activity, Video, FileText, Share2, Settings, Info } from "lucide-react";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import {
   Tooltip,
@@ -14,11 +14,9 @@ import { SubspaceSidebar } from "@/app/components/space/SubspaceSidebar";
 import { cn } from "@/lib/utils";
 import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs";
 import { PostCard, type PostProps } from "@/app/components/space/PostCard";
-import { KanbanPostDialog } from "@/app/components/space/KanbanBoardPost";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { AboutThisSpaceDialog } from "@/app/components/space/AboutThisSpaceDialog";
-import { SubspaceBoardView } from "@/app/components/space/SubspaceBoardView";
 
 /* ─── Mock subspace metadata ─── */
 
@@ -88,23 +86,6 @@ const SUBSPACE_MAP: Record<string, SubspaceInfo> = {
     callouts: [
       { id: "planning", label: "Planning", description: "Urban green space planning documents and proposals.", count: 4, linkedToNext: true },
       { id: "implementation", label: "Implementation", description: "Progress updates and implementation guides.", linkedToNext: false },
-    ],
-  },
-  "solar-panel-deployment": {
-    title: "Solar Panel Deployment",
-    description:
-      "Planning and rollout of residential solar panel installations across participating municipalities.",
-    parentName: "Renewable Energy Transition",
-    initials: "SP",
-    avatarColor: "#f59e0b",
-    avatarImage: "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200",
-    parentInitials: "RE",
-    parentAvatarColor: "#22c55e",
-    memberCount: 8,
-    callouts: [
-      { id: "sites", label: "Site Selection", description: "Criteria and evaluation of potential installation sites.", count: 3 },
-      { id: "permits", label: "Permits", description: "Permit applications, approvals, and regulatory compliance.", count: 2 },
-      { id: "install", label: "Installation", description: "Technical documentation and installation progress." },
     ],
   },
 };
@@ -265,62 +246,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     timestamp: "4 days ago",
     stats: { comments: 4 },
   },
-  {
-    id: "sp-7",
-    type: "kanban",
-    callout: "strategy",
-    author: {
-      name: "Sarah Chen",
-      role: "Lead",
-      avatarUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-    },
-    title: "Energy Transition — Task Board",
-    snippet:
-      "Shared task board for tracking deliverables across the strategy phase. Drag items between columns to update status.",
-    timestamp: "1 day ago",
-    framingKanban: {
-      columns: [
-        {
-          id: "todo",
-          label: "To Do",
-          cards: [
-            { id: "k1", title: "Review stakeholder input survey results", assignee: "David Kim" },
-            { id: "k2", title: "Map existing municipal energy contracts", assignee: "Emily Davis" },
-            { id: "k3", title: "Draft cost-benefit analysis template" },
-            { id: "k4", title: "Schedule follow-up with provincial authorities", assignee: "Anna Martinez" },
-            { id: "k5", title: "Collect baseline consumption data from pilot municipalities" },
-          ],
-        },
-        {
-          id: "in-progress",
-          label: "In Progress",
-          cards: [
-            { id: "k6", title: "Wind capacity assessment for northern corridor", assignee: "Alex Torres" },
-            { id: "k7", title: "Solar panel feasibility study — urban rooftops", assignee: "Sarah Chen" },
-          ],
-        },
-        {
-          id: "review",
-          label: "Review",
-          cards: [
-            { id: "k8", title: "Grid interconnection proposal v2", assignee: "Robert Fox" },
-          ],
-        },
-        {
-          id: "done",
-          label: "Done",
-          cards: [
-            { id: "k9", title: "Stakeholder mapping complete", assignee: "Anna Martinez" },
-            { id: "k10", title: "Kickoff meeting held", assignee: "Sarah Chen" },
-            { id: "k11", title: "Baseline energy audit — Amsterdam district", assignee: "David Kim" },
-            { id: "k12", title: "EU directive compliance checklist finalized", assignee: "Robert Fox" },
-          ],
-        },
-      ],
-    },
-    stats: { comments: 3 },
-  },
 ];
 
 /* ─── Page Component ─── */
@@ -334,12 +259,10 @@ export default function SubspacePage() {
   const [searchParams] = useSearchParams();
   const variant = (parseInt(searchParams.get("v") || "1") || 1) as 1 | 2 | 3 | 4 | 5;
 
-  // Determine which slug to use for content — sub-subspace takes priority
   const activeSlug = subSubspaceSlug || subspaceSlug;
-
   const info = SUBSPACE_MAP[activeSlug] || {
     ...DEFAULT_SUBSPACE,
-    title: subspaceSlug
+    title: activeSlug
       .replace(/-/g, " ")
       .replace(/\b\w/g, (c) => c.toUpperCase()),
   };
@@ -349,23 +272,6 @@ export default function SubspacePage() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCommunityDialogOpen, setIsCommunityDialogOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"feed" | "board">("feed");
-  const [kanbanDialogPost, setKanbanDialogPost] = useState<(typeof SUBSPACE_POSTS)[number] | null>(null);
-
-  // Track whether action icons have scrolled off-screen
-  const actionIconsRef = useRef<HTMLDivElement>(null);
-  const [actionIconsHidden, setActionIconsHidden] = useState(false);
-
-  useEffect(() => {
-    const el = actionIconsRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setActionIconsHidden(!entry.isIntersecting),
-      { threshold: 0 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
 
   // Listen for sidebar "New Post" button event
   useEffect(() => {
@@ -402,7 +308,18 @@ export default function SubspacePage() {
         onCommunityClick={() => setIsCommunityDialogOpen(true)}
         onInfoClick={() => setIsAboutOpen(true)}
         actionButtons={
-          <div ref={actionIconsRef} className="flex items-center gap-0.5">
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={() => setIsAboutOpen(true)}
+              className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+              style={{
+                background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+                color: "var(--muted-foreground)",
+              }}
+              title="About this Subspace"
+            >
+              <Info className="w-3.5 h-3.5" />
+            </button>
             {[
               { icon: Activity, title: "Recent Activity" },
               { icon: Video, title: "Video Call" },
@@ -439,43 +356,46 @@ export default function SubspacePage() {
 
       {/* ── Main Content Area ── */}
       <main className="flex-1 w-full px-6 md:px-8 pb-8" style={{ paddingTop: 12 }}>
-        <div className={cn(
-          "items-start",
-          isSidebarCollapsed
-            ? "grid grid-cols-12 gap-0"
-            : "grid grid-cols-12 gap-6"
-        )}>
-          {/* Sidebar + Content wrapper: when collapsed, use a flex container inside the grid to avoid gap issues */}
-          <div className={cn(
-            isSidebarCollapsed
-              ? "col-span-12 lg:col-start-2 lg:col-span-10 flex gap-4"
-              : "contents"
-          )}>
-            {/* Left Sidebar */}
-            <div
-              className={cn(
-                "hidden lg:block sticky top-24 self-start max-h-[calc(100vh-6rem)] scrollbar-hide overflow-y-auto transition-all duration-300",
-                isSidebarCollapsed
-                  ? "shrink-0"
-                  : "lg:col-start-2 col-span-2"
-              )}
-            >
-              <SubspaceSidebar
-                isCollapsed={isSidebarCollapsed}
-                onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                depth={subSubspaceSlug ? 2 : 1}
-                parentSubspaceName={subSubspaceSlug ? info.parentName : undefined}
-                parentSubspaceInitials={subSubspaceSlug ? info.parentName.split(" ").map(w => w[0]).join("").slice(0, 2) : undefined}
-              />
-            </div>
-
-            {/* Content */}
-            <div className={cn(
-              "min-w-0 transition-all duration-300",
+        <div className="grid grid-cols-12 gap-6 items-start">
+          {/* Left Sidebar — shrinks to 1 col when collapsed */}
+          <div
+            className={cn(
+              "hidden lg:block sticky top-24 self-start max-h-[calc(100vh-6rem)] scrollbar-hide overflow-y-auto transition-all duration-300",
               isSidebarCollapsed
-                ? "flex-1"
-                : "col-span-12 lg:col-span-8"
-            )}>
+                ? "lg:col-start-1 col-span-1"
+                : "lg:col-start-2 col-span-2"
+            )}
+          >
+            <SubspaceSidebar
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() =>
+                setIsSidebarCollapsed(!isSidebarCollapsed)
+              }
+              parentSpaceName={subSubspaceSlug ? info.parentName : "The Sandbox"}
+              parentSpaceInitials={subSubspaceSlug ? info.parentInitials : "S"}
+              parentSpaceBanner={subSubspaceSlug
+                ? "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80"
+                : "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400"}
+              parentSpaceDescription={subSubspaceSlug
+                ? "Developing strategies for municipal energy transition to 100% renewables by 2030."
+                : "The place for all field builders on steward-ownership to learn, connect, discuss and collaborate."}
+              parentSpaceHref={subSubspaceSlug
+                ? `/space/${spaceSlug}/subspaces/${subspaceSlug}`
+                : `/space/${spaceSlug}`}
+              grandparentSpaceName={subSubspaceSlug ? "The Sandbox" : undefined}
+              grandparentSpaceInitials={subSubspaceSlug ? "S" : undefined}
+              grandparentSpaceBanner={subSubspaceSlug
+                ? "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400"
+                : undefined}
+              grandparentSpaceHref={subSubspaceSlug ? `/space/${spaceSlug}` : undefined}
+            />
+          </div>
+
+          {/* Right Content: Channels + Feed — expands when sidebar collapsed */}
+          <div className={cn(
+            "col-span-12 min-w-0 transition-all duration-300",
+            isSidebarCollapsed ? "lg:col-span-10" : "lg:col-span-8"
+          )}>
           {/* Sticky channel tabs bar */}
           <div
             className="sticky top-16 z-10 pt-4 pb-3 mb-4"
@@ -512,99 +432,17 @@ export default function SubspacePage() {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                {viewMode === "feed" && (
-                  <CalloutTabs
-                    tabs={info.callouts}
-                    activeTab={activeCallout}
-                    onTabChange={setActiveCallout}
-                  />
-                )}
-                {viewMode === "board" && (
-                  <span className="text-sm font-medium text-foreground">Board View</span>
-                )}
+                <CalloutTabs
+                  tabs={info.callouts}
+                  activeTab={activeCallout}
+                  onTabChange={setActiveCallout}
+                />
               </div>
-              {/* View mode toggle */}
-              <div className="flex items-center gap-0.5 shrink-0 bg-muted rounded-lg p-0.5">
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setViewMode("feed")}
-                        className={cn(
-                          "p-1.5 rounded-md transition-colors",
-                          viewMode === "feed"
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                        aria-label="Feed view"
-                      >
-                        <List className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Feed view</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setViewMode("board")}
-                        className={cn(
-                          "p-1.5 rounded-md transition-colors",
-                          viewMode === "board"
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                        aria-label="Board view"
-                      >
-                        <Columns3 className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Board view</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              {/* Action icons — appear inline when scrolled past info bar */}
-              {actionIconsHidden && (
-                <div className="flex items-center gap-0.5 shrink-0">
-                  {[
-                    { icon: Activity, title: "Recent Activity" },
-                    { icon: Video, title: "Video Call" },
-                    { icon: Share2, title: "Share" },
-                  ].map(({ icon: Icon, title }) => (
-                    <button
-                      key={title}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-                      style={{
-                        background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-                        color: "var(--muted-foreground)",
-                      }}
-                      title={title}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                    </button>
-                  ))}
-                  <Link to={`/space/${spaceSlug}/subspaces/${subspaceSlug}/settings/about`}>
-                    <button
-                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-                      style={{
-                        background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-                        color: "var(--muted-foreground)",
-                      }}
-                      title="Settings"
-                    >
-                      <Settings className="w-3.5 h-3.5" />
-                    </button>
-                  </Link>
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Tab description (feed mode only) */}
-          {viewMode === "feed" && info.callouts.find((c) => c.id === activeCallout)?.description && (
+          {/* Tab description */}
+          {info.callouts.find((c) => c.id === activeCallout)?.description && (
             <div className="mb-4">
               <ReadMoreText
                 maxLines={2}
@@ -620,27 +458,13 @@ export default function SubspacePage() {
             </div>
           )}
 
-          {/* Board View */}
-          {viewMode === "board" && (
-            <SubspaceBoardView
-              phases={info.callouts}
-              posts={SUBSPACE_POSTS}
-            />
-          )}
-
-          {/* Feed View */}
-          {viewMode === "feed" && (
+          {/* Feed */}
           <div className="space-y-6">
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => (
                 <PostCard
                   key={post.id}
                   post={post}
-                  onOpenFraming={
-                    post.type === "kanban"
-                      ? () => setKanbanDialogPost(post)
-                      : undefined
-                  }
                 />
               ))
             ) : (
@@ -669,8 +493,6 @@ export default function SubspacePage() {
               </div>
             )}
           </div>
-          )}
-          </div>
           </div>
         </div>
       </main>
@@ -693,16 +515,6 @@ export default function SubspacePage() {
         onOpenChange={setIsAboutOpen}
         spaceSlug={`${spaceSlug}/subspaces/${subspaceSlug}`}
       />
-
-      {/* Kanban Post Dialog */}
-      {kanbanDialogPost?.framingKanban && (
-        <KanbanPostDialog
-          open={!!kanbanDialogPost}
-          onOpenChange={(open) => { if (!open) setKanbanDialogPost(null); }}
-          title={kanbanDialogPost.title}
-          data={kanbanDialogPost.framingKanban}
-        />
-      )}
     </div>
   );
 }

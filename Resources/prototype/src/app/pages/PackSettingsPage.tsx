@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useParams } from "react-router";
-import { Lightbulb, Plus, MoreHorizontal, Trash2, Eye, Search, ChevronDown, ChevronRight, Check, Loader2, Pencil, Upload, X } from "lucide-react";
+import { Lightbulb, Plus, MoreHorizontal, Trash2, Eye, Search, ChevronDown, ChevronRight, Check, Loader2, Pencil, Upload, X, Layers } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
@@ -30,6 +30,7 @@ import "react-quill/dist/quill.snow.css";
 
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { CreateClassificationTemplateDialog } from "@/app/components/classifications/CreateClassificationTemplateDialog";
 
 // ─── Mock Data ───────────────────────────────────────────────────────────────
 
@@ -68,15 +69,20 @@ const PACK_TEMPLATES = [
   // Community Guidelines Templates
   { id: "t10", name: "Knowledge Sharing Community", type: "Community Guidelines" as const, tags: ["Knowledge Sharing", "Online Community"], image: "" },
   { id: "t14", name: "Innovation Community Code", type: "Community Guidelines" as const, tags: ["Innovation", "Conduct"], image: "" },
+  // Classification Templates
+  { id: "t15", name: "UN Sustainable Development Goals", type: "Classification" as const, tags: ["SDG", "Impact"], image: "" },
+  { id: "t16", name: "Sector", type: "Classification" as const, tags: ["Sector", "Reporting"], image: "" },
+  { id: "t17", name: "Language", type: "Classification" as const, tags: ["Language", "Localization"], image: "" },
 ];
 
-type TemplateType = "Space" | "Collaboration Tool" | "Whiteboard" | "Post" | "Community Guidelines";
+type TemplateType = "Space" | "Collaboration Tool" | "Whiteboard" | "Post" | "Classification" | "Community Guidelines";
 
 const TEMPLATE_SECTIONS: { id: TemplateType; title: string }[] = [
   { id: "Space", title: "Space Templates" },
   { id: "Collaboration Tool", title: "Collaboration Tool Templates" },
   { id: "Whiteboard", title: "Whiteboard Templates" },
   { id: "Post", title: "Post Templates" },
+  { id: "Classification", title: "Classification Templates" },
   { id: "Community Guidelines", title: "Community Guidelines Templates" },
 ];
 
@@ -364,6 +370,7 @@ function PackSettingsTemplates() {
   const navigate = useNavigate();
   const { packSlug } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
+  const [createClassificationOpen, setCreateClassificationOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
     Object.fromEntries(TEMPLATE_SECTIONS.map(s => [s.id, true]))
   );
@@ -378,7 +385,11 @@ function PackSettingsTemplates() {
   };
 
   const handleCreateNew = (type: TemplateType) => {
-    toast.success(`Create new ${type} template (placeholder)`);
+    if (type === "Classification") {
+      setCreateClassificationOpen(true);
+    } else {
+      toast.success(`Create new ${type} template (placeholder)`);
+    }
   };
 
   const handleDelete = (templateId: string, e: React.MouseEvent) => {
@@ -453,16 +464,44 @@ function PackSettingsTemplates() {
                       className="group relative rounded-md border border-border bg-card overflow-hidden cursor-pointer hover:border-primary/50 hover:shadow-sm transition-all"
                       onClick={() => navigate(`/templates/packs/${packSlug}/settings/templates/${template.id}`)}
                     >
-                      {/* Thumbnail */}
-                      <div className="aspect-[4/3] bg-muted overflow-hidden">
-                        {template.image ? (
-                          <img src={template.image} alt={template.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
-                            <Lightbulb className="w-8 h-8" />
+                      {/* Thumbnail / Preview */}
+                      {template.type === "Classification" ? (
+                        <div className="p-4 bg-muted/30 border-b border-border">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center shrink-0">
+                              <Layers className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+                              Multi-select
+                            </Badge>
                           </div>
-                        )}
-                      </div>
+                          <div className="flex flex-wrap gap-1">
+                            {(template.name === "UN Sustainable Development Goals"
+                              ? ["SDG 1 – No Poverty", "SDG 7 – Clean Energy", "SDG 13 – Climate Action"]
+                              : template.name === "Sector"
+                              ? ["Energy", "Healthcare", "Education", "Technology"]
+                              : ["Dutch", "English", "French", "German"]
+                            ).slice(0, 4).map((val, i) => (
+                              <span key={i} className="inline-block bg-background border border-border px-2 py-0.5 rounded text-[10px] text-muted-foreground truncate max-w-[120px]">
+                                {val}
+                              </span>
+                            ))}
+                            <span className="inline-block bg-background border border-border px-2 py-0.5 rounded text-[10px] text-muted-foreground">
+                              +more
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="aspect-[4/3] bg-muted overflow-hidden">
+                          {template.image ? (
+                            <img src={template.image} alt={template.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
+                              <Lightbulb className="w-8 h-8" />
+                            </div>
+                          )}
+                        </div>
+                      )}
                       {/* Info */}
                       <div className="p-3">
                         <p className="text-body-emphasis truncate">{template.name}</p>
@@ -503,6 +542,14 @@ function PackSettingsTemplates() {
           </div>
         );
       })}
+
+      <CreateClassificationTemplateDialog
+        open={createClassificationOpen}
+        onOpenChange={setCreateClassificationOpen}
+        onCreated={(template) => {
+          toast.success(`Classification template "${template.name}" created`);
+        }}
+      />
     </div>
   );
 }

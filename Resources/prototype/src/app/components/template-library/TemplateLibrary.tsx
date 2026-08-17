@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { 
  Search, Filter, ChevronRight, Layout, Users, FileText, 
  Monitor, Info, Star, Plus, ArrowRight, BookOpen, Layers,
- ChevronLeft, MoreHorizontal, Home, Image as ImageIcon, Shield
+ ChevronLeft, MoreHorizontal, Home, Image as ImageIcon, Shield, Tags, X, ChevronDown, Check
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
@@ -13,6 +13,52 @@ import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
 import { useNavigate } from "react-router";
 import { TEMPLATE_PACKS, INDIVIDUAL_TEMPLATES, CATEGORIES, ALL_TEMPLATES } from "@/app/data/template-data";
+import {
+ Dialog,
+ DialogContent,
+ DialogHeader,
+ DialogTitle,
+ DialogClose,
+} from "@/app/components/ui/dialog";
+import {
+ Popover,
+ PopoverContent,
+ PopoverTrigger,
+} from "@/app/components/ui/popover";
+
+// --- Filter Dropdown (matching production) ---
+
+function DropdownFilter({ selected, options, onChange }: { selected: string; options: string[]; onChange: (v: string) => void }) {
+ const [open, setOpen] = useState(false);
+ return (
+ <Popover open={open} onOpenChange={setOpen}>
+ <PopoverTrigger asChild>
+ <Button variant="outline" className="gap-2 h-9 text-caption font-medium min-w-[140px] justify-between">
+ <div className="flex items-center gap-2">
+ <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+ <span className="uppercase">{selected}</span>
+ </div>
+ <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+ </Button>
+ </PopoverTrigger>
+ <PopoverContent align="start" className="w-[200px] p-1">
+ {options.map((opt) => (
+ <button
+ key={opt}
+ onClick={() => { onChange(opt); setOpen(false); }}
+ className={cn(
+ "w-full flex items-center gap-2 px-3 py-2 rounded-sm text-caption font-medium transition-colors text-left",
+ selected === opt ? "text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+ )}
+ >
+ <Check className={cn("w-3.5 h-3.5 shrink-0", selected === opt ? "text-primary" : "text-transparent")} />
+ <span className="uppercase">{opt}</span>
+ </button>
+ ))}
+ </PopoverContent>
+ </Popover>
+ );
+}
 
 // --- Components ---
 
@@ -148,6 +194,8 @@ function TemplatePreview({ type, content, structure }: { type: string, content?:
  displayContent = (structure.post?.title || "") + "\n" + (structure.post?.description || "") + "\n\nAttached: " + (structure.component?.name || "");
  } else if (type === "Community Guidelines") {
  displayContent = structure.categories?.map((c: any) => c.name + "\n- " + c.preview).join("\n\n");
+ } else if (type === "Classification") {
+ displayContent = (structure.classificationName || "Classification") + "\n" + (structure.cardinality === "multi" ? "Multi-select" : "Single-select") + "\n\n" + (structure.values?.slice(0, 6).map((v: string) => "- " + v).join("\n") || "");
  }
  }
 
@@ -202,12 +250,18 @@ function TemplatePreview({ type, content, structure }: { type: string, content?:
  );
 }
 
-function TemplateCard({ template }: { template: typeof INDIVIDUAL_TEMPLATES[0] }) {
+function TemplateCard({ template, onClassificationPreview }: { template: typeof INDIVIDUAL_TEMPLATES[0]; onClassificationPreview?: (t: any) => void }) {
  const navigate = useNavigate();
 
  return (
  <div 
- onClick={() => navigate(`/templates/${template.id}`)}
+ onClick={() => {
+ if (template.type === "Classification" && onClassificationPreview) {
+ onClassificationPreview(template);
+ } else {
+ navigate(`/templates/${template.id}`);
+ }
+ }}
  className="group relative flex flex-col bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer h-full"
  >
  {/* Preview Section - Expanded to match PackCard style */}
@@ -298,6 +352,7 @@ function Pagination({
 export function TemplateLibrary() {
  const [searchQuery, setSearchQuery] = useState("");
  const [selectedCategory, setSelectedCategory] = useState("All");
+ const [classificationPreview, setClassificationPreview] = useState<any>(null);
  const navigate = useNavigate();
  
  // Pagination State
@@ -383,7 +438,7 @@ export function TemplateLibrary() {
  </div>
  </div>
  
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
  {currentPacks.map(pack => (
  <PackCard 
  key={pack.id} 
@@ -414,36 +469,30 @@ export function TemplateLibrary() {
  <p className="text-body text-muted-foreground">Browse individual templates organized by type.</p>
  </div>
 
- <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide w-full md:w-auto">
- {CATEGORIES.map(cat => (
- <button
- key={cat}
- onClick={() => setSelectedCategory(cat)}
- className={cn(
- "px-3 py-2 rounded-full text-caption font-medium whitespace-nowrap transition-colors border",
- selectedCategory === cat 
- ? "bg-primary text-primary-foreground border-primary" 
- : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground"
- )}
- >
- {cat}
- </button>
- ))}
- {searchQuery && (
- <button
- onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }}
- className="text-caption text-muted-foreground hover:text-foreground ml-2 whitespace-nowrap"
- >
- Clear all
- </button>
- )}
+ <div className="flex items-center gap-3 w-full md:w-auto">
+ {/* Filter Dropdown */}
+ <DropdownFilter
+ selected={selectedCategory}
+ options={CATEGORIES}
+ onChange={setSelectedCategory}
+ />
+ {/* Search */}
+ <div className="relative flex-1 md:w-[220px]">
+ <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+ <Input
+ placeholder="Search templates"
+ value={searchQuery}
+ onChange={(e) => { setSearchQuery(e.target.value); setTemplatePage(1); }}
+ className="pl-9 h-9"
+ />
+ </div>
  </div>
  </div>
 
  {/* Displaying as a simplified grid for pagination clarity with large datasets */}
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
  {currentTemplates.map(template => (
- <TemplateCard key={template.id} template={template} />
+ <TemplateCard key={template.id} template={template} onClassificationPreview={setClassificationPreview} />
  ))}
  </div>
 
@@ -474,6 +523,63 @@ export function TemplateLibrary() {
  </div>
  </div>
  </main>
+
+ {/* Classification Preview Dialog */}
+ <Dialog open={!!classificationPreview} onOpenChange={(open) => { if (!open) setClassificationPreview(null); }}>
+ <DialogContent className="w-[calc(100%-3rem)] sm:w-[600px] sm:max-w-none p-0 gap-0 overflow-hidden rounded-xl">
+ {classificationPreview && (
+ <>
+ <div className="px-6 pt-5 pb-4 border-b flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center">
+ <Tags className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+ </div>
+ <div>
+ <DialogTitle className="text-subsection-title">{classificationPreview.name}</DialogTitle>
+ <Badge variant="secondary" className="text-[10px] h-4 px-1.5 mt-1">Classification template</Badge>
+ </div>
+ </div>
+ <DialogClose className="rounded-full p-2 hover:bg-muted transition-colors">
+ <X className="w-4 h-4 text-muted-foreground" />
+ </DialogClose>
+ </div>
+ <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+ <div className="flex items-center gap-4 text-caption text-muted-foreground">
+ <span>{classificationPreview.author || "Alkemio"}</span>
+ <span>•</span>
+ <span>{classificationPreview.structure?.cardinality === "multi" ? "Multi-select" : "Single-select"}</span>
+ <span>•</span>
+ <span>{classificationPreview.structure?.values?.length || 0} values</span>
+ </div>
+ <p className="text-body text-muted-foreground">{classificationPreview.description}</p>
+ <div>
+ <h4 className="text-caption font-semibold uppercase tracking-wider text-muted-foreground mb-3">Defined Values</h4>
+ <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+ {classificationPreview.structure?.values?.map((val: string, i: number) => (
+ <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-lg border border-border bg-muted/30">
+ <div className="w-5 h-5 rounded bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center shrink-0">
+ <span className="text-[9px] font-bold text-purple-600 dark:text-purple-400">{i + 1}</span>
+ </div>
+ <span className="text-caption text-foreground">{val}</span>
+ </div>
+ ))}
+ </div>
+ </div>
+ {classificationPreview.tags && (
+ <div className="flex flex-wrap gap-1.5 pt-2">
+ {classificationPreview.tags.map((tag: string) => (
+ <Badge key={tag} variant="secondary" className="text-caption font-normal">{tag}</Badge>
+ ))}
+ </div>
+ )}
+ </div>
+ <div className="px-6 py-4 border-t bg-muted/20 flex justify-end">
+ <Button variant="outline" onClick={() => setClassificationPreview(null)}>Close</Button>
+ </div>
+ </>
+ )}
+ </DialogContent>
+ </Dialog>
  </div>
  );
 }

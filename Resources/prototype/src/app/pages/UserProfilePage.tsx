@@ -81,14 +81,14 @@ Always looking for collaborators on open source climate data projects. Feel free
                       tags: org.tags,
                     }}
                   >
-                    <div>
+                    <Link to={`/organization/${org.name.toLowerCase().replace(/\s+/g, '-')}`}>
                       <OrganizationCard 
                         name={org.name}
                         role={org.role}
                         memberCount={org.memberCount}
                         imageUrl={org.imageUrl}
                       />
-                    </div>
+                    </Link>
                   </OrgHoverCard>
                 ))}
               </div>

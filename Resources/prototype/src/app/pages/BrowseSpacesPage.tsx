@@ -6,6 +6,7 @@ import {
   X,
   FolderOpen,
   ArrowUpDown,
+  Tags,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -25,6 +26,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/components/ui/popover";
 import {
   SpaceCard,
   SpaceCardSkeleton,
@@ -566,7 +572,145 @@ const ALL_SPACES: SpaceCardData[] = [
   },
 ];
 
+// ─── Classification data for spaces ──────────────────────────────────────────
+
+const SPACE_CLASSIFICATIONS: Record<string, { name: string; values: string[] }[]> = {
+  "s1": [
+    { name: "UN SDGs", values: ["SDG 7 – Affordable and Clean Energy", "SDG 9 – Industry, Innovation and Infrastructure"] },
+    { name: "Sector", values: ["Energy", "Technology"] },
+  ],
+  "s2": [
+    { name: "UN SDGs", values: ["SDG 7 – Affordable and Clean Energy", "SDG 12 – Responsible Consumption", "SDG 13 – Climate Action"] },
+    { name: "Sector", values: ["Energy", "Environment"] },
+  ],
+  "s3": [
+    { name: "UN SDGs", values: ["SDG 11 – Sustainable Cities and Communities", "SDG 17 – Partnerships for the Goals"] },
+    { name: "Sector", values: ["Social Services", "Government"] },
+  ],
+  "s4": [
+    { name: "UN SDGs", values: ["SDG 11 – Sustainable Cities and Communities", "SDG 9 – Industry, Innovation and Infrastructure"] },
+    { name: "Sector", values: ["Government", "Transportation"] },
+  ],
+  "s5": [
+    { name: "UN SDGs", values: ["SDG 4 – Quality Education"] },
+    { name: "Sector", values: ["Education"] },
+  ],
+  "s6": [
+    { name: "UN SDGs", values: ["SDG 3 – Good Health and Well-Being"] },
+    { name: "Sector", values: ["Healthcare", "Technology"] },
+  ],
+  "s7": [
+    { name: "UN SDGs", values: ["SDG 9 – Industry, Innovation and Infrastructure", "SDG 17 – Partnerships for the Goals"] },
+    { name: "Sector", values: ["Technology"] },
+  ],
+  "s8": [
+    { name: "UN SDGs", values: ["SDG 8 – Decent Work and Economic Growth", "SDG 10 – Reduced Inequalities"] },
+    { name: "Sector", values: ["Finance", "Social Services"] },
+  ],
+};
+
+// Enrich spaces with classifications
+ALL_SPACES.forEach(space => {
+  (space as any).classifications = SPACE_CLASSIFICATIONS[space.id] || [];
+});
+
+// Available SDG filter values
+const SDG_VALUES = [
+  "SDG 3 – Good Health and Well-Being",
+  "SDG 4 – Quality Education",
+  "SDG 7 – Affordable and Clean Energy",
+  "SDG 8 – Decent Work and Economic Growth",
+  "SDG 9 – Industry, Innovation and Infrastructure",
+  "SDG 10 – Reduced Inequalities",
+  "SDG 11 – Sustainable Cities and Communities",
+  "SDG 12 – Responsible Consumption",
+  "SDG 13 – Climate Action",
+  "SDG 17 – Partnerships for the Goals",
+];
+
+const SECTOR_VALUES = [
+  "Education", "Energy", "Environment", "Finance", "Government",
+  "Healthcare", "Social Services", "Technology", "Transportation",
+];
+
 const BATCH_SIZE = 12;
+
+// ─── Facet Section for sidebar ───────────────────────────────────────────────
+
+function FacetSection({
+  title,
+  values,
+  selected,
+  onToggle,
+  formatLabel,
+}: {
+  title: string;
+  values: string[];
+  selected: string[];
+  onToggle: (value: string) => void;
+  formatLabel?: (v: string) => string;
+}) {
+  const [open, setOpen] = useState(true);
+  const [expanded, setExpanded] = useState(false);
+  const INITIAL_SHOW = 5;
+  const visibleValues = expanded ? values : values.slice(0, INITIAL_SHOW);
+  const hasMore = values.length > INITIAL_SHOW;
+
+  return (
+    <div className="py-3 border-t border-border first:border-t-0 first:pt-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between text-left mb-2"
+      >
+        <span className="text-caption font-semibold text-foreground flex items-center gap-1.5">
+          <ChevronDown style={{ width: 12, height: 12, transition: "transform 0.2s", transform: open ? "rotate(0deg)" : "rotate(-90deg)" }} />
+          {title}
+        </span>
+        {selected.length > 0 && (
+          <Badge className="text-[10px] h-4 px-1.5" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
+            {selected.length}
+          </Badge>
+        )}
+      </button>
+      {open && (
+        <>
+          <div className="space-y-0.5">
+            {visibleValues.map((value) => {
+              const isSelected = selected.includes(value);
+              return (
+                <button
+                  key={value}
+                  onClick={() => onToggle(value)}
+                  className="w-full flex items-center gap-2 px-1 py-1 rounded text-left text-caption hover:bg-muted/50 transition-colors"
+                  style={{ color: isSelected ? "var(--primary)" : undefined, fontWeight: isSelected ? 500 : undefined }}
+                >
+                  <div
+                    className="w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0"
+                    style={{
+                      borderColor: isSelected ? "var(--primary)" : "var(--border)",
+                      background: isSelected ? "var(--primary)" : "transparent",
+                    }}
+                  >
+                    {isSelected && <span style={{ color: "white", fontSize: 8, lineHeight: 1 }}>✓</span>}
+                  </div>
+                  <span className="truncate">{formatLabel ? formatLabel(value) : value}</span>
+                </button>
+              );
+            })}
+          </div>
+          {hasMore && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-1 ml-1 text-[11px] text-primary hover:underline"
+            >
+              {expanded ? "Show less" : `Show ${values.length - INITIAL_SHOW} more…`}
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 type SortOption = "recent" | "alpha" | "members" | "active";
 type PrivacyFilter = "all" | "public" | "private";
@@ -579,6 +723,9 @@ export default function BrowseSpacesPage() {
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [privacyFilter, setPrivacyFilter] = useState<PrivacyFilter>("all");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
+  const [selectedSDGs, setSelectedSDGs] = useState<string[]>([]);
+  const [selectedSectors, setSelectedSectors] = useState<string[]>([]);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(true);
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -605,6 +752,27 @@ export default function BrowseSpacesPage() {
     if (typeFilter === "spaces") result = result.filter((s) => !s.parent);
     if (typeFilter === "subspaces") result = result.filter((s) => !!s.parent);
 
+    // Classification filters
+    if (selectedSDGs.length > 0) {
+      result = result.filter((s) => {
+        const cls = (s as any).classifications as { name: string; values: string[] }[] | undefined;
+        if (!cls) return false;
+        const sdgCls = cls.find((c) => c.name === "UN SDGs");
+        if (!sdgCls) return false;
+        return selectedSDGs.some((sdg) => sdgCls.values.includes(sdg));
+      });
+    }
+
+    if (selectedSectors.length > 0) {
+      result = result.filter((s) => {
+        const cls = (s as any).classifications as { name: string; values: string[] }[] | undefined;
+        if (!cls) return false;
+        const sectorCls = cls.find((c) => c.name === "Sector");
+        if (!sectorCls) return false;
+        return selectedSectors.some((sec) => sectorCls.values.includes(sec));
+      });
+    }
+
     // Sort
     switch (sortBy) {
       case "alpha":
@@ -624,12 +792,12 @@ export default function BrowseSpacesPage() {
     }
 
     return result;
-  }, [searchQuery, sortBy, privacyFilter, typeFilter]);
+  }, [searchQuery, sortBy, privacyFilter, typeFilter, selectedSDGs, selectedSectors]);
 
   const displayedSpaces = filteredSpaces.slice(0, visibleCount);
   const hasMore = visibleCount < filteredSpaces.length;
   const activeFilterCount =
-    (privacyFilter !== "all" ? 1 : 0) + (typeFilter !== "all" ? 1 : 0);
+    (privacyFilter !== "all" ? 1 : 0) + (typeFilter !== "all" ? 1 : 0) + (selectedSDGs.length > 0 ? 1 : 0) + (selectedSectors.length > 0 ? 1 : 0);
 
   const handleLoadMore = useCallback(() => {
     setIsLoadingMore(true);
@@ -644,6 +812,8 @@ export default function BrowseSpacesPage() {
     setSearchQuery("");
     setPrivacyFilter("all");
     setTypeFilter("all");
+    setSelectedSDGs([]);
+    setSelectedSectors([]);
     setSortBy("recent");
   };
 
@@ -862,6 +1032,56 @@ export default function BrowseSpacesPage() {
         </DropdownMenu>
       </div>
 
+      {/* ─── Classification Filter Sidebar + Content ─────────────────── */}
+      <div className="flex gap-6">
+        {/* Sidebar */}
+        {filterPanelOpen && (
+          <div className="hidden lg:block w-[240px] shrink-0">
+            <div className="sticky top-20 space-y-1 border border-border rounded-lg bg-card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-caption font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Tags style={{ width: 12, height: 12 }} />
+                  Classifications
+                </h3>
+                {(selectedSDGs.length > 0 || selectedSectors.length > 0) && (
+                  <button
+                    onClick={() => { setSelectedSDGs([]); setSelectedSectors([]); setVisibleCount(BATCH_SIZE); }}
+                    className="text-[10px] text-primary hover:underline"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+
+              {/* SDG Section */}
+              <FacetSection
+                title="UN SDGs"
+                values={SDG_VALUES}
+                selected={selectedSDGs}
+                onToggle={(val) => {
+                  setSelectedSDGs((prev) => prev.includes(val) ? prev.filter((s) => s !== val) : [...prev, val]);
+                  setVisibleCount(BATCH_SIZE);
+                }}
+                formatLabel={(v) => v.replace("SDG ", "").replace(" –", ":")}
+              />
+
+              {/* Sector Section */}
+              <FacetSection
+                title="Sector"
+                values={SECTOR_VALUES}
+                selected={selectedSectors}
+                onToggle={(val) => {
+                  setSelectedSectors((prev) => prev.includes(val) ? prev.filter((s) => s !== val) : [...prev, val]);
+                  setVisibleCount(BATCH_SIZE);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Main content */}
+        <div className="flex-1 min-w-0">
+
       {/* Active filter chips */}
       {(activeFilterCount > 0 || searchQuery) && (
         <div className="flex flex-wrap items-center gap-2" style={{ marginBottom: 16 }}>
@@ -913,6 +1133,20 @@ export default function BrowseSpacesPage() {
               <X style={{ width: 10, height: 10 }} />
             </Badge>
           )}
+          {selectedSDGs.map((sdg) => (
+            <Badge key={sdg} variant="secondary" className="gap-1 cursor-pointer text-caption font-normal" style={{ padding: "4px 10px", borderRadius: "999px" }}
+              onClick={() => { setSelectedSDGs((prev) => prev.filter((s) => s !== sdg)); setVisibleCount(BATCH_SIZE); }}>
+              {sdg.replace("SDG ", "").replace(" –", ":")}
+              <X style={{ width: 10, height: 10 }} />
+            </Badge>
+          ))}
+          {selectedSectors.map((sector) => (
+            <Badge key={sector} variant="secondary" className="gap-1 cursor-pointer text-caption font-normal" style={{ padding: "4px 10px", borderRadius: "999px" }}
+              onClick={() => { setSelectedSectors((prev) => prev.filter((s) => s !== sector)); setVisibleCount(BATCH_SIZE); }}>
+              {sector}
+              <X style={{ width: 10, height: 10 }} />
+            </Badge>
+          ))}
         </div>
       )}
 
@@ -1030,6 +1264,8 @@ export default function BrowseSpacesPage() {
           </Button>
         </div>
       )}
+        </div>{/* end Main content */}
+      </div>{/* end flex sidebar+content */}
         </div>
       </div>
     </div>

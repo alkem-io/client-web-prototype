@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { InviteVCDialog } from "@/app/components/vc/InviteVCDialog";
 import {
  Search,
  MoreHorizontal,
@@ -18,7 +17,10 @@ import {
  ChevronLeft,
  ChevronRight,
  Eye,
- ArrowUpDown
+ ArrowUpDown,
+ ClipboardList,
+ MessageSquare,
+ UserCheck
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
@@ -39,6 +41,14 @@ import {
  DropdownMenuTrigger,
  DropdownMenuSeparator
 } from "@/app/components/ui/dropdown-menu";
+import {
+ Dialog,
+ DialogContent,
+ DialogHeader,
+ DialogTitle,
+ DialogDescription,
+} from "@/app/components/ui/dialog";
+import { Separator } from "@/app/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
@@ -47,8 +57,14 @@ import { Link } from "react-router";
 
 // --- Mock Data ---
 
-type MemberStatus = 'Active' | 'Pending' | 'Invited';
+type MemberStatus = 'Active' | 'Pending' | 'Invited' | 'Accepted';
 type MemberRole = 'Host' | 'Admin' | 'Lead' | 'Member';
+type JoinMethod = 'invited' | 'applied' | 'direct';
+
+interface ApplicationAnswer {
+ question: string;
+ answer: string;
+}
 
 interface CommunityMember {
  id: string;
@@ -59,6 +75,10 @@ interface CommunityMember {
  role: MemberRole;
  avatar: string | null;
  initials: string;
+ joinMethod?: JoinMethod;
+ invitedBy?: string;
+ applicationMessage?: string;
+ applicationFormAnswers?: ApplicationAnswer[];
 }
 
 const MOCK_MEMBERS: CommunityMember[] = [
@@ -66,47 +86,77 @@ const MOCK_MEMBERS: CommunityMember[] = [
  id: 'u1', name: "Elena Martinez", email: "elena@alkemio.org", date: "2023-10-15",
  status: "Active", role: "Host",
  avatar: "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- initials: "EM"
+ initials: "EM",
+ joinMethod: 'invited', invitedBy: 'Platform Admin',
  },
  {
  id: 'u2', name: "Sarah Chen", email: "sarah.chen@example.com", date: "2023-11-02",
  status: "Active", role: "Admin",
  avatar: "https://images.unsplash.com/photo-1757347398206-7425300ef990?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- initials: "SC"
+ initials: "SC",
+ joinMethod: 'direct',
  },
  {
  id: 'u3', name: "Maya Ross", email: "maya.r@example.com", date: "2023-12-10",
  status: "Active", role: "Lead",
  avatar: "https://images.unsplash.com/photo-1589332911105-a6b59f2e4c4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- initials: "MR"
+ initials: "MR",
+ joinMethod: 'applied',
+ applicationFormAnswers: [
+ { question: "Why do you want to join this space?", answer: "I've been following Alkemio's work on innovation ecosystems for two years and believe my experience in sustainable tech can add real value to the discussions here." },
+ { question: "Link to your portfolio or LinkedIn profile", answer: "https://linkedin.com/in/mayaross" },
+ ],
  },
  {
  id: 'u4', name: "David Kim", email: "dkim@design.co", date: "2024-01-05",
  status: "Active", role: "Member",
  avatar: "https://images.unsplash.com/photo-1651634099348-e4c38cfaa6d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- initials: "DK"
+ initials: "DK",
+ joinMethod: 'invited', invitedBy: 'Elena Martinez',
  },
  {
  id: 'u5', name: "Robert Fox", email: "robert.fox@example.com", date: "2024-01-12",
  status: "Active", role: "Member",
  avatar: "https://images.unsplash.com/photo-1651097681268-851acda33b18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
- initials: "RF"
+ initials: "RF",
+ joinMethod: 'applied',
+ applicationMessage: "Hi, I'm a product designer with 8 years in civic tech. I'd love to contribute to the UX challenges this space is tackling — happy to share my portfolio on request.",
  },
  {
  id: 'p1', name: "Michael Chen", email: "m.chen@university.edu", date: "2024-02-20",
- status: "Pending", role: "Member", avatar: null, initials: "MC"
+ status: "Pending", role: "Member", avatar: null, initials: "MC",
+ joinMethod: 'applied',
+ applicationFormAnswers: [
+ { question: "Why do you want to join this space?", answer: "As a researcher in urban mobility at TU Delft, this space aligns directly with my work on smart city adoption frameworks. I'd love to connect with practitioners here." },
+ { question: "Link to your portfolio or LinkedIn profile", answer: "https://linkedin.com/in/michaelchen-research" },
+ ],
  },
  {
  id: 'p2', name: "Jessica Alverez", email: "jess.alverez@studio.com", date: "2024-02-21",
- status: "Pending", role: "Member", avatar: null, initials: "JA"
+ status: "Pending", role: "Member", avatar: null, initials: "JA",
+ joinMethod: 'applied',
+ applicationMessage: "I run a design studio focused on social impact projects and would love to bring that perspective to this community. Looking forward to collaborating!",
+ },
+ {
+ // Accepted = admin approved the application; membership is being finalised.
+ // Delete is intentionally unavailable at this stage.
+ id: 'a1', name: "Lisa Park", email: "lisa.park@venture.io", date: "2024-02-22",
+ status: "Accepted", role: "Member", avatar: null, initials: "LP",
+ joinMethod: 'applied',
+ applicationFormAnswers: [
+ { question: "Why do you want to join this space?", answer: "I work in venture capital focused on climate tech. This space looks like the right community to explore collaborative funding models with practitioners." },
+ { question: "Link to your portfolio or LinkedIn profile", answer: "https://linkedin.com/in/lisapark-vc" },
+ ],
  },
  {
  id: 'i1', name: "Thomas Wright", email: "tom.wright@construction.com", date: "2024-02-18",
- status: "Invited", role: "Member", avatar: null, initials: "TW"
+ status: "Invited", role: "Member", avatar: null, initials: "TW",
+ joinMethod: 'invited', invitedBy: 'Elena Martinez',
  },
  {
  id: 'i2', name: "Emily Zhang", email: "emily.z@tech.io", date: "2024-02-19",
- status: "Invited", role: "Lead", avatar: null, initials: "EZ"
+ status: "Invited", role: "Lead", avatar: null, initials: "EZ",
+ joinMethod: 'invited', invitedBy: 'Sarah Chen',
  },
  ...Array.from({ length: 20 }).map((_, i) => ({
  id: `m${i + 6}`,
@@ -125,6 +175,7 @@ const MOCK_MEMBERS: CommunityMember[] = [
  "JW", "ET", "LO", "SL", "OS", "AP", "WC", "IG", "HW", "MK",
  "AW", "CD", "DL", "AW", "MC", "HL", "JH", "EY", "SA", "AK"
  ][i] || `M${i + 6}`,
+ joinMethod: 'direct' as JoinMethod,
  }))
 ];
 
@@ -171,6 +222,115 @@ const MOCK_VCS: VirtualContributor[] = [
  },
 ];
 
+// --- Membership Details Dialog ---
+
+function MembershipDetailsDialog({
+ member,
+ open,
+ onOpenChange,
+}: {
+ member: CommunityMember | null;
+ open: boolean;
+ onOpenChange: (open: boolean) => void;
+}) {
+ if (!member) return null;
+ const joinedDate = new Date(member.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+ return (
+ <Dialog open={open} onOpenChange={onOpenChange}>
+ <DialogContent className="max-w-lg">
+ <DialogHeader>
+ <DialogTitle>Membership Details</DialogTitle>
+ <DialogDescription>How {member.name} joined this space</DialogDescription>
+ </DialogHeader>
+
+ <div className="space-y-4 pt-1">
+ {/* Member summary */}
+ <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border">
+ <Avatar className="w-10 h-10 border">
+ {member.avatar && <AvatarImage src={member.avatar} />}
+ <AvatarFallback className="text-sm font-semibold">{member.initials}</AvatarFallback>
+ </Avatar>
+ <div>
+ <div className="font-medium text-sm">{member.name}</div>
+ <div className="text-xs text-muted-foreground">{member.email}</div>
+ </div>
+ <Badge
+ variant="outline"
+ className={cn(
+ "ml-auto shrink-0",
+ member.status === 'Active' && "bg-green-500/10 text-green-600 border-green-500/20",
+ member.status === 'Pending' && "bg-amber-500/10 text-amber-600 border-amber-500/20",
+ member.status === 'Invited' && "bg-primary/10 text-primary border-primary/20",
+ member.status === 'Accepted' && "bg-green-500/10 text-green-600 border-green-500/20",
+ )}
+ >
+ {member.status}
+ </Badge>
+ </div>
+
+ {/* How they joined */}
+ <div className="space-y-2">
+ <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">How they joined</p>
+ {member.joinMethod === 'invited' ? (
+ <div className="flex items-start gap-2.5 text-sm">
+ <UserPlus className="w-4 h-4 mt-0.5 text-primary shrink-0" />
+ <span>
+ Invited by <span className="font-medium">{member.invitedBy ?? 'an admin'}</span> on {joinedDate}
+ </span>
+ </div>
+ ) : member.joinMethod === 'applied' ? (
+ <div className="flex items-start gap-2.5 text-sm">
+ <ClipboardList className="w-4 h-4 mt-0.5 text-amber-600 shrink-0" />
+ <span>Submitted an application on {joinedDate}</span>
+ </div>
+ ) : (
+ <div className="flex items-start gap-2.5 text-sm text-muted-foreground">
+ <UserCheck className="w-4 h-4 mt-0.5 shrink-0" />
+ <span>Added directly as a member on {joinedDate}</span>
+ </div>
+ )}
+ </div>
+
+ {/* Application form answers */}
+ {member.applicationFormAnswers && member.applicationFormAnswers.length > 0 && (
+ <>
+ <Separator />
+ <div className="space-y-3">
+ <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Application Form</p>
+ {member.applicationFormAnswers.map((qa, i) => (
+ <div key={i} className="space-y-1">
+ <p className="text-xs font-medium text-muted-foreground">{qa.question}</p>
+ <p className="text-sm bg-muted/40 rounded-md px-3 py-2 border leading-relaxed">{qa.answer}</p>
+ </div>
+ ))}
+ </div>
+ </>
+ )}
+
+ {/* Free-text message */}
+ {member.applicationMessage && (
+ <>
+ <Separator />
+ <div className="space-y-2">
+ <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Message</p>
+ <div className="flex items-start gap-2.5">
+ <MessageSquare className="w-4 h-4 mt-2.5 text-muted-foreground shrink-0" />
+ <p className="text-sm bg-muted/40 rounded-md px-3 py-2 border flex-1 leading-relaxed">{member.applicationMessage}</p>
+ </div>
+ </div>
+ </>
+ )}
+
+ {/* No details */}
+ {!member.applicationFormAnswers && !member.applicationMessage && member.joinMethod === 'direct' && (
+ <p className="text-sm text-muted-foreground text-center py-2">No additional details available.</p>
+ )}
+ </div>
+ </DialogContent>
+ </Dialog>
+ );
+}
+
 // --- Component ---
 
 export function SpaceSettingsCommunity() {
@@ -178,10 +338,16 @@ export function SpaceSettingsCommunity() {
  const [searchQuery, setSearchQuery] = useState('');
  const [page, setPage] = useState(1);
  const [pendingSort, setPendingSort] = useState<{ key: 'name' | 'date' | 'status'; dir: 'asc' | 'desc' }>({ key: 'date', dir: 'desc' });
- const [inviteVCOpen, setInviteVCOpen] = useState(false);
+ const [selectedMember, setSelectedMember] = useState<CommunityMember | null>(null);
+ const [detailsOpen, setDetailsOpen] = useState(false);
  const pageSize = 10;
 
- const pendingMembers = members.filter(m => m.status === 'Pending' || m.status === 'Invited')
+ const openDetails = (member: CommunityMember) => {
+ setSelectedMember(member);
+ setDetailsOpen(true);
+ };
+
+ const pendingMembers = members.filter(m => m.status === 'Pending' || m.status === 'Invited' || m.status === 'Accepted')
  .sort((a, b) => {
  const { key, dir } = pendingSort;
  const aVal = key === 'date' ? new Date(a.date).getTime() : a[key].toLowerCase();
@@ -213,6 +379,7 @@ export function SpaceSettingsCommunity() {
  };
 
  return (
+ <>
  <div className="space-y-5 animate-in fade-in duration-500">
  {/* ── Pending Memberships ── */}
  <SettingsSection
@@ -266,30 +433,47 @@ export function SpaceSettingsCommunity() {
  className={cn(
  "text-badge",
  member.status === 'Pending' && "bg-amber-500/10 text-amber-600 border-amber-500/20",
- member.status === 'Invited' && "bg-primary/10 text-primary border-primary/20"
+ member.status === 'Invited' && "bg-primary/10 text-primary border-primary/20",
+ member.status === 'Accepted' && "bg-green-500/10 text-green-600 border-green-500/20",
  )}
  >
- {member.status === 'Pending' ? 'Application Received' : 'Invited'}
+ {member.status === 'Pending' ? 'Application Received' : member.status === 'Accepted' ? 'Accepted – Processing' : 'Invited'}
  </Badge>
  </TableCell>
  <TableCell className="text-right">
  <div className="flex items-center justify-end gap-1">
  {member.status === 'Pending' && (
  <>
- <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-primary" title="Approve">
+ <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-primary" title="Approve application">
  <Check className="h-3.5 w-3.5" />
  </Button>
- <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-destructive" title="Reject">
+ <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-destructive" title="Reject application">
  <X className="h-3.5 w-3.5" />
  </Button>
  </>
  )}
- <IconButton variant="ghost" tooltipLabel="View" >
+ <IconButton variant="ghost" tooltipLabel="View details" onClick={() => openDetails(member)}>
  <Eye className="w-3.5 h-3.5" />
  </IconButton>
- <IconButton variant="ghost" tooltipLabel="Delete" className="text-destructive" onClick={() => handleRemove(member.id)}>
+ {member.status === 'Accepted' ? (
+ <IconButton
+ variant="ghost"
+ tooltipLabel="Delete unavailable — membership already accepted"
+ className="text-muted-foreground opacity-40 cursor-not-allowed"
+ disabled
+ >
  <Trash2 className="w-3.5 h-3.5" />
  </IconButton>
+ ) : (
+ <IconButton
+ variant="ghost"
+ tooltipLabel={member.status === 'Invited' ? 'Revoke invitation' : 'Delete application'}
+ className="text-destructive"
+ onClick={() => handleRemove(member.id)}
+ >
+ <Trash2 className="w-3.5 h-3.5" />
+ </IconButton>
+ )}
  </div>
  </TableCell>
  </TableRow>
@@ -377,6 +561,9 @@ export function SpaceSettingsCommunity() {
  </DropdownMenuTrigger>
  <DropdownMenuContent align="end">
  <DropdownMenuItem>View Profile</DropdownMenuItem>
+ <DropdownMenuItem onClick={() => openDetails(member)}>
+ <Eye className="w-4 h-4 mr-2" /> Membership Details
+ </DropdownMenuItem>
  <DropdownMenuItem>Change Role</DropdownMenuItem>
  <DropdownMenuSeparator />
  <DropdownMenuItem className="text-destructive" onClick={() => handleRemove(member.id)}>
@@ -533,21 +720,19 @@ export function SpaceSettingsCommunity() {
  </IconButton>
  </div>
  ))}
- <Button variant="outline" size="sm" className="gap-2" onClick={() => setInviteVCOpen(true)}>
+ <Button variant="outline" size="sm" className="gap-2">
  <Plus className="w-4 h-4" /> Add Virtual Contributor
  </Button>
  </div>
  </SettingsSection>
-
- <InviteVCDialog
- open={inviteVCOpen}
- onOpenChange={setInviteVCOpen}
- existingVCIds={MOCK_VCS.map(vc => vc.id)}
- onInvite={(vc, message) => {
- // In a real app, this would send an invitation to the backend
- console.log(`Invited ${vc.name} with message: ${message}`);
- }}
- />
  </div>
+
+ {/* ── Membership Details Dialog ── */}
+ <MembershipDetailsDialog
+ member={selectedMember}
+ open={detailsOpen}
+ onOpenChange={setDetailsOpen}
+ />
+ </>
  );
 }

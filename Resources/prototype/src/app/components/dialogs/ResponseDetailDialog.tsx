@@ -56,7 +56,7 @@ const MOCK_RESPONSE = {
 
 const PEER_RESPONSES = [
  { id: "1", type: "Text", title: "Legal Framework", author: "Mike K.", date: "1d ago" },
- { id: "2", type: "Whiteboard", title: "Logistics Map V1", author: "Sarah Jenkins", date: "2d ago", active: true },
+ { id: "2", type: "Whiteboard", title: "Logistics Map V1", author: "Sarah Jenkins", date: "2d ago" },
  { id: "3", type: "Collection", title: "Existing Models", author: "Hoyte R.", date: "Today" },
  { id: "4", type: "Text", title: "Budget Draft", author: "Elena R.", date: "3d ago" },
  { id: "5", type: "Whiteboard", title: "User Journey", author: "David M.", date: "3d ago" },
@@ -64,6 +64,7 @@ const PEER_RESPONSES = [
 
 export function ResponseDetailDialog({ open, onOpenChange, responseId }: ResponseDetailDialogProps) {
  const [commentText, setCommentText] = useState("");
+ const [activeIndex, setActiveIndex] = useState(1);
  const isAuthor = true; // Mock author status
 
  const handleCopyLink = () => {
@@ -75,7 +76,11 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
  };
 
  const handleNav = (direction: "prev" | "next") => {
- toast.info(`Navigating to ${direction} response`);
+ setActiveIndex((i) =>
+   direction === "prev"
+     ? Math.max(0, i - 1)
+     : Math.min(PEER_RESPONSES.length - 1, i + 1)
+ );
  };
 
  return (
@@ -105,15 +110,16 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
  {/* 2. Response Navigation Controls */}
  <div className="h-12 shrink-0 bg-muted/20 border-b border-border flex items-center justify-between px-6">
  <div className="flex items-center gap-4 text-body-emphasis text-muted-foreground">
- <span>Response {MOCK_RESPONSE.responseIndex} of {MOCK_RESPONSE.totalResponses}</span>
+ <span>Response {activeIndex + 1} of {PEER_RESPONSES.length}</span>
  </div>
  
  <div className="flex items-center gap-2">
  <Button 
  variant="ghost" 
  size="sm" 
- className="h-8 gap-1 pl-2 pr-3 text-muted-foreground hover:text-foreground"
+ className="h-8 gap-1 pl-2 pr-3 text-muted-foreground hover:text-foreground disabled:opacity-40"
  onClick={() => handleNav("prev")}
+ disabled={activeIndex === 0}
  >
  <ChevronLeft className="w-4 h-4" /> Previous
  </Button>
@@ -121,8 +127,9 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
  <Button 
  variant="ghost" 
  size="sm" 
- className="h-8 gap-1 pl-3 pr-2 text-muted-foreground hover:text-foreground"
+ className="h-8 gap-1 pl-3 pr-2 text-muted-foreground hover:text-foreground disabled:opacity-40"
  onClick={() => handleNav("next")}
+ disabled={activeIndex === PEER_RESPONSES.length - 1}
  >
  Next <ChevronRight className="w-4 h-4" />
  </Button>
@@ -136,19 +143,19 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
  {/* Peer Responses Preview Strip */}
  <div className="px-8 pt-8 pb-2">
  <h3 className="text-label uppercase text-muted-foreground mb-3">
- All Contributions ({MOCK_RESPONSE.totalResponses})
+ All Contributions ({PEER_RESPONSES.length})
  </h3>
  <div className="flex gap-3 overflow-x-auto pb-4 -mx-2 px-2 snap-x">
- {PEER_RESPONSES.map((item) => (
+ {PEER_RESPONSES.map((item, index) => (
  <div 
  key={item.id}
  className={cn(
  "snap-start shrink-0 w-48 p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm flex flex-col gap-2",
- item.active 
+ index === activeIndex
  ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20" 
  : "bg-background border-border hover:border-primary/50"
  )}
- onClick={() => !item.active && handleNav("next")}
+ onClick={() => setActiveIndex(index)}
  >
  <div className="flex items-start justify-between">
  <Badge variant="outline" className="text-[10px] h-5 px-1 bg-transparent border-border/60 text-muted-foreground">
@@ -163,7 +170,7 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
  )}
  </div>
  <div className="space-y-1">
- <div className={cn("text-card-title line-clamp-2", item.active ? "text-primary" : "text-foreground")}>
+ <div className={cn("text-card-title line-clamp-2", index === activeIndex ? "text-primary" : "text-foreground")}>
  {item.title}
  </div>
  <div className="text-[10px] text-muted-foreground flex items-center gap-1.5">

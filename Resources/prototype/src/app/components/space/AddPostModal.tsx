@@ -9,7 +9,8 @@ import {
   Users, Pencil, Search, Check, ChevronsUpDown,
   FileSpreadsheet, Upload,
   Zap, UserPlus, Calendar, LayoutGrid, BookOpen, Mail, PlusCircle, CirclePlus,
-  Building2, Bot, List, Map as MapIcon
+  Building2, Bot, List, Map as MapIcon,
+  ClipboardList, ChevronUp, ChevronDown, CheckSquare
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
@@ -19,6 +20,7 @@ import { Label } from "@/app/components/ui/label";
 import { Switch } from "@/app/components/ui/switch";
 import { Separator } from "@/app/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { ConfigureTaskColumnsDialog, type TaskColumnDef } from "@/app/components/contribution/TaskBoard";
 import {
   Collapsible,
   CollapsibleContent,
@@ -36,6 +38,51 @@ import {
   PopoverTrigger,
 } from "@/app/components/ui/popover";
 import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+import { Textarea } from "@/app/components/ui/textarea";
+import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog";
+import {
+  ANSWER_TYPE_DESCRIPTORS,
+  ANSWER_TYPE_ORDER,
+  type CalloutFormAnswerType,
+  type CalloutFormChoiceOption,
+  type CalloutFormResponseVisibility,
+} from "@/app/components/callout/calloutFormTypes";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+
+/** A question row while it's being authored — `sortOrder` is the array index. */
+interface DraftFormQuestion {
+  id: string;
+  question: string;
+  explanation: string;
+  answerType: CalloutFormAnswerType;
+  /** Always present while authoring so the choice editor never has to null-check. */
+  options: CalloutFormChoiceOption[];
+}
+
+const uid = (prefix: string) =>
+  `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+function createDraftOption(): CalloutFormChoiceOption {
+  return { id: uid("opt"), label: "" };
+}
+
+function createDraftQuestion(): DraftFormQuestion {
+  return {
+    id: uid("q"),
+    question: "",
+    explanation: "",
+    // Short answer is the cheapest thing to answer, so it's the default —
+    // the author opts into more effort rather than out of it.
+    answerType: "short",
+    options: [],
+  };
+}
 
 interface AddPostModalProps {
   open: boolean;
@@ -56,6 +103,56 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
   const [ctaText, setCtaText] = useState("");
   const [ctaLink, setCtaLink] = useState("");
   const [ctaPickerOpen, setCtaPickerOpen] = useState(false);
+
+  // Form contribution type — controlled, unlike the neighbouring Poll panel whose inputs
+  // are uncontrolled and discard whatever the author types.
+  const [formQuestions, setFormQuestions] = useState<DraftFormQuestion[]>([createDraftQuestion()]);
+  const [formVisibility, setFormVisibility] = useState<CalloutFormResponseVisibility>("admins");
+  const [formAllowMultiple, setFormAllowMultiple] = useState(false);
+  const [formSettingsOpen, setFormSettingsOpen] = useState(false);
+
+  const updateFormQuestion = (id: string, patch: Partial<DraftFormQuestion>) => {
+    setFormQuestions(prev => prev.map(q => (q.id === id ? { ...q, ...patch } : q)));
+  };
+
+  const removeFormQuestion = (id: string) => {
+    setFormQuestions(prev => prev.filter(q => q.id !== id));
+  };
+
+  const addFormOption = (questionId: string) => {
+    setFormQuestions(prev =>
+      prev.map(q => (q.id === questionId ? { ...q, options: [...q.options, createDraftOption()] } : q))
+    );
+  };
+
+  const updateFormOption = (questionId: string, optionId: string, label: string) => {
+    setFormQuestions(prev =>
+      prev.map(q =>
+        q.id === questionId
+          ? { ...q, options: q.options.map(o => (o.id === optionId ? { ...o, label } : o)) }
+          : q
+      )
+    );
+  };
+
+  const removeFormOption = (questionId: string, optionId: string) => {
+    setFormQuestions(prev =>
+      prev.map(q =>
+        q.id === questionId ? { ...q, options: q.options.filter(o => o.id !== optionId) } : q
+      )
+    );
+  };
+
+  /** Swaps a question with its neighbour; no-ops at the ends. */
+  const moveFormQuestion = (index: number, direction: -1 | 1) => {
+    setFormQuestions(prev => {
+      const target = index + direction;
+      if (target < 0 || target >= prev.length) return prev;
+      const next = [...prev];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  };
 
   // Simulated space settings (in production, these come from space config)
   const spaceSettings = {
@@ -155,12 +252,18 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
   const [subspaceSearch, setSubspaceSearch] = useState("");
 
   // Collection type — always visible
-  const [collectionType, setCollectionType] = useState<"none" | "links" | "posts" | "memos" | "whiteboards" | "documents">("none");
+  const [collectionType, setCollectionType] = useState<"none" | "links" | "posts" | "memos" | "whiteboards" | "documents" | "form" | "tasks">("none");
   const [membersCanAdd, setMembersCanAdd] = useState(true);
   const [adminsCanAdd, setAdminsCanAdd] = useState(true);
   const [collectionDefaultTitle, setCollectionDefaultTitle] = useState("");
   const [collectionDefaultDescription, setCollectionDefaultDescription] = useState("");
   const [enableCollectionComments, setEnableCollectionComments] = useState(true);
+  const [taskColumns, setTaskColumns] = useState<TaskColumnDef[]>([
+    { id: "todo", label: "To Do", color: "#6b7280" },
+    { id: "in-progress", label: "In Progress", color: "#2563eb" },
+    { id: "done", label: "Done", color: "#16a34a" },
+  ]);
+  const [taskColumnsDialogOpen, setTaskColumnsDialogOpen] = useState(false);
   const [linkRows, setLinkRows] = useState([{ title: "", url: "", description: "" }]);
   const [linkDescription, setLinkDescription] = useState("");
   const [selectedPostTemplate, setSelectedPostTemplate] = useState("");
@@ -426,7 +529,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                   <div className="border-2 border-dashed rounded-lg bg-background p-5 text-center cursor-pointer hover:bg-muted/50 transition-colors">
                     <Upload className="w-5 h-5 text-muted-foreground/50 mx-auto mb-1.5" />
                     <p className="text-caption text-muted-foreground">Drag & drop a file, or click to upload</p>
-                    <p className="text-badge text-muted-foreground/60 mt-1">.docx, .xlsx, .pptx up to 25 MB</p>
+                    <p className="text-badge text-muted-foreground/60 mt-1">.docx, .xlsx, .pptx, .pdf up to 25 MB</p>
                   </div>
                 </div>
              )}
@@ -615,7 +718,9 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
             <div className="flex flex-wrap gap-2">
               {[
                 { id: 'links', label: 'Links & Files', icon: Link2 },
+                { id: 'form', label: 'Form', icon: ClipboardList },
                 { id: 'posts', label: 'Posts', icon: FileText },
+                { id: 'tasks', label: 'Tasks', icon: CheckSquare },
                 { id: 'memos', label: 'Memos', icon: PenLine },
                 { id: 'whiteboards', label: 'Whiteboards', icon: Presentation },
               ].map((type) => (
@@ -639,6 +744,177 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
             </div>
 
             {/* Inline collection settings panel — type-specific */}
+            {collectionType === 'form' && (
+                <div className="mt-2 p-4 border rounded-xl bg-muted/30 space-y-4 animate-in fade-in slide-in-from-top-2">
+                 <div className="flex items-center gap-3">
+                   <div className="p-2 rounded-lg bg-primary/10 text-primary"><ClipboardList className="w-5 h-5" /></div>
+                   <div>
+                     <p className="text-body-emphasis">Form</p>
+                     <p className="text-caption text-muted-foreground">Ask questions and collect answers as responses</p>
+                   </div>
+                 </div>
+
+                 {/* Question list — order here is the order respondents see. */}
+                 <div className="space-y-3">
+                   {formQuestions.map((question, index) => (
+                     <div key={question.id} className="p-3 border rounded-lg bg-background space-y-3">
+                       {/* Question text and its answer type sit on one row, as in
+                           Google Forms — choosing the shape is part of writing the
+                           question, not a setting you go looking for afterwards. */}
+                       <div className="flex items-start gap-2">
+                         <span className="text-caption text-muted-foreground mt-2.5 w-4 shrink-0 tabular-nums">{index + 1}.</span>
+                         <div className="flex-1 space-y-2 min-w-0">
+                           <div className="flex items-start gap-2">
+                             <Input
+                               value={question.question}
+                               onChange={e => updateFormQuestion(question.id, { question: e.target.value })}
+                               placeholder="Ask a question"
+                               className="h-8 bg-background flex-1 min-w-0"
+                             />
+                             <Select
+                               value={question.answerType}
+                               onValueChange={value =>
+                                 updateFormQuestion(question.id, {
+                                   answerType: value as CalloutFormAnswerType,
+                                   // Seed two blanks the first time a question becomes a
+                                   // choice, so the author has somewhere to type.
+                                   options:
+                                     value === 'choice' && question.options.length === 0
+                                       ? [createDraftOption(), createDraftOption()]
+                                       : question.options,
+                                 })
+                               }
+                             >
+                               <SelectTrigger className="h-8 w-[172px] shrink-0 bg-background">
+                                 <SelectValue />
+                               </SelectTrigger>
+                               <SelectContent>
+                                 {ANSWER_TYPE_ORDER.map(type => {
+                                   const descriptor = ANSWER_TYPE_DESCRIPTORS[type];
+                                   const TypeIcon = descriptor.icon;
+                                   return (
+                                     <SelectItem key={type} value={type}>
+                                       <span className="flex items-center gap-2">
+                                         <TypeIcon className="w-4 h-4 text-muted-foreground" />
+                                         {descriptor.label}
+                                       </span>
+                                     </SelectItem>
+                                   );
+                                 })}
+                               </SelectContent>
+                             </Select>
+                           </div>
+                           <Textarea
+                             value={question.explanation}
+                             onChange={e => updateFormQuestion(question.id, { explanation: e.target.value })}
+                             placeholder="Add an explanation (optional)"
+                             className="bg-background min-h-0 h-14 text-body"
+                           />
+                         </div>
+                       </div>
+
+                       {/* Answer preview — what the respondent will see. Inert
+                           here; the real inputs live in FormRespondDialog. */}
+                       <div className="pl-6">
+                         {question.answerType === 'choice' ? (
+                           <div className="space-y-2">
+                             {question.options.map((option, optionIndex) => (
+                               <div key={option.id} className="flex items-center gap-2">
+                                 <span className="w-4 h-4 rounded-full border border-muted-foreground/40 shrink-0" aria-hidden="true" />
+                                 <Input
+                                   value={option.label}
+                                   onChange={e => updateFormOption(question.id, option.id, e.target.value)}
+                                   placeholder={`Option ${optionIndex + 1}`}
+                                   className="h-8 bg-background flex-1 min-w-0"
+                                 />
+                                 <IconButton
+                                   variant="ghost"
+                                   tooltipLabel="Remove option"
+                                   disabled={question.options.length <= 2}
+                                   onClick={() => removeFormOption(question.id, option.id)}
+                                 >
+                                   <X className="w-4 h-4" />
+                                 </IconButton>
+                               </div>
+                             ))}
+                             <Button
+                               variant="ghost"
+                               size="sm"
+                               className="gap-1.5 text-caption text-muted-foreground"
+                               onClick={() => addFormOption(question.id)}
+                             >
+                               <Plus className="w-3.5 h-3.5" /> Add option
+                             </Button>
+                           </div>
+                         ) : (
+                           <div
+                             className={cn(
+                               'rounded-md border border-dashed border-border/70 bg-muted/20 px-3 flex items-center',
+                               question.answerType === 'long' ? 'h-14' : 'h-8'
+                             )}
+                           >
+                             <span className="text-caption text-muted-foreground">
+                               {ANSWER_TYPE_DESCRIPTORS[question.answerType].description}
+                             </span>
+                           </div>
+                         )}
+                       </div>
+
+                       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pl-6">
+                         <div className="flex items-center gap-0.5 ml-auto">
+                           <IconButton
+                             variant="ghost"
+                             tooltipLabel="Move up"
+                             disabled={index === 0}
+                             onClick={() => moveFormQuestion(index, -1)}
+                           >
+                             <ChevronUp className="w-4 h-4" />
+                           </IconButton>
+                           <IconButton
+                             variant="ghost"
+                             tooltipLabel="Move down"
+                             disabled={index === formQuestions.length - 1}
+                             onClick={() => moveFormQuestion(index, 1)}
+                           >
+                             <ChevronDown className="w-4 h-4" />
+                           </IconButton>
+                           <IconButton
+                             variant="ghost"
+                             tooltipLabel="Delete question"
+                             disabled={formQuestions.length === 1}
+                             onClick={() => removeFormQuestion(question.id)}
+                           >
+                             <Trash2 className="w-4 h-4" />
+                           </IconButton>
+                         </div>
+                       </div>
+                     </div>
+                   ))}
+
+                   {/* Add-question left, settings gear right — matching the
+                       Poll panel, where the per-framing settings live behind
+                       the gear rather than crowding the authoring surface. */}
+                   <div className="flex items-center justify-between gap-3 pt-1">
+                     <Button
+                       variant="outline"
+                       size="sm"
+                       className="gap-1.5 h-8"
+                       onClick={() => setFormQuestions(prev => [...prev, createDraftQuestion()])}
+                     >
+                       <Plus className="w-3.5 h-3.5" /> Add question
+                     </Button>
+                     <IconButton
+                       variant="ghost"
+                       tooltipLabel="Form settings"
+                       onClick={() => setFormSettingsOpen(true)}
+                     >
+                       <Settings className="w-4 h-4" />
+                     </IconButton>
+                   </div>
+                 </div>
+               </div>
+            )}
+
             {collectionType === 'links' && (
               <div className="mt-2 px-4 pb-4 pt-6 border rounded-xl bg-muted/30 space-y-4 animate-in fade-in slide-in-from-top-2">
                 {/* Pre-populate links */}
@@ -734,6 +1010,46 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                   </div>
                   <Button variant="outline" size="sm" className="h-8 shrink-0" onClick={() => setDefaultsDialogOpen(true)}>Set Default Response</Button>
                 </div>
+              </div>
+            )}
+
+            {collectionType === 'tasks' && (
+              <div className="mt-2 px-4 pb-4 pt-5 border rounded-xl bg-muted/30 space-y-4 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-3.5 h-3.5 text-muted-foreground" />
+                        <Label className="text-body-emphasis">Members can add</Label>
+                      </div>
+                      <Switch checked={membersCanAdd} onCheckedChange={setMembersCanAdd} />
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-3.5 h-3.5 text-muted-foreground" />
+                        <Label className="text-body-emphasis">Admins can add</Label>
+                      </div>
+                      <Switch checked={adminsCanAdd} onCheckedChange={setAdminsCanAdd} />
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-3.5 h-3.5 text-muted-foreground" />
+                        <Label className="text-body-emphasis">Enable comments</Label>
+                      </div>
+                      <Switch checked={enableCollectionComments} onCheckedChange={setEnableCollectionComments} />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 shrink-0">
+                    <Button variant="outline" size="sm" className="h-8" onClick={() => setDefaultsDialogOpen(true)}>Set Default Response</Button>
+                    <Button variant="outline" size="sm" className="h-8" onClick={() => setTaskColumnsDialogOpen(true)}>Configure Task Columns</Button>
+                  </div>
+                </div>
+                <ConfigureTaskColumnsDialog
+                  open={taskColumnsDialogOpen}
+                  onOpenChange={setTaskColumnsDialogOpen}
+                  columns={taskColumns}
+                  onSave={setTaskColumns}
+                />
               </div>
             )}
 
@@ -1013,6 +1329,23 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Form settings — the authoring-time twin of the gear on the callout card.
+          No responses exist yet, so the reveal confirmation never fires here. */}
+      <FormSettingsDialog
+        open={formSettingsOpen}
+        onOpenChange={setFormSettingsOpen}
+        form={{
+          questions: [],
+          responses: [],
+          responseVisibility: formVisibility,
+          allowMultipleResponses: formAllowMultiple,
+        }}
+        onChange={(settings) => {
+          setFormVisibility(settings.responseVisibility);
+          setFormAllowMultiple(settings.allowMultipleResponses);
+        }}
+      />
     </Dialog>
   );
 }

@@ -61,6 +61,7 @@ const SECTIONS = [
  { id: "subspace", title: "Subspace Templates", type: "Subspace" },
  { id: "collab", title: "Collaboration Tools", type: "Collaboration Tool" },
  { id: "whiteboard", title: "Whiteboards", type: "Whiteboard" },
+ { id: "classification", title: "Classification Templates", type: "Classification" },
  { id: "guidelines", title: "Community Guidelines", type: "Community Guidelines" }
 ];
 
@@ -148,6 +149,8 @@ function TemplatePreview({ type, content, structure }: { type: string, content?:
  displayContent = (structure.post?.title || "") + "\n" + (structure.post?.description || "") + "\n\nAttached: " + (structure.component?.name || "");
  } else if (type === "Community Guidelines") {
  displayContent = structure.categories?.map((c: any) => c.name + "\n- " + c.preview).join("\n\n");
+ } else if (type === "Classification") {
+ displayContent = (structure.classificationName || "Classification") + "\n" + (structure.cardinality === "multi" ? "Multi-select" : "Single-select") + "\n\n" + (structure.values?.slice(0, 6).map((v: string) => "- " + v).join("\n") || "");
  }
  }
 

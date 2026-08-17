@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -302,7 +303,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
               onClick={() => setApplicationDialogOpen(true)}
             >
               <Plus className="w-4 h-4" />
-              Create Subspace
+              Apply for a Subspace
             </Button>
           )}
         </div>
@@ -532,51 +533,35 @@ export function TagCloud({ tags, activeTags, toggleTag }: { tags: string[]; acti
 
 function UpcomingEvents() {
   const [collapsed, setCollapsed] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
-  const upcomingEvents = [
-    { title: "Strategy Workshop", date: "Jul 8", status: "upcoming" },
-    { title: "Stakeholder Review", date: "Jul 11", status: "upcoming" },
-    { title: "Community Solar Session", date: "Jul 15", status: "upcoming" },
-  ];
-  const pastEvents = [
-    { title: "Kickoff Meeting", date: "Jun 20", status: "past" },
-    { title: "Data Review Sprint", date: "Jun 14", status: "past" },
-    { title: "Onboarding Workshop", date: "Jun 5", status: "past" },
+  const events = [
+    { title: "Strategy Workshop", date: "Jul 8" },
+    { title: "Stakeholder Review", date: "Jul 11" },
+    { title: "Community Solar Session", date: "Jul 15" },
   ];
 
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between mb-3">
         <button
-          onClick={() => setDialogOpen(true)}
+          onClick={() => setCollapsed(!collapsed)}
           className="flex items-center gap-1 hover:text-foreground transition-colors"
-          title="View all events"
         >
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Events
           </span>
+          <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
         </button>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="w-5 h-5 flex items-center justify-center rounded hover:bg-muted/50 transition-colors"
-            title={collapsed ? "Expand" : "Collapse"}
-          >
-            <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
-          </button>
-          <button
-            className="w-5 h-5 flex items-center justify-center rounded hover:bg-muted/50 transition-colors"
-            style={{ color: "var(--primary)" }}
-            title="Add event"
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        <button
+          className="w-5 h-5 flex items-center justify-center rounded hover:bg-muted/50 transition-colors"
+          style={{ color: "var(--primary)" }}
+          title="Add event"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </button>
       </div>
       {!collapsed && (
         <div className="flex flex-col gap-0.5">
-          {upcomingEvents.map((event) => (
+          {events.map((event) => (
             <button
               key={event.title}
               className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
@@ -596,94 +581,6 @@ function UpcomingEvents() {
           ))}
         </div>
       )}
-
-      {/* Events Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" style={{ color: "var(--primary)" }} />
-              Events
-            </DialogTitle>
-            <DialogDescription>All upcoming and past events for this space.</DialogDescription>
-          </DialogHeader>
-
-          {/* View toggle */}
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5 w-fit">
-            <button
-              onClick={() => setViewMode("list")}
-              className={cn("px-3 py-1.5 rounded-md text-xs font-medium transition-colors", viewMode === "list" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}
-            >
-              List
-            </button>
-            <button
-              onClick={() => setViewMode("calendar")}
-              className={cn("px-3 py-1.5 rounded-md text-xs font-medium transition-colors", viewMode === "calendar" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}
-            >
-              Calendar
-            </button>
-          </div>
-
-          {viewMode === "list" && (
-            <div className="space-y-4 mt-2">
-              <div>
-                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Upcoming</h4>
-                <div className="space-y-1">
-                  {upcomingEvents.map((event) => (
-                    <div key={event.title} className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-muted/50 transition-colors">
-                      <span className="w-10 h-10 rounded-lg shrink-0 flex flex-col items-center justify-center leading-none" style={{ background: "color-mix(in srgb, var(--primary) 10%, transparent)", color: "var(--primary)" }}>
-                        <span className="text-[9px] font-medium uppercase">{event.date.split(" ")[0]}</span>
-                        <span className="text-sm font-bold">{event.date.split(" ")[1]}</span>
-                      </span>
-                      <span className="text-sm font-medium text-foreground">{event.title}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Past</h4>
-                <div className="space-y-1">
-                  {pastEvents.map((event) => (
-                    <div key={event.title} className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-muted/50 transition-colors opacity-60">
-                      <span className="w-10 h-10 rounded-lg shrink-0 flex flex-col items-center justify-center leading-none" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}>
-                        <span className="text-[9px] font-medium uppercase">{event.date.split(" ")[0]}</span>
-                        <span className="text-sm font-bold">{event.date.split(" ")[1]}</span>
-                      </span>
-                      <span className="text-sm text-muted-foreground">{event.title}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {viewMode === "calendar" && (
-            <div className="mt-2 border border-border rounded-lg p-4 text-center">
-              <div className="grid grid-cols-7 gap-1 mb-2">
-                {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map((d) => (
-                  <span key={d} className="text-xs font-medium text-muted-foreground">{d}</span>
-                ))}
-              </div>
-              <div className="grid grid-cols-7 gap-1">
-                {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                  <button
-                    key={day}
-                    className={cn(
-                      "w-8 h-8 rounded-md text-xs flex items-center justify-center transition-colors",
-                      [8, 11, 15].includes(day)
-                        ? "bg-primary text-primary-foreground font-bold"
-                        : "text-foreground hover:bg-muted/50"
-                    )}
-                  >
-                    {day}
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-muted-foreground mt-3">3 events this month</p>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
@@ -692,13 +589,17 @@ function IntentLeadsBox() {
   return (
     <div className="rounded-lg border border-border bg-white p-3 pb-5 flex flex-col gap-3">
       <div className="flex flex-col gap-2">
-        <ReadMoreText
-          maxLines={3}
-          className="text-sm text-foreground/85 leading-relaxed"
-          toggleColor="var(--primary)"
-        >
+        <p className="text-sm text-foreground/85 leading-relaxed">
           A place to try and play around with various Alkemio features, to gain a better understanding of the platform, its flows and experience.
-        </ReadMoreText>
+        </p>
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent("open-about-dialog"))}
+          className="flex items-center gap-1 text-xs font-medium transition-colors hover:opacity-80 self-start"
+          style={{ color: "var(--primary)" }}
+        >
+          Learn more
+          <ExternalLink className="w-3 h-3" />
+        </button>
       </div>
       <div className="border-t border-border" />
       <div className="flex flex-col gap-1.5">
@@ -784,7 +685,14 @@ export function SubspaceQuickLinks() {
   const [collapsed, setCollapsed] = useState(false);
   const [sortMode, setSortMode] = useState<'az' | 'za' | 'newest' | 'oldest'>('az');
   const [sortOpen, setSortOpen] = useState(false);
+  const location = useLocation();
   const subspaces = TAB_INDEX.workspaces.slice(0, 4);
+
+  // Build base path: current space or subspace path + /subspaces/
+  const basePath = location.pathname.replace(/\/$/, "");
+  const subspacesBase = basePath.includes("/subspaces/")
+    ? basePath + "/subspaces/"
+    : basePath + "/subspaces/";
 
   const sortedSubspaces = [...subspaces].sort((a, b) => {
     switch (sortMode) {
@@ -843,19 +751,23 @@ export function SubspaceQuickLinks() {
       </div>
       {!collapsed && (
         <div className="flex flex-col gap-0.5">
-          {sortedSubspaces.map((s, i) => (
-            <button
-              key={s.title}
-              className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
-            >
-              <img
-                src={SUBSPACE_AVATARS[i % SUBSPACE_AVATARS.length]}
-                alt={s.title}
-                className="w-8 h-8 rounded-lg shrink-0 object-cover"
-              />
-              <span className="text-foreground/85 truncate">{s.title}</span>
-            </button>
-          ))}
+          {sortedSubspaces.map((s, i) => {
+            const slug = s.title.toLowerCase().replace(/\s+/g, "-");
+            return (
+              <a
+                key={s.title}
+                href={subspacesBase + slug}
+                className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left no-underline"
+              >
+                <img
+                  src={SUBSPACE_AVATARS[i % SUBSPACE_AVATARS.length]}
+                  alt={s.title}
+                  className="w-8 h-8 rounded-lg shrink-0 object-cover"
+                />
+                <span className="text-foreground/85 truncate">{s.title}</span>
+              </a>
+            );
+          })}
         </div>
       )}
     </div>

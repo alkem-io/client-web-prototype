@@ -1,7 +1,8 @@
 import {
  X, Share2, MoreHorizontal, MessageSquare, ThumbsUp, Heart, Smile,
  FileText, Link as LinkIcon, PenTool, Layout, Send, ChevronRight, Presentation, LayoutGrid,
- FileSpreadsheet, FileImage, Download, ExternalLink, ImagePlus, Images
+ FileSpreadsheet, FileImage, Download, ExternalLink, ImagePlus, Images,
+ Lock, Users
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
@@ -12,13 +13,22 @@ import { Separator } from "@/app/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
 import { Textarea } from "@/app/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { ResponseDetailDialog } from "@/app/components/dialogs/ResponseDetailDialog";
 import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
 import { PostProps, type MediaGalleryFeedThumbnail } from "@/app/components/space/PostCard";
+import { PostReactions } from "@/app/components/space/PostReactions";
+import { type PostReaction, seedDemoReactions, toggleReaction } from "@/app/components/space/post-reactions-data";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { MediaGalleryDetailView } from "@/app/components/mediaGallery/MediaGalleryDetailView";
+import {
+ ANSWER_TYPE_DESCRIPTORS,
+ findAnswer,
+ responsesAreRestricted,
+ sortedQuestions,
+ visibleResponses,
+} from "@/app/components/callout/calloutFormTypes";
 
 interface PostDetailDialogProps {
  open: boolean;
@@ -26,13 +36,25 @@ interface PostDetailDialogProps {
  post: PostProps | null;
  onAddMediaGalleryImages?: () => void;
  onDeleteMediaGalleryImage?: (thumbnail: MediaGalleryFeedThumbnail) => void;
+ /** Viewer context for the form framing (form framing only) — drives US3 response visibility. */
+ formViewer?: { userId: string; isAdmin: boolean };
+ /** Contribution cards to render below the post body (replaces the feed-level preview in L1). */
+ contributionsPreview?: ReactNode;
 }
 
-export function PostDetailDialog({ open, onOpenChange, post, onAddMediaGalleryImages, onDeleteMediaGalleryImage }: PostDetailDialogProps) {
+export function PostDetailDialog({ open, onOpenChange, post, onAddMediaGalleryImages, onDeleteMediaGalleryImage, formViewer, contributionsPreview }: PostDetailDialogProps) {
  const [commentText, setCommentText] = useState("");
  const [selectedResponseId, setSelectedResponseId] = useState<string | null>(null);
  const [activeDocIndex, setActiveDocIndex] = useState(0);
  const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
+ // Same seeded set the feed card shows, so opening a post does not change its
+ // reactions. Keyed off the post id via the initialiser below.
+ const [reactions, setReactions] = useState<PostReaction[]>([]);
+ const [reactionsPostId, setReactionsPostId] = useState<string | null>(null);
+ if (post && post.id !== reactionsPostId) {
+   setReactionsPostId(post.id);
+   setReactions(post.reactions ?? seedDemoReactions(post.id, post.reactionOptions));
+ }
 
  if (!post) return null;
 
@@ -288,27 +310,115 @@ export function PostDetailDialog({ open, onOpenChange, post, onAddMediaGalleryIm
  </div>
  )}
 
- {/* 5. Post Metadata / Reactions */}
- <div className="flex items-center gap-4 py-4 border-y border-border mt-8">
- <div className="flex -space-x-2">
- <span className="flex items-center justify-center w-6 h-6 rounded-full bg-info/10 text-info text-caption border border-background">👍</span>
- <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive/10 text-destructive text-caption border border-background">❤️</span>
- <span className="flex items-center justify-center w-6 h-6 rounded-full bg-warning/10 text-warning text-caption border border-background">💡</span>
+ {/* Form contribution type — the question set read-only, plus the responses
+ the viewer is allowed to see. Answering happens through FormRespondDialog
+ from the feed; this view is for reading what the form asks. */}
+ {post.contributionForm && (() => {
+ const form = post.contributionForm;
+ const questions = sortedQuestions(form);
+ const viewerId = formViewer?.userId ?? '';
+ const visible = visibleResponses(form, viewerId, formViewer?.isAdmin ?? false);
+ const restricted = responsesAreRestricted(form, formViewer?.isAdmin ?? false);
+
+ return (
+ <div className="space-y-4">
+ <div className="flex items-center justify-between gap-3">
+ <span className="text-label uppercase text-muted-foreground">Questions ({questions.length})</span>
+ <span className="inline-flex items-center gap-1.5 text-caption text-muted-foreground">
+ {form.responseVisibility === 'admins' ? (
+ <><Lock className="w-3 h-3" aria-hidden="true" /> Responses visible to admins only</>
+ ) : (
+ <><Users className="w-3 h-3" aria-hidden="true" /> Responses visible to space members</>
+ )}
+ </span>
  </div>
- <span className="text-body-emphasis text-muted-foreground">{post.stats?.likes ?? 0} reactions</span>
- 
+
+ <div className="space-y-3">
+ {questions.map((question, index) => (
+ <div key={question.id} className="rounded-xl border bg-muted/30 p-4">
+ <p className="text-body-emphasis">
+ <span className="text-muted-foreground mr-1.5">{index + 1}.</span>
+ {question.question}
+ </p>
+ {question.explanation && (
+ <p className="text-caption text-muted-foreground mt-1">{question.explanation}</p>
+ )}
+ <p className="text-caption text-muted-foreground mt-2">
+ {ANSWER_TYPE_DESCRIPTORS[question.answerType].label}
+ {question.answerType === 'choice' && question.options
+ ? ` · ${question.options.length} options`
+ : ''}
+ </p>
+ </div>
+ ))}
+ </div>
+
+ <div className="pt-2">
+ <p className="text-label uppercase text-muted-foreground">
+ {restricted ? `Your response (${visible.length})` : `Responses (${visible.length})`}
+ </p>
+ {visible.length === 0 ? (
+ <p className="text-body text-muted-foreground mt-2">No responses yet.</p>
+ ) : (
+ <div className="mt-3 space-y-3">
+ {visible.map((response) => (
+ <div key={response.id} className="rounded-lg border p-4 space-y-3 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => handleLevel3(response.author.name)}>
+ <div className="flex items-center gap-2">
+ <Avatar className="w-6 h-6">
+ {response.author.avatarUrl && (
+ <AvatarImage src={response.author.avatarUrl} alt={response.author.name} />
+ )}
+ <AvatarFallback className="text-badge">{response.author.name.charAt(0)}</AvatarFallback>
+ </Avatar>
+ <span className="text-body-emphasis">{response.author.name}</span>
+ <span className="text-caption text-muted-foreground">
+ {new Date(response.submittedAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+ </span>
+ </div>
+ {questions.map((question) => {
+ const answer = findAnswer(response, question.id);
+ if (!answer) return null;
+ return (
+ <div key={question.id}>
+ <p className="text-caption text-muted-foreground">{question.question}</p>
+ <p className="text-body whitespace-pre-wrap break-words">{answer}</p>
+ </div>
+ );
+ })}
+ </div>
+ ))}
+ </div>
+ )}
+ </div>
+ </div>
+ );
+ })()}
+
+ {/* 5. Post Metadata / Reactions — the same cluster the feed card uses, so a
+ post reads identically whether it is open or in the feed. Replaces the older
+ stacked-emoji tally, which showed a number and no people. */}
+ <div className="flex items-center gap-4 py-4 border-y border-border mt-8">
+ <PostReactions
+ reactions={reactions}
+ options={post.reactionOptions}
+ onToggle={emoji => setReactions(current => toggleReaction(current, emoji))}
+ />
+
  <div className="flex-1" />
- 
- <Button variant="outline" size="sm" className="gap-2 rounded-full">
- <Smile className="w-4 h-4 text-muted-foreground" />
- React
- </Button>
+
  <Button variant="outline" size="sm" className="gap-2 rounded-full">
  <Share2 className="w-4 h-4 text-muted-foreground" />
  Share
  </Button>
  </div>
  </div>
+
+ {/* Contributions from feed-level callout types (posts, memos, whiteboards, links) */}
+ {contributionsPreview && (
+ <div className="border-t border-border px-6 md:px-10 py-8">
+ {contributionsPreview}
+ </div>
+ )}
 
  {/* 3. Contributions/Responses Section - CONDITIONAL */}
  {showContributions && (

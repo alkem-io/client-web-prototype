@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router";
 import { toast } from "sonner";
 import { 
  ArrowLeft, Share2, ChevronDown, ChevronRight, 
- Layers, Info, Users, FileText, Monitor, 
+ Layers, Info, Users, FileText, Monitor, Tags,
  MessageSquare, Home, Zap, StickyNote, Layout as LayoutIcon, Image as ImageIcon,
  BookOpen, List, Shield, ExternalLink, Grid, Paperclip, Settings, PenTool, MoreHorizontal
 } from "lucide-react";
@@ -123,10 +123,12 @@ function TemplateHeader({ template, onBack, onApply, packSlug, templateId }: { t
  </div>
 
  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 min-w-[200px]">
+ {template.type !== "Classification" && (
  <Button size="lg" className="w-full sm:w-auto font-semibold shadow-sm" onClick={onApply}>
  <Zap className="w-4 h-4 mr-2 fill-current" />
  Apply This Template
  </Button>
+ )}
  
  <div className="flex items-center gap-2 justify-center sm:justify-start">
  <IconButton variant="ghost" tooltipLabel="Share" >
@@ -593,6 +595,76 @@ function RenderCommunityGuidelines({ structure }: { structure: any }) {
  );
 }
 
+function RenderClassificationContent({ structure }: { structure: any }) {
+ const values: string[] = structure?.values || [];
+ const cardinality = structure?.cardinality || "multi";
+ const name = structure?.classificationName || "Classification";
+
+ return (
+ <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+ {/* Header */}
+ <div className="p-6 border-b border-border bg-muted/30">
+ <div className="flex items-center gap-3 mb-3">
+ <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center">
+ <Tags className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+ </div>
+ <div>
+ <h3 className="text-subsection-title font-semibold">{name}</h3>
+ <div className="flex items-center gap-2 mt-0.5">
+ <Badge variant="secondary" className="text-caption h-5 px-2">
+ {cardinality === "multi" ? "Multi-select" : "Single-select"}
+ </Badge>
+ <span className="text-caption text-muted-foreground">
+ {values.length} values defined
+ </span>
+ </div>
+ </div>
+ </div>
+ <p className="text-body text-muted-foreground">
+ {cardinality === "multi"
+ ? "Users can select one or more values from this classification when applying it to a space."
+ : "Users select exactly one value from this classification when applying it to a space."}
+ </p>
+ </div>
+
+ {/* Values */}
+ <div className="p-6">
+ <h4 className="text-label uppercase text-muted-foreground mb-4">Defined Values</h4>
+ <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+ {values.map((value, i) => (
+ <div
+ key={i}
+ className="flex items-center gap-3 p-3 rounded-lg border border-border bg-background hover:bg-muted/30 transition-colors"
+ >
+ <div className="w-6 h-6 rounded-md bg-purple-100 dark:bg-purple-500/15 flex items-center justify-center shrink-0">
+ <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400">
+ {i + 1}
+ </span>
+ </div>
+ <span className="text-body text-foreground">{value}</span>
+ </div>
+ ))}
+ </div>
+ </div>
+
+ {/* Usage hint */}
+ <div className="px-6 pb-6">
+ <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 text-caption text-primary/80 space-y-1">
+ <p className="font-semibold flex items-center gap-2">
+ <Info className="w-3.5 h-3.5" />
+ How classifications work
+ </p>
+ <p>
+ When this template is applied to a space, a copy of these values is created.
+ The space admin then selects which values apply. Changes to this template
+ don't affect spaces that have already applied it.
+ </p>
+ </div>
+ </div>
+ </div>
+ );
+}
+
 function TemplatePreview({ template }: { template: any }) {
  const { type, structure } = template;
 
@@ -601,6 +673,7 @@ function TemplatePreview({ template }: { template: any }) {
  if (type === "Collaboration Tool") return <RenderCollabContent structure={structure} />;
  if (type === "Whiteboard") return <RenderWhiteboardContent template={template} />;
  if (type === "Community Guidelines") return <RenderCommunityGuidelines structure={structure} />;
+ if (type === "Classification") return <RenderClassificationContent structure={structure} />;
  if (type === "Post") return <RenderPostContent structure={structure} />;
  
  // Default/Fallback
