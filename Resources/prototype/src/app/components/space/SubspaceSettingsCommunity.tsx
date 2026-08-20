@@ -23,6 +23,7 @@ import {
  ArrowUpDown,
  ArrowUp,
  ArrowDown,
+ Send,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
@@ -48,6 +49,22 @@ import {
  CollapsibleContent,
  CollapsibleTrigger,
 } from "@/app/components/ui/collapsible";
+import {
+ Dialog,
+ DialogContent,
+ DialogHeader,
+ DialogTitle,
+ DialogDescription,
+ DialogFooter,
+} from "@/app/components/ui/dialog";
+import {
+ Select,
+ SelectContent,
+ SelectItem,
+ SelectTrigger,
+ SelectValue,
+} from "@/app/components/ui/select";
+import { Textarea } from "@/app/components/ui/textarea";
 import { Separator } from "@/app/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -160,6 +177,32 @@ const MOCK_ORGS: Organization[] = [
  { id: "org1", name: "Partner Org", logo: "PO", memberCount: 5 },
 ];
 
+type OrgInviteStatus = 'pending' | 'accepted';
+type OrgInviteRole = 'Member' | 'Lead' | 'Admin';
+
+interface OrgInvitation {
+ id: string;
+ name: string;
+ logo: string;
+ memberCount: number;
+ invitedDate: string;
+ status: OrgInviteStatus;
+ role: OrgInviteRole;
+ message?: string;
+}
+
+const INITIAL_ORG_INVITATIONS: OrgInvitation[] = [
+ { id: 'inv1', name: 'Green Future Labs', logo: 'GF', memberCount: 8, invitedDate: '2024-02-18', status: 'pending', role: 'Member' },
+];
+
+const SEARCHABLE_ORGS = [
+ { id: 's1', name: 'TU Delft', logo: 'TD', memberCount: 120 },
+ { id: 's2', name: 'Climate Lab', logo: 'CL', memberCount: 34 },
+ { id: 's3', name: 'Urban Futures', logo: 'UF', memberCount: 18 },
+ { id: 's4', name: 'Digital Commons', logo: 'DC', memberCount: 55 },
+ { id: 's5', name: 'Nexus Ventures', logo: 'NV', memberCount: 9 },
+];
+
 interface VirtualContributor {
  id: string;
  name: string;
@@ -214,8 +257,118 @@ function SectionHeader({
  );
 }
 
+function InviteOrgDialog({
+ open,
+ onOpenChange,
+ onInvite,
+ alreadyInvited,
+}: {
+ open: boolean;
+ onOpenChange: (v: boolean) => void;
+ onInvite: (org: typeof SEARCHABLE_ORGS[0], role: OrgInviteRole, message: string) => void;
+ alreadyInvited: string[];
+}) {
+ const [query, setQuery] = useState('');
+ const [selected, setSelected] = useState<typeof SEARCHABLE_ORGS[0] | null>(null);
+ const [role, setRole] = useState<OrgInviteRole>('Member');
+ const [message, setMessage] = useState('');
+
+ const filtered = SEARCHABLE_ORGS.filter(
+ (o) =>
+ !alreadyInvited.includes(o.id) &&
+ o.name.toLowerCase().includes(query.toLowerCase())
+ );
+
+ const reset = () => { setQuery(''); setSelected(null); setRole('Member'); setMessage(''); };
+ const handleOpenChange = (v: boolean) => { if (!v) reset(); onOpenChange(v); };
+
+ return (
+ <Dialog open={open} onOpenChange={handleOpenChange}>
+ <DialogContent className="max-w-md">
+ <DialogHeader>
+ <DialogTitle>Invite Organisation</DialogTitle>
+ <DialogDescription>
+ {selected
+ ? `Configure the invitation for ${selected.name}.`
+ : 'Search for an organisation to invite to this subspace.'}
+ </DialogDescription>
+ </DialogHeader>
+
+ {!selected && (
+ <>
+ <div className="relative">
+ <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+ <Input autoFocus placeholder="Search organisations…" className="pl-9" value={query} onChange={(e) => setQuery(e.target.value)} />
+ </div>
+ <div className="space-y-1 max-h-64 overflow-y-auto">
+ {filtered.length === 0 && (
+ <p className="text-body text-muted-foreground text-center py-4">No organisations found.</p>
+ )}
+ {filtered.map((org) => (
+ <div key={org.id} className="flex items-center justify-between p-3 rounded-md hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setSelected(org)}>
+ <div className="flex items-center gap-3">
+ <div className="w-9 h-9 bg-muted rounded-md flex items-center justify-center font-bold text-muted-foreground text-caption">{org.logo}</div>
+ <div>
+ <div className="text-body-emphasis">{org.name}</div>
+ <div className="text-caption text-muted-foreground">{org.memberCount} members</div>
+ </div>
+ </div>
+ <Button size="sm" variant="ghost" tabIndex={-1}>Select →</Button>
+ </div>
+ ))}
+ </div>
+ </>
+ )}
+
+ {selected && (
+ <>
+ <div className="flex items-center gap-3 p-3 bg-muted/30 border rounded-md">
+ <div className="w-9 h-9 bg-muted rounded-md flex items-center justify-center font-bold text-muted-foreground text-caption shrink-0">{selected.logo}</div>
+ <div className="flex-1 min-w-0">
+ <div className="text-body-emphasis">{selected.name}</div>
+ <div className="text-caption text-muted-foreground">{selected.memberCount} members</div>
+ </div>
+ <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => setSelected(null)}>Change</Button>
+ </div>
+
+ <Separator />
+
+ <div className="space-y-2">
+ <label className="text-body-emphasis">Invite as</label>
+ <Select value={role} onValueChange={(v) => setRole(v as OrgInviteRole)}>
+ <SelectTrigger><SelectValue /></SelectTrigger>
+ <SelectContent>
+ <SelectItem value="Member">Member</SelectItem>
+ <SelectItem value="Lead">Lead</SelectItem>
+ <SelectItem value="Admin">Admin</SelectItem>
+ </SelectContent>
+ </Select>
+ </div>
+
+ <div className="space-y-2">
+ <label className="text-body-emphasis">
+ Message <span className="text-caption text-muted-foreground font-normal">(optional)</span>
+ </label>
+ <Textarea placeholder="Add a personal note to the invitation…" className="resize-none" rows={3} value={message} onChange={(e) => setMessage(e.target.value)} />
+ </div>
+
+ <DialogFooter>
+ <Button variant="outline" onClick={() => setSelected(null)}>Back</Button>
+ <Button className="gap-1.5" onClick={() => { onInvite(selected, role, message); handleOpenChange(false); }}>
+ <Send className="w-3.5 h-3.5" /> Send Invitation
+ </Button>
+ </DialogFooter>
+ </>
+ )}
+ </DialogContent>
+ </Dialog>
+ );
+}
+
 export function SubspaceSettingsCommunity() {
  const [members, setMembers] = useState<Member[]>(MOCK_MEMBERS);
+ const [orgInvitations, setOrgInvitations] = useState<OrgInvitation[]>(INITIAL_ORG_INVITATIONS);
+ const [inviteOrgOpen, setInviteOrgOpen] = useState(false);
  const [search, setSearch] = useState("");
  const [filter, setFilter] = useState<"All" | "Active" | "Pending" | "Invited">("All");
  const [page, setPage] = useState(1);
@@ -235,6 +388,30 @@ export function SubspaceSettingsCommunity() {
  const toggleSection = (section: string) => {
  setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
  };
+
+ const handleInviteOrg = (org: typeof SEARCHABLE_ORGS[0], role: OrgInviteRole, message: string) => {
+ setOrgInvitations((prev) => [
+ ...prev,
+ {
+ id: `inv-${org.id}`,
+ name: org.name,
+ logo: org.logo,
+ memberCount: org.memberCount,
+ invitedDate: new Date().toISOString().slice(0, 10),
+ status: 'pending' as OrgInviteStatus,
+ role,
+ message: message || undefined,
+ },
+ ]);
+ };
+
+ const revokeOrgInvite = (id: string) => {
+ setOrgInvitations((prev) => prev.filter((i) => i.id !== id));
+ };
+
+ const alreadyInvitedSourceIds = orgInvitations.map((i) =>
+ i.id.startsWith('inv-') ? i.id.slice(4) : i.id
+ );
 
  const handleSort = (key: keyof Member) => {
  setSortConfig((current) => ({
@@ -655,8 +832,8 @@ export function SubspaceSettingsCommunity() {
  <div>
  <SectionHeader
  icon={Building}
- title="Member Organizations"
- description="Allow members from specific organizations to join automatically."
+ title="Member Organisations"
+ description="Allow members from specific organisations to join automatically."
  isOpen={openSections.orgs}
  onToggle={() => toggleSection("orgs")}
  />
@@ -680,15 +857,52 @@ export function SubspaceSettingsCommunity() {
  </IconButton>
  </div>
  ))}
+
+ {/* Pending invitations */}
+ {orgInvitations.filter(i => i.status === 'pending').length > 0 && (
+ <div className="pt-1">
+ <p className="text-caption font-semibold uppercase tracking-wide text-muted-foreground mb-2">Pending Invitations</p>
+ <div className="space-y-2">
+ {orgInvitations.filter(i => i.status === 'pending').map(inv => (
+ <div key={inv.id} className="flex items-center justify-between p-3 bg-amber-500/5 border border-amber-500/20 rounded-md">
+ <div className="flex items-center gap-3">
+ <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center font-bold text-muted-foreground">
+ {inv.logo}
  </div>
- <div className="mt-4">
- <Button variant="outline" size="sm" className="gap-2">
- <Plus className="w-4 h-4" /> Add Organization
+ <div>
+ <div className="text-body-emphasis">{inv.name}</div>
+ <div className="text-caption text-muted-foreground">{inv.memberCount} members</div>
+ </div>
+ <Badge variant="outline" className="ml-2 bg-amber-500/10 text-amber-600 border-amber-500/20 text-badge">
+ <Mail className="w-3 h-3 mr-1" /> Invited
+ </Badge> <Badge variant="outline" className="bg-muted text-muted-foreground text-badge">
+ {inv.role}
+ </Badge> </div>
+ <Button
+ size="sm"
+ variant="ghost"
+ className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1.5"
+ onClick={() => revokeOrgInvite(inv.id)}
+ >
+ <X className="w-3.5 h-3.5" /> Revoke
  </Button>
- <p className="text-caption text-muted-foreground mt-2">
- Users from these organizations can join without admin approval.
- </p>
  </div>
+ ))}
+ </div>
+ </div>
+ )}
+ </div>
+ <div className="mt-4 flex items-center gap-2">
+ <Button variant="outline" size="sm" className="gap-2">
+ <Plus className="w-4 h-4" /> Add Organisation
+ </Button>
+ <Button variant="outline" size="sm" className="gap-2" onClick={() => setInviteOrgOpen(true)}>
+ <Send className="w-3.5 h-3.5" /> Invite Organisation
+ </Button>
+ </div>
+ <p className="text-caption text-muted-foreground mt-2">
+ Users from these organisations can join without admin approval.
+ </p>
  </CollapsibleContent>
  </Collapsible>
 
@@ -761,6 +975,13 @@ export function SubspaceSettingsCommunity() {
  // In a real app, this would send an invitation to the backend
  console.log(`Invited ${vc.name} with message: ${message}`);
  }}
+ />
+
+ <InviteOrgDialog
+ open={inviteOrgOpen}
+ onOpenChange={setInviteOrgOpen}
+ onInvite={handleInviteOrg}
+ alreadyInvited={alreadyInvitedSourceIds}
  />
  </div>
  );

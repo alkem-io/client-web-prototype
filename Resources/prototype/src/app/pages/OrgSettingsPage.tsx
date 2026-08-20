@@ -1,10 +1,11 @@
 import { useParams, Link, useLocation, Navigate } from "react-router";
-import { Building2, CreditCard, Users, Settings } from "lucide-react";
+import { Building2, CreditCard, Users, Settings, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OrgSettingsProfile } from "@/app/components/org/OrgSettingsProfile";
 import { OrgSettingsAccount } from "@/app/components/org/OrgSettingsAccount";
 import { OrgSettingsAssociates } from "@/app/components/org/OrgSettingsAssociates";
 import { OrgSettingsSettings } from "@/app/components/org/OrgSettingsSettings";
+import { OrgSettingsInvitations } from "@/app/components/org/OrgSettingsInvitations";
 
 interface OrgData {
   name: string;
@@ -50,6 +51,7 @@ export default function OrgSettingsPage() {
     { label: "Account", icon: CreditCard, id: "account" },
     { label: "Associates", icon: Users, id: "associates" },
     { label: "Settings", icon: Settings, id: "settings" },
+    { label: "Invitations", icon: Bell, id: "invitations" },
   ];
 
   return (
@@ -111,6 +113,8 @@ export default function OrgSettingsPage() {
                 <OrgSettingsAssociates />
               ) : tab === "settings" ? (
                 <OrgSettingsSettings />
+              ) : tab === "invitations" ? (
+                <OrgSettingsInvitations />
               ) : (
                 <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed rounded-xl bg-muted/5">
                   <p className="text-muted-foreground">Tab not found</p>

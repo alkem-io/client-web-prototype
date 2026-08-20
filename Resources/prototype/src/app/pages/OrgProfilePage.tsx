@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router";
-import { Mail, Send, Settings, Users, UserPlus } from "lucide-react";
+import { Mail, Send, Settings, UserPlus } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
 import { Badge } from "@/app/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import { cn } from "@/lib/utils";
-
 interface OrgData {
   name: string;
   initials: string;
