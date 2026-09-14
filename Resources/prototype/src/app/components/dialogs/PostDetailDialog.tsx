@@ -2,7 +2,7 @@ import {
  X, Share2, MoreHorizontal, MessageSquare, ThumbsUp, Heart, Smile,
  FileText, Link as LinkIcon, PenTool, Layout, Send, ChevronRight, Presentation, LayoutGrid,
  FileSpreadsheet, FileImage, Download, ExternalLink, ImagePlus, Images,
- Lock, Users
+ Lock, Users, StickyNote
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogDescription } from "@/app/components/ui/dialog";
 import { Button } from "@/app/components/ui/button";
@@ -22,6 +22,10 @@ import { PostReactions } from "@/app/components/space/PostReactions";
 import { type PostReaction, seedDemoReactions, toggleReaction } from "@/app/components/space/post-reactions-data";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { MediaGalleryDetailView } from "@/app/components/mediaGallery/MediaGalleryDetailView";
+import { MemoDialog } from "@/app/components/memo/MemoDialog";
+import { SignedCopiesTrigger } from "@/app/components/memo/SignedCopiesTrigger";
+import { useSignedCopies } from "@/app/components/memo/memoSigningStore";
+import { uniqueSigners } from "@/app/components/memo/signingData";
 import {
  ANSWER_TYPE_DESCRIPTORS,
  findAnswer,
@@ -47,6 +51,9 @@ export function PostDetailDialog({ open, onOpenChange, post, onAddMediaGalleryIm
  const [selectedResponseId, setSelectedResponseId] = useState<string | null>(null);
  const [activeDocIndex, setActiveDocIndex] = useState(0);
  const [selectedDocument, setSelectedDocument] = useState<{ title: string; docType: 'word' | 'spreadsheet' | 'presentation'; size: string; lastEdited?: string } | null>(null);
+ const [memoOpen, setMemoOpen] = useState(false);
+ // Hook order has to stay stable, so this runs before the `!post` bail-out below.
+ const signedCopies = useSignedCopies(post?.id);
  // Same seeded set the feed card shows, so opening a post does not change its
  // reactions. Keyed off the post id via the initialiser below.
  const [reactions, setReactions] = useState<PostReaction[]>([]);
@@ -138,7 +145,19 @@ export function PostDetailDialog({ open, onOpenChange, post, onAddMediaGalleryIm
  </Avatar>
  <div className="flex flex-col">
  <span className="text-card-title text-foreground">{post.author.name}</span>
+ <div className="flex flex-wrap items-center gap-x-2">
  <span className="text-caption text-muted-foreground">{post.timestamp}</span>
+ {post.type === "memo" && signedCopies.length > 0 && (
+ <>
+ <span className="text-caption text-muted-foreground" aria-hidden="true">·</span>
+ <SignedCopiesTrigger
+ count={signedCopies.length}
+ signers={uniqueSigners(signedCopies)}
+ onClick={() => setMemoOpen(true)}
+ />
+ </>
+ )}
+ </div>
  </div>
  </div>
 
@@ -170,6 +189,31 @@ export function PostDetailDialog({ open, onOpenChange, post, onAddMediaGalleryIm
  </>
  )}
  </div>
+
+ {/* Memo framing — the memo is a surface of its own (MemoDialog); this is
+ the way into it from the post, mirroring the feed card's preview. */}
+ {post.type === "memo" && (
+ <button
+ type="button"
+ onClick={() => setMemoOpen(true)}
+ className="group relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 h-40 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+ >
+ {post.framingMemoMarkdown ? (
+ <div className="p-4 h-full overflow-hidden text-body text-foreground whitespace-pre-wrap line-clamp-5">
+ {post.framingMemoMarkdown}
+ </div>
+ ) : (
+ <div className="w-full h-full flex items-center justify-center">
+ <StickyNote className="w-12 h-12 text-muted-foreground/50" aria-hidden="true" />
+ </div>
+ )}
+ <div className="absolute inset-0 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
+ <span className="inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-sm h-9 px-4 text-control">
+ Open Memo
+ </span>
+ </div>
+ </button>
+ )}
 
  {/* Document Preview — click opens L3 Collabora editor */}
  {post.type === "document" && post.contentPreview?.documents && (() => {
@@ -577,6 +621,17 @@ export function PostDetailDialog({ open, onOpenChange, post, onAddMediaGalleryIm
  onOpenChange={(open) => !open && setSelectedResponseId(null)}
  responseId={selectedResponseId}
  />
+ {post.type === "memo" && memoOpen && (
+ <MemoDialog
+ open
+ onOpenChange={setMemoOpen}
+ memoId={post.id}
+ title={post.title}
+ markdown={post.framingMemoMarkdown ?? ""}
+ author={{ name: post.author.name, avatarUrl: post.author.avatarUrl }}
+ timestamp={post.timestamp}
+ />
+ )}
  <DocumentDetailDialog
  open={!!selectedDocument}
  onOpenChange={(open) => !open && setSelectedDocument(null)}

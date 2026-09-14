@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Key, Shield, Eye, EyeOff, Trash2, Plus } from "lucide-react";
+import { Key, Shield, Eye, EyeOff, Trash2, Plus, ArrowUpRight, BadgeCheck, Signature } from "lucide-react";
 import { Input } from "@/app/components/ui/input";
 import { Button } from "@/app/components/ui/button";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 import { toast } from "sonner";
+import { CLEVERBASE_DOCS_URL } from "@/app/components/memo/signingData";
+import { setCleverbaseLinked, useMemoSigning } from "@/app/components/memo/memoSigningStore";
 
 export function UserSettingsSecurity() {
   const [password, setPassword] = useState("");
@@ -11,6 +13,9 @@ export function UserSettingsSecurity() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  // Where "you need a Cleverbase account" actually resolves — the Sign button
+  // on every memo reads this (spec 013).
+  const { cleverbaseLinked } = useMemoSigning();
 
   const handleChangePassword = () => {
     if (!password || !confirmPassword) return;
@@ -112,6 +117,56 @@ export function UserSettingsSecurity() {
             <Plus className="w-4 h-4 mr-1.5" />
             Add Passkey
           </Button>
+        </div>
+      </SettingsSection>
+
+      {/* Signing identity */}
+      <SettingsSection
+        title="Digital signing"
+        description="Sign memos with a signature that can be verified outside Alkemio."
+        icon={<Signature className="w-4 h-4" />}
+        iconColor="green"
+      >
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/20 p-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+                <BadgeCheck className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-body-emphasis truncate">Cleverbase</p>
+                <p className="text-caption text-muted-foreground">
+                  {cleverbaseLinked
+                    ? "Linked — you can sign memos in any space where signing is on."
+                    : "Not linked — Sign memo stays visible but can't be used yet."}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant={cleverbaseLinked ? "outline" : "default"}
+              size="sm"
+              className="shrink-0"
+              onClick={() => {
+                setCleverbaseLinked(!cleverbaseLinked);
+                toast.success(
+                  cleverbaseLinked
+                    ? "Cleverbase account unlinked"
+                    : "Cleverbase account linked — you can sign memos now",
+                );
+              }}
+            >
+              {cleverbaseLinked ? "Unlink" : "Link account"}
+            </Button>
+          </div>
+          <a
+            href={CLEVERBASE_DOCS_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-caption font-medium text-primary hover:underline"
+          >
+            How signing works
+            <ArrowUpRight className="size-3.5" />
+          </a>
         </div>
       </SettingsSection>
     </div>

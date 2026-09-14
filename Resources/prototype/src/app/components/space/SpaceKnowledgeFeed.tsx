@@ -4,6 +4,7 @@ import { Plus, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
+import { MemoDialog } from "@/app/components/memo/MemoDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
@@ -719,6 +720,9 @@ const INITIAL_POSTS: PostWithTags[] = [
 export function SpaceKnowledgeFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostCardData | null>(null);
+  // "Open Memo" used to fall through to the post dialog; memos now open as
+  // themselves, which is where signing lives (spec 013).
+  const [openMemo, setOpenMemo] = useState<PostCardData | null>(null);
   const [contributionsDialogPostId, setContributionsDialogPostId] = useState<string | null>(null);
   const [posts, setPosts] = useState<PostWithTags[]>(INITIAL_POSTS);
   const [collapseEnabled, setCollapseEnabled] = useState(() => {
@@ -1040,6 +1044,7 @@ export function SpaceKnowledgeFeed() {
               }}
               onClick={() => setSelectedPost(post)}
               onExpandClick={() => setSelectedPost(post)}
+              onOpenFraming={post.type === "memo" ? () => setOpenMemo(post) : undefined}
               onAddMediaGalleryImages={() => openAddDialog(post.id)}
               onDeleteMediaGalleryImage={(t) => deleteImage(post.id, t.id)}
               contributionsPreview={getContributionPreview(post)}
@@ -1080,6 +1085,18 @@ export function SpaceKnowledgeFeed() {
         >
           {contributionsDialogData.cards}
         </ContributionsDialog>
+      )}
+
+      {openMemo && (
+        <MemoDialog
+          open
+          onOpenChange={next => !next && setOpenMemo(null)}
+          memoId={openMemo.id}
+          title={openMemo.title}
+          markdown={openMemo.framingMemoMarkdown ?? ""}
+          author={{ name: openMemo.author.name, avatarUrl: openMemo.author.avatarUrl }}
+          timestamp={openMemo.timestamp}
+        />
       )}
 
       <PostDetailDialog
