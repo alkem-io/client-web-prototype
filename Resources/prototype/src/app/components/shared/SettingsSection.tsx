@@ -21,6 +21,9 @@ interface SettingsSectionProps {
   iconColor?: IconColor;
   defaultOpen?: boolean;
   collapsible?: boolean;
+  /** Controlled open state. Omit to let the section manage its own. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
 }
@@ -32,10 +35,21 @@ export function SettingsSection({
   iconColor = 'primary',
   defaultOpen = true,
   collapsible = true,
+  open,
+  onOpenChange,
   children,
   className,
 }: SettingsSectionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
+  // Controlled when `open` is supplied — lets a caller react to the toggle
+  // (scroll the revealed section into view, for instance) without forking the
+  // component. Uncontrolled otherwise, which is how every settings page uses it.
+  const isOpen = open ?? uncontrolledOpen;
+
+  const setIsOpen = (next: boolean) => {
+    if (open === undefined) setUncontrolledOpen(next);
+    onOpenChange?.(next);
+  };
 
   return (
     <div className={cn("rounded-lg border bg-card", className)}>

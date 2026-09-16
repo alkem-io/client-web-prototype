@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useLocation } from "react-router";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import { Button } from "@/app/components/ui/button";
@@ -16,6 +16,12 @@ import { cn } from "@/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { SubspaceApplicationDialog } from "@/app/components/dialogs/SubspaceApplicationDialog";
 import type { ApplicationFormConfig } from "@/app/components/dialogs/SubspaceApplicationDialog";
+import {
+  normalizeConfig,
+  visibleWidgets,
+  SPACE_WIDGET_DEFS,
+  type SidebarWidgetConfig,
+} from "@/app/components/space/SidebarWidgets";
 
 interface SpaceSidebarProps {
   spaceSlug: string;
@@ -24,7 +30,7 @@ interface SpaceSidebarProps {
   /** Description of the currently active tab */
   activeTabDescription?: string;
   /** Admin-controlled feature toggles */
-  enabledFeatures?: { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean; intent: boolean };
+  widgetConfig?: SidebarWidgetConfig;
 }
 
 const TAB_TAGS: Record<string, string[]> = {
@@ -78,8 +84,8 @@ const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: str
   ],
 };
 
-export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription, enabledFeatures }: SpaceSidebarProps) {
-  const features = enabledFeatures || { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true, intent: true };
+export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription, widgetConfig }: SpaceSidebarProps) {
+  const config = widgetConfig ?? normalizeConfig(null, SPACE_WIDGET_DEFS);
   const [indexOpen, setIndexOpen] = useState(false);
   const [applicationDialogOpen, setApplicationDialogOpen] = useState(false);
 
@@ -256,9 +262,46 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
   const hasFilters = searchValue !== "" || activeTags.length > 0;
   const matchCount = filteredIndexItems.length;
 
-  return (
-    <div className="flex flex-col w-full">
-      {/* Description */}
+  // Shown next to whichever of Search / Tags is on, so an active filter is
+  // always clearable.
+  const filterFeedback = hasFilters && (
+    <div
+      className="flex items-center justify-between gap-2 p-2 rounded-md text-xs mb-3"
+      style={{
+        background: "color-mix(in srgb, var(--primary) 10%, transparent)",
+        color: "var(--primary)",
+      }}
+    >
+      <span>
+        <strong>{matchCount}</strong> item{matchCount !== 1 ? 's' : ''} match
+        {activeTags.length > 0 && (
+          <>
+            {" "}tagged <strong>"{activeTags.join('" + "')}"</strong>
+          </>
+        )}
+        {activeTags.length > 0 && searchValue && " and "}
+        {searchValue && (
+          <>
+            {" "}search for <strong>"{searchValue}"</strong>
+          </>
+        )}
+      </span>
+      <button
+        onClick={() => {
+          setSearchValue("");
+          clearTags();
+        }}
+        className="flex items-center justify-center w-5 h-5 rounded hover:bg-primary/20 transition-colors"
+        title="Clear filters"
+      >
+        <X className="w-3 h-3" />
+      </button>
+    </div>
+  );
+
+  // ─── Sidebar widgets — visibility and order come from Settings → Layout ────
+  const widgetNodes: Record<string, React.ReactNode> = {
+    about: (
       <div className="pb-2">
         <ReadMoreText
           maxLines={3}
@@ -269,52 +312,43 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           {activeTabDescription || "Activity and updates from members of this space."}
         </ReadMoreText>
       </div>
-
-      {/* Intent + Leads box (Home tab only) */}
-      {features.intent && variant === "home" && (
-        <>
-          <div className="mb-2">
-            <IntentLeadsBox />
-          </div>
-        </>
-      )}
-
-      {/* Action buttons */}
-      {(features.post || features.addUser || features.createSubspace) && (
-      <div className="pb-2">
-        <div className="flex flex-col gap-2">
-          {features.post && (
-            <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
-              <Plus className="w-4 h-4" />
-              Post
-            </Button>
-          )}
-          {features.addUser && variant === "community" && (
-            <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
-              <UserPlus className="w-4 h-4" />
-              Add User
-            </Button>
-          )}
-          {features.createSubspace && (variant === "home" || variant === "workspaces") && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full gap-2 justify-start"
-              onClick={() => setApplicationDialogOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              Apply for a Subspace
-            </Button>
-          )}
+    ),
+    intent:
+      variant === "home" ? (
+        <div className="mb-2">
+          <IntentLeadsBox />
         </div>
-      </div>
-      )}
-
-      {/* ── divider ── */}
-      {(features.post || features.addUser || features.createSubspace) && <div className="mb-2" />}
-
-      {/* Search bar */}
-      {features.search && (
+      ) : null,
+    post: (
+      <Button
+        size="sm"
+        className="w-full gap-2 justify-start"
+        onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}
+      >
+        <Plus className="w-4 h-4" />
+        Post
+      </Button>
+    ),
+    addUser:
+      variant === "community" ? (
+        <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+          <UserPlus className="w-4 h-4" />
+          Add User
+        </Button>
+      ) : null,
+    createSubspace:
+      variant === "home" || variant === "workspaces" ? (
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full gap-2 justify-start"
+          onClick={() => setApplicationDialogOpen(true)}
+        >
+          <Plus className="w-4 h-4" />
+          Apply for a Subspace
+        </Button>
+      ) : null,
+    search: (
       <div className="pb-2">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -334,75 +368,35 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
             }}
           />
         </div>
+        {!config.enabled.tags && filterFeedback}
       </div>
-      )}
-
-      {/* Tag cloud */}
-      {features.tags && (
+    ),
+    tags: (
+      <>
         <TagCloud tags={tags} activeTags={activeTags} toggleTag={toggleTag} />
-      )}
-
-      {/* Filter feedback */}
-      {hasFilters && (
-        <div
-          className="flex items-center justify-between gap-2 p-2 rounded-md text-xs mb-3"
-          style={{
-            background: "color-mix(in srgb, var(--primary) 10%, transparent)",
-            color: "var(--primary)",
-          }}
-        >
-          <span>
-            <strong>{matchCount}</strong> item{matchCount !== 1 ? 's' : ''} match
-            {activeTags.length > 0 && (
-              <>
-                {" "}tagged <strong>"{activeTags.join('" + "')}"</strong>
-              </>
-            )}
-            {activeTags.length > 0 && searchValue && " and "}
-            {searchValue && (
-              <>
-                {" "}search for <strong>"{searchValue}"</strong>
-              </>
-            )}
-          </span>
-          <button
-            onClick={() => {
-              setSearchValue("");
-              clearTags();
-            }}
-            className="flex items-center justify-center w-5 h-5 rounded hover:bg-primary/20 transition-colors"
-            title="Clear filters"
-          >
-            <X className="w-3 h-3" />
-          </button>
-        </div>
-      )}
-
-      {/* ── divider ── */}
-      <div className="mb-2" />
-
-      {/* Subspace quick links (Home tab only) */}
-      {features.subspaceLinks && variant === "home" && (
+        {filterFeedback}
+        <div className="mb-2" />
+      </>
+    ),
+    subspaceLinks:
+      variant === "home" ? (
         <>
           <div className="pb-2">
             <SubspaceQuickLinks />
           </div>
           <div className="mb-2" />
         </>
-      )}
-
-      {/* Upcoming Events (Home tab only) */}
-      {variant === "home" && (
+      ) : null,
+    events:
+      variant === "home" ? (
         <>
           <div className="pb-2">
             <UpcomingEvents />
           </div>
           <div className="mb-2" />
         </>
-      )}
-
-      {/* Index Button */}
-      {features.index && (
+      ) : null,
+    index: (
       <div>
         <Button
           variant="outline"
@@ -414,6 +408,39 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           Index
         </Button>
       </div>
+    ),
+  };
+
+  // Post / Add User / Apply stay grouped in one button stack while adjacent.
+  const ACTION_KEYS = ["post", "addUser", "createSubspace"];
+  const widgetGroups = visibleWidgets(config)
+    .filter((k) => widgetNodes[k] != null)
+    .reduce<Array<{ family: "action" | "solo"; keys: string[] }>>((acc, key) => {
+      const isAction = ACTION_KEYS.includes(key);
+      const last = acc[acc.length - 1];
+      if (isAction && last && last.family === "action") last.keys.push(key);
+      else acc.push({ family: isAction ? "action" : "solo", keys: [key] });
+      return acc;
+    }, []);
+
+  return (
+    <div className="flex flex-col w-full">
+      {/* Widgets — visibility and order come from Settings → Layout */}
+      {widgetGroups.map((group, i) =>
+        group.family === "action" ? (
+          <Fragment key={`g-${i}`}>
+            <div className="pb-2">
+              <div className="flex flex-col gap-2">
+                {group.keys.map((k) => (
+                  <Fragment key={k}>{widgetNodes[k]}</Fragment>
+                ))}
+              </div>
+            </div>
+            <div className="mb-2" />
+          </Fragment>
+        ) : (
+          <Fragment key={`g-${i}`}>{widgetNodes[group.keys[0]]}</Fragment>
+        )
       )}
 
       {/* Index Dialog */}

@@ -43,8 +43,13 @@ import InnovationHubPage from "./pages/InnovationHubPage";
 import InnovationHubSettingsPage from "./pages/InnovationHubSettingsPage";
 import ResponsiveSidebarDemo from "./pages/ResponsiveSidebarDemo";
 import SubspaceStackingExploration from "./pages/SubspaceStackingExploration";
+import PostDialogExploration from "./pages/PostDialogExploration";
 import MemoSigningExploration from "./pages/MemoSigningExploration";
 import { SubspaceApplicationPage } from "./pages/SubspaceApplicationPage";
+import MockupGalleryPage from "@/mockups/gallery/GalleryPage";
+import MockupCompositionPage from "@/mockups/gallery/CompositionPage";
+import MockupCalibratePage from "@/mockups/gallery/CalibratePage";
+import MockupExportPage, { ManifestPage as MockupManifestPage } from "@/mockups/gallery/ExportPage";
 
 export const router = createBrowserRouter([
   {
@@ -52,11 +57,19 @@ export const router = createBrowserRouter([
     Component: RootWrapper,
     children: [
       /* ─── Standalone pages (no layout) ─── */
+      /* ─── Mockup generator (standalone, no app chrome) ─── */
+      { path: "/mockups", Component: MockupGalleryPage },
+      { path: "/mockups/calibrate", Component: MockupCalibratePage },
+      { path: "/mockups/manifest", Component: MockupManifestPage },
+      { path: "/mockups/:id/export", Component: MockupExportPage },
+      { path: "/mockups/:id", Component: MockupCompositionPage },
+
       { path: "/design-system", Component: DesignSystemPage },
       { path: "/typography", Component: TypographySystemPage },
       { path: "/typography-decisions", Component: TypographyDecisionPage },
       { path: "/responsive-sidebar-demo", Component: ResponsiveSidebarDemo },
       { path: "/subspace-stacking", Component: SubspaceStackingExploration },
+      { path: "/post-dialog", Component: PostDialogExploration },
       { path: "/memo-signing", Component: MemoSigningExploration },
       { path: "/analytics", Component: EcosystemAnalyticsPage },
       { path: "/onboarding", Component: OnboardingPage },

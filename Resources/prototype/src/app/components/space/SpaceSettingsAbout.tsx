@@ -26,6 +26,7 @@ import {
 import {
   ClassificationPickerDialog,
   AppliedClassification,
+  AVAILABLE_CLASSIFICATION_TEMPLATES,
 } from "@/app/components/classifications/ClassificationPickerDialog";
 
 // Mock data for initial state
@@ -44,6 +45,10 @@ const INITIAL_DATA = {
   ]
 };
 
+const SDG_CLASSIFICATION_VALUES = AVAILABLE_CLASSIFICATION_TEMPLATES.find(
+  (template) => template.id === "ct-sdg"
+)?.values ?? [];
+
 export function SpaceSettingsAbout() {
   const [formData, setFormData] = useState(INITIAL_DATA);
   const [savedData, setSavedData] = useState(INITIAL_DATA);
@@ -58,7 +63,7 @@ export function SpaceSettingsAbout() {
       templateName: "UN Sustainable Development Goals",
       selectedValues: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"],
       cardinality: "multi",
-      allValues: [],
+      allValues: SDG_CLASSIFICATION_VALUES,
     },
   ]);
   const [savedClassifications, setSavedClassifications] = useState<AppliedClassification[]>([
@@ -68,7 +73,7 @@ export function SpaceSettingsAbout() {
       templateName: "UN Sustainable Development Goals",
       selectedValues: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"],
       cardinality: "multi",
-      allValues: [],
+      allValues: SDG_CLASSIFICATION_VALUES,
     },
   ]);
   const [classificationPickerOpen, setClassificationPickerOpen] = useState(false);
@@ -357,20 +362,28 @@ export function SpaceSettingsAbout() {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
+                    {cls.selectedValues.length === 0 && (
+                      <p className="text-caption text-muted-foreground">
+                        No values selected. Choose one or more values:
+                      </p>
+                    )}
                     <div className="flex flex-wrap gap-1.5">
-                      {cls.selectedValues.map((val) => (
+                      {cls.allValues.map((value) => {
+                        const isSelected = cls.selectedValues.includes(value);
+
+                        return isSelected ? (
                         <Badge
-                          key={val}
+                          key={value}
                           variant="secondary"
-                          className="text-caption font-normal gap-1 pl-2 pr-1.5 py-0.5"
+                          className="border border-primary/30 bg-primary/10 text-caption font-medium text-primary gap-1 pl-2 pr-1.5 py-0.5 shadow-sm"
                         >
-                          {val}
+                          {value}
                           <button
                             onClick={() => {
                               setClassifications((prev) =>
                                 prev.map((c) =>
                                   c.id === cls.id
-                                    ? { ...c, selectedValues: c.selectedValues.filter((v) => v !== val) }
+                                    ? { ...c, selectedValues: c.selectedValues.filter((v) => v !== value) }
                                     : c
                                 )
                               );
@@ -380,7 +393,31 @@ export function SpaceSettingsAbout() {
                             <X className="w-2.5 h-2.5" />
                           </button>
                         </Badge>
-                      ))}
+                        ) : (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => {
+                            setClassifications((prev) =>
+                              prev.map((classification) =>
+                                classification.id === cls.id
+                                  ? {
+                                      ...classification,
+                                      selectedValues: classification.cardinality === "multi"
+                                        ? [...classification.selectedValues, value]
+                                        : [value],
+                                    }
+                                  : classification
+                              )
+                            );
+                          }}
+                          className="inline-flex items-center gap-1 rounded-md border border-dashed border-muted-foreground/40 bg-transparent px-2 py-0.5 text-caption text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <Plus className="h-3 w-3" aria-hidden="true" />
+                          {value}
+                        </button>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}

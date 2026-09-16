@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mobile Navigation Prototype — [Home] › [...] & Slide-in Chat</title>
+<style>
+  :root {
+    --primary: #1d384a;
+    --bg: #fcfdfe;
+    --fg: #1d384a;
+    --muted: #f1f5f9;
+    --muted-fg: #64748b;
+    --border: #e2e8f0;
+    --accent: #0b6bcb;
+    --shadow: 0 4px 6px 0 rgba(0,0,0,.09);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; background: #eef2f6; color: var(--fg);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 30px 24px 60px; }
+  h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -.01em; }
+  .hint { color: var(--muted-fg); font-size: 13.5px; margin: 0 0 22px; }
+
+  .stage { display: grid; grid-template-columns: 260px 1fr 260px; gap: 28px; align-items: start; }
+  @media (max-width: 980px) { .stage { grid-template-columns: 1fr; justify-items: center; } }
+
+  .panel { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 16px; box-shadow: var(--shadow); width: 100%; }
+  .panel h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-fg); margin: 0 0 10px; }
+  .panel + .panel { margin-top: 16px; }
+
+  .widths { display: flex; gap: 6px; }
+  .widths button {
+    flex: 1; border: 1px solid var(--border); background: #fff; color: var(--fg);
+    border-radius: 7px; padding: 7px 0; font: inherit; font-size: 12px; cursor: pointer;
+  }
+  .widths button[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  .metric { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; padding: 6px 0; border-bottom: 1px dashed var(--border); }
+  .metric:last-child { border-bottom: 0; }
+  .metric b { font-size: 17px; font-variant-numeric: tabular-nums; }
+  .metric span { color: var(--muted-fg); }
+  .trailout { font-size: 12px; color: var(--muted-fg); line-height: 1.5; word-break: break-word; }
+
+  .reset {
+    width: 100%; margin-top: 10px; border: 1px solid var(--border); background: #fff;
+    border-radius: 7px; padding: 8px; font: inherit; font-size: 12.5px; cursor: pointer; color: var(--muted-fg);
+  }
+
+  /* ---------- device ---------- */
+  .deviceWrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .device {
+    border: 9px solid #26313c; border-radius: 34px; background: var(--bg);
+    overflow: hidden; position: relative; display: flex; flex-direction: column;
+    height: 720px; box-shadow: 0 14px 34px rgba(15,30,45,.24); transition: width .18s ease;
+  }
+  .statusbar {
+    height: 26px; flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px; font-size: 11px; font-weight: 700; color: var(--fg); background: var(--bg);
+  }
+  .devlabel { font-size: 11.5px; color: var(--muted-fg); letter-spacing: .04em; }
+
+  /* header */
+  .appbar {
+    height: 64px; flex: none; background: #fff; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px;
+  }
+  .abL { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
+  .abR { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+
+  .tap {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 44px; height: 44px; border: 0; background: none; padding: 0 4px;
+    border-radius: 10px; cursor: pointer; color: var(--fg); font: inherit;
+  }
+  .tap:active { background: rgba(29,56,74,.09); }
+  .tap.tight { min-width: 36px; padding: 0 2px; }
+
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: #2f9fc4; flex: none; display: inline-flex; align-items: center; justify-content: center; color: white; }
+
+  /* Circular Buttons */
+  .circleBtn {
+    position: relative; width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--fg); padding: 0; flex: none;
+  }
+  .circleBtn:active { background: var(--muted); }
+  .circleBtn.chat { color: #1d384a; }
+  .circleBtn .avatarImg { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg,#5b7386,#2c4356); display: block; }
+  
+  .badge {
+    position: absolute; top: -3px; right: -3px; min-width: 16px; height: 16px; padding: 0 4px;
+    border-radius: 999px; background: #e11d48; color: #fff; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
+  }
+
+  /* Compact Breadcrumb [Home] > [...] */
+  .crumbBox { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+  .csep { color: #94a3b8; font-size: 14px; font-weight: bold; flex: none; }
+  .ellipBtn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--muted); color: var(--fg); font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .ellipBtn:active { background: #e2e8f0; }
+
+  /* Screen contents */
+  .screen { flex: 1; overflow-y: auto; overscroll-behavior: contain; background: var(--bg); }
+  .screen::-webkit-scrollbar { width: 0; }
+  .slideL { animation: sl .22s ease; }
+  .slideR { animation: sr .22s ease; }
+  @keyframes sl { from { transform: translateX(26px); opacity: .3 } to { transform: none; opacity: 1 } }
+  @keyframes sr { from { transform: translateX(-26px); opacity: .3 } to { transform: none; opacity: 1 } }
+
+  .hero { height: 108px; background: linear-gradient(120deg,#a9cadd,#e2edf4); }
+  .pad { padding: 14px 16px; }
+  .ptitle { font-size: 21px; font-weight: 800; letter-spacing: -.01em; margin: 0 0 3px; }
+  .ptag { font-size: 13px; color: var(--muted-fg); margin: 0 0 14px; }
+
+  .card2 {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 13px;
+    margin-bottom: 10px; width: 100%; text-align: left; font: inherit; cursor: pointer; display: block;
+  }
+  .card2:active { background: var(--muted); }
+  .card2 .row { display: flex; align-items: center; gap: 10px; }
+  .card2 .sq { width: 34px; height: 34px; border-radius: 9px; flex: none; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; }
+  .card2 .nm { font-size: 14.5px; font-weight: 700; }
+  .card2 .mt { font-size: 12px; color: var(--muted-fg); }
+  .card2 .chev { margin-left: auto; color: #b8c4d0; }
+  .post { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 13px; margin-bottom: 10px; }
+  .post .ln { height: 9px; border-radius: 5px; background: var(--muted); margin-bottom: 7px; }
+  .post .ln.s { width: 55%; }
+  .post .hd { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .sechd { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-fg); margin: 4px 0 9px; }
+
+  /* Bottom bar */
+  .bottom {
+    height: 56px; flex: none; background: #fff; border-top: 1px solid var(--border);
+    display: flex; align-items: stretch; gap: 0; padding: 0 4px;
+  }
+  .burger { width: 46px; display: flex; align-items: center; justify-content: center; border: 0; background: none; cursor: pointer; }
+  .burger span { display: block; width: 17px; height: 2px; background: var(--muted-fg); box-shadow: 0 -5px 0 var(--muted-fg), 0 5px 0 var(--muted-fg); }
+  .vdiv { width: 1px; background: var(--border); margin: 16px 4px; flex: none; }
+  .tabs { display: flex; gap: 4px; overflow-x: auto; flex: 1; align-items: stretch; }
+  .tabs::-webkit-scrollbar { height: 0; }
+  .tabs button {
+    border: 0; background: none; font: inherit; font-size: 13px; color: var(--muted-fg);
+    padding: 0 9px; white-space: nowrap; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] { color: var(--primary); font-weight: 700; }
+
+  /* Overlays */
+  .overlays { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+  .overlays > * { pointer-events: auto; }
+  .scrim { position: absolute; inset: 0; background: rgba(15,30,45,.38); animation: fade .15s ease; }
+  @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+
+  /* Breadcrumb Tree Dropdown */
+  .popTree {
+    position: absolute; top: 72px; left: 10px; width: 280px;
+    background: #fff; border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(15,30,45,.28); padding: 8px; z-index: 40;
+    animation: pin .16s ease;
+  }
+  @keyframes pin { from { transform: translateY(-6px) scale(.97); opacity: 0 } to { transform: none; opacity: 1 } }
+  .treeHdr { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-fg); padding: 6px 10px 6px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+  
+  .treeRow {
+    display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none;
+    font: inherit; font-size: 13.5px; font-weight: 600; padding: 8px 10px; border-radius: 8px;
+    cursor: pointer; text-align: left; color: var(--fg);
+  }
+  .treeRow:active { background: var(--muted); }
+  .treeRow.current { background: #eef4f9; color: var(--primary); font-weight: 700; }
+  .treeRow .indentLine { color: #94a3b8; font-family: monospace; font-size: 13px; }
+  .treeRow .sq { width: 20px; height: 20px; border-radius: 5px; flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; color: #fff; }
+  .treeRow .curBadge { margin-left: auto; font-size: 10px; font-weight: bold; color: var(--accent); background: #e0f2fe; padding: 2px 6px; border-radius: 999px; }
+
+  /* Profile Menu */
+  .popMenu {
+    position: absolute; top: 72px; right: 10px; width: 220px;
+    background: #fff; border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(15,30,45,.28); padding: 6px; z-index: 40;
+    animation: pin .16s ease;
+  }
+  .prow {
+    display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none;
+    font: inherit; font-size: 13.5px; font-weight: 600; padding: 9px 10px; border-radius: 8px;
+    cursor: pointer; text-align: left; color: var(--fg);
+  }
+  .prow:active { background: var(--muted); }
+  .prow .mb { margin-left: auto; background: #e11d48; color: #fff; border-radius: 999px; font-size: 10px; font-weight: 700; padding: 1px 6px; }
+  .psep { height: 1px; background: var(--border); margin: 4px 4px; }
+
+  /* LinkedIn-style Chat Drawer (Slide in from Right) */
+  .chatDrawer {
+    position: absolute; top: 0; right: 0; bottom: 0; width: 100%; max-width: 330px;
+    background: #fff; box-shadow: -8px 0 28px rgba(15,30,45,.25); z-index: 50;
+    display: flex; flex-direction: column; animation: slideIn .24s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  
+  .chatHdr {
+    height: 60px; border-bottom: 1px solid var(--border); padding: 0 14px;
+    display: flex; align-items: center; justify-content: space-between; flex: none;
+  }
+  .chatHdr h3 { font-size: 16px; font-weight: 700; margin: 0; }
+  .chatClose { width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  
+  .chatBody { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
+  .chatItem {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px;
+    display: flex; gap: 10px; align-items: center; cursor: pointer;
+  }
+  .chatItem:active { background: #f1f5f9; }
+  .chatAv { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#a855f7); flex: none; }
+  .chatInfo { min-width: 0; flex: 1; }
+  .chatName { font-size: 13.5px; font-weight: 700; margin-bottom: 2px; }
+  .chatMsg { font-size: 12px; color: var(--muted-fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chatTime { font-size: 11px; color: var(--muted-fg); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Mobile Navigation Prototype</h1>
+  <p class="hint">Left: <code>[Home] › [...]</code> with indented hierarchy menu. Right: Dedicated Chat button (slides from right) & Profile button (nav utilities).</p>
+
+  <div class="stage">
+
+    <div>
+      <div class="panel">
+        <h2>Key Interactions</h2>
+        <ul style="padding-left:18px;margin:0;font-size:13px;color:var(--muted-fg);line-height:1.6">
+          <li><strong>[Home] › [...]</strong>: 1-tap Home preserved; <code>[...]</code> opens full hierarchy with indentation.</li>
+          <li><strong>Chat circle (💬)</strong>: Slide-in chat drawer from the right (LinkedIn mobile style).</li>
+          <li><strong>Profile circle (👤)</strong>: Search, Notifications, Spaces & Settings centralized.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h2>Device width</h2>
+        <div class="widths" id="widthSeg">
+          <button data-w="360" aria-pressed="false">360</button>
+          <button data-w="390" aria-pressed="true">390</button>
+          <button data-w="430" aria-pressed="false">430</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="deviceWrap">
+      <div class="device" id="device" style="width:390px">
+        <div class="statusbar"><span>9:41</span><span>􀙇 􀛨</span></div>
+        <div class="appbar" id="appbar"></div>
+        <div class="screen" id="screen"></div>
+        <div id="bottomSlot"></div>
+        <div class="overlays" id="overlaySlot"></div>
+      </div>
+      <div class="devlabel" id="devlabel">390 × 720 · mobile viewport test</div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Navigation Metrics</h2>
+        <div class="metric"><span>Taps to parent</span><b id="mParent">—</b></div>
+        <div class="metric"><span>Taps to Home</span><b id="mHome">—</b></div>
+        <div class="metric"><span>Depth</span><b id="mDepth">—</b></div>
+      </div>
+      <div class="panel">
+        <h2>Session</h2>
+        <div class="metric"><span>Taps used</span><b id="mTaps">0</b></div>
+        <button class="reset" id="resetBtn">Reset to Home</button>
+      </div>
+      <div class="panel">
+        <h2>Current Trail</h2>
+        <div class="trailout" id="trailOut">—</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  const NODES = {
+    home:   { id: 'home',   name: 'Home',            kind: 'root',  level: 0 },
+    spaces: { id: 'spaces', name: 'Spaces',          kind: 'root',  parent: 'home',   level: 0 },
+    ge:     { id: 'ge',     name: 'Green Energy',    kind: 'space', parent: 'spaces', level: 1, ini: 'GE', col: '#2f7fa8', tag: 'Accelerating the energy transition' },
+    cs:     { id: 'cs',     name: 'Creative Space',  kind: 'space', parent: 'spaces', level: 1, ini: 'CS', col: '#8a5cc4', tag: 'Where ideas get made' },
+    um:     { id: 'um',     name: 'Urban Mobility',  kind: 'space', parent: 'ge',     level: 2, ini: 'UM', col: '#4a8f52', tag: 'Rethinking how cities move' },
+    kh:     { id: 'kh',     name: 'Knowledge Hub',   kind: 'space', parent: 'ge',     level: 2, ini: 'KH', col: '#c47a3c', tag: 'Shared research and reports' },
+    ps:     { id: 'ps',     name: 'Pilot Study',     kind: 'space', parent: 'um',     level: 3, ini: 'PS', col: '#b5566e', tag: 'Field trial, Q3 2026' },
+  };
+  const CHILDREN = { spaces: ['ge','cs'], ge: ['um','kh'], um: ['ps'], cs: [], kh: [], ps: [] };
+  const TABS = ['Home', 'Community', 'Subspaces', 'Knowledge base'];
+
+  const state = { node: 'home', tab: 'Home', overlay: null, taps: 0, dir: 'fwd' };
+
+  const $ = id => document.getElementById(id);
+  const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
+
+  function trail(id) {
+    const out = [];
+    let cur = NODES[id];
+    while (cur) { out.unshift(cur); cur = cur.parent ? NODES[cur.parent] : null; }
+    return out;
+  }
+  const countTap = () => { state.taps++; $('mTaps').textContent = state.taps; };
+
+  function go(id, dir) {
+    state.dir = dir || 'fwd';
+    state.node = id;
+    state.tab = 'Home';
+    state.overlay = null;
+    render();
+  }
+
+  /* ---------- Header ---------- */
+  function renderHeader() {
+    const bar = $('appbar');
+    bar.innerHTML = '';
+    const t = trail(state.node);
+    const depth = t.length - 1;
+
+    // Left: [Home] or [Home] > [...]
+    const left = el('div', 'abL');
+    const homeBtn = el('button', 'tap tight');
+    homeBtn.title = 'Go to Home';
+    homeBtn.innerHTML = '<span class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>';
+    homeBtn.onclick = () => { countTap(); go('home', 'back'); };
+    left.appendChild(homeBtn);
+
+    if (depth > 0) {
+      left.appendChild(el('span', 'csep', '›'));
+      
+      const ellip = el('button', 'ellipBtn');
+      ellip.innerHTML = '<span>…</span> <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>';
+      ellip.onclick = () => { countTap(); state.overlay = state.overlay === 'tree' ? null : 'tree'; render(); };
+      left.appendChild(ellip);
+    }
+    bar.appendChild(left);
+
+    // Right: 2 Circle Buttons (Profile + Chat)
+    const right = el('div', 'abR');
+
+    // Profile Circle Button
+    const profBtn = el('button', 'circleBtn');
+    profBtn.title = 'Profile and Menu';
+    profBtn.innerHTML = '<span class="avatarImg"></span>';
+    profBtn.onclick = () => { countTap(); state.overlay = state.overlay === 'profile' ? null : 'profile'; render(); };
+    right.appendChild(profBtn);
+
+    // Chat Circle Button (outermost right)
+    const chatBtn = el('button', 'circleBtn chat');
+    chatBtn.title = 'Open Messaging';
+    chatBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.9 8.9 0 0 1-4-.9L3 21l1.9-4.6A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span class="badge">2</span>';
+    chatBtn.onclick = () => { countTap(); state.overlay = state.overlay === 'chat' ? null : 'chat'; render(); };
+    right.appendChild(chatBtn);
+
+    bar.appendChild(right);
+  }
+
+  /* ---------- Screen ---------- */
+  function spaceCard(n) {
+    const b = el('button', 'card2');
+    const row = el('div', 'row');
+    const sq = el('span', 'sq', n.ini || n.name.slice(0,2).toUpperCase()); sq.style.background = n.col || '#2f7fa8';
+    const txt = el('div');
+    txt.appendChild(el('div', 'nm', n.name));
+    txt.appendChild(el('div', 'mt', n.tag));
+    const ch = el('span', 'chev', '›');
+    row.appendChild(sq); row.appendChild(txt); row.appendChild(ch);
+    b.appendChild(row);
+    b.onclick = () => { countTap(); go(n.id, 'fwd'); };
+    return b;
+  }
+  function post(title) {
+    const p = el('div', 'post');
+    p.appendChild(el('div', 'hd', title));
+    p.appendChild(el('div', 'ln'));
+    p.appendChild(el('div', 'ln'));
+    p.appendChild(el('div', 'ln s'));
+    return p;
+  }
+
+  function renderScreen() {
+    const s = $('screen');
+    s.innerHTML = '';
+    s.className = 'screen ' + (state.dir === 'fwd' ? 'slideL' : 'slideR');
+    s.scrollTop = 0;
+    const node = NODES[state.node];
+
+    if (node.kind === 'root') {
+      const pad = el('div', 'pad');
+      pad.appendChild(el('h1', 'ptitle', node.name));
+      pad.appendChild(el('p', 'ptag', node.id === 'home' ? 'Your spaces and recent activity' : 'Explore all available spaces'));
+      pad.appendChild(el('div', 'sechd', node.id === 'home' ? 'Recent spaces' : 'All spaces'));
+      (CHILDREN.spaces).forEach(id => pad.appendChild(spaceCard(NODES[id])));
+      if (node.id === 'home') { pad.appendChild(el('div', 'sechd', 'Recent Activity')); pad.appendChild(post('Elena Martinez posted in Green Energy')); pad.appendChild(post('New challenge opened in Urban Mobility')); }
+      s.appendChild(pad);
+      return;
+    }
+
+    s.appendChild(el('div', 'hero'));
+    const pad = el('div', 'pad');
+    pad.appendChild(el('h1', 'ptitle', node.name));
+    pad.appendChild(el('p', 'ptag', node.tag));
+    const kids = CHILDREN[node.id] || [];
+    if (state.tab === 'Subspaces') {
+      pad.appendChild(el('div', 'sechd', kids.length ? 'Subspaces' : 'No subspaces yet'));
+      kids.forEach(id => pad.appendChild(spaceCard(NODES[id])));
+    } else {
+      if (kids.length) {
+        pad.appendChild(el('div', 'sechd', 'Subspaces'));
+        kids.forEach(id => pad.appendChild(spaceCard(NODES[id])));
+      }
+      pad.appendChild(el('div', 'sechd', state.tab));
+      pad.appendChild(post('Weekly space summary'));
+      pad.appendChild(post('Working group deliverables & notes'));
+    }
+    s.appendChild(pad);
+  }
+
+  function renderBottom() {
+    const slot = $('bottomSlot');
+    slot.innerHTML = '';
+    if (NODES[state.node].kind !== 'space') return;
+    const bar = el('div', 'bottom');
+    const b = el('button', 'burger'); b.appendChild(el('span')); b.onclick = countTap;
+    bar.appendChild(b);
+    bar.appendChild(el('div', 'vdiv'));
+    const tabs = el('div', 'tabs');
+    TABS.forEach(t => {
+      const tb = el('button', null, t);
+      tb.setAttribute('aria-selected', String(t === state.tab));
+      tb.onclick = () => { countTap(); state.tab = t; render(); };
+      tabs.appendChild(tb);
+    });
+    bar.appendChild(tabs);
+    slot.appendChild(bar);
+  }
+
+  /* ---------- Overlays ---------- */
+  function renderOverlay() {
+    const slot = $('overlaySlot');
+    slot.innerHTML = '';
+    slot.style.display = state.overlay ? 'block' : 'none';
+    if (!state.overlay) return;
+
+    const scrim = el('div', 'scrim');
+    scrim.onclick = () => { state.overlay = null; render(); };
+    slot.appendChild(scrim);
+
+    // 1. Indented Tree Dropdown from [...]
+    if (state.overlay === 'tree') {
+      const pop = el('div', 'popTree');
+      pop.appendChild(el('div', 'treeHdr', 'Location Hierarchy'));
+
+      const t = trail(state.node);
+      const activeId = state.node;
+
+      t.forEach((n, idx) => {
+        const isCur = n.id === activeId;
+        const row = el('button', 'treeRow' + (isCur ? ' current' : ''));
+        
+        // Indentation calculation
+        const indentLevel = idx; // 0 for Home, 1 for Spaces, 2 for Space, 3 for Subspace, 4 for Subsubspace
+        if (indentLevel > 0) {
+          const indentSpan = el('span', 'indentLine');
+          indentSpan.style.paddingLeft = ((indentLevel - 1) * 14) + 'px';
+          indentSpan.innerHTML = '↳ ';
+          row.appendChild(indentSpan);
+        }
+
+        const sq = el('span', 'sq');
+        if (n.col) { sq.style.background = n.col; sq.textContent = n.ini || ''; }
+        else { sq.style.background = '#2f9fc4'; sq.innerHTML = '⌂'; }
+        row.appendChild(sq);
+
+        row.appendChild(document.createTextNode(n.name));
+        
+        if (isCur) {
+          row.appendChild(el('span', 'curBadge', 'Current'));
+        } else {
+          row.onclick = () => { countTap(); go(n.id, 'back'); };
+        }
+        pop.appendChild(row);
+      });
+
+      slot.appendChild(pop);
+      return;
+    }
+
+    // 2. Profile Menu (Search, Notifications, My Spaces, Settings)
+    if (state.overlay === 'profile') {
+      const pop = el('div', 'popMenu');
+      [['Search', '🔍'], ['Notifications', '🔔', '5'], ['My Spaces', '⊞'], ['Settings', '⚙']].forEach(([label, icon, badge]) => {
+        const r = el('button', 'prow');
+        r.appendChild(el('span', '', icon + ' '));
+        r.appendChild(document.createTextNode(label));
+        if (badge) r.appendChild(el('span', 'mb', badge));
+        r.onclick = countTap;
+        pop.appendChild(r);
+      });
+      pop.appendChild(el('div', 'psep'));
+      const prof = el('button', 'prow');
+      prof.appendChild(el('span', '', '👤 '));
+      prof.appendChild(document.createTextNode('Your Profile'));
+      prof.onclick = countTap;
+      pop.appendChild(prof);
+      slot.appendChild(pop);
+      return;
+    }
+
+    // 3. LinkedIn-style Slide-in Chat Drawer
+    if (state.overlay === 'chat') {
+      const drawer = el('div', 'chatDrawer');
+      const hdr = el('div', 'chatHdr');
+      hdr.appendChild(el('h3', null, 'Messages (2 unread)'));
+      const closeBtn = el('button', 'chatClose');
+      closeBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d384a" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      closeBtn.onclick = () => { countTap(); state.overlay = null; render(); };
+      hdr.appendChild(closeBtn);
+      drawer.appendChild(hdr);
+
+      const bdy = el('div', 'chatBody');
+      const chats = [
+        { name: 'Elena Martinez', msg: 'Updated the project scope for Urban Mobility', time: '12m' },
+        { name: 'Neil & Working Group', msg: 'Check out the proposed back navigation concept', time: '1h' },
+        { name: 'Rotterdam Innovation Hub', msg: 'Shared whiteboard meeting notes', time: '2d' }
+      ];
+      chats.forEach(c => {
+        const item = el('div', 'chatItem');
+        item.appendChild(el('div', 'chatAv'));
+        const info = el('div', 'chatInfo');
+        info.appendChild(el('div', 'chatName', c.name));
+        info.appendChild(el('div', 'chatMsg', c.msg));
+        item.appendChild(info);
+        item.appendChild(el('div', 'chatTime', c.time));
+        item.onclick = countTap;
+        bdy.appendChild(item);
+      });
+      drawer.appendChild(bdy);
+      slot.appendChild(drawer);
+      return;
+    }
+  }
+
+  /* ---------- Metrics ---------- */
+  function renderMetrics() {
+    const t = trail(state.node);
+    const depth = t.length - 1;
+    $('mParent').textContent = depth > 0 ? '1 (via …)' : '—';
+    $('mHome').textContent = depth > 0 ? '1 ([Home] button)' : '0';
+    $('mDepth').textContent = String(depth);
+    $('trailOut').textContent = t.map(n => n.name).join('  ›  ');
+  }
+
+  function render() {
+    renderHeader();
+    renderScreen();
+    renderBottom();
+    renderOverlay();
+    renderMetrics();
+  }
+
+  $('widthSeg').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    $('device').style.width = b.dataset.w + 'px';
+    $('devlabel').textContent = b.dataset.w + ' × 720 · mobile viewport test';
+    [...$('widthSeg').children].forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  };
+  $('resetBtn').onclick = () => { state.taps = 0; $('mTaps').textContent = '0'; go('home', 'back'); };
+
+  render();
+})();
+</script>
+</body>
+</html>

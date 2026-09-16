@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contributor card data map</title>
+    <style>
+      :root {
+        --ink: #183a4b;
+        --text: #243746;
+        --muted: #64748b;
+        --line: #b8c7ce;
+        --border: #dce5e9;
+        --canvas: #eef4f3;
+        --card: #ffffff;
+        --chip: #f1f5f6;
+        --user: #c8485b;
+        --org: #0f8f85;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        min-width: 960px;
+        margin: 0;
+        color: var(--text);
+        font-family: Georgia, "Times New Roman", serif;
+        background: var(--canvas);
+      }
+      main { width: 100%; min-width: 960px; max-width: 1360px; margin: 0 auto; padding: 52px 54px 64px; }
+      h1 { margin: 0; color: var(--ink); font-size: 34px; font-weight: 600; letter-spacing: 0; }
+      .key { display: flex; gap: 22px; margin-top: 12px; font: 700 12px/1 Arial, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+      .key span { display: flex; align-items: center; gap: 7px; }
+      .dot { width: 9px; height: 9px; border-radius: 50%; }
+      .dot.user { background: var(--user); } .dot.org { background: var(--org); }
+      .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 42px; margin-top: 48px; }
+      .panel { position: relative; min-height: 390px; border-top: 3px solid var(--ink); }
+      .panel-title { margin: 16px 0 0; font: 700 17px/1 Arial, sans-serif; color: var(--ink); }
+      .panel-title span { color: var(--muted); font-weight: 400; }
+      .card {
+        position: absolute; top: 72px; left: 147px; width: 312px;
+        display: flex; flex-direction: column; padding: 18px; overflow: hidden;
+        background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+        box-shadow: 0 5px 18px rgba(24,58,75,.08); font-family: Arial, sans-serif;
+      }
+      .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 11px; }
+      .identity { display: flex; align-items: flex-start; gap: 11px; min-width: 0; }
+      .avatar { width: 46px; height: 46px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: #fff; font-size: 13px; font-weight: 700; }
+      .user-card .avatar { background: var(--user); }
+      .org-card .avatar { border-radius: 7px; background: var(--org); }
+      .name { margin-top: 3px; font-size: 15px; font-weight: 700; color: var(--text); }
+      .action { display: grid; width: 19px; height: 19px; place-items: center; color: var(--muted); }
+      .action svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .status { display: inline-flex; align-items: center; margin-top: 6px; padding: 4px 7px; border: 1px solid var(--border); border-radius: 999px; font-size: 11px; color: var(--muted); background: var(--chip); }
+      .bio { margin: 24px 0 0; font-size: 14px; line-height: 1.48; color: var(--muted); }
+      .empty-bio { font-style: italic; }
+      .chips { display: flex; gap: 5px; margin-top: 16px; overflow: hidden; }
+      .chip { max-width: 140px; padding: 4px 7px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); background: var(--chip); font-size: 11px; }
+      .location { display: flex; align-items: center; gap: 5px; margin-top: 14px; color: var(--muted); font-size: 11px; }
+      .pin { width: 8px; height: 8px; border: 1.5px solid currentColor; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); }
+      .bottom { margin-top: auto; padding-top: 14px; color: var(--muted); font-size: 11px; }
+      .callout { position: absolute; width: 130px; color: var(--muted); font: 11px/1.25 Arial, sans-serif; white-space: normal; transform: translateY(-50%); }
+      .callout strong { display: block; color: var(--text); font-size: 11px; }
+      .callout code { font-family: "SFMono-Regular", Consolas, monospace; font-size: 10px; }
+      .callout::after { position: absolute; top: 50%; content: ""; height: 1px; background: var(--line); transform: translateY(-50%); }
+      .callout::before { position: absolute; top: 50%; content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--line); transform: translateY(-50%); }
+      .right { left: 475px; text-align: left; } .right::after { right: 100%; width: 20px; } .right::before { right: calc(100% + 17px); }
+      .left { right: 475px; text-align: right; } .left::after { left: 100%; width: 20px; } .left::before { left: calc(100% + 17px); }
+      .c-avatar { top: 104px; } .c-name { top: 104px; } .c-status { top: 129px; } .c-bio { top: 175px; } .c-chips { top: 229px; } .c-location { top: 262px; } .c-bottom { top: 300px; }
+      .note { position: absolute; top: 345px; left: 147px; width: 312px; color: var(--muted); font: 11px/1.35 Arial, sans-serif; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Contributor card data map</h1>
+      <div class="key"><span><i class="dot user"></i>User</span><span><i class="dot org"></i>Organization</span></div>
+      <div class="cards">
+        <section class="panel">
+          <h2 class="panel-title">User contributor <span>Community tab</span></h2>
+          <article class="card user-card">
+            <div class="top"><div class="identity"><div class="avatar">EM</div><div><div class="name">Elena Martinez</div><div class="status">Member</div></div></div><span class="action">...</span></div>
+            <p class="bio">Community Host. Driving sustainable innovation in urban planning.</p>
+            <div class="chips"><span class="chip">Urban Planning</span><span class="chip">Sustainability</span></div>
+            <div class="location"><i class="pin"></i>Barcelona, ES</div>
+            <div class="bottom">Joined this space Oct 2023</div>
+          </article>
+          <div class="callout left c-avatar"><strong>Avatar</strong><code>member.avatar</code></div>
+          <div class="callout right c-name"><strong>Name</strong><code>member.name</code></div>
+          <div class="callout left c-status"><strong>Membership label</strong><code>"Member"</code></div>
+          <div class="callout right c-bio"><strong>Bio</strong><code>member.bio</code></div>
+          <div class="callout left c-chips"><strong>Profile skills, first 2</strong><code>member.skills</code></div>
+          <div class="callout right c-location"><strong>Location</strong><code>member.location</code></div>
+          <div class="callout right c-bottom"><strong>Space join date</strong><code>member.joinDate</code></div>
+          <div class="note">Empty bio: <em>User has not filled in their bio</em></div>
+        </section>
+        <section class="panel">
+          <h2 class="panel-title">Organization contributor <span>Community tab</span></h2>
+          <article class="card org-card">
+            <div class="top"><div class="identity"><div class="avatar">GF</div><div><div class="name">Green Future Labs</div></div></div><span class="action" aria-label="External link"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg></span></div>
+            <p class="bio">Leading research in renewable energy systems and sustainable urban planning.</p>
+            <div class="chips"><span class="chip">Renewable Energy</span><span class="chip">Urban Planning</span></div>
+            <div class="location"><i class="pin"></i>Rotterdam, NL</div>
+            <div class="bottom">12 members in this space</div>
+          </article>
+          <div class="callout left c-avatar"><strong>Avatar</strong><code>org.avatar</code></div>
+          <div class="callout right c-name"><strong>Name</strong><code>org.name</code></div>
+          <div class="callout right c-bio"><strong>Description</strong><code>org.description</code></div>
+          <div class="callout left c-chips"><strong>Profile skills, first 2</strong><code>org.skillTags</code></div>
+          <div class="callout right c-location"><strong>Location</strong><code>org.location</code></div>
+          <div class="callout right c-bottom"><strong>Members in this space</strong><code>org.members</code></div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

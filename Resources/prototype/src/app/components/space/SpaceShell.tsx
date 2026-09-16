@@ -13,6 +13,10 @@ import { IconButton } from "@/app/components/ui/icon-button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import {
+  loadSpaceSidebarWidgets,
+  spaceTabDefaults,
+} from "@/app/components/space/SidebarWidgets";
 
 /**
  * SpaceShell wraps the tab pages (Home, Community, Workspaces, Knowledge)
@@ -34,46 +38,18 @@ export function SpaceShell() {
   const rawPanel = searchParams.get("panel") || "full";
   const panelMode = (rawPanel === "railed" ? "rail" : rawPanel) as "full" | "rail" | "hidden";
 
-  // Admin-configured sidebar features — per tab (from localStorage, set via Settings > Layout)
-  type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean; intent: boolean };
-  const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true, intent: true };
-  const allTabFeatures = (() => {
-    try {
-      const stored = localStorage.getItem('alkemio-sidebar-features');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        const defaults: Record<string, SidebarFeatureSet> = {
-          home: { ...defaultFeatureSet },
-          community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
-          workspaces: { ...defaultFeatureSet, addUser: false },
-          knowledge: { ...defaultFeatureSet, addUser: false, createSubspace: false, subspaceLinks: false },
-        };
-        for (const tabId of Object.keys(defaults)) {
-          if (parsed[tabId]) defaults[tabId] = { ...defaults[tabId], ...parsed[tabId] };
-        }
-        return defaults;
-      }
-      return {
-        home: { ...defaultFeatureSet },
-        community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
-        workspaces: { ...defaultFeatureSet, addUser: false },
-        knowledge: { ...defaultFeatureSet, addUser: false, createSubspace: false, subspaceLinks: false },
-      };
-    } catch {
-      return {
-        home: { ...defaultFeatureSet },
-        community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
-        workspaces: { ...defaultFeatureSet, addUser: false },
-        knowledge: { ...defaultFeatureSet, addUser: false, createSubspace: false, subspaceLinks: false },
-      };
-    }
-  })();
-
-  // Get features for current tab variant
-  const getCurrentTabFeatures = () => {
-    const variant = getSidebarVariant();
-    const variantMap: Record<string, string> = { home: 'home', community: 'community', workspaces: 'subspaces', knowledge: 'knowledge' };
-    return allTabFeatures[variantMap[variant] || 'home'] || defaultFeatureSet;
+  // Admin-configured sidebar widgets — per tab, set via Settings > Layout.
+  // Carries both which widgets are on and the order they render in.
+  const allTabWidgets = loadSpaceSidebarWidgets();
+  const getCurrentTabConfig = () => {
+    const variantMap: Record<string, string> = {
+      home: 'home',
+      community: 'community',
+      workspaces: 'subspaces',
+      knowledge: 'knowledge',
+    };
+    const tabId = variantMap[getSidebarVariant()] || 'home';
+    return allTabWidgets[tabId] ?? spaceTabDefaults(tabId);
   };
 
   // User-toggleable sidebar: reads admin default, user can switch expanded <-> railed
@@ -216,7 +192,7 @@ export function SpaceShell() {
                 <>
                   <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
                     <aside>
-                      <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} enabledFeatures={getCurrentTabFeatures()} />
+                      <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} widgetConfig={getCurrentTabConfig()} />
                       {/* User collapse toggle */}
                       <button
                         onClick={() => setSidebarCollapsed(true)}
@@ -244,7 +220,7 @@ export function SpaceShell() {
               {/* ═══ PANEL RAIL: Slim icon rail + expanded content ═══ */}
               {mobileStrategy === 0 && effectivePanelMode === "rail" && (
                 <div className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} min-w-0`}>
-                  <SidebarIconRail slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} enabledFeatures={getCurrentTabFeatures()} onExpand={() => setSidebarCollapsed(false)} />
+                  <SidebarIconRail slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} enabledFeatures={getCurrentTabConfig().enabled} onExpand={() => setSidebarCollapsed(false)} />
                 </div>
               )}
             </div>
@@ -689,7 +665,7 @@ function MobileBottomNavFAB({ slug, sidebarVariant, activeTabDescription, usesSc
 // ═══════════════════════════════════════════════════════════════════
 
 interface SidebarIconRailProps extends MobileStrategyProps {
-  enabledFeatures?: { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean };
+  enabledFeatures?: Record<string, boolean>;
   onExpand?: () => void;
 }
 

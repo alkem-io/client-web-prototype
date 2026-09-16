@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, MoreHorizontal, UserPlus, Shield, User, CheckCircle2, Building2, ExternalLink, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, MoreHorizontal, UserPlus, User, MapPin, ExternalLink, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
 } from "@/app/components/ui/dropdown-menu";
 import { Link } from "react-router";
-import { cn } from "@/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 import { OrgHoverCard } from "@/app/components/user/OrgHoverCard";
@@ -249,28 +248,6 @@ export function SpaceMembers() {
     setCurrentPage(1);
   };
 
-  const getRoleBadgeColor = (roleType: string) => {
-    switch (roleType) {
-      case "admin":
-        return "bg-primary/10 text-primary border-primary/20";
-      case "moderator":
-        return "bg-chart-2/10 text-chart-2 border-chart-2/20";
-      default:
-        return "bg-muted text-muted-foreground border-border";
-    }
-  };
-
-  const getRoleIcon = (roleType: string) => {
-    switch (roleType) {
-      case "admin":
-        return <Shield className="w-3 h-3 mr-1" />;
-      case "moderator":
-        return <CheckCircle2 className="w-3 h-3 mr-1" />;
-      default:
-        return <User className="w-3 h-3 mr-1" />;
-    }
-  };
-
   return (
     <div className="space-y-6">
       {/* Unified Grid */}
@@ -280,8 +257,6 @@ export function SpaceMembers() {
             <UserCard
               key={entry.id}
               member={entry}
-              getRoleBadgeColor={getRoleBadgeColor}
-              getRoleIcon={getRoleIcon}
             />
           ) : (
             <OrgCard key={entry.id} org={entry} />
@@ -365,16 +340,14 @@ export function SpaceMembers() {
 // ── User Card ──
 function UserCard({
   member,
-  getRoleBadgeColor,
-  getRoleIcon,
 }: {
   member: MemberEntry;
-  getRoleBadgeColor: (rt: string) => string;
-  getRoleIcon: (rt: string) => React.ReactNode;
 }) {
+  const profileTags = member.skills?.slice(0, 2) ?? [];
+
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
-      <CardContent className="p-0">
+    <Card className="h-full overflow-hidden hover:shadow-md transition-all duration-300">
+      <CardContent className="flex flex-1 flex-col p-0" style={{ paddingBottom: 0 }}>
         <div className="p-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             <ProfileHoverCard
@@ -417,14 +390,11 @@ function UserCard({
                 {member.name}
               </Link>
               <div
-                className={cn(
-                  "inline-flex items-center px-2 py-0.5 rounded-full text-caption font-medium border mt-1",
-                  getRoleBadgeColor(member.roleType)
-                )}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-medium border mt-1 bg-muted text-muted-foreground border-border"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
-                {getRoleIcon(member.roleType)}
-                {member.role}
+                <User className="w-3 h-3" />
+                Member
               </div>
             </div>
           </div>
@@ -444,26 +414,48 @@ function UserCard({
           </DropdownMenu>
         </div>
 
-        <div className="px-4 pb-4">
-          {member.bio && (
-            <p
-              className="line-clamp-2 text-body"
-              style={{
-                color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              {member.bio}
-            </p>
-          )}
-          <div
-            className={cn("flex items-center gap-1 text-caption", member.bio ? "mt-4" : "mt-1")}
+        <div className="flex flex-1 flex-col px-4 pb-4">
+          <p
+            className={`line-clamp-2 text-body${member.bio ? "" : " italic"}`}
             style={{
               color: "var(--muted-foreground)",
               fontFamily: "'Inter', sans-serif",
             }}
           >
-            <span>Joined {member.joinDate}</span>
+            {member.bio || "User has not filled in their bio"}
+          </p>
+          {profileTags.length > 0 && (
+            <div className="mt-3 flex gap-1 overflow-hidden">
+              {profileTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="shrink min-w-0 truncate rounded-full border border-border bg-muted px-1.5 py-0.5 text-caption text-muted-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+          {member.location && (
+            <div
+              className="mt-3 flex items-center gap-1 text-caption"
+              style={{
+                color: "var(--muted-foreground)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              <MapPin className="w-3 h-3" />
+              <span>{member.location}</span>
+            </div>
+          )}
+          <div
+            className="mt-auto flex items-center gap-1 pt-3 text-caption"
+            style={{
+              color: "var(--muted-foreground)",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            <span>Joined this space {member.joinDate}</span>
           </div>
         </div>
       </CardContent>
@@ -473,9 +465,11 @@ function UserCard({
 
 // ── Organization Card ──
 function OrgCard({ org }: { org: OrgEntry }) {
+  const profileTags = org.skillTags?.slice(0, 2) ?? [];
+
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
-      <CardContent className="p-0">
+    <Card className="h-full overflow-hidden hover:shadow-md transition-all duration-300">
+      <CardContent className="flex h-full flex-col p-0" style={{ paddingBottom: 0 }}>
         <div className="p-4 flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
             <OrgHoverCard
@@ -529,21 +523,6 @@ function OrgCard({ org }: { org: OrgEntry }) {
               >
                 {org.name}
               </Link>
-              <div className="flex items-center gap-1.5 mt-1">
-                <span
-                  className="inline-flex items-center gap-1 px-2 py-0.5 text-caption font-medium"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    color: "var(--info)",
-                    background: "color-mix(in srgb, var(--info) 10%, transparent)",
-                    border: "1px solid color-mix(in srgb, var(--info) 20%, transparent)",
-                    borderRadius: "999px",
-                  }}
-                >
-                  <Building2 className="w-3 h-3" />
-                  {org.type}
-                </span>
-              </div>
             </div>
           </div>
 
@@ -563,7 +542,7 @@ function OrgCard({ org }: { org: OrgEntry }) {
           </a>
         </div>
 
-        <div className="px-4 pb-4">
+        <div className="flex flex-1 flex-col px-4 pb-4">
           <p
             className="line-clamp-2 min-h-[2.5rem] text-body"
             style={{
@@ -573,8 +552,32 @@ function OrgCard({ org }: { org: OrgEntry }) {
           >
             {org.description}
           </p>
+          {profileTags.length > 0 && (
+            <div className="mt-3 flex gap-1 overflow-hidden">
+              {profileTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="shrink min-w-0 truncate rounded-full border border-border bg-muted px-1.5 py-0.5 text-caption text-muted-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+          {org.location && (
+            <div
+              className="mt-3 flex items-center gap-1 text-caption"
+              style={{
+                color: "var(--muted-foreground)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              <MapPin className="w-3 h-3" />
+              <span>{org.location}</span>
+            </div>
+          )}
           <div
-            className="flex items-center gap-1 mt-4 text-caption"
+            className="mt-auto flex items-center gap-1 pt-3 text-caption"
             style={{
               color: "var(--muted-foreground)",
               fontFamily: "'Inter', sans-serif",

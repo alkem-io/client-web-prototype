@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>New activity indicators — concepts</title>
+<style>
+  :root {
+    --primary: #1d384a;
+    --bg: #fcfdfe;
+    --fg: #1d384a;
+    --muted: #f1f5f9;
+    --muted-fg: #64748b;
+    --border: #e2e8f0;
+    --radius: 6px;
+    --accent: #0b6bcb;
+    --destructive: #ef4444;
+    --shadow: 0 4px 6px 0 rgba(0,0,0,.09);
+    font-synthesis: none;
+  }
+
+  /* ── Indicator colour options ── */
+  [data-color="navy"] { --act: #1d384a; }
+  [data-color="blue"] { --act: #0b6bcb; }
+  [data-color="teal"] { --act: #0d9488; }
+
+  /* ── Treatment definitions ───────────────────────────────────────────
+     Expressed as custom properties so the nearest [data-t] ancestor wins.
+     That lets the comparison strip show all five at once while the live
+     surfaces follow the global toolbar selection. */
+  [data-t] { --ind-display: inline-block; --ind-size: 6px; --ind-bg: var(--act);
+             --ind-bw: 0px; --host-bg: transparent; --host-bar: 0px; --host-weight: 500; }
+  [data-t="solid"]  { }
+  [data-t="ring"]   { --ind-size: 8px; --ind-bg: transparent; --ind-bw: 2px; }
+  [data-t="tint"]   { --ind-size: 5px; --host-bg: color-mix(in srgb, var(--act) 8%, transparent); }
+  [data-t="bar"]    { --ind-display: none; --host-bar: 3px; }
+  [data-t="weight"] { --ind-size: 5px; --host-weight: 700; }
+
+  .ind {
+    display: var(--ind-display);
+    width: var(--ind-size); height: var(--ind-size);
+    background: var(--ind-bg);
+    border: var(--ind-bw) solid var(--act);
+    border-radius: 50%;
+    flex: none;
+    box-sizing: content-box;
+    transition: opacity .28s ease, transform .28s ease;
+  }
+  /* Tabs always keep a dot — an edge bar has nowhere to live on a tab. */
+  .ind.always { display: inline-block; }
+  .ind.fade-out { opacity: 0; transform: scale(.4); }
+
+  [data-enabled="false"] .ind { display: none !important; }
+  [data-enabled="false"] .has-new { background: transparent !important; box-shadow: none !important; }
+  [data-enabled="false"] .has-new .label { font-weight: 500 !important; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #eef2f6; color: var(--fg);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1240px; margin: 0 auto; padding: 28px 28px 120px; }
+  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -.01em; }
+  h2 { font-size: 20px; margin: 0 0 4px; letter-spacing: -.005em; }
+  h3 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-fg); margin: 22px 0 10px; }
+  p.lede { color: var(--muted-fg); font-size: 14px; margin: 0 0 22px; max-width: 78ch; }
+  .sub { color: var(--muted-fg); font-size: 13.5px; margin: 0 0 18px; max-width: 80ch; }
+  code { font: 12.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--muted); padding: 1px 5px; border-radius: 4px; }
+
+  .card {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    padding: 22px; box-shadow: var(--shadow); margin-bottom: 26px;
+  }
+  .tag {
+    display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #fff; background: var(--primary);
+    padding: 3px 8px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .tag.alt { background: var(--accent); }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.93);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border);
+    padding: 11px 28px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
+  }
+  .tgroup { display: flex; align-items: center; gap: 8px; }
+  .tgroup > label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted-fg); font-weight: 700; }
+  .seg { display: flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+  .seg button {
+    border: 0; background: #fff; padding: 5px 10px; font: inherit; font-size: 12.5px;
+    cursor: pointer; color: var(--muted-fg); border-right: 1px solid var(--border);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--primary); color: #fff; font-weight: 600; }
+  .btn {
+    border: 1px solid var(--border); background: #fff; border-radius: 7px; padding: 6px 12px;
+    font: inherit; font-size: 12.5px; cursor: pointer; color: var(--fg);
+  }
+  .btn:hover { background: var(--muted); }
+  .btn.solid { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .swatch { width: 13px; height: 13px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: -2px; }
+
+  /* ── Comparison strip ── */
+  .cmp { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  @media (max-width: 1000px) { .cmp { grid-template-columns: repeat(2, 1fr); } }
+  .cmpcell { border: 1px solid var(--border); border-radius: 9px; padding: 12px; background: var(--bg); }
+  .cmpname { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted-fg); font-weight: 700; margin-bottom: 9px; }
+  .cmpnote { font-size: 11.5px; color: var(--muted-fg); margin-top: 9px; line-height: 1.4; }
+
+  /* ── Sidebar mock ── */
+  .surfaces { display: grid; grid-template-columns: 268px 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 980px) { .surfaces { grid-template-columns: 1fr; } }
+
+  /* Flex column so whitespace between rows generates no stray line boxes. */
+  .sidebar { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 12px 10px; display: flex; flex-direction: column; }
+  .sbhead { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-fg); font-weight: 700; padding: 10px 8px 6px; display: flex; align-items: center; justify-content: space-between; }
+  .navrow {
+    display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px;
+    border-radius: var(--radius); cursor: pointer; width: 100%; border: 0; background: transparent;
+    font: inherit; font-size: 13.5px; color: rgba(29,56,74,.78); text-align: left;
+  }
+  .navrow:hover { background: rgba(29,56,74,.05); }
+  .navrow.active { background: var(--muted); color: var(--fg); font-weight: 600; }
+  .navrow .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: var(--host-weight); }
+  .has-new { background: var(--host-bg); box-shadow: inset var(--host-bar) 0 0 var(--act); }
+  .sq { width: 22px; height: 22px; border-radius: 6px; flex: none; background: linear-gradient(135deg,#7fb2cd,#c9dbe8); }
+  .sq.b { background: linear-gradient(135deg,#9ec5a8,#d8eadc); }
+  .sq.c { background: linear-gradient(135deg,#c9b6e0,#e9e0f4); }
+  .sq.d { background: linear-gradient(135deg,#e0c4a8,#f4e8db); }
+  .navrow.nested { padding-left: 26px; font-size: 13px; }
+  .icon { width: 17px; height: 17px; flex: none; color: var(--muted-fg); }
+
+  /* ── Tabs mock ── */
+  .panel { background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .panelbar { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .panelttl { font-weight: 700; font-size: 15px; }
+  .tabs { display: flex; gap: 4px; padding: 0 18px; border-bottom: 1px solid var(--border); }
+  .tab {
+    border: 0; background: transparent; font: inherit; font-size: 13.5px; cursor: pointer;
+    padding: 12px 12px 10px; color: var(--muted-fg); border-bottom: 2px solid transparent;
+    display: flex; align-items: center; gap: 7px; position: relative;
+  }
+  .tab .label { font-weight: var(--host-weight); }
+  .tab:hover { color: var(--fg); }
+  .tab.active { color: var(--fg); font-weight: 600; border-bottom-color: var(--primary); }
+  .tabbody { padding: 18px; }
+
+  /* ── Cards ── */
+  .cardgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 700px) { .cardgrid { grid-template-columns: 1fr; } }
+  .scard {
+    border: 1px solid var(--border); border-radius: 9px; overflow: hidden; background: #fff;
+    cursor: pointer; position: relative; transition: box-shadow .18s ease;
+  }
+  .scard:hover { box-shadow: var(--shadow); }
+  .scard .banner { height: 56px; background: linear-gradient(120deg,#c9dbe8,#e6eef4); }
+  .scard.g .banner { background: linear-gradient(120deg,#cfe4d5,#eaf4ee); }
+  .scard .inner { padding: 12px 14px 14px; }
+  .scard .name { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 7px; }
+  .scard .name .label { font-weight: var(--host-weight); }
+  .scard .tagline { font-size: 12.5px; color: var(--muted-fg); margin-top: 3px; }
+  .scard .meta { font-size: 11.5px; color: var(--muted-fg); margin-top: 10px; display: flex; gap: 12px; }
+  .corner { position: absolute; top: 9px; right: 9px; z-index: 2; }
+  .corner .ind { box-shadow: 0 0 0 2.5px #fff; }
+
+  /* ── Posts ── */
+  .feed { max-height: 340px; overflow-y: auto; border: 1px solid var(--border); border-radius: 9px; padding: 12px; background: var(--bg); }
+  .post { border: 1px solid var(--border); border-radius: 8px; background: #fff; padding: 13px 15px; margin-bottom: 11px; }
+  .post:last-child { margin-bottom: 0; }
+  .ptype { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-fg); font-weight: 700; }
+  .ptitle { font-weight: 700; font-size: 14px; margin-top: 5px; display: flex; align-items: center; gap: 7px; }
+  .ptitle .label { font-weight: var(--host-weight); }
+  .pbody { font-size: 12.5px; color: var(--muted-fg); margin-top: 5px; }
+  .pfoot { font-size: 11.5px; color: var(--muted-fg); margin-top: 9px; }
+  .scrollhint { font-size: 12px; color: var(--muted-fg); margin: 0 0 9px; display: flex; align-items: center; gap: 6px; }
+
+  /* ── Bell comparison ── */
+  .bellrow { display: flex; align-items: center; gap: 34px; flex-wrap: wrap; }
+  .bellbox { display: flex; align-items: center; gap: 11px; }
+  .bellwrap { position: relative; width: 34px; height: 34px; border-radius: 8px; background: var(--muted); display: flex; align-items: center; justify-content: center; }
+  .bellbadge {
+    position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px;
+    border-radius: 999px; background: var(--destructive); color: #fff; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
+  }
+  .bellcap { font-size: 12.5px; color: var(--muted-fg); max-width: 30ch; }
+
+  /* ── Settings ── */
+  .setrow { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .setrow:last-child { border-bottom: 0; }
+  .setttl { font-weight: 600; font-size: 14px; }
+  .setdesc { font-size: 12.5px; color: var(--muted-fg); margin-top: 2px; max-width: 62ch; }
+  .switch { width: 42px; height: 24px; border-radius: 999px; border: 0; background: #cbd5e1; position: relative; cursor: pointer; flex: none; transition: background .2s ease; }
+  .switch[aria-checked="true"] { background: var(--primary); }
+  .switch i { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .2s ease; display: block; }
+  .switch[aria-checked="true"] i { transform: translateX(18px); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 130%);
+    background: var(--primary); color: #fff; border-radius: 9px; padding: 12px 14px 12px 18px;
+    display: flex; align-items: center; gap: 16px; box-shadow: 0 10px 30px rgba(15,30,45,.3);
+    font-size: 13.5px; z-index: 100; transition: transform .3s cubic-bezier(.2,.8,.3,1);
+  }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast button { border: 1px solid rgba(255,255,255,.4); background: transparent; color: #fff; border-radius: 6px; padding: 5px 11px; font: inherit; font-size: 12.5px; cursor: pointer; }
+  .toast button:hover { background: rgba(255,255,255,.14); }
+
+  ul.notes { margin: 8px 0 0; padding-left: 20px; font-size: 13.5px; color: var(--muted-fg); }
+  ul.notes li { margin-bottom: 7px; }
+  ul.notes strong { color: var(--fg); }
+  .pill { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; background: #fef3c7; color: #92400e; padding: 2px 7px; border-radius: 999px; margin-right: 6px; }
+</style>
+</head>
+<body data-t="solid" data-color="blue" data-enabled="true">
+
+<div class="toolbar">
+  <div class="tgroup">
+    <label>Treatment</label>
+    <div class="seg" id="segT">
+      <button data-v="solid" aria-pressed="true">Solid dot</button>
+      <button data-v="ring" aria-pressed="false">Ring</button>
+      <button data-v="tint" aria-pressed="false">Dot + tint</button>
+      <button data-v="bar" aria-pressed="false">Edge bar</button>
+      <button data-v="weight" aria-pressed="false">Dot + bold</button>
+    </div>
+  </div>
+  <div class="tgroup">
+    <label>Colour</label>
+    <div class="seg" id="segC">
+      <button data-v="navy" aria-pressed="false"><span class="swatch" style="background:#1d384a"></span>Navy</button>
+      <button data-v="blue" aria-pressed="true"><span class="swatch" style="background:#0b6bcb"></span>Blue</button>
+      <button data-v="teal" aria-pressed="false"><span class="swatch" style="background:#0d9488"></span>Teal</button>
+    </div>
+  </div>
+  <div class="tgroup">
+    <button class="btn" id="btnReset">Reset demo state</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <h1>New activity indicators — concepts</h1>
+  <p class="lede">
+    Five candidate visual treatments for the “something changed here” signal, applied live across all five
+    surfaces. Switch treatment and colour in the bar above; everything below updates at once.
+    The behaviour is real, not faked: <strong>tabs and cards clear when you visit them, posts clear when you
+    scroll them into view</strong>.
+  </p>
+
+  <!-- ══════════ 1. TREATMENT COMPARISON ══════════ -->
+  <div class="card">
+    <span class="tag">1 · Pick a language</span>
+    <h2>The five treatments, side by side</h2>
+    <p class="sub">Same sidebar row in each cell, so the only variable is the treatment. All five are shown simultaneously here regardless of the toolbar setting.</p>
+
+    <div class="cmp">
+      <div class="cmpcell" data-t="solid">
+        <div class="cmpname">A · Solid dot</div>
+        <div class="navrow has-new"><span class="sq"></span><span class="label">Green Energy</span><span class="ind"></span></div>
+        <div class="navrow"><span class="sq b"></span><span class="label">Lux-Lab</span></div>
+        <div class="cmpnote">Unambiguous, familiar, reads as a signal. The safe default.</div>
+      </div>
+      <div class="cmpcell" data-t="ring">
+        <div class="cmpname">B · Ring</div>
+        <div class="navrow has-new"><span class="sq"></span><span class="label">Green Energy</span><span class="ind"></span></div>
+        <div class="navrow"><span class="sq b"></span><span class="label">Lux-Lab</span></div>
+        <div class="cmpnote">Quieter than solid, but at 6–8px the hole is nearly invisible. Risk: reads as a rendering artefact.</div>
+      </div>
+      <div class="cmpcell" data-t="tint">
+        <div class="cmpname">C · Dot + row tint</div>
+        <div class="navrow has-new"><span class="sq"></span><span class="label">Green Energy</span><span class="ind"></span></div>
+        <div class="navrow"><span class="sq b"></span><span class="label">Lux-Lab</span></div>
+        <div class="cmpnote">Scannable at a glance. Risk: collides with hover and active-row states in the sidebar.</div>
+      </div>
+      <div class="cmpcell" data-t="bar">
+        <div class="cmpname">D · Edge bar</div>
+        <div class="navrow has-new"><span class="sq"></span><span class="label">Green Energy</span><span class="ind"></span></div>
+        <div class="navrow"><span class="sq b"></span><span class="label">Lux-Lab</span></div>
+        <div class="cmpnote">Elegant on rows and cards, but has nowhere to live on a tab, so it can’t be the whole language.</div>
+      </div>
+      <div class="cmpcell" data-t="weight">
+        <div class="cmpname">E · Dot + bold label</div>
+        <div class="navrow has-new"><span class="sq"></span><span class="label">Green Energy</span><span class="ind"></span></div>
+        <div class="navrow"><span class="sq b"></span><span class="label">Lux-Lab</span></div>
+        <div class="cmpnote">Borrows from email. Strongest scan, but the most “inbox” — the exact feeling we said we wanted to avoid.</div>
+      </div>
+    </div>
+
+    <h3>My read</h3>
+    <ul class="notes">
+      <li><strong>A (solid dot)</strong> for everything, at 6px. It is the only option that works identically on rows, tabs, cards and posts, which matters more than any individual cell looking nicer.</li>
+      <li><strong>D</strong> is the most beautiful on cards and the most useless on tabs. Mixing D on cards with A on tabs gives you two signals to learn instead of one.</li>
+      <li><strong>E</strong> is the one to avoid. Bold text says “unfinished work”; a dot says “news”. The client asked for the second.</li>
+    </ul>
+  </div>
+
+  <!-- ══════════ 2. LIVE SURFACES ══════════ -->
+  <div class="card">
+    <span class="tag alt">2 · All five surfaces, live</span>
+    <h2>Behaviour, not just styling</h2>
+    <p class="sub">
+      Click a tab to clear its dot. Click a subspace or dashboard card to “enter” it. Scroll the post feed —
+      posts clear after being visible for a moment. Watch the sidebar: the space dot survives until every
+      <em>tab</em> inside it is clear, but unread posts never keep it lit.
+    </p>
+
+    <div class="surfaces">
+      <!-- SIDEBAR -->
+      <div>
+        <h3 style="margin-top:0">Surface 1 — Sidebar</h3>
+        <div class="sidebar">
+          <button class="navrow"><span class="icon">▦</span><span class="label">Dashboard</span></button>
+          <div class="sbhead">
+            <span>My spaces</span>
+            <button class="btn" style="padding:2px 7px;font-size:10.5px" id="markSpace" title="Mark everything in Green Energy as read">Mark read</button>
+          </div>
+
+          <button class="navrow has-new" data-rollup="green">
+            <span class="sq"></span><span class="label">Green Energy Transition</span>
+            <span class="ind"></span><span class="sr-only">New activity</span>
+          </button>
+          <button class="navrow nested has-new" data-clear="container" data-sub="solar">
+            <span class="sq b" style="width:16px;height:16px"></span><span class="label">Solar Rooftops</span>
+            <span class="ind"></span><span class="sr-only">New activity</span>
+          </button>
+          <button class="navrow nested" data-clear="container">
+            <span class="sq c" style="width:16px;height:16px"></span><span class="label">Grid Storage</span>
+          </button>
+
+          <button class="navrow has-new" data-clear="container">
+            <span class="sq c"></span><span class="label">VNG Innovation Hub</span>
+            <span class="ind"></span><span class="sr-only">New activity</span>
+          </button>
+          <button class="navrow" data-clear="container">
+            <span class="sq d"></span><span class="label">Digital Commons</span>
+          </button>
+        </div>
+        <p class="cmpnote" style="padding:0 2px">Collapsed-sidebar and mobile placement deliberately not covered — pinned for a later pass.</p>
+      </div>
+
+      <!-- SPACE PANEL -->
+      <div>
+        <h3 style="margin-top:0">Surfaces 2–4 — Tabs, subspace cards, posts</h3>
+        <div class="panel">
+          <div class="panelbar">
+            <span class="panelttl">Green Energy Transition</span>
+            <button class="btn" id="markAll">Mark all as read</button>
+          </div>
+
+          <div class="tabs" id="tabs">
+            <button class="tab active" data-tab="home"><span class="label">Home</span></button>
+            <button class="tab has-new" data-tab="community">
+              <span class="label">Community</span><span class="ind always"></span><span class="sr-only">New activity</span>
+            </button>
+            <button class="tab has-new" data-tab="subspaces">
+              <span class="label">Subspaces</span><span class="ind always"></span><span class="sr-only">New activity</span>
+            </button>
+            <button class="tab" data-tab="kb"><span class="label">Knowledge Base</span></button>
+          </div>
+
+          <div class="tabbody">
+            <h3 style="margin-top:0">Subspace cards</h3>
+            <div class="cardgrid">
+              <div class="scard has-new" data-clear="container" data-sub="solar">
+                <span class="corner"><span class="ind always"></span><span class="sr-only">New activity</span></span>
+                <div class="banner"></div>
+                <div class="inner">
+                  <div class="name"><span class="label">Solar Rooftops</span></div>
+                  <div class="tagline">Municipal rooftop solar pilots</div>
+                  <div class="meta"><span>24 members</span><span>6 callouts</span></div>
+                </div>
+              </div>
+              <div class="scard g" data-clear="container">
+                <div class="banner"></div>
+                <div class="inner">
+                  <div class="name"><span class="label">Grid Storage</span></div>
+                  <div class="tagline">Battery and buffering approaches</div>
+                  <div class="meta"><span>18 members</span><span>3 callouts</span></div>
+                </div>
+              </div>
+            </div>
+
+            <h3>Posts — clear on sight</h3>
+            <p class="scrollhint">↓ Scroll inside the feed. Dots fade once a post has been visible for ~0.8s.</p>
+            <div class="feed" id="feed">
+              <div class="post has-new">
+                <div class="ptype">Post</div>
+                <div class="ptitle"><span class="label">Rooftop survey results — Q3</span><span class="ind always"></span><span class="sr-only">New</span></div>
+                <div class="pbody">Forty-two buildings assessed, of which twenty-eight are structurally viable.</div>
+                <div class="pfoot">Maria Jansen · 2 days ago</div>
+              </div>
+              <div class="post has-new">
+                <div class="ptype">Form response</div>
+                <div class="ptitle"><span class="label">Response from Pieter de Vries</span><span class="ind always"></span><span class="sr-only">New</span></div>
+                <div class="pbody">4 of 6 questions answered.</div>
+                <div class="pfoot">Yesterday</div>
+              </div>
+              <div class="post">
+                <div class="ptype">Whiteboard</div>
+                <div class="ptitle"><span class="label">Installation sequencing</span></div>
+                <div class="pbody">Draft ordering for the first twelve sites.</div>
+                <div class="pfoot">Sam Okonkwo · 5 days ago</div>
+              </div>
+              <div class="post has-new">
+                <div class="ptype">Memo</div>
+                <div class="ptitle"><span class="label">Procurement constraints</span><span class="ind always"></span><span class="sr-only">New</span></div>
+                <div class="pbody">Framework agreement expires in November.</div>
+                <div class="pfoot">3 hours ago</div>
+              </div>
+              <div class="post has-new">
+                <div class="ptype">Post</div>
+                <div class="ptitle"><span class="label">Site visit notes — Almere</span><span class="ind always"></span><span class="sr-only">New</span></div>
+                <div class="pbody">Two roofs need reinforcement before panels can be mounted.</div>
+                <div class="pfoot">1 hour ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Surface 5 — Dashboard cards</h3>
+        <div class="cardgrid">
+          <div class="scard has-new" data-clear="container">
+            <span class="corner"><span class="ind always"></span><span class="sr-only">New activity</span></span>
+            <div class="banner"></div>
+            <div class="inner">
+              <div class="name"><span class="label">VNG Innovation Hub</span></div>
+              <div class="tagline">Municipal innovation network</div>
+              <div class="meta"><span>Last visit 9 days ago</span></div>
+            </div>
+          </div>
+          <div class="scard g" data-clear="container">
+            <div class="banner"></div>
+            <div class="inner">
+              <div class="name"><span class="label">Digital Commons</span></div>
+              <div class="tagline">Shared civic infrastructure</div>
+              <div class="meta"><span>Last visit yesterday</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ 3. TWO SYSTEMS ══════════ -->
+  <div class="card">
+    <span class="tag">3 · Don’t collide with the bell</span>
+    <h2>Two unread systems, two visual languages</h2>
+    <p class="sub">The notification bell already exists and means “this concerns <em>you</em>”. Activity dots mean “this <em>place</em> changed”. They must not look like the same thing, or people will assume the dots are also things they’re obliged to act on.</p>
+    <div class="bellrow">
+      <div class="bellbox">
+        <div class="bellwrap">🔔<span class="bellbadge">3</span></div>
+        <div class="bellcap"><strong style="color:var(--fg)">Red, counted, cornered.</strong> Directed at you. Demands action.</div>
+      </div>
+      <div class="bellbox">
+        <div class="bellwrap" style="background:transparent"><span class="ind always" style="--ind-display:inline-block"></span></div>
+        <div class="bellcap"><strong style="color:var(--fg)">Coloured, numberless, inline.</strong> Ambient. Invites, never demands.</div>
+      </div>
+    </div>
+    <ul class="notes" style="margin-top:16px">
+      <li>Never render activity dots in <code>--destructive</code> red, and never give them a visible count.</li>
+      <li>The hidden count still goes to screen readers via the label, so assistive tech gets more, not less.</li>
+    </ul>
+  </div>
+
+  <!-- ══════════ 4. SETTINGS ══════════ -->
+  <div class="card">
+    <span class="tag">4 · Control</span>
+    <h2>One switch, in General settings</h2>
+    <p class="sub">Toggle this off and every dot on this page disappears. No granularity — per-surface controls are a settings tax nobody pays.</p>
+    <div class="setrow">
+      <div>
+        <div class="setttl">Show new activity indicators</div>
+        <div class="setdesc">Display a small dot on spaces, tabs, cards and posts that have changed since you last looked.</div>
+      </div>
+      <button class="switch" id="swIndicators" role="switch" aria-checked="true"><i></i></button>
+    </div>
+    <div class="setrow">
+      <div>
+        <div class="setttl">Mark everything as read</div>
+        <div class="setdesc">Clears every indicator across all your spaces. Undoable for a few seconds afterwards.</div>
+      </div>
+      <button class="btn solid" id="markGlobal">Mark all as read</button>
+    </div>
+  </div>
+
+  <!-- ══════════ 5. OPEN ITEMS ══════════ -->
+  <div class="card">
+    <span class="tag">5 · Still open</span>
+    <h2>Carried into the spec as unresolved</h2>
+    <ul class="notes">
+      <li><span class="pill">Pinned</span><strong>Decay window.</strong> How long activity stays “new”. Deferred to a later version.</li>
+      <li><span class="pill">Pinned</span><strong>Mobile &amp; collapsed sidebar.</strong> Dot placement on avatars and in the breadcrumb.</li>
+      <li><span class="pill">My call</span><strong>No re-dotting mid-visit.</strong> Dots clear optimistically and stay clear until you navigate away and return. Needs your sign-off.</li>
+      <li><span class="pill">Accepted</span><strong>Honest inconsistency.</strong> A clean sidebar can still contain dotted posts, because item dots don’t roll up into container dots.</li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastMsg">Marked as read</span>
+  <button id="toastUndo">Undo</button>
+</div>
+
+<script>
+(function () {
+  var body = document.body;
+
+  /* ── Toolbar ─────────────────────────────────────────────── */
+  function wireSeg(id, attr) {
+    var seg = document.getElementById(id);
+    seg.addEventListener('click', function (e) {
+      var btn = e.target.closest('button');
+      if (!btn) return;
+      seg.querySelectorAll('button').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+      body.setAttribute(attr, btn.dataset.v);
+    });
+  }
+  wireSeg('segT', 'data-t');
+  wireSeg('segC', 'data-color');
+
+  /* ── Snapshot initial state so Reset and Undo can restore ── */
+  var tracked = Array.prototype.slice.call(document.querySelectorAll('.card .has-new'));
+  var initial = tracked.map(function (el) { return el; });
+
+  function isNew(el) { return el.classList.contains('has-new'); }
+
+  function clear(el) {
+    if (!isNew(el)) return false;
+    var ind = el.querySelector('.ind');
+    if (ind) {
+      ind.classList.add('fade-out');
+      setTimeout(function () { el.classList.remove('has-new'); ind.classList.remove('fade-out'); }, 280);
+    } else {
+      el.classList.remove('has-new');
+    }
+    return true;
+  }
+
+  function restore(els) {
+    els.forEach(function (el) { el.classList.add('has-new'); });
+    recomputeRollup();
+  }
+
+  /* ── Rollup: the space row stays lit while any tab is lit ──
+     Item dots (posts) are deliberately excluded from this. */
+  var rollupRow = document.querySelector('[data-rollup="green"]');
+  function recomputeRollup() {
+    if (!rollupRow) return;
+    var tabsLit = document.querySelectorAll('#tabs .tab.has-new').length;
+    var subLit = document.querySelectorAll('.sidebar .navrow.nested.has-new').length;
+    if (tabsLit + subLit > 0) rollupRow.classList.add('has-new');
+    else rollupRow.classList.remove('has-new');
+  }
+
+  /* ── Tabs clear on visit ──────────────────────────────────── */
+  document.getElementById('tabs').addEventListener('click', function (e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    this.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+    clear(tab);
+    setTimeout(recomputeRollup, 300);
+  });
+
+  /* ── Containers clear on visit, never on sight ─────────────
+     Linked instances (sidebar row + its card) clear together. */
+  document.querySelectorAll('[data-clear="container"]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      clear(el);
+      var key = el.dataset.sub;
+      if (key) {
+        document.querySelectorAll('[data-sub="' + key + '"]').forEach(function (twin) { clear(twin); });
+      }
+      setTimeout(recomputeRollup, 300);
+    });
+  });
+
+  /* ── Posts clear on sight ─────────────────────────────────── */
+  /* ── Posts clear on sight ───────────────────────────────────
+     Geometry check rather than IntersectionObserver: a post counts as seen
+     only when 60% of it is inside BOTH the viewport and the feed's own clip
+     box, held for 800ms. Being merely present in the scroll container is not
+     enough — otherwise posts would clear while off screen. */
+  var feed = document.getElementById('feed');
+  var timers = new Map();
+
+  function seenRatio(el) {
+    var r = el.getBoundingClientRect();
+    var f = feed.getBoundingClientRect();
+    if (!r.height) return 0;
+    var top = Math.max(r.top, f.top, 0);
+    var bottom = Math.min(r.bottom, f.bottom, window.innerHeight);
+    return Math.max(0, bottom - top) / r.height;
+  }
+
+  function checkPosts() {
+    feed.querySelectorAll('.post').forEach(function (el) {
+      if (!isNew(el)) return;
+      if (seenRatio(el) >= 0.6) {
+        if (timers.has(el)) return;
+        timers.set(el, setTimeout(function () {
+          timers.delete(el);
+          if (body.getAttribute('data-enabled') === 'true') clear(el);
+        }, 800));
+      } else if (timers.has(el)) {
+        clearTimeout(timers.get(el));
+        timers.delete(el);
+      }
+    });
+  }
+
+  window.addEventListener('scroll', checkPosts, { passive: true });
+  window.addEventListener('resize', checkPosts);
+  feed.addEventListener('scroll', checkPosts, { passive: true });
+  checkPosts();
+
+  /* ── Mark as read + undo toast ────────────────────────────── */
+  var toast = document.getElementById('toast');
+  var toastMsg = document.getElementById('toastMsg');
+  var toastTimer = null;
+  var lastCleared = [];
+
+  function showToast(msg, cleared) {
+    lastCleared = cleared;
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 6000);
+  }
+
+  function markScope(scopes, label) {
+    var cleared = [];
+    scopes.forEach(function (scope) {
+      scope.querySelectorAll('.has-new').forEach(function (el) {
+        if (clear(el)) cleared.push(el);
+      });
+    });
+    setTimeout(recomputeRollup, 300);
+    if (cleared.length) showToast(label + ' — ' + cleared.length + ' items marked as read', cleared);
+  }
+
+  /* Per-space clear must hit both the space panel and that space's sidebar rows,
+     or the rollup rule would immediately relight the sidebar. */
+  function markSpaceRead() {
+    markScope([
+      document.querySelector('.panel'),
+      document.querySelector('.sidebar')
+    ], 'Green Energy Transition');
+  }
+
+  document.getElementById('markAll').addEventListener('click', markSpaceRead);
+  document.getElementById('markSpace').addEventListener('click', markSpaceRead);
+  document.getElementById('markGlobal').addEventListener('click', function () {
+    markScope([document], 'Everything');
+  });
+  document.getElementById('toastUndo').addEventListener('click', function () {
+    restore(lastCleared);
+    lastCleared = [];
+    toast.classList.remove('show');
+  });
+
+  /* ── Settings switch ──────────────────────────────────────── */
+  var sw = document.getElementById('swIndicators');
+  sw.addEventListener('click', function () {
+    var on = sw.getAttribute('aria-checked') === 'true';
+    sw.setAttribute('aria-checked', String(!on));
+    body.setAttribute('data-enabled', String(!on));
+  });
+
+  /* ── Reset ────────────────────────────────────────────────── */
+  document.getElementById('btnReset').addEventListener('click', function () {
+    restore(initial);
+    toast.classList.remove('show');
+  });
+})();
+</script>
+</body>
+</html>

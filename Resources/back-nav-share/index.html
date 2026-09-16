@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Alkemio — mobile back navigation</title>
+<style>
+  :root { --fg:#1d384a; --muted-fg:#64748b; --border:#e2e8f0; }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; background:#eef2f6; color:var(--fg); min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding:32px;
+    font:16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .box { max-width:600px; width:100%; }
+  h1 { font-size:28px; margin:0 0 6px; letter-spacing:-.01em; }
+  p.sub { color:var(--muted-fg); margin:0 0 28px; font-size:15px; }
+  a.item {
+    display:block; background:#fff; border:1px solid var(--border); border-radius:12px;
+    padding:20px 22px; margin-bottom:14px; text-decoration:none; color:inherit;
+    box-shadow:0 4px 6px rgba(0,0,0,.06); transition:transform .12s ease, box-shadow .12s ease;
+  }
+  a.item:hover { transform:translateY(-2px); box-shadow:0 8px 18px rgba(15,30,45,.12); }
+  a.item h2 { font-size:18px; margin:0 0 4px; }
+  a.item span { color:var(--muted-fg); font-size:14px; }
+  footer { color:var(--muted-fg); font-size:13px; margin-top:22px; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>Mobile back navigation</h1>
+    <p class="sub">Exploration for the stakeholder note that the app is missing a back button. Mobile only.</p>
+
+    <a class="item" href="./interactive.html">
+      <h2>Interactive prototype →</h2>
+      <span>Drill into a space and try to get back out. Switch between concepts H, I and I2 mid-flow, and change device width.</span>
+    </a>
+
+    <a class="item" href="./concepts.html">
+      <h2>Concept overview →</h2>
+      <span>All concepts as static frames, with the arguments for and against each.</span>
+    </a>
+
+    <footer>Best viewed on desktop. Prototype only — not connected to real data.</footer>
+  </div>
+</body>
+</html>

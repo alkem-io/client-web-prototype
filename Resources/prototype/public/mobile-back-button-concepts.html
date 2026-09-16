@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mobile back navigation — concepts</title>
+<style>
+  :root {
+    --primary: #1d384a;
+    --bg: #fcfdfe;
+    --fg: #1d384a;
+    --muted: #f1f5f9;
+    --muted-fg: #64748b;
+    --border: #e2e8f0;
+    --radius: 6px;
+    --accent: #0b6bcb;
+    --warn: #b45309;
+    --good: #15803d;
+    --bad: #b91c1c;
+    --shadow: 0 4px 6px 0 rgba(0,0,0,.09);
+    font-synthesis: none;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #eef2f6;
+    color: var(--fg);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1240px; margin: 0 auto; padding: 36px 28px 72px; }
+  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 26px; letter-spacing: -.01em; }
+  h2 { font-size: 21px; margin: 0 0 6px; letter-spacing: -.005em; }
+  h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-fg); margin: 20px 0 8px; }
+  code { font: 12.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--muted); padding: 1px 5px; border-radius: 4px; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px; align-items: start; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    padding: 22px; box-shadow: var(--shadow); height: 100%;
+  }
+  .card.wide { grid-column: 1 / -1; }
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: #fff; background: var(--primary);
+    padding: 3px 8px; border-radius: 999px; margin-bottom: 10px;
+  }
+  .tag.alt { background: var(--accent); }
+  .sub { color: var(--muted-fg); font-size: 13.5px; margin: 0 0 18px; }
+
+  /* ---------- phone ---------- */
+  .frames { display: flex; gap: 20px; justify-content: center; margin: 4px 0 6px; }
+  .framewrap { text-align: center; }
+  .framelabel { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted-fg); margin-top: 9px; }
+  .phone {
+    width: 200px; height: 386px; border-radius: 22px; border: 6px solid #26313c;
+    background: var(--bg); overflow: hidden; display: flex; flex-direction: column;
+    position: relative; box-shadow: 0 6px 16px rgba(15,30,45,.18);
+  }
+  .status { height: 15px; background: var(--bg); display: flex; align-items: center; justify-content: center; flex: none; }
+  .status i { width: 50px; height: 5px; border-radius: 3px; background: #26313c; display: block; }
+
+  .hdr {
+    height: 36px; flex: none; border-bottom: 1px solid var(--border); background: #fff;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 8px; gap: 6px;
+  }
+  .hdr.tall { height: 44px; }
+  .hdr .left { display: flex; align-items: center; gap: 5px; min-width: 0; }
+  .icons { display: flex; gap: 5px; flex: none; }
+  .dot { width: 13px; height: 13px; border-radius: 50%; background: var(--muted); flex: none; }
+  .dot.av { background: var(--primary); }
+  .logo { width: 17px; height: 17px; border-radius: 4px; background: var(--primary); flex: none; }
+
+  .backctl {
+    display: inline-flex; align-items: center; gap: 3px; min-width: 0;
+    font-size: 11px; font-weight: 650; color: var(--fg);
+    padding: 3px 6px 3px 3px; border-radius: 5px; background: rgba(29,56,74,.06);
+  }
+  .backctl svg { flex: none; }
+  .backctl span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 86px; }
+  .chevronly {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; border-radius: 5px;
+  }
+
+  .banner { height: 50px; flex: none; background: linear-gradient(120deg,#c9dbe8,#e6eef4); }
+  .banner.rel { position: relative; }
+  .bchip {
+    position: absolute; left: 7px; top: 7px;
+    display: inline-flex; align-items: center; gap: 3px;
+    background: rgba(255,255,255,.92);
+    border-radius: 999px; padding: 3px 9px 3px 6px;
+    font-size: 10.5px; font-weight: 650; box-shadow: 0 2px 6px rgba(15,30,45,.2);
+  }
+  .ttl { font-size: 12px; font-weight: 700; padding: 7px 9px 0; }
+  .tag2 { font-size: 9.5px; color: var(--muted-fg); padding: 0 9px 6px; }
+
+  .body { flex: 1; overflow: hidden; padding: 8px; display: flex; flex-direction: column; gap: 7px; }
+  .block { background: #fff; border: 1px solid var(--border); border-radius: 5px; height: 46px; flex: none; }
+
+  .bottombar {
+    flex: none; height: 32px; border-top: 1px solid var(--border); background: #fff;
+    display: flex; align-items: center; gap: 7px; padding: 0 7px; font-size: 10px; color: var(--muted-fg);
+  }
+  .bottombar .active { color: var(--primary); font-weight: 700; }
+  .bottombar .divider { width: 1px; height: 15px; background: var(--border); flex: none; }
+  .burger { display: flex; flex-direction: column; gap: 2px; flex: none; padding: 0 2px; }
+  .burger i { width: 12px; height: 1.5px; background: var(--muted-fg); display: block; }
+
+  .fab {
+    position: absolute; left: 9px; bottom: 12px; z-index: 5;
+    display: inline-flex; align-items: center; gap: 3px;
+    background: #fff; border: 1px solid var(--border); box-shadow: 0 3px 10px rgba(15,30,45,.22);
+    border-radius: 999px; padding: 4px 10px 4px 7px; font-size: 10.5px; font-weight: 650;
+  }
+
+  .hl { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  /* ---------- concept H ---------- */
+  .hid { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .spaceav { width: 22px; height: 22px; border-radius: 7px; flex: none; background: linear-gradient(135deg,#7fb2cd,#c9dbe8); }
+  .hid .txt { min-width: 0; display: flex; flex-direction: column; }
+  .hid .t { font-size: 11px; font-weight: 700; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hid .s { font-size: 8.5px; color: var(--muted-fg); line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .avwrap { position: relative; flex: none; }
+  .badge {
+    position: absolute; top: -3px; right: -3px; min-width: 12px; height: 12px; padding: 0 3px;
+    border-radius: 999px; background: #e11d48; color: #fff; font-size: 7.5px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; border: 1.5px solid #fff;
+  }
+  .av { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); display: block; }
+  .scrim { position: absolute; inset: 0; background: rgba(15,30,45,.28); z-index: 5; }
+  .sheet {
+    position: absolute; top: 44px; right: 7px; width: 126px; z-index: 6;
+    background: #fff; border: 1px solid var(--border); border-radius: 9px;
+    box-shadow: 0 8px 22px rgba(15,30,45,.28); padding: 5px;
+  }
+  .mrow {
+    display: flex; align-items: center; gap: 6px; font-size: 9.5px; font-weight: 600;
+    padding: 4.5px 6px; border-radius: 5px; color: var(--fg);
+  }
+  .mrow .gl { width: 11px; height: 11px; border-radius: 3px; background: var(--muted); flex: none; }
+  .mrow .mb { margin-left: auto; background: #e11d48; color: #fff; border-radius: 999px; font-size: 7.5px; font-weight: 700; padding: 0 4px; line-height: 1.5; }
+  .msep { height: 1px; background: var(--border); margin: 4px 2px; }
+
+  /* ---------- lists ---------- */
+  ul { margin: 0 0 12px; padding-left: 18px; }
+  li { margin-bottom: 4px; font-size: 13.5px; }
+  .pro::marker { color: var(--good); }
+  .con::marker { color: var(--bad); }
+  .rules { background: var(--muted); border-radius: var(--radius); padding: 12px 14px 12px 30px; margin: 0; }
+  .rules li { font-size: 12.5px; margin-bottom: 4px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+
+  /* ---------- concept I ---------- */
+  .crumbs { display: flex; align-items: center; gap: 3px; min-width: 0; font-size: 10px; }
+  .crumbs .csep { color: #b8c4d0; font-size: 9px; flex: none; }
+  .crumbs .crumb {
+    color: var(--muted-fg); font-weight: 600; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; max-width: 74px;
+  }
+  .crumbs .crumb.cur { color: var(--fg); font-weight: 700; max-width: 78px; }
+  .crumbs .cellip {
+    background: var(--muted); color: var(--muted-fg); font-weight: 700;
+    padding: 1px 5px; border-radius: 4px; flex: none; line-height: 1.4;
+  }
+  .trigger {
+    display: inline-flex; align-items: center; gap: 3px; flex: none;
+    background: rgba(29,56,74,.06); border-radius: 5px; padding: 3px 5px;
+  }
+  .dropdown {
+    position: absolute; top: 36px; left: 7px; width: 140px; z-index: 6;
+    background: #fff; border: 1px solid var(--border); border-radius: 9px;
+    box-shadow: 0 8px 22px rgba(15,30,45,.28); padding: 5px;
+  }
+  .drow {
+    display: flex; align-items: center; gap: 6px; font-size: 9.5px; font-weight: 600;
+    padding: 4.5px 6px; border-radius: 5px; color: var(--fg);
+  }
+  .drow .gl { width: 11px; height: 11px; border-radius: 3px; background: var(--muted); flex: none; }
+  .drow .gl.sq { background: linear-gradient(135deg,#7fb2cd,#c9dbe8); }
+  .drow.on { background: var(--muted); }
+  .drow .ind { width: 8px; flex: none; }
+
+  /* ---------- concept I2 ---------- */
+  .gcrumb {
+    width: 16px; height: 16px; border-radius: 5px; flex: none; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 7px; font-weight: 800;
+    color: #2c5670; background: linear-gradient(135deg,#a8cadd,#dceaf2); border: 1px solid rgba(44,86,112,.18);
+  }
+  .gcrumb.b { background: linear-gradient(135deg,#c3d9a8,#e6f0da); color: #4a6b2c; border-color: rgba(74,107,44,.18); }
+  .gcrumb.cur { box-shadow: 0 0 0 2px rgba(29,56,74,.55); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Mobile back navigation — concepts</h1>
+
+  <div class="grid">
+
+    <!-- ============ CONCEPT A ============ -->
+    <section class="card">
+      <span class="tag">Concept A</span>
+      <h2>Header back, labelled</h2>
+      <p class="sub">The breadcrumb’s parent segment, replacing the logo below <code>md</code>.</p>
+
+      <div class="frames">
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left"><div class="logo"></div></div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="body">
+              <div class="ttl" style="padding:0 0 4px">Spaces</div>
+              <div class="block"></div><div class="block"></div><div class="block"></div>
+            </div>
+          </div>
+          <div class="framelabel">Root · logo, no back</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="backctl hl">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1d384a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                  <span>Green Energy</span>
+                </span>
+              </div>
+              <div class="icons"><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Drilled in · back appears</div>
+        </div>
+      </div>
+
+      <h3>For</h3>
+      <ul>
+        <li class="pro">No new chrome; reclaims space the breadcrumb already wastes.</li>
+        <li class="pro">Universal — the header is on every route.</li>
+        <li class="pro">Says where you land. Matters at L2.</li>
+        <li class="pro">Reuses <code>useBreadcrumbs()</code>.</li>
+      </ul>
+
+      <h3>Against</h3>
+      <ul>
+        <li class="con">Costs the logo, and one-tap Home with it.</li>
+        <li class="con">Label length unpredictable; truncates on long names and other locales.</li>
+        <li class="con">Squeezes the icon row at 360px.</li>
+      </ul>
+
+      <h3>Rules</h3>
+      <ul class="rules">
+        <li>Below <code>md</code> only. Empty trail ⇒ logo.</li>
+        <li>Truncate around 140px, ghost style.</li>
+        <li>Long-press ⇒ full ancestor list.</li>
+      </ul>
+    </section>
+
+    <!-- ============ CONCEPT G ============ -->
+    <section class="card">
+      <span class="tag alt">Concept G</span>
+      <h2>Header back, bare chevron</h2>
+      <p class="sub">A’s placement, stripped to the glyph.</p>
+
+      <div class="frames">
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left"><div class="logo"></div></div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="body">
+              <div class="ttl" style="padding:0 0 4px">Spaces</div>
+              <div class="block"></div><div class="block"></div><div class="block"></div>
+            </div>
+          </div>
+          <div class="framelabel">Root · logo, no back</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="chevronly hl">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1d384a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </span>
+              </div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Drilled in · chevron takes the slot</div>
+        </div>
+      </div>
+
+      <h3>For</h3>
+      <ul>
+        <li class="pro">Smallest footprint; the icon row survives intact.</li>
+        <li class="pro">No truncation or i18n risk.</li>
+        <li class="pro">Universally understood glyph.</li>
+        <li class="pro">Cheapest to ship and to reverse.</li>
+      </ul>
+
+      <h3>Against</h3>
+      <ul>
+        <li class="con">Doesn’t say where you land. At L2 every chevron looks identical.</li>
+        <li class="con">Still costs the logo, with nothing gained for it.</li>
+        <li class="con">Lower discoverability than a labelled control.</li>
+      </ul>
+
+      <h3>Rules</h3>
+      <ul class="rules">
+        <li>Icon-only, but <code>aria-label</code> names the parent.</li>
+        <li>44×44 target despite the 20px glyph.</li>
+        <li>Long-press ⇒ ancestor list.</li>
+      </ul>
+    </section>
+
+    <!-- ============ CONCEPT B ============ -->
+    <section class="card">
+      <span class="tag">Concept B</span>
+      <h2>Back in the bottom bar</h2>
+      <p class="sub">Thumb-reachable. Joins the hamburger at the bar’s left end.</p>
+
+      <div class="frames">
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left"><div class="logo"></div></div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="backctl hl" style="padding:2px 5px 2px 2px;font-size:10px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1d384a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                <span>Back</span>
+              </span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Comm…</span>
+              <span style="margin-left:auto"></span>
+              <span class="burger"><i></i><i></i><i></i></span>
+            </div>
+          </div>
+          <div class="framelabel">Space page · burger moves right</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left"><div class="logo"></div></div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="ttl" style="padding-top:9px">Account settings</div>
+            <div class="tag2">Profile</div>
+            <div class="body"><div class="block"></div><div class="block"></div></div>
+            <span class="fab hl">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1d384a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+              Back
+            </span>
+          </div>
+          <div class="framelabel">No bottom bar · needs a 2nd treatment</div>
+        </div>
+      </div>
+
+      <h3>For</h3>
+      <ul>
+        <li class="pro">Best ergonomics — sits in the thumb arc.</li>
+        <li class="pro">Leaves the header, logo and one-tap Home alone.</li>
+      </ul>
+
+      <h3>Against</h3>
+      <ul>
+        <li class="con">The bar isn’t universal — settings, profile, forum and messages have none, so a floating pill fallback is required.</li>
+        <li class="con">Left end is already the hamburger; three controls plus scrolling tabs in 56px truncates, as shown.</li>
+        <li class="con">No <code>safe-area-inset-bottom</code> padding today; collides with the home indicator.</li>
+      </ul>
+
+      <h3>Rules</h3>
+      <ul class="rules">
+        <li>Hamburger moves to the right end.</li>
+        <li>Banner-less routes get a floating pill, bottom-left.</li>
+        <li>Bar gains <code>pb-[env(safe-area-inset-bottom)]</code>.</li>
+      </ul>
+    </section>
+
+    <!-- ============ CONCEPT F ============ -->
+    <section class="card">
+      <span class="tag">Concept F</span>
+      <h2>Back rides the banner</h2>
+      <p class="sub">A floating chip over the page hero. The header is never touched.</p>
+
+      <div class="frames">
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left"><div class="logo"></div></div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="body">
+              <div class="ttl" style="padding:0 0 4px">Spaces</div>
+              <div class="block"></div><div class="block"></div><div class="block"></div>
+            </div>
+          </div>
+          <div class="framelabel">Root · header untouched</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left"><div class="logo"></div></div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner rel">
+              <span class="bchip hl">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1d384a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                Green Energy
+              </span>
+            </div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Drilled in · chip over the hero</div>
+        </div>
+      </div>
+
+      <h3>For</h3>
+      <ul>
+        <li class="pro">Logo, Home and the icon row all survive. Lowest-risk change to shared chrome.</li>
+        <li class="pro">Sits lower on screen, so easier to reach.</li>
+        <li class="pro">Fits the existing <code>overlayHeader</code> banner treatment.</li>
+      </ul>
+
+      <h3>Against</h3>
+      <ul>
+        <li class="con">Not universal — banner-less routes need a fallback, reintroducing B’s two-patterns problem.</li>
+        <li class="con">Scrolls away unless pinned; pinning re-creates a floating element over content.</li>
+        <li class="con">Contrast unpredictable over user-uploaded banners.</li>
+      </ul>
+
+      <h3>Rules</h3>
+      <ul class="rules">
+        <li>Frosted white for legibility over arbitrary imagery.</li>
+        <li>Banner-less routes fall back to A or G.</li>
+        <li>Sticks to the header on scroll.</li>
+      </ul>
+    </section>
+
+    <!-- ============ CONCEPT H ============ -->
+    <section class="card wide">
+      <span class="tag alt">Concept H</span>
+      <h2>Conversation header — back · space · profile</h2>
+      <p class="sub">The WhatsApp chat-header model. Every utility icon moves under the avatar.</p>
+
+      <div class="frames" style="gap:34px;flex-wrap:wrap">
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr tall">
+              <div class="left">
+                <div class="logo"></div>
+                <div class="hid"><div class="txt"><span class="t">Spaces</span></div></div>
+              </div>
+              <div class="avwrap"><span class="av"></span><span class="badge">8</span></div>
+            </div>
+            <div class="body">
+              <div class="block"></div><div class="block"></div><div class="block"></div>
+            </div>
+          </div>
+          <div class="framelabel">Root · logo + page name</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr tall">
+              <div class="left">
+                <span class="chevronly hl">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d384a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </span>
+                <div class="hid">
+                  <span class="spaceav"></span>
+                  <div class="txt">
+                    <span class="t">Urban Mobility</span>
+                    <span class="s">Green Energy · 24 members</span>
+                  </div>
+                </div>
+              </div>
+              <div class="avwrap"><span class="av"></span><span class="badge">8</span></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Drilled in · identity in the middle</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr tall">
+              <div class="left">
+                <span class="chevronly">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1d384a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </span>
+                <div class="hid">
+                  <span class="spaceav"></span>
+                  <div class="txt">
+                    <span class="t">Urban Mobility</span>
+                    <span class="s">Green Energy · 24 members</span>
+                  </div>
+                </div>
+              </div>
+              <div class="avwrap hl"><span class="av"></span><span class="badge">8</span></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="scrim"></div>
+            <div class="sheet">
+              <div class="mrow"><span class="gl"></span>Search</div>
+              <div class="mrow"><span class="gl"></span>Messages<span class="mb">3</span></div>
+              <div class="mrow"><span class="gl"></span>Notifications<span class="mb">5</span></div>
+              <div class="mrow"><span class="gl"></span>My spaces</div>
+              <div class="msep"></div>
+              <div class="mrow"><span class="gl"></span>Home</div>
+              <div class="mrow"><span class="gl"></span>Profile</div>
+              <div class="mrow"><span class="gl"></span>Settings</div>
+            </div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Avatar tapped · icons live here</div>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div>
+          <h3>For</h3>
+          <ul>
+            <li class="pro">Only concept that says where you <em>are</em>, not just where you’d land.</li>
+            <li class="pro">Solves crowding outright — one right-hand target, real 44px even at 320px.</li>
+            <li class="pro">Most familiar pattern of the five.</li>
+            <li class="pro">Subtitle is free space for parent, member count or tab.</li>
+            <li class="pro">Universal; no fallback pattern needed.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Against</h3>
+          <ul>
+            <li class="con">Notifications go behind a tap; an aggregated badge is less informative than a bell.</li>
+            <li class="con">Search gets buried, and for some users it’s primary navigation.</li>
+            <li class="con">Largest change — new title/subtitle contract on every route.</li>
+            <li class="con">Home moves to the menu; two taps.</li>
+            <li class="con">Title plus subtitle makes truncation more visible than in A.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Rules</h3>
+      <ul class="rules">
+        <li>Below <code>md</code> only. Desktop keeps logo, trail and full icon row.</li>
+        <li>Root shows logo + page name; no back, no space avatar.</li>
+        <li>Title is the current entity; subtitle is the parent, truncating first.</li>
+        <li>Avatar badge aggregates; the menu breaks it down.</li>
+        <li>Tapping the title block opens About.</li>
+      </ul>
+    </section>
+
+    <!-- ============ CONCEPT I ============ -->
+    <section class="card wide">
+      <span class="tag alt">Concept I</span>
+      <h2>Breadcrumb restored to the logo slot</h2>
+      <p class="sub">The logo becomes the first crumb. Inline while it fits, collapsed behind a tap when it doesn’t.</p>
+
+      <div class="frames" style="gap:34px;flex-wrap:wrap">
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left"><div class="logo"></div></div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="body">
+              <div class="ttl" style="padding:0 0 4px">Spaces</div>
+              <div class="block"></div><div class="block"></div><div class="block"></div>
+            </div>
+          </div>
+          <div class="framelabel">Root · logo alone</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="crumbs hl">
+                  <span class="logo" style="width:14px;height:14px"></span>
+                  <span class="csep">›</span>
+                  <span class="crumb cur">Green Energy</span>
+                </span>
+              </div>
+              <div class="icons"><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Green Energy</div>
+            <div class="tag2">Space · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">One level deep · full trail inline</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="crumbs hl">
+                  <span class="logo" style="width:14px;height:14px"></span>
+                  <span class="csep">›</span>
+                  <span class="cellip">…</span>
+                  <span class="csep">›</span>
+                  <span class="crumb cur">Urban Mobility</span>
+                </span>
+              </div>
+              <div class="icons"><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Two deep · middle collapses</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="crumbs">
+                  <span class="logo" style="width:14px;height:14px"></span>
+                  <span class="csep">›</span>
+                  <span class="cellip hl">…</span>
+                  <span class="csep">›</span>
+                  <span class="crumb cur">Urban Mobility</span>
+                </span>
+              </div>
+              <div class="icons"><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="scrim"></div>
+            <div class="dropdown">
+              <div class="drow"><span class="gl"></span>Home</div>
+              <div class="drow"><span class="gl"></span>Spaces</div>
+              <div class="drow"><span class="gl sq"></span>Green Energy</div>
+              <div class="drow on"><span class="gl sq"></span>Urban Mobility</div>
+            </div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Ellipsis tapped · full trail</div>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div>
+          <h3>For</h3>
+          <ul>
+            <li class="pro">Only concept that keeps one-tap Home <em>and</em> adds back — the logo stays as the first crumb.</li>
+            <li class="pro">Every ancestor is reachable, not just the parent. Escapes an L2 dead end in one tap.</li>
+            <li class="pro">Restores parity with desktop instead of inventing a mobile-only pattern.</li>
+            <li class="pro">Ships the collapse logic <code>AppBreadcrumb</code> already has; nothing new to invent.</li>
+            <li class="pro">Universal — the header is on every route.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Against</h3>
+          <ul>
+            <li class="con">At two or more levels, going up one is two taps — open, then choose.</li>
+            <li class="con">Crumbs are small targets; the trail competes with the icon row for width.</li>
+            <li class="con">Reads as orientation, not as an action. Users hunting for “back” may not see a button.</li>
+            <li class="con">An ellipsis is a weak, low-discoverability affordance.</li>
+            <li class="con">Truncation is worst here — two user-generated names in one row.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Rules</h3>
+      <ul class="rules">
+        <li>Below <code>md</code> only. Empty trail ⇒ logo alone.</li>
+        <li>Two segments render inline; three or more collapse the middle to an ellipsis.</li>
+        <li>Logo crumb is always Home; current crumb is never a link.</li>
+        <li>Ellipsis and each crumb are 44×44 targets despite the visual size.</li>
+        <li>Dropdown lists the complete trail, current item marked.</li>
+      </ul>
+    </section>
+
+    <!-- ============ CONCEPT I2 ============ -->
+    <section class="card wide">
+      <span class="tag alt">Concept I2</span>
+      <h2>Breadcrumb, icons only</h2>
+      <p class="sub">I without the text. Each ancestor is its own avatar; names appear only on tap.</p>
+
+      <div class="frames" style="gap:34px;flex-wrap:wrap">
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="crumbs hl">
+                  <span class="logo" style="width:15px;height:15px"></span>
+                  <span class="csep">›</span>
+                  <span class="gcrumb cur">GE</span>
+                </span>
+              </div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Green Energy</div>
+            <div class="tag2">Space · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">One deep · whole icon row survives</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="crumbs hl">
+                  <span class="logo" style="width:15px;height:15px"></span>
+                  <span class="csep">›</span>
+                  <span class="gcrumb">GE</span>
+                  <span class="csep">›</span>
+                  <span class="gcrumb b cur">UM</span>
+                </span>
+              </div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Two deep · still fits, no collapse</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="crumbs hl">
+                  <span class="logo" style="width:15px;height:15px"></span>
+                  <span class="csep">›</span>
+                  <span class="cellip">…</span>
+                  <span class="csep">›</span>
+                  <span class="gcrumb b cur">PS</span>
+                </span>
+              </div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Pilot Study</div>
+            <div class="tag2">Subspace · Knowledge base</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Four deep · middle collapses</div>
+        </div>
+
+        <div class="framewrap">
+          <div class="phone">
+            <div class="status"><i></i></div>
+            <div class="hdr">
+              <div class="left">
+                <span class="crumbs">
+                  <span class="logo" style="width:15px;height:15px"></span>
+                  <span class="csep">›</span>
+                  <span class="gcrumb hl">GE</span>
+                  <span class="csep">›</span>
+                  <span class="gcrumb b cur">UM</span>
+                </span>
+              </div>
+              <div class="icons"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot av"></div></div>
+            </div>
+            <div class="banner"></div>
+            <div class="ttl">Urban Mobility</div>
+            <div class="tag2">Subspace · Community</div>
+            <div class="body"><div class="block"></div></div>
+            <div class="scrim"></div>
+            <div class="dropdown">
+              <div class="drow"><span class="gl"></span>Home</div>
+              <div class="drow"><span class="gl"></span>Spaces</div>
+              <div class="drow"><span class="gl sq"></span>Green Energy</div>
+              <div class="drow on"><span class="gl sq"></span>Urban Mobility</div>
+            </div>
+            <div class="bottombar">
+              <span class="burger"><i></i><i></i><i></i></span>
+              <span class="divider"></span>
+              <span class="active">Home</span><span>Community</span>
+            </div>
+          </div>
+          <div class="framelabel">Tapped · names appear here</div>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div>
+          <h3>For</h3>
+          <ul>
+            <li class="pro">Fits the real constraint — three levels in ~62px, so nothing in the icon row has to move.</li>
+            <li class="pro">Keeps everything I gives: one-tap Home, every ancestor reachable, one tap up from any depth.</li>
+            <li class="pro">Immune to long names and translation — no text to overflow.</li>
+            <li class="pro">Uses <code>BreadcrumbTrailItem.avatar</code>, which already exists in production.</li>
+            <li class="pro">Space avatars are already how users recognise spaces elsewhere in the product.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Against</h3>
+          <ul>
+            <li class="con">Recognition depends on avatar quality. Spaces without one fall back to initials, which are weak at 16px.</li>
+            <li class="con">Two visually similar banners next to each other are indistinguishable.</li>
+            <li class="con">A row of small squares reads as decoration; discoverability is the lowest of any concept.</li>
+            <li class="con">16px glyphs need invisible 44px targets, so they cannot sit tightly packed.</li>
+            <li class="con">Screen readers carry the whole burden — labels must be exact.</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Rules</h3>
+      <ul class="rules">
+        <li>Avatar from the space’s card banner; initials fallback on a tinted chip.</li>
+        <li>Up to three glyphs inline; beyond that the middle collapses to an ellipsis.</li>
+        <li>Current crumb carries a ring and is not tappable.</li>
+        <li>Each glyph is a 44×44 target with an <code>aria-label</code> naming the space.</li>
+        <li>Tapping any crumb navigates directly; tapping the current one opens the labelled list.</li>
+      </ul>
+    </section>
+
+  </div>
+
+</div>
+</body>
+</html>

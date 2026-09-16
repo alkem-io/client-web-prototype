@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
@@ -25,6 +25,7 @@ import {
   Plus,
   Folder,
   Search,
+  UserPlus,
   ArrowUpLeft,
   PanelLeftOpen,
   PanelLeftClose,
@@ -34,6 +35,10 @@ import { TagCloud, SubspaceQuickLinks } from "@/app/components/space/SpaceSideba
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 import { VCHoverCard } from "@/app/components/user/VCHoverCard";
 import { cn } from "@/lib/utils";
+import {
+  loadSubspaceSidebarWidgets,
+  visibleWidgets,
+} from "@/app/components/space/SidebarWidgets";
 
 interface SubspaceSidebarProps {
   isCollapsed: boolean;
@@ -139,162 +144,34 @@ export function SubspaceSidebar({
   const [railHovered, setRailHovered] = useState(false);
   const depth = grandparentSpaceName ? 2 : 1;
 
-  return (
-    <div
-      className={cn(
-        "relative transition-all duration-300 ease-in-out shrink-0",
-        isCollapsed ? "w-12" : "w-full",
-        className
-      )}
-      style={{ fontFamily: "var(--font-family, 'Inter', sans-serif)" }}
+  // Admin-configured sidebar widgets — one set for the whole subspace,
+  // set via Subspace Settings → Innovation Flow → Customize Sidebar.
+  const widgetConfig = loadSubspaceSidebarWidgets();
+  const visibleKeys = visibleWidgets(widgetConfig);
+  // The challenge card is what the parent-space cards stack behind, so it only
+  // gets that treatment while it leads the order. Moved down, it stands alone
+  // and the parent stack falls back to normal flow at the top.
+  const stackedChallenge = visibleKeys[0] === "intent";
+
+  const quickActionButton = (Icon: React.ElementType, label: string, key: string) => (
+    <button
+      onClick={() => setOpenDialog(key)}
+      className="flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
     >
-      {/* ── Collapsed Rail View ── */}
-      {isCollapsed && (
-        <div className="flex flex-col items-center gap-0 pt-1">
-          {/* Expand button */}
-          <button
-            onClick={onToggleCollapse}
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted mb-1"
-            title="Expand sidebar"
-          >
-            <PanelLeftOpen className="w-4 h-4" />
-          </button>
-
-          {/* Parent space indicator */}
-          <a
-            href="#"
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-muted mb-1"
-            title={`Go to ${parentSpaceName}`}
-            style={{ textDecoration: "none" }}
-          >
-            <div
-              className="flex items-center justify-center"
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 4,
-                background: "var(--primary)",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-              }}
-            >
-              <span style={{ color: "white", fontSize: "8px", fontWeight: 700, letterSpacing: "-0.02em" }}>
-                {parentSpaceInitials}
-              </span>
-            </div>
-          </a>
-
-          {/* Divider */}
-          <div className="w-5 h-px my-1.5" style={{ background: "var(--border)" }} />
-
-          {/* Quick action icons */}
-          {[
-            { icon: Users, label: "Community", key: "community" },
-            { icon: CalendarDays, label: "Events", key: "events" },
-            { icon: List, label: "Index", key: "index" },
-            { icon: Layers, label: "Subspaces", key: "subspaces" },
-          ].map(({ icon: Icon, label, key }) => (
-            <button
-              key={key}
-              onClick={() => setOpenDialog(key)}
-              className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-              title={label}
-            >
-              <Icon className="w-4 h-4" />
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Sidebar content — hidden when collapsed */}
-      <div
-        className={cn(
-          "flex flex-col gap-3 transition-opacity duration-200",
-          isCollapsed
-            ? "opacity-0 invisible pointer-events-none h-0 overflow-hidden"
-            : "opacity-100 visible overflow-visible"
-        )}
+      <Icon className="w-4 h-4 shrink-0" style={{ color: "var(--primary)" }} />
+      <span
+        style={{
+          fontSize: "var(--text-sm)",
+          fontWeight: "var(--font-weight-medium)" as any,
+          color: "var(--foreground)",
+        }}
       >
-        {/* ── Challenge Statement with Parent Stack ── */}
-        <div style={{ paddingTop: depth === 2 ? 28 : 14, paddingLeft: depth === 2 ? 20 : 10, marginTop: 4, paddingBottom: 0, overflow: "visible" }} className="relative">
-          {/* Grandparent card (depth 2 only) */}
-          {depth === 2 && grandparentSpaceBanner && (
-            <a
-              href={grandparentSpaceHref || "#"}
-              className="absolute block no-underline"
-              title={`Go to ${grandparentSpaceName}`}
-              style={{
-                top: 0,
-                left: 0,
-                width: "calc(100% - 20px)",
-                height: "calc(100% - 28px)",
-                borderRadius: 12,
-                overflow: "hidden",
-                border: "1px solid var(--border)",
-                background: "var(--card)",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-                transform: "translateY(0)",
-                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
-              }}
-            >
-              <div style={{ aspectRatio: "16 / 9", overflow: "hidden" }}>
-                <img src={grandparentSpaceBanner} alt={grandparentSpaceName} className="w-full h-full object-cover" style={{ display: "block" }} />
-              </div>
-              <div className="flex items-center gap-2 px-3 py-2">
-                <div className="flex items-center justify-center shrink-0" style={{ width: 18, height: 18, borderRadius: 4, background: "var(--primary)" }}>
-                  <span style={{ color: "white", fontSize: "7px", fontWeight: 700 }}>{grandparentSpaceInitials}</span>
-                </div>
-                <span className="text-xs font-medium truncate" style={{ color: "var(--muted-foreground)" }}>{grandparentSpaceName}</span>
-                <ArrowUpLeft className="w-3 h-3 shrink-0" style={{ color: "var(--muted-foreground)", opacity: 0, transition: "opacity 0.2s" }} />
-              </div>
-            </a>
-          )}
+        {label}
+      </span>
+    </button>
+  );
 
-          {/* Parent card — mini SpaceCard behind the challenge */}
-          <a
-            href={parentSpaceHref}
-            className="absolute block no-underline"
-            title={`Go to ${parentSpaceName}`}
-            style={{
-              top: depth === 2 ? 14 : 0,
-              left: depth === 2 ? 10 : 0,
-              width: "calc(100% - 20px)",
-              height: "calc(100% - 28px)",
-              borderRadius: 12,
-              overflow: "hidden",
-              border: "1px solid var(--border)",
-              background: "var(--card)",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-              transform: railHovered ? "translateY(-3px)" : "translateY(0)",
-              transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
-            }}
-            onMouseEnter={() => setRailHovered(true)}
-            onMouseLeave={() => setRailHovered(false)}
-          >
-            <div style={{ aspectRatio: "16 / 9", overflow: "hidden" }}>
-              <img
-                src={parentSpaceBanner}
-                alt={parentSpaceName}
-                className="w-full h-full object-cover"
-                style={{
-                  display: "block",
-                  filter: railHovered ? "brightness(1.05)" : "brightness(1)",
-                  transition: "filter 0.3s",
-                }}
-              />
-            </div>
-            <div className="flex flex-col gap-1 px-3 py-2">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center shrink-0" style={{ width: 20, height: 20, borderRadius: 4, background: "var(--primary)" }}>
-                  <span style={{ color: "white", fontSize: "8px", fontWeight: 700 }}>{parentSpaceInitials}</span>
-                </div>
-                <span className="text-xs font-medium truncate" style={{ color: "var(--foreground)" }}>{parentSpaceName}</span>
-                <ArrowUpLeft className="w-3 h-3 shrink-0" style={{ color: "var(--muted-foreground)", opacity: railHovered ? 0.7 : 0, transition: "opacity 0.2s" }} />
-              </div>
-              <p className="text-xs text-muted-foreground line-clamp-2" style={{ lineHeight: 1.4 }}>{parentSpaceDescription}</p>
-            </div>
-          </a>
-
-          {/* Front card — challenge statement */}
+  const challengeCard = (
           <div
             className="relative rounded-xl overflow-hidden"
             style={{ border: "1px solid rgba(255,255,255,0.1)" }}
@@ -381,70 +258,277 @@ export function SubspaceSidebar({
               </div>
             </div>
           </div>
-        </div>
+  );
 
-        {/* ── Action Buttons ── */}
-        <div className="flex flex-col gap-2">
-          <Button size="sm" className="w-full gap-2 justify-start" onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}>
-            <Plus className="w-4 h-4" />
-            Post
-          </Button>
-          <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
-            <Plus className="w-4 h-4" />
-            Create Subspace
-          </Button>
-        </div>
-
-        {/* ── Search ── */}
-        <div>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search posts..."
-              className="w-full h-9 pl-8 pr-3 transition-all text-sm rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
-            />
-          </div>
-        </div>
-
-        {/* ── Tags ── */}
-        <TagCloud
-          tags={["Strategy", "Policy", "Solar", "Grid", "Stakeholders", "Data", "Funding", "Community"]}
-          activeTags={[]}
-          toggleTag={() => {}}
+  const widgetNodes: Record<string, React.ReactNode> = {
+    intent: stackedChallenge ? null : challengeCard,
+    post: (
+      <Button
+        size="sm"
+        className="w-full gap-2 justify-start"
+        onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}
+      >
+        <Plus className="w-4 h-4" />
+        Post
+      </Button>
+    ),
+    inviteUser: (
+      <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+        <UserPlus className="w-4 h-4" />
+        Invite User
+      </Button>
+    ),
+    createSubspace: (
+      <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
+        <Plus className="w-4 h-4" />
+        Create Subspace
+      </Button>
+    ),
+    search: (
+      <div className="relative">
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Search posts..."
+          className="w-full h-9 pl-8 pr-3 transition-all text-sm rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
         />
+      </div>
+    ),
+    tags: (
+      <TagCloud
+        tags={["Strategy", "Policy", "Solar", "Grid", "Stakeholders", "Data", "Funding", "Community"]}
+        activeTags={[]}
+        toggleTag={() => {}}
+      />
+    ),
+    subspaceLinks: <SubspaceQuickLinks />,
+    community: quickActionButton(Users, "Community", "community"),
+    events: quickActionButton(CalendarDays, "Events", "events"),
+    index: quickActionButton(List, "Index", "index"),
+  };
 
-        {/* ── Subspaces ── */}
-        <SubspaceQuickLinks />
+  // Keep buttons and quick-action rows visually grouped while they sit together,
+  // so the default order still looks the way it did before it was configurable.
+  const FAMILIES: Record<string, "action" | "quick"> = {
+    post: "action",
+    inviteUser: "action",
+    createSubspace: "action",
+    community: "quick",
+    events: "quick",
+    index: "quick",
+  };
+  const widgetGroups = visibleKeys.reduce<
+    Array<{ family: "action" | "quick" | "solo"; keys: string[] }>
+  >((acc, key) => {
+    if (key === "intent" && stackedChallenge) return acc;
+    const family = FAMILIES[key];
+    const last = acc[acc.length - 1];
+    if (family && last && last.family === family) last.keys.push(key);
+    else acc.push({ family: family ?? "solo", keys: [key] });
+    return acc;
+  }, []);
 
-        {/* ── Quick Actions ── */}
-        <div className="space-y-1">
-          {[
-            { icon: Users, label: "Community", key: "community" },
-            { icon: CalendarDays, label: "Events", key: "events" },
-            { icon: List, label: "Index", key: "index" },
-          ].map(({ icon: Icon, label, key }) => (
+  // The collapsed rail mirrors the same choices.
+  const railIcons = visibleKeys
+    .filter((k) => ["community", "events", "index", "subspaceLinks"].includes(k))
+    .map((k) =>
+      k === "community"
+        ? { icon: Users, label: "Community", key: "community" }
+        : k === "events"
+        ? { icon: CalendarDays, label: "Events", key: "events" }
+        : k === "index"
+        ? { icon: List, label: "Index", key: "index" }
+        : { icon: Layers, label: "Subspaces", key: "subspaces" }
+    );
+
+  return (
+    <div
+      className={cn(
+        "relative transition-all duration-300 ease-in-out shrink-0",
+        isCollapsed ? "w-12" : "w-full",
+        className
+      )}
+      style={{ fontFamily: "var(--font-family, 'Inter', sans-serif)" }}
+    >
+      {/* ── Collapsed Rail View ── */}
+      {isCollapsed && (
+        <div className="flex flex-col items-center gap-0 pt-1">
+          {/* Expand button */}
+          <button
+            onClick={onToggleCollapse}
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted mb-1"
+            title="Expand sidebar"
+          >
+            <PanelLeftOpen className="w-4 h-4" />
+          </button>
+
+          {/* Parent space indicator */}
+          <a
+            href="#"
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-muted mb-1"
+            title={`Go to ${parentSpaceName}`}
+            style={{ textDecoration: "none" }}
+          >
+            <div
+              className="flex items-center justify-center"
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: 4,
+                background: "var(--primary)",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+              }}
+            >
+              <span style={{ color: "white", fontSize: "8px", fontWeight: 700, letterSpacing: "-0.02em" }}>
+                {parentSpaceInitials}
+              </span>
+            </div>
+          </a>
+
+          {/* Divider */}
+          <div className="w-5 h-px my-1.5" style={{ background: "var(--border)" }} />
+
+          {/* Quick action icons */}
+          {railIcons.map(({ icon: Icon, label, key }) => (
             <button
               key={key}
               onClick={() => setOpenDialog(key)}
-              className="flex items-center gap-3 w-full text-left px-3 py-2.5 rounded-md transition-colors hover:bg-muted/50"
+              className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
+              title={label}
             >
-              <Icon
-                className="w-4 h-4 shrink-0"
-                style={{ color: "var(--primary)" }}
-              />
-              <span
-                style={{
-                  fontSize: "var(--text-sm)",
-                  fontWeight: "var(--font-weight-medium)" as any,
-                  color: "var(--foreground)",
-                }}
-              >
-                {label}
-              </span>
+              <Icon className="w-4 h-4" />
             </button>
           ))}
         </div>
+      )}
+
+      {/* Sidebar content — hidden when collapsed */}
+      <div
+        className={cn(
+          "flex flex-col gap-3 transition-opacity duration-200",
+          isCollapsed
+            ? "opacity-0 invisible pointer-events-none h-0 overflow-hidden"
+            : "opacity-100 visible overflow-visible"
+        )}
+      >
+        {/* ── Challenge Statement with Parent Stack ── */}
+        <div
+          style={{
+            paddingTop: stackedChallenge ? (depth === 2 ? 28 : 14) : 0,
+            paddingLeft: stackedChallenge ? (depth === 2 ? 20 : 10) : 0,
+            marginTop: 4,
+            paddingBottom: 0,
+            overflow: "visible",
+          }}
+          className={cn("relative", !stackedChallenge && "flex flex-col gap-2")}
+        >
+          {/* Grandparent card (depth 2 only) */}
+          {depth === 2 && grandparentSpaceBanner && (
+            <a
+              href={grandparentSpaceHref || "#"}
+              className={cn("block no-underline", stackedChallenge && "absolute")}
+              title={`Go to ${grandparentSpaceName}`}
+              style={{
+                ...(stackedChallenge
+                  ? {
+                      top: 0,
+                      left: 0,
+                      width: "calc(100% - 20px)",
+                      height: "calc(100% - 28px)",
+                    }
+                  : { width: "100%" }),
+                borderRadius: 12,
+                overflow: "hidden",
+                border: "1px solid var(--border)",
+                background: "var(--card)",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+                transform: "translateY(0)",
+                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
+              }}
+            >
+              <div style={{ aspectRatio: "16 / 9", overflow: "hidden" }}>
+                <img src={grandparentSpaceBanner} alt={grandparentSpaceName} className="w-full h-full object-cover" style={{ display: "block" }} />
+              </div>
+              <div className="flex items-center gap-2 px-3 py-2">
+                <div className="flex items-center justify-center shrink-0" style={{ width: 18, height: 18, borderRadius: 4, background: "var(--primary)" }}>
+                  <span style={{ color: "white", fontSize: "7px", fontWeight: 700 }}>{grandparentSpaceInitials}</span>
+                </div>
+                <span className="text-xs font-medium truncate" style={{ color: "var(--muted-foreground)" }}>{grandparentSpaceName}</span>
+                <ArrowUpLeft className="w-3 h-3 shrink-0" style={{ color: "var(--muted-foreground)", opacity: 0, transition: "opacity 0.2s" }} />
+              </div>
+            </a>
+          )}
+
+          {/* Parent card — mini SpaceCard behind the challenge */}
+          <a
+            href={parentSpaceHref}
+            className={cn("block no-underline", stackedChallenge && "absolute")}
+            title={`Go to ${parentSpaceName}`}
+            style={{
+              ...(stackedChallenge
+                ? {
+                    top: depth === 2 ? 14 : 0,
+                    left: depth === 2 ? 10 : 0,
+                    width: "calc(100% - 20px)",
+                    height: "calc(100% - 28px)",
+                  }
+                : { width: "100%" }),
+              borderRadius: 12,
+              overflow: "hidden",
+              border: "1px solid var(--border)",
+              background: "var(--card)",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+              transform: railHovered ? "translateY(-3px)" : "translateY(0)",
+              transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
+            }}
+            onMouseEnter={() => setRailHovered(true)}
+            onMouseLeave={() => setRailHovered(false)}
+          >
+            <div style={{ aspectRatio: "16 / 9", overflow: "hidden" }}>
+              <img
+                src={parentSpaceBanner}
+                alt={parentSpaceName}
+                className="w-full h-full object-cover"
+                style={{
+                  display: "block",
+                  filter: railHovered ? "brightness(1.05)" : "brightness(1)",
+                  transition: "filter 0.3s",
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-1 px-3 py-2">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center shrink-0" style={{ width: 20, height: 20, borderRadius: 4, background: "var(--primary)" }}>
+                  <span style={{ color: "white", fontSize: "8px", fontWeight: 700 }}>{parentSpaceInitials}</span>
+                </div>
+                <span className="text-xs font-medium truncate" style={{ color: "var(--foreground)" }}>{parentSpaceName}</span>
+                <ArrowUpLeft className="w-3 h-3 shrink-0" style={{ color: "var(--muted-foreground)", opacity: railHovered ? 0.7 : 0, transition: "opacity 0.2s" }} />
+              </div>
+              <p className="text-xs text-muted-foreground line-clamp-2" style={{ lineHeight: 1.4 }}>{parentSpaceDescription}</p>
+            </div>
+          </a>
+
+          {stackedChallenge && challengeCard}
+        </div>
+
+        {/* ── Widgets — visibility and order come from Settings → Layout ── */}
+        {widgetGroups.map((group, i) =>
+          group.family === "action" ? (
+            <div key={`g-${i}`} className="flex flex-col gap-2">
+              {group.keys.map((k) => (
+                <Fragment key={k}>{widgetNodes[k]}</Fragment>
+              ))}
+            </div>
+          ) : group.family === "quick" ? (
+            <div key={`g-${i}`} className="space-y-1">
+              {group.keys.map((k) => (
+                <Fragment key={k}>{widgetNodes[k]}</Fragment>
+              ))}
+            </div>
+          ) : (
+            <Fragment key={`g-${i}`}>{widgetNodes[group.keys[0]]}</Fragment>
+          )
+        )}
 
         {/* Collapse button */}
         <button

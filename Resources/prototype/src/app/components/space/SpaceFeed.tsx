@@ -37,8 +37,8 @@ const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=f
 interface PostWithTags extends PostCardData {
   tags: string[];
   contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'form' | 'tasks';
-  /** When set, the post body embeds a rich subspace card (What / Why / Who). */
-  embeddedSubspace?: RichSubspaceCardData;
+  /** When set, the post body embeds one or more rich subspace cards (What / Why / Who). */
+  embeddedSubspaces?: RichSubspaceCardData[];
 }
 
 /** Sample subspace embedded in the "come join us" post — mirrors the Figma design. */
@@ -67,6 +67,55 @@ const SAMPLE_SUBSPACE: RichSubspaceCardData = {
     "City energy planners, municipal sustainability officers, utility and grid partners, and researchers working on the practical side of the transition. If you spend your time on the how — not just the why — you'll feel at home here.\n\nNewcomers with a policy, engineering, or community-organising background are especially welcome. A lot of the hardest problems in this space are about people and process, not only technology, so a wide range of experience is genuinely useful.",
 };
 
+const SAMPLE_SUBSPACE_2: RichSubspaceCardData = {
+  slug: "urban-mobility-lab",
+  name: "Urban Mobility Lab",
+  parentName: "Sustainable Cities Initiative",
+  parentSlug: "sustainable-cities-initiative",
+  tagline: "Rethinking how a city moves — away from cars, toward people.",
+  bannerImage: "https://images.unsplash.com/photo-1743385779313-ac03bb0f997b?auto=format&fit=crop&w=800&q=80",
+  avatarInitials: "UM",
+  avatarColor: "#7C3AED",
+  isPrivate: false,
+  isMember: false,
+  tags: ["Transport", "Accessibility"],
+  extraTagCount: 1,
+  leads: [
+    { name: "David Kim", initials: "DK", color: "#2563EB", type: "person" },
+    { name: "City Transit Authority", initials: "CT", color: "#0891B2", type: "org" },
+  ],
+  what:
+    "A design-and-research lab reimagining how people move through the city — prioritising walking, cycling, and shared transit over private cars. We prototype street redesigns, run pilot corridors, and model the network effects of each intervention before anything is built.\n\nOutputs are concrete: redesign templates councils can adopt, before/after impact studies, and open data on how each pilot changed journey times, safety, and emissions.",
+  why:
+    "Transport is the fastest-growing source of urban emissions and the hardest to shift, because it is bound up in habit, land use, and decades of car-first infrastructure. Cities need evidence that alternatives actually work at street level before they will commit budget.\n\nThis lab exists to produce that evidence — turning contested mobility debates into tested, measurable interventions that make the low-carbon option the easy, obvious one for residents.",
+  who:
+    "Urban designers, transport planners, active-travel advocates, and data analysts who want to move from opinion to measured outcomes. If you have run a pilot, mapped a corridor, or fought a parking-removal battle, your experience is gold here.\n\nWe especially welcome people who can bridge community engagement and technical modelling — the projects that succeed are the ones residents helped shape, not just the ones that model well.",
+};
+
+const SAMPLE_SUBSPACE_3: RichSubspaceCardData = {
+  slug: "green-infrastructure",
+  name: "Green Infrastructure",
+  parentName: "Sustainable Cities Initiative",
+  parentSlug: "sustainable-cities-initiative",
+  tagline: "Treating parks, trees and drainage as critical infrastructure.",
+  bannerImage: "https://images.unsplash.com/photo-1760611656007-f767a8082758?auto=format&fit=crop&w=800&q=80",
+  avatarInitials: "GI",
+  avatarColor: "#059669",
+  isPrivate: false,
+  isMember: false,
+  tags: ["Urban", "Green Spaces", "Drainage"],
+  leads: [
+    { name: "Emily Davis", initials: "ED", color: "#D97706", type: "person" },
+    { name: "City Planning Dept", initials: "CP", color: "#059669", type: "org" },
+  ],
+  what:
+    "A working group planning and delivering the city's green infrastructure — urban forests, vertical gardens, sustainable drainage, and the corridors that connect them. We treat green space as critical infrastructure, not decoration, with the same rigour applied to roads or pipes.\n\nEach project produces a site plan, a maintenance and funding model, and a monitoring framework so we can prove the flood, heat, and biodiversity benefits over time rather than assuming them.",
+  why:
+    "Cities are heating faster than the surrounding countryside and flooding more often as storms intensify, yet grey infrastructure alone can't keep pace or afford the upgrades. Green infrastructure is often cheaper, cools neighbourhoods, and manages stormwater at the source.\n\nThis subspace exists to make the case bankable — pairing landscape design with hard evidence on avoided flood damage, reduced cooling demand, and health outcomes so finance and planning teams can confidently say yes.",
+  who:
+    "Landscape architects, ecologists, drainage engineers, and neighbourhood groups who want greener, cooler, more resilient streets. Whether you plant, design, maintain, or campaign, there's a place for your perspective.\n\nNewcomers who can help translate ecological value into the language of budgets and planning policy are especially welcome — that translation is usually what turns a good idea into a funded project.",
+};
+
 const INITIAL_POSTS: PostWithTags[] = [
     // 0. Post embedding a rich subspace card — first so it's visible on load
     {
@@ -78,12 +127,12 @@ const INITIAL_POSTS: PostWithTags[] = [
         role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       },
-      title: "Looking for city energy leads — come join us 👇",
+      title: "Three subspaces open for new contributors 👇",
       snippet:
-        "We just opened the Renewable Energy Transition subspace to new contributors. If you're working on municipal energy planning, here's the full picture of what we're doing and why:",
+        "We're opening up three connected workstreams to new contributors this quarter. If you're working on the practical side of the urban energy and climate transition, here's what each one is about — and who it's for:",
       timestamp: "5 hours ago",
       commentCount: 9,
-      embeddedSubspace: SAMPLE_SUBSPACE,
+      embeddedSubspaces: [SAMPLE_SUBSPACE, SAMPLE_SUBSPACE_2, SAMPLE_SUBSPACE_3],
     },
     // 1. Form — the framing is visible in context on load
     {
@@ -496,11 +545,19 @@ export function SpaceFeed() {
 
   // Build contribution previews for each post
   function getContributionPreview(post: PostWithTags) {
-    // Embedded subspace card (rich What / Why / Who) — rendered in the post body.
-    if (post.embeddedSubspace) {
+    // Embedded subspace cards (rich What / Why / Who) — rendered in the post body.
+    // Multiple cards are separated by a hairline so the post reads as one set.
+    if (post.embeddedSubspaces?.length) {
       return (
         <div className="mt-4">
-          <RichSubspaceCard subspace={post.embeddedSubspace} />
+          {post.embeddedSubspaces.flatMap((subspace, i) =>
+            i === 0
+              ? [<RichSubspaceCard key={subspace.slug} subspace={subspace} />]
+              : [
+                  <div key={subspace.slug + "-div"} role="separator" className="mx-1 my-[18px] h-px bg-border" />,
+                  <RichSubspaceCard key={subspace.slug} subspace={subspace} />,
+                ]
+          )}
         </div>
       );
     }

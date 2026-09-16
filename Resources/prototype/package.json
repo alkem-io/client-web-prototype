@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "mockup:dev": "vite --open /mockups",
+    "mockup:build": "node mockup/export.mjs",
+    "mockup:check": "node mockup/check.mjs",
+    "mockup:new": "node mockup/new.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

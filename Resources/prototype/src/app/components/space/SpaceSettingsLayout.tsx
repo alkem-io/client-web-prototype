@@ -11,7 +11,6 @@ import {
   Pencil,
   RotateCcw,
   Save,
-  Check,
   Loader2,
   Undo2,
   MessageSquare,
@@ -46,13 +45,8 @@ import {
   PanelLeftClose,
   EyeOff as PanelLeftOff,
   AlignLeft,
-  Tag,
-  Target,
   Layers as LayersIcon,
-  ListOrdered,
   FileEdit,
-  UserPlus,
-  MessageSquarePlus,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -73,13 +67,22 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
 } from "@/app/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
+import {
+  SidebarWidgetsDialog,
+  loadSpaceSidebarWidgets,
+  saveSpaceSidebarWidgets,
+  spaceTabDefaults,
+  spaceWidgetsDescription,
+  hiddenCount,
+  SPACE_WIDGET_DEFS,
+  type SidebarWidgetConfig,
+} from "./SidebarWidgets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type TabId = "home" | "community" | "subspaces" | "knowledge";
@@ -343,19 +346,7 @@ const PostCard = ({
 // SECTION 2 — Kanban Column (collapsible, drop target)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-type SidebarFeatureSet = { search: boolean; tags: boolean; post: boolean; addUser: boolean; createSubspace: boolean; subspaceLinks: boolean; index: boolean; intent: boolean };
-type PerTabFeatures = Record<TabId, SidebarFeatureSet>;
-
-const FEATURE_DEFS: Array<{ key: keyof SidebarFeatureSet; icon: React.ElementType; label: string }> = [
-  { key: 'search', icon: Search, label: 'Search' },
-  { key: 'tags', icon: Tag, label: 'Tags & Filters' },
-  { key: 'post', icon: MessageSquarePlus, label: 'Post' },
-  { key: 'addUser', icon: UserPlus, label: 'Add User' },
-  { key: 'createSubspace', icon: Layers, label: 'Create Subspace' },
-  { key: 'subspaceLinks', icon: Layers, label: 'Subspace Links' },
-  { key: 'intent', icon: Target, label: 'Intention & Leads' },
-  { key: 'index', icon: ListOrdered, label: 'Index' },
-];
+type PerTabFeatures = Record<TabId, SidebarWidgetConfig>;
 
 interface KanbanColumnProps {
   tab: TabItem;
@@ -378,8 +369,8 @@ interface KanbanColumnProps {
   onIconChange: (id: TabId, newIcon: React.ElementType) => void;
   isEditing: boolean;
   setEditingId: (id: TabId | null) => void;
-  sidebarFeatures: SidebarFeatureSet;
-  onSidebarFeatureToggle: (key: keyof SidebarFeatureSet, checked: boolean) => void;
+  hiddenWidgets: number;
+  onOpenLayout: () => void;
   sidebarMode: 'expanded' | 'railed' | 'hidden';
 }
 
@@ -399,8 +390,8 @@ const KanbanColumn = ({
   onIconChange,
   isEditing,
   setEditingId,
-  sidebarFeatures,
-  onSidebarFeatureToggle,
+  hiddenWidgets,
+  onOpenLayout,
   sidebarMode,
 }: KanbanColumnProps) => {
   const autoExpandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -523,55 +514,41 @@ const KanbanColumn = ({
                   <MoreVertical className="w-3.5 h-3.5 text-muted-foreground" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuItem disabled>
-                  <Check className="w-3.5 h-3.5 mr-2" />
-                  Set as Active Phase
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem disabled className="uppercase text-caption tracking-wide">
+                  Mark as Active Phase
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setEditingId(tab.id)}>
+                <DropdownMenuItem
+                  onClick={() => setEditingId(tab.id)}
+                  className="uppercase text-caption tracking-wide"
+                >
                   <Pencil className="w-3.5 h-3.5 mr-2" />
                   Edit Details
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  Set Default Post Template
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  Clear Default Template
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 {sidebarMode !== 'hidden' && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger>
-                        <PanelLeft className="w-3.5 h-3.5 mr-2" />
-                        Sidebar Features
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="w-52">
-                        {FEATURE_DEFS.map(({ key, icon: FeatureIcon, label }) => (
-                          <DropdownMenuCheckboxItem
-                            key={key}
-                            checked={sidebarFeatures[key]}
-                            onCheckedChange={(checked) => onSidebarFeatureToggle(key, !!checked)}
-                            onSelect={(e) => e.preventDefault()}
-                          >
-                            <FeatureIcon className="w-3.5 h-3.5 mr-2" />
-                            {label}
-                          </DropdownMenuCheckboxItem>
-                        ))}
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                  </>
+                  <DropdownMenuItem
+                    onClick={onOpenLayout}
+                    className="uppercase text-caption tracking-wide"
+                  >
+                    <LayoutIcon className="w-3.5 h-3.5 mr-2" />
+                    Layout
+                    {hiddenWidgets > 0 && (
+                      <Badge variant="secondary" className="text-caption tabular-nums ml-auto">
+                        {hiddenWidgets}
+                      </Badge>
+                    )}
+                  </DropdownMenuItem>
                 )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem className="uppercase text-caption tracking-wide">
+                  <FileText className="w-3.5 h-3.5 mr-2" />
+                  Post Template
+                </DropdownMenuItem>
+                <DropdownMenuItem className="uppercase text-caption tracking-wide">
                   <EyeOff className="w-3.5 h-3.5 mr-2" />
-                  Hide Tab
+                  Hide from Menu
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                <DropdownMenuItem className="uppercase text-caption tracking-wide text-destructive focus:text-destructive">
                   <Trash2 className="w-3.5 h-3.5 mr-2" />
                   Delete Tab
                 </DropdownMenuItem>
@@ -776,43 +753,15 @@ export function SpaceSettingsLayout() {
     return localStorage.getItem('alkemio-sidebar-default') === 'railed';
   });
 
-  // Sidebar feature toggles — per tab
-  const defaultFeatureSet: SidebarFeatureSet = { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true, intent: true };
-  const defaultPerTabFeatures: PerTabFeatures = {
-    home: { ...defaultFeatureSet },
-    community: { ...defaultFeatureSet, createSubspace: false, subspaceLinks: false },
-    subspaces: { ...defaultFeatureSet, addUser: false },
-    knowledge: { ...defaultFeatureSet, addUser: false, createSubspace: false, subspaceLinks: false },
-  };
-  const [sidebarFeatures, setSidebarFeatures] = useState<PerTabFeatures>(() => {
-    try {
-      const stored = localStorage.getItem('alkemio-sidebar-features');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Merge with defaults for each tab
-        const merged: PerTabFeatures = { ...defaultPerTabFeatures };
-        for (const tabId of Object.keys(defaultPerTabFeatures) as TabId[]) {
-          if (parsed[tabId]) merged[tabId] = { ...defaultPerTabFeatures[tabId], ...parsed[tabId] };
-        }
-        return merged;
-      }
-      return defaultPerTabFeatures;
-    } catch { return defaultPerTabFeatures; }
-  });
-  const [savedSidebarFeatures, setSavedSidebarFeatures] = useState<PerTabFeatures>(() => {
-    try {
-      const stored = localStorage.getItem('alkemio-sidebar-features');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        const merged: PerTabFeatures = { ...defaultPerTabFeatures };
-        for (const tabId of Object.keys(defaultPerTabFeatures) as TabId[]) {
-          if (parsed[tabId]) merged[tabId] = { ...defaultPerTabFeatures[tabId], ...parsed[tabId] };
-        }
-        return merged;
-      }
-      return defaultPerTabFeatures;
-    } catch { return defaultPerTabFeatures; }
-  });
+  // Sidebar widgets — one config per tab, edited in the Layout dialog
+  const [sidebarFeatures, setSidebarFeatures] = useState<PerTabFeatures>(
+    () => loadSpaceSidebarWidgets() as PerTabFeatures
+  );
+  const [savedSidebarFeatures, setSavedSidebarFeatures] = useState<PerTabFeatures>(
+    () => loadSpaceSidebarWidgets() as PerTabFeatures
+  );
+  /** Which tab's Layout dialog is open, if any. */
+  const [layoutDialogTab, setLayoutDialogTab] = useState<TabId | null>(null);
 
   // ─── Change detection (tabs + posts) ───────────────────────────────────────
   const hasChanges = useMemo(() => {
@@ -953,7 +902,7 @@ export function SpaceSettingsLayout() {
       setSavedSidebarDefaultCollapsed(sidebarDefaultCollapsed);
       localStorage.setItem('alkemio-sidebar-default', sidebarDefaultCollapsed ? 'railed' : 'expanded');
       setSavedSidebarFeatures({ ...sidebarFeatures });
-      localStorage.setItem('alkemio-sidebar-features', JSON.stringify(sidebarFeatures));
+      saveSpaceSidebarWidgets(sidebarFeatures);
       setLastSaved(new Date());
     }, 1000);
   };
@@ -1025,13 +974,11 @@ export function SpaceSettingsLayout() {
                   onIconChange={handleIconChange}
                   isEditing={editingId === tab.id}
                   setEditingId={setEditingId}
-                  sidebarFeatures={sidebarFeatures[tab.id]}
-                  onSidebarFeatureToggle={(key, checked) =>
-                    setSidebarFeatures((prev) => ({
-                      ...prev,
-                      [tab.id]: { ...prev[tab.id], [key]: checked },
-                    }))
-                  }
+                  hiddenWidgets={hiddenCount(
+                    sidebarFeatures[tab.id] ?? spaceTabDefaults(tab.id),
+                    SPACE_WIDGET_DEFS
+                  )}
+                  onOpenLayout={() => setLayoutDialogTab(tab.id)}
                   sidebarMode={sidebarMode}
                 />
               </DraggableColumnWrapper>
@@ -1136,6 +1083,21 @@ export function SpaceSettingsLayout() {
         </div>
       </div>
     </DndProvider>
+    {layoutDialogTab && (
+      <SidebarWidgetsDialog
+        open={layoutDialogTab !== null}
+        onOpenChange={(open) => !open && setLayoutDialogTab(null)}
+        title={tabs.find((t) => t.id === layoutDialogTab)?.label ?? "Sidebar"}
+        description={spaceWidgetsDescription(
+          tabs.find((t) => t.id === layoutDialogTab)?.label ?? "this"
+        )}
+        defs={SPACE_WIDGET_DEFS}
+        config={sidebarFeatures[layoutDialogTab] ?? spaceTabDefaults(layoutDialogTab)}
+        onSave={(config) =>
+          setSidebarFeatures((prev) => ({ ...prev, [layoutDialogTab]: config }))
+        }
+      />
+    )}
     <SaveBar
       isDirty={hasChanges}
       isSaving={isSaving}

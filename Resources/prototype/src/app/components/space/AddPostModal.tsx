@@ -249,6 +249,8 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
 
   // Subspaces
   const [subspaceManualSelection, setSubspaceManualSelection] = useState(true);
+  // Display style for embedded subspaces: compact (simple) vs expanded (rich What/Why/Who)
+  const [subspaceRichCard, setSubspaceRichCard] = useState(false);
   const [subspaceSearch, setSubspaceSearch] = useState("");
 
   // Collection type — always visible
@@ -257,6 +259,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
   const [adminsCanAdd, setAdminsCanAdd] = useState(true);
   const [collectionDefaultTitle, setCollectionDefaultTitle] = useState("");
   const [collectionDefaultDescription, setCollectionDefaultDescription] = useState("");
+  const [collectionDefaultTags, setCollectionDefaultTags] = useState("");
   const [enableCollectionComments, setEnableCollectionComments] = useState(true);
   const [taskColumns, setTaskColumns] = useState<TaskColumnDef[]>([
     { id: "todo", label: "To Do", color: "#6b7280" },
@@ -682,6 +685,19 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
 
              {activeAttachment === 'subspaces' && (
                 <div className="mt-2 p-4 border rounded-xl bg-muted/30 space-y-4 animate-in fade-in slide-in-from-top-2">
+                  {/* Card style — simple (compact) vs rich (expanded What/Why/Who) */}
+                  <div className="flex items-center gap-3">
+                    <Switch checked={subspaceRichCard} onCheckedChange={setSubspaceRichCard} />
+                    <Label className="text-body-emphasis">Expanded card</Label>
+                  </div>
+                  <p className="text-caption text-muted-foreground">
+                    {subspaceRichCard
+                      ? "Shows the full card with the subspace's What, Why and Who — more context, more height."
+                      : "Shows a compact card — banner, name, tags and leads only."}
+                  </p>
+
+                  <Separator />
+
                   {/* Manual selection toggle */}
                   <div className="flex items-center gap-3">
                     <Switch checked={subspaceManualSelection} onCheckedChange={setSubspaceManualSelection} />
@@ -1223,6 +1239,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
               {collectionType === 'posts' && 'Post defaults'}
               {collectionType === 'memos' && 'Memo defaults'}
               {collectionType === 'whiteboards' && 'Whiteboard defaults'}
+              {collectionType === 'tasks' && 'Task defaults'}
             </DialogTitle>
             <DialogClose className="rounded-full p-1.5 hover:bg-muted transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
@@ -1295,8 +1312,8 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
               />
             </div>
 
-            {/* Default description — Posts & Memos */}
-            {(collectionType === 'posts' || collectionType === 'memos') && (
+            {/* Default description — Posts, Memos & Tasks */}
+            {(collectionType === 'posts' || collectionType === 'memos' || collectionType === 'tasks') && (
               <div className="space-y-1.5">
                 <Label className="text-body-emphasis">Default description</Label>
                 <MarkdownEditor
@@ -1321,6 +1338,18 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                 </div>
               </div>
             )}
+
+            {/* Default tags */}
+            <div className="space-y-1.5">
+              <Label className="text-body-emphasis">Default tags</Label>
+              <Input
+                value={collectionDefaultTags}
+                onChange={e => setCollectionDefaultTags(e.target.value)}
+                placeholder="Comma-separated tags, e.g. urgent, backend"
+                className="h-9 bg-background"
+              />
+              <p className="text-xs text-muted-foreground">Tags that will be pre-filled on new responses.</p>
+            </div>
           </div>
 
           <div className="flex justify-end gap-2 px-5 py-3.5 border-t">

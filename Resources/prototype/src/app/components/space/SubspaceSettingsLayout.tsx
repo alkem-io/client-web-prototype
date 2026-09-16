@@ -22,6 +22,7 @@ import {
   Download,
   Upload,
   FileText,
+  PanelLeft,
 } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { IconButton } from "@/app/components/ui/icon-button";
@@ -50,6 +51,15 @@ import {
   DialogDescription,
 } from "@/app/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import {
+  SidebarWidgetsDialog,
+  loadSubspaceSidebarWidgets,
+  saveSubspaceSidebarWidgets,
+  hiddenCount,
+  SUBSPACE_WIDGET_DEFS,
+  SUBSPACE_WIDGETS_DESCRIPTION,
+  type SidebarWidgetConfig,
+} from "./SidebarWidgets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface PhaseItem {
@@ -667,12 +677,26 @@ export function SubspaceSettingsLayout() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [showSaveTemplate, setShowSaveTemplate] = useState(false);
   const [templateName, setTemplateName] = useState("");
+  const [showSidebarWidgets, setShowSidebarWidgets] = useState(false);
+
+  // ─── Saved snapshots — what "Discard Changes" restores ────────────────────
+  const [savedPhases, setSavedPhases] = useState<PhaseItem[]>(DEFAULT_PHASES);
+  const [savedPhasePosts, setSavedPhasePosts] = useState<PhasePosts>(DEFAULT_POSTS);
+
+  // ─── Sidebar widgets — decided once for the whole subspace, not per phase ──
+  const [sidebarWidgets, setSidebarWidgets] = useState<SidebarWidgetConfig>(
+    loadSubspaceSidebarWidgets
+  );
+  const [savedSidebarWidgets, setSavedSidebarWidgets] = useState<SidebarWidgetConfig>(
+    loadSubspaceSidebarWidgets
+  );
+  const hiddenWidgetCount = hiddenCount(sidebarWidgets, SUBSPACE_WIDGET_DEFS);
 
   // ─── Change detection ──────────────────────────────────────────────────────
   const hasChanges = useMemo(() => {
-    if (phases.length !== DEFAULT_PHASES.length) return true;
+    if (phases.length !== savedPhases.length) return true;
     const phasesChanged = phases.some((phase, i) => {
-      const d = DEFAULT_PHASES[i];
+      const d = savedPhases[i];
       return (
         phase.id !== d.id ||
         phase.label !== d.label ||
@@ -682,14 +706,22 @@ export function SubspaceSettingsLayout() {
     });
     if (phasesChanged) return true;
 
-    for (const phaseId of Object.keys(DEFAULT_POSTS)) {
+    const phaseIds = new Set([
+      ...Object.keys(savedPhasePosts),
+      ...Object.keys(phasePosts),
+    ]);
+    for (const phaseId of phaseIds) {
       const cur = phasePosts[phaseId] ?? [];
-      const orig = DEFAULT_POSTS[phaseId] ?? [];
-      if (cur.length !== orig.length) return true;
-      if (cur.some((p, i) => p.id !== orig[i]?.id)) return true;
+      const prev = savedPhasePosts[phaseId] ?? [];
+      if (cur.length !== prev.length) return true;
+      if (cur.some((p, i) => p.id !== prev[i]?.id)) return true;
     }
+
+    if (JSON.stringify(sidebarWidgets) !== JSON.stringify(savedSidebarWidgets))
+      return true;
+
     return false;
-  }, [phases, phasePosts]);
+  }, [phases, phasePosts, savedPhases, savedPhasePosts, sidebarWidgets, savedSidebarWidgets]);
 
   // ─── Phase reorder ─────────────────────────────────────────────────────────
   const movePhase = useCallback(
@@ -837,6 +869,8 @@ export function SubspaceSettingsLayout() {
       setIsSaving(false);
       setSavedPhases([...phases]);
       setSavedPhasePosts({ ...phasePosts });
+      setSavedSidebarWidgets(sidebarWidgets);
+      saveSubspaceSidebarWidgets(sidebarWidgets);
       setLastSaved(new Date());
     }, 1000);
   };
@@ -844,6 +878,7 @@ export function SubspaceSettingsLayout() {
   const handleDiscard = () => {
     setPhases([...savedPhases]);
     setPhasePosts({ ...savedPhasePosts });
+    setSidebarWidgets(savedSidebarWidgets);
     const newExpanded: Record<string, boolean> = {};
     savedPhases.forEach((p) => {
       newExpanded[p.id] = (savedPhasePosts[p.id]?.length ?? 0) > 0;
@@ -912,6 +947,20 @@ export function SubspaceSettingsLayout() {
               Save as Template
             </Button>
             <div className="flex-1" />
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => setShowSidebarWidgets(true)}
+            >
+              <PanelLeft className="w-3.5 h-3.5" />
+              Customize Sidebar
+              {hiddenWidgetCount > 0 && (
+                <Badge variant="secondary" className="text-caption tabular-nums ml-0.5">
+                  {hiddenWidgetCount} hidden
+                </Badge>
+              )}
+            </Button>
             <Button
               size="sm"
               className="gap-2"
@@ -988,6 +1037,17 @@ export function SubspaceSettingsLayout() {
           </div>
         </div>
       </div>
+
+      {/* ── Customize Sidebar Dialog ── */}
+      <SidebarWidgetsDialog
+        open={showSidebarWidgets}
+        onOpenChange={setShowSidebarWidgets}
+        title="Sidebar"
+        description={SUBSPACE_WIDGETS_DESCRIPTION}
+        defs={SUBSPACE_WIDGET_DEFS}
+        config={sidebarWidgets}
+        onSave={setSidebarWidgets}
+      />
 
       {/* ── Load Template Dialog ── */}
       <Dialog open={showTemplates} onOpenChange={setShowTemplates}>
