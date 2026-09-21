@@ -4,7 +4,10 @@ import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { SpaceSidebar } from "./SpaceSidebar";
 import { FilterProvider, useSpaceFilters } from "./FilterContext";
-import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, LayoutGrid, List } from "lucide-react";
+import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, LayoutGrid, List, CheckCheck } from "lucide-react";
+import { toast } from "sonner";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { spaceContainer } from "@/app/data/activity-data";
 import { AboutThisSpaceDialog } from "./AboutThisSpaceDialog";
 import { WelcomeSpaceDialog } from "@/app/components/dialogs/WelcomeSpaceDialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/components/ui/sheet";
@@ -37,6 +40,17 @@ export function SpaceShell() {
   // Sidebar panel display mode: ?panel=full|rail|railed|hidden (admin setting)
   const rawPanel = searchParams.get("panel") || "full";
   const panelMode = (rawPanel === "railed" ? "rail" : rawPanel) as "full" | "rail" | "hidden";
+
+  const { hasContainerActivity, markAllRead } = useActivityIndicators();
+  const spaceHasActivity = hasContainerActivity(spaceContainer(slug));
+  const handleMarkSpaceRead = () => {
+    const { cleared, undo } = markAllRead(spaceContainer(slug));
+    if (cleared === 0) return;
+    toast(`${cleared} item${cleared === 1 ? "" : "s"} marked as read`, {
+      duration: 6000,
+      action: { label: "Undo", onClick: undo },
+    });
+  };
 
   // Admin-configured sidebar widgets — per tab, set via Settings > Layout.
   // Carries both which widgets are on and the order they render in.
@@ -130,6 +144,19 @@ export function SpaceShell() {
           <Settings className="w-3.5 h-3.5" />
         </Link>
       </IconButton>
+      {spaceHasActivity && (
+        <IconButton
+          tooltipLabel="Mark all as read"
+          className="w-7 h-7"
+          onClick={handleMarkSpaceRead}
+          style={{
+            background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
+            color: "var(--muted-foreground)",
+          }}
+        >
+          <CheckCheck className="w-3.5 h-3.5" />
+        </IconButton>
+      )}
     </div>
   );
 

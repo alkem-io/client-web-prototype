@@ -13,6 +13,9 @@ import {
   StickyNote,
 } from 'lucide-react';
 import { type MouseEvent as ReactMouseEvent, type ReactNode, useState, useRef, useEffect, useCallback } from 'react';
+import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
+import { ActivityDot } from '@/app/components/shared/ActivityDot';
+import { postItem } from '@/app/data/activity-data';
 import {
   CalloutCollaboraPreview,
   type CollaboraDocumentPreviewType,
@@ -369,6 +372,30 @@ export function PostCard({
     ? `${post.commentCount} Comment${post.commentCount !== 1 ? 's' : ''}`
     : 'No comments';
 
+  const { hasItemActivity, markItemSeen } = useActivityIndicators();
+  const activityItemId = postItem(post.id);
+  const hasActivity = hasItemActivity(activityItemId);
+  const hoverTimer = useRef<number | null>(null);
+
+  const cancelHoverClear = useCallback(() => {
+    if (hoverTimer.current !== null) {
+      window.clearTimeout(hoverTimer.current);
+      hoverTimer.current = null;
+    }
+  }, []);
+
+  // Hovering is deliberate attention; scrolling past is not. The short delay
+  // stops a cursor sweeping across the feed from clearing everything it crosses.
+  const handleActivityHover = useCallback(() => {
+    if (!hasActivity || hoverTimer.current !== null) return;
+    hoverTimer.current = window.setTimeout(() => {
+      hoverTimer.current = null;
+      markItemSeen(activityItemId);
+    }, 400);
+  }, [hasActivity, markItemSeen, activityItemId]);
+
+  useEffect(() => cancelHoverClear, [cancelHoverClear]);
+
   // Comments and reactions gate independently: a post with commenting switched
   // off still shows the responses it already has.
   const showComments = post.commentsEnabled !== false || (post.commentCount ?? 0) > 0;
@@ -384,6 +411,8 @@ export function PostCard({
 
   return (
     <Card
+      onMouseEnter={handleActivityHover}
+      onMouseLeave={cancelHoverClear}
       className={cn(
         'group hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border-border/60',
         post.isDraft && 'border-l-4 border-l-amber-400',
@@ -517,13 +546,15 @@ export function PostCard({
               onClick
                 ? e => {
                     e.preventDefault();
+                    markItemSeen(activityItemId);
                     onClick();
                   }
-                : undefined
+                : () => markItemSeen(activityItemId)
             }
           >
             {post.title}
           </a>
+          {hasActivity && <ActivityDot className="ml-2 align-middle" label="New" />}
         </h3>
         {post.snippet && (
           <SimpleExpandableText content={post.snippet} maxLines={3} defaultExpanded={post.descriptionExpanded} embeddedImages={post.embeddedImages} />

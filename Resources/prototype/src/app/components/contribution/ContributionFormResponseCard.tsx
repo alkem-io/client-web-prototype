@@ -9,6 +9,7 @@ import { ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
 import { Badge } from '@/app/components/ui/badge';
+import { ReactionBar } from '@/app/components/space/PostReactions';
 
 type ContributionFormResponseCardProps = {
   author: { name: string; avatarUrl?: string };
@@ -19,6 +20,9 @@ type ContributionFormResponseCardProps = {
   answerCount: number;
   /** Marks the viewer's own response — the one they always see regardless of visibility. */
   isOwn?: boolean;
+  /** Identity for the reaction store; falls back to the author and date. */
+  reactionId?: string;
+  reactionsEnabled?: boolean;
   onClick?: () => void;
   className?: string;
 };
@@ -29,6 +33,8 @@ export function ContributionFormResponseCard({
   snippet,
   answerCount,
   isOwn,
+  reactionId,
+  reactionsEnabled = true,
   onClick,
   className,
 }: ContributionFormResponseCardProps) {
@@ -47,7 +53,7 @@ export function ContributionFormResponseCard({
       tabIndex={0}
       className={cn(
         'w-full text-left p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        'flex flex-col h-[180px]',
+        'flex flex-col min-h-[180px]',
         isOwn && 'border-primary/40',
         className
       )}
@@ -83,6 +89,11 @@ export function ContributionFormResponseCard({
           {answerCount} {answerCount === 1 ? 'answer' : 'answers'}
         </span>
       </div>
+      {reactionsEnabled && (
+        <div className="mt-2.5 pt-2.5 border-t border-border/60">
+          <ReactionBar id={reactionId ?? `form-response:${author.name}:${submittedDate ?? ''}`} />
+        </div>
+      )}
     </div>
   );
 }

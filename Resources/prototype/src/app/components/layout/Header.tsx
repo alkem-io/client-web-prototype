@@ -33,6 +33,8 @@ import { useSearch } from "@/app/contexts/SearchContext";
 import { useGridOverlay } from "@/app/contexts/GridOverlayContext";
 import { useNotifications } from "@/app/contexts/NotificationsContext";
 import { useMessages } from "@/app/contexts/MessagesContext";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { SPACE_CHANGES } from "@/app/data/activity-data";
 import { AppBreadcrumb } from "@/app/components/layout/AppBreadcrumb";
 
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
@@ -61,7 +63,12 @@ export function Header({
   const { isVisible: isGridVisible, toggle: toggleGrid } = useGridOverlay();
   const { openNotifications } = useNotifications();
   const { openMessages } = useMessages();
+  const { hasContainerActivity } = useActivityIndicators();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+
+  const spaceActivityCount = SPACE_CHANGES.filter((c) =>
+    hasContainerActivity(c.containerId)
+  ).length;
 
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle('dark');
@@ -204,83 +211,22 @@ export function Header({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Notifications dropdown → full overlay on click */}
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-muted-foreground"
-              title="Notifications"
-            >
-              <Bell className="w-5 h-5" />
-              {PREVIEW_NOTIFICATIONS.filter(n => !n.read).length > 0 && (
-                <span
-                  className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full border border-background"
-                  style={{ background: "var(--destructive)" }}
-                />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80 md:w-96 p-0 overflow-hidden">
-            <div
-              className="flex items-center justify-between px-4 py-3"
-              style={{ borderBottom: "1px solid var(--border)", background: "color-mix(in srgb, var(--muted) 30%, transparent)" }}
-            >
-              <span className="text-card-title">Notifications</span>
-              <span className="text-caption font-medium text-primary cursor-pointer hover:opacity-80">Mark all as read</span>
-            </div>
-            <div className="max-h-[50vh] overflow-y-auto">
-              {PREVIEW_NOTIFICATIONS.map((n) => (
-                <button
-                  key={n.id}
-                  onClick={openNotifications}
-                  className={cn(
-                    "flex gap-3 p-4 w-full text-left hover:bg-muted/50 transition-colors",
-                    !n.read && "bg-primary/5 hover:bg-primary/10"
-                  )}
-                  style={{ borderBottom: "1px solid var(--border)" }}
-                >
-                  <div className="shrink-0 mt-0.5 relative">
-                    <Avatar className="w-8 h-8 md:w-10 md:h-10" style={{ border: "1px solid var(--border)" }}>
-                      <AvatarImage src={n.avatar} />
-                      <AvatarFallback className="bg-primary/10 text-primary text-caption">{n.author.substring(0, 2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div
-                      className="absolute -bottom-1 -right-1 rounded-full p-0.5"
-                      style={{ background: "var(--primary)", color: "var(--primary-foreground)", border: "2px solid var(--background)" }}
-                    >
-                      {n.type === "invite" && <UserPlus className="w-2.5 h-2.5" />}
-                      {n.type === "comment" && <MessageSquare className="w-2.5 h-2.5" />}
-                      {n.type === "mention" && <Check className="w-2.5 h-2.5" />}
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <p className="text-body leading-snug">
-                      <span className="font-semibold">{n.author}</span>{" "}
-                      {n.action}{" "}
-                      <span className="font-medium opacity-80">{n.target}</span>
-                    </p>
-                    <p className="flex items-center gap-1 text-caption text-muted-foreground">
-                      <Clock className="w-3 h-3" />
-                      {n.time}
-                    </p>
-                  </div>
-                  {!n.read && (
-                    <div className="shrink-0 mt-1.5">
-                      <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: "var(--primary)" }} />
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-            <div className="p-2" style={{ borderTop: "1px solid var(--border)", background: "color-mix(in srgb, var(--muted) 30%, transparent)" }}>
-              <Button variant="ghost" size="sm" className="w-full h-8 text-caption" onClick={openNotifications}>
-                View all notifications
-              </Button>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Notifications — opens the full dialog directly, matching production */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative text-muted-foreground"
+          title="Notifications"
+          onClick={() => openNotifications("notifications")}
+        >
+          <Bell className="w-5 h-5" />
+          {(PREVIEW_NOTIFICATIONS.filter(n => !n.read).length > 0 || spaceActivityCount > 0) && (
+            <span
+              className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full border border-background"
+              style={{ background: "var(--destructive)" }}
+            />
+          )}
+        </Button>
 
         {/* Spaces Grid icon */}
         <Button

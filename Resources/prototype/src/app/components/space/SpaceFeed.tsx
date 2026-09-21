@@ -731,8 +731,8 @@ export function SpaceFeed() {
 
   return (
     <div className="w-full">
-      {/* Lead Update — pinned announcement (temporarily hidden) */}
-      {/* <LeadUpdate /> */}
+      {/* Lead Update — pinned announcement */}
+      <LeadUpdate />
 
       <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
         {filteredPosts.map((post) => (

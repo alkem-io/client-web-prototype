@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Lock } from "lucide-react";
 import { useNavigate } from "react-router";
 import { MyMembershipsPanel } from "@/app/components/memberships/MyMembershipsPanel";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { spaceContainer } from "@/app/data/activity-data";
 
 const recentSpaces = [
   {
@@ -45,6 +48,7 @@ const recentSpaces = [
 export function RecentSpaces() {
   const navigate = useNavigate();
   const [membershipsOpen, setMembershipsOpen] = useState(false);
+  const { hasContainerActivity } = useActivityIndicators();
 
   return (
     <div className="space-y-4" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -116,6 +120,12 @@ export function RecentSpaces() {
                   }}
                 >
                   {space.name}
+                  {hasContainerActivity(spaceContainer(space.slug)) && (
+                    <ActivityDot
+                      className="ml-2 align-middle"
+                      label={`${space.name} has new activity`}
+                    />
+                  )}
                 </h3>
               </div>
             </div>

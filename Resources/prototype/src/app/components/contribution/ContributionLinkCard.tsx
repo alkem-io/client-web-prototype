@@ -1,5 +1,6 @@
-import { ExternalLink, FileText, Link2, Pencil, Trash2 } from 'lucide-react';
+import { ExternalLink, FileText, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ReactionBar } from '@/app/components/space/PostReactions';
 
 type ContributionLinkCardProps = {
   title: string;
@@ -7,6 +8,9 @@ type ContributionLinkCardProps = {
   url?: string;
   isFile?: boolean;
   author?: string;
+  /** Identity for the reaction store; falls back to the title. */
+  reactionId?: string;
+  reactionsEnabled?: boolean;
   onClick?: () => void;
   className?: string;
 };
@@ -17,6 +21,8 @@ export function ContributionLinkCard({
   url,
   isFile,
   author,
+  reactionId,
+  reactionsEnabled = true,
   onClick,
   className,
 }: ContributionLinkCardProps) {
@@ -36,6 +42,9 @@ export function ContributionLinkCard({
         <p className="text-body-emphasis text-foreground truncate">{title}</p>
         {description && (
           <p className="text-caption text-muted-foreground truncate mt-0.5">{description}</p>
+        )}
+        {reactionsEnabled && (
+          <ReactionBar id={reactionId ?? `link:${title}`} className="mt-1.5" />
         )}
       </div>
       <div className="flex items-center gap-2 shrink-0 opacity-0 group-hover/link:opacity-100 transition-opacity">

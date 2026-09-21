@@ -167,8 +167,6 @@
   .scard .name .label { font-weight: var(--host-weight); }
   .scard .tagline { font-size: 12.5px; color: var(--muted-fg); margin-top: 3px; }
   .scard .meta { font-size: 11.5px; color: var(--muted-fg); margin-top: 10px; display: flex; gap: 12px; }
-  .corner { position: absolute; top: 9px; right: 9px; z-index: 2; }
-  .corner .ind { box-shadow: 0 0 0 2.5px #fff; }
 
   /* ── Posts ── */
   .feed { max-height: 340px; overflow-y: auto; border: 1px solid var(--border); border-radius: 9px; padding: 12px; background: var(--bg); }
@@ -219,7 +217,7 @@
   .pill { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; background: #fef3c7; color: #92400e; padding: 2px 7px; border-radius: 999px; margin-right: 6px; }
 </style>
 </head>
-<body data-t="solid" data-color="blue" data-enabled="true">
+<body data-t="solid" data-color="navy" data-enabled="true">
 
 <div class="toolbar">
   <div class="tgroup">
@@ -235,8 +233,8 @@
   <div class="tgroup">
     <label>Colour</label>
     <div class="seg" id="segC">
-      <button data-v="navy" aria-pressed="false"><span class="swatch" style="background:#1d384a"></span>Navy</button>
-      <button data-v="blue" aria-pressed="true"><span class="swatch" style="background:#0b6bcb"></span>Blue</button>
+      <button data-v="navy" aria-pressed="true"><span class="swatch" style="background:#1d384a"></span>Navy</button>
+      <button data-v="blue" aria-pressed="false"><span class="swatch" style="background:#0b6bcb"></span>Blue</button>
       <button data-v="teal" aria-pressed="false"><span class="swatch" style="background:#0d9488"></span>Teal</button>
     </div>
   </div>
@@ -370,10 +368,12 @@
             <h3 style="margin-top:0">Subspace cards</h3>
             <div class="cardgrid">
               <div class="scard has-new" data-clear="container" data-sub="solar">
-                <span class="corner"><span class="ind always"></span><span class="sr-only">New activity</span></span>
                 <div class="banner"></div>
                 <div class="inner">
-                  <div class="name"><span class="label">Solar Rooftops</span></div>
+                  <div class="name">
+                    <span class="label">Solar Rooftops</span>
+                    <span class="ind always"></span><span class="sr-only">New activity</span>
+                  </div>
                   <div class="tagline">Municipal rooftop solar pilots</div>
                   <div class="meta"><span>24 members</span><span>6 callouts</span></div>
                 </div>
@@ -428,10 +428,12 @@
         <h3>Surface 5 — Dashboard cards</h3>
         <div class="cardgrid">
           <div class="scard has-new" data-clear="container">
-            <span class="corner"><span class="ind always"></span><span class="sr-only">New activity</span></span>
             <div class="banner"></div>
             <div class="inner">
-              <div class="name"><span class="label">VNG Innovation Hub</span></div>
+              <div class="name">
+                <span class="label">VNG Innovation Hub</span>
+                <span class="ind always"></span><span class="sr-only">New activity</span>
+              </div>
               <div class="tagline">Municipal innovation network</div>
               <div class="meta"><span>Last visit 9 days ago</span></div>
             </div>

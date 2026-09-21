@@ -4,6 +4,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
 import { Badge } from "@/app/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { spaceOrSubspaceIds } from "@/app/data/activity-data";
 
 export interface SpaceLead {
   name: string;
@@ -53,6 +56,8 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
   const overflowCount = space.leads.length - maxVisibleLeads;
 
   const { t } = useLanguage();
+  const { hasContainerActivity } = useActivityIndicators();
+  const hasActivity = spaceOrSubspaceIds(space.slug).some(hasContainerActivity);
 
   if (compact) {
     return (
@@ -89,6 +94,9 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
               {space.name}
+              {hasActivity && (
+                <ActivityDot className="ml-2 align-middle" label={`${space.name} has new activity`} />
+              )}
             </h3>
             <p className="text-xs text-muted-foreground truncate mt-0.5">
               {space.description}
@@ -184,6 +192,9 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
             }}
           >
             {space.name}
+            {hasActivity && (
+              <ActivityDot className="ml-2 align-middle" label={`${space.name} has new activity`} />
+            )}
           </h3>
 
           {/* Parent indicator for subspaces */}

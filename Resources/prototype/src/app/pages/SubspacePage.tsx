@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams, Link } from "react-router";
-import { Plus, Layout, Activity, Video, FileText, Share2, Settings, Info } from "lucide-react";
+import { Plus, Layout, Activity, Video, FileText, Share2, Settings, List, Columns3, Info } from "lucide-react";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import {
   Tooltip,
@@ -14,9 +14,11 @@ import { SubspaceSidebar } from "@/app/components/space/SubspaceSidebar";
 import { cn } from "@/lib/utils";
 import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs";
 import { PostCard, type PostProps } from "@/app/components/space/PostCard";
+import { KanbanPostDialog } from "@/app/components/space/KanbanBoardPost";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { AboutThisSpaceDialog } from "@/app/components/space/AboutThisSpaceDialog";
+import { SubspaceBoardView } from "@/app/components/space/SubspaceBoardView";
 
 /* ─── Mock subspace metadata ─── */
 
@@ -246,6 +248,62 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     timestamp: "4 days ago",
     stats: { comments: 4 },
   },
+  {
+    id: "sp-7",
+    type: "kanban",
+    callout: "strategy",
+    author: {
+      name: "Sarah Chen",
+      role: "Lead",
+      avatarUrl:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+    },
+    title: "Energy Transition — Task Board",
+    snippet:
+      "Shared task board for tracking deliverables across the strategy phase. Drag items between columns to update status.",
+    timestamp: "1 day ago",
+    framingKanban: {
+      columns: [
+        {
+          id: "todo",
+          label: "To Do",
+          cards: [
+            { id: "k1", title: "Review stakeholder input survey results", assignee: "David Kim" },
+            { id: "k2", title: "Map existing municipal energy contracts", assignee: "Emily Davis" },
+            { id: "k3", title: "Draft cost-benefit analysis template" },
+            { id: "k4", title: "Schedule follow-up with provincial authorities", assignee: "Anna Martinez" },
+            { id: "k5", title: "Collect baseline consumption data from pilot municipalities" },
+          ],
+        },
+        {
+          id: "in-progress",
+          label: "In Progress",
+          cards: [
+            { id: "k6", title: "Wind capacity assessment for northern corridor", assignee: "Alex Torres" },
+            { id: "k7", title: "Solar panel feasibility study — urban rooftops", assignee: "Sarah Chen" },
+          ],
+        },
+        {
+          id: "review",
+          label: "Review",
+          cards: [
+            { id: "k8", title: "Grid interconnection proposal v2", assignee: "Robert Fox" },
+          ],
+        },
+        {
+          id: "done",
+          label: "Done",
+          cards: [
+            { id: "k9", title: "Stakeholder mapping complete", assignee: "Anna Martinez" },
+            { id: "k10", title: "Kickoff meeting held", assignee: "Sarah Chen" },
+            { id: "k11", title: "Baseline energy audit — Amsterdam district", assignee: "David Kim" },
+            { id: "k12", title: "EU directive compliance checklist finalized", assignee: "Robert Fox" },
+          ],
+        },
+      ],
+    },
+    stats: { comments: 3 },
+  },
 ];
 
 /* ─── Page Component ─── */
@@ -272,6 +330,8 @@ export default function SubspacePage() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCommunityDialogOpen, setIsCommunityDialogOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"feed" | "board">("feed");
+  const [kanbanDialogPost, setKanbanDialogPost] = useState<(typeof SUBSPACE_POSTS)[number] | null>(null);
 
   // Listen for sidebar "New Post" button event
   useEffect(() => {
@@ -432,17 +492,66 @@ export default function SubspacePage() {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                <CalloutTabs
-                  tabs={info.callouts}
-                  activeTab={activeCallout}
-                  onTabChange={setActiveCallout}
-                />
+                {viewMode === "feed" && (
+                  <CalloutTabs
+                    tabs={info.callouts}
+                    activeTab={activeCallout}
+                    onTabChange={setActiveCallout}
+                    activityOwner={activeSlug}
+                  />
+                )}
+                {viewMode === "board" && (
+                  <span className="text-sm font-medium text-foreground">Board View</span>
+                )}
+              </div>
+              {/* View mode toggle */}
+              <div className="flex items-center gap-0.5 shrink-0 bg-muted rounded-lg p-0.5">
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setViewMode("feed")}
+                        className={cn(
+                          "p-1.5 rounded-md transition-colors",
+                          viewMode === "feed"
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                        aria-label="Feed view"
+                      >
+                        <List className="w-4 h-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>Feed view</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setViewMode("board")}
+                        className={cn(
+                          "p-1.5 rounded-md transition-colors",
+                          viewMode === "board"
+                            ? "bg-background text-foreground shadow-sm"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                        aria-label="Board view"
+                      >
+                        <Columns3 className="w-4 h-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>Board view</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
           </div>
 
-          {/* Tab description */}
-          {info.callouts.find((c) => c.id === activeCallout)?.description && (
+          {/* Tab description (feed mode only) */}
+          {viewMode === "feed" && info.callouts.find((c) => c.id === activeCallout)?.description && (
             <div className="mb-4">
               <ReadMoreText
                 maxLines={2}
@@ -458,13 +567,27 @@ export default function SubspacePage() {
             </div>
           )}
 
-          {/* Feed */}
+          {/* Board View */}
+          {viewMode === "board" && (
+            <SubspaceBoardView
+              phases={info.callouts}
+              posts={SUBSPACE_POSTS}
+            />
+          )}
+
+          {/* Feed View */}
+          {viewMode === "feed" && (
           <div className="space-y-6">
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => (
                 <PostCard
                   key={post.id}
                   post={post}
+                  onOpenFraming={
+                    post.type === "kanban"
+                      ? () => setKanbanDialogPost(post)
+                      : undefined
+                  }
                 />
               ))
             ) : (
@@ -493,6 +616,7 @@ export default function SubspacePage() {
               </div>
             )}
           </div>
+          )}
           </div>
         </div>
       </main>
@@ -515,6 +639,16 @@ export default function SubspacePage() {
         onOpenChange={setIsAboutOpen}
         spaceSlug={`${spaceSlug}/subspaces/${subspaceSlug}`}
       />
+
+      {/* Kanban Post Dialog */}
+      {kanbanDialogPost?.framingKanban && (
+        <KanbanPostDialog
+          open={!!kanbanDialogPost}
+          onOpenChange={(open) => { if (!open) setKanbanDialogPost(null); }}
+          title={kanbanDialogPost.title}
+          data={kanbanDialogPost.framingKanban}
+        />
+      )}
     </div>
   );
 }

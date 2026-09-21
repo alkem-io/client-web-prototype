@@ -6,6 +6,8 @@ import { NotificationsProvider } from "@/app/contexts/NotificationsContext";
 import { NotificationsOverlay } from "@/app/components/layout/NotificationsOverlay";
 import { MessagesProvider } from "@/app/contexts/MessagesContext";
 import { MessagesOverlay } from "@/app/components/layout/MessagesOverlay";
+import { ActivityIndicatorsProvider } from "@/app/contexts/ActivityIndicatorsContext";
+import { ActivityVisitTracker } from "@/app/components/shared/ActivityVisitTracker";
 
 /**
  * Root wrapper rendered inside RouterProvider.
@@ -16,11 +18,14 @@ export function RootWrapper() {
     <GridOverlayProvider>
       <NotificationsProvider>
         <MessagesProvider>
-          <SearchOverlay />
-          <NotificationsOverlay />
-          <MessagesOverlay />
-          <GridOverlay />
-          <Outlet />
+          <ActivityIndicatorsProvider>
+            <ActivityVisitTracker />
+            <SearchOverlay />
+            <NotificationsOverlay />
+            <MessagesOverlay />
+            <GridOverlay />
+            <Outlet />
+          </ActivityIndicatorsProvider>
         </MessagesProvider>
       </NotificationsProvider>
     </GridOverlayProvider>

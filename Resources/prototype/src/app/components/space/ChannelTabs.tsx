@@ -1,5 +1,9 @@
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronsRight } from "lucide-react";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { calloutContainer } from "@/app/data/activity-data";
 
 export interface CalloutTab {
   id: string;
@@ -20,13 +24,23 @@ interface CalloutTabsProps {
   tabs: CalloutTab[];
   activeTab: string;
   onTabChange: (id: string) => void;
+  /** Space or subspace slug these phases belong to. Enables activity dots. */
+  activityOwner?: string;
 }
 
 export function CalloutTabs({
   tabs,
   activeTab,
   onTabChange,
+  activityOwner,
 }: CalloutTabsProps) {
+  const { hasContainerActivity, visitContainer } = useActivityIndicators();
+
+  // Phases aren't routed, so the one already open counts as visited on arrival.
+  useEffect(() => {
+    if (activityOwner && activeTab) visitContainer(calloutContainer(activityOwner, activeTab));
+  }, [activityOwner, activeTab, visitContainer]);
+
   return (
     <nav className="w-full">
       <div
@@ -35,6 +49,8 @@ export function CalloutTabs({
       >
         {tabs.map((tab, index) => {
           const isActive = activeTab === tab.id;
+          const hasActivity =
+            !!activityOwner && hasContainerActivity(calloutContainer(activityOwner, tab.id));
           return (
             <div key={tab.id} className="inline-flex items-start shrink-0">
               {index > 0 && tabs[index - 1]?.linkedToNext && (
@@ -56,6 +72,7 @@ export function CalloutTabs({
                 }}
               >
               {tab.label}
+              {hasActivity && <ActivityDot label={`${tab.label} has new activity`} />}
               </button>
             </div>
           );

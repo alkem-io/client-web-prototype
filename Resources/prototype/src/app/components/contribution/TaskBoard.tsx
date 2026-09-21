@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/app/components/ui/dialog";
+import { ReactionBar } from "@/app/components/space/PostReactions";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -156,6 +157,7 @@ function DraggableTaskCard({
               </span>
             )}
           </div>
+          <ReactionBar id={`task:${task.id}`} className="pt-0.5" />
         </div>
       </div>
     </motion.div>
@@ -467,6 +469,7 @@ function TaskDetailDialog({
                 <span>Created <span className="font-medium text-foreground">{task.createdDate}</span></span>
               )}
             </div>
+            <ReactionBar id={`task:${task.id}`} />
           </div>
 
           {/* Comments */}

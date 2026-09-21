@@ -1,4 +1,4 @@
-import { Plus, Smile } from 'lucide-react';
+import { ChevronLeft, Plus, Search, Smile } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
 import {
@@ -8,12 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/components/ui/dialog';
+import { Input } from '@/app/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { EMOJI_GROUPS, searchEmoji } from '@/app/components/space/emoji-catalog';
 import {
   DEFAULT_REACTION_OPTIONS,
   type PostReaction,
   type ReactionUser,
+  seedDemoReactions,
+  toggleReaction,
   VIEWER,
 } from '@/app/components/space/post-reactions-data';
 
@@ -65,6 +69,10 @@ export function PostReactions({
 }: PostReactionsProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+  // The full catalogue replaces the quick row inside the same popover rather
+  // than opening a second layer on top of it.
+  const [browsing, setBrowsing] = useState(false);
+  const [query, setQuery] = useState('');
   // Hover-opening must not steal focus; a click-open should.
   const openedByHover = useRef(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -98,14 +106,23 @@ export function PostReactions({
     setPickerOpen(true);
   };
   const closeSoon = () => {
+    // Searching the catalogue means leaving the popover with the pointer is
+    // normal; only the quick row is cheap enough to close on its own.
+    if (browsing) return;
     cancelClose();
     closeTimer.current = setTimeout(() => setPickerOpen(false), 220);
   };
 
-  const choose = (emoji: string) => {
-    onToggle?.(emoji);
+  const closePicker = () => {
     cancelClose();
     setPickerOpen(false);
+    setBrowsing(false);
+    setQuery('');
+  };
+
+  const choose = (emoji: string) => {
+    onToggle?.(emoji);
+    closePicker();
   };
 
   return (
@@ -114,8 +131,11 @@ export function PostReactions({
         <Popover
           open={pickerOpen}
           onOpenChange={next => {
-            if (!next) cancelClose();
-            setPickerOpen(next);
+            if (!next) {
+              closePicker();
+              return;
+            }
+            setPickerOpen(true);
           }}
         >
           <PopoverTrigger asChild={true}>
@@ -154,31 +174,59 @@ export function PostReactions({
             align="start"
             side="top"
             sideOffset={8}
-            className="w-auto rounded-full p-1.5"
+            className={cn('p-1.5', browsing ? 'w-[286px] rounded-xl' : 'w-auto rounded-full')}
             onMouseEnter={cancelClose}
             onMouseLeave={closeSoon}
             onOpenAutoFocus={event => {
               if (openedByHover.current) event.preventDefault();
             }}
             onClick={event => event.stopPropagation()}
+            // Radix portals the content, but React events still bubble up the
+            // component tree — without this, typing a space into the search box
+            // activates the card the reaction bar sits in.
+            onKeyDown={event => event.stopPropagation()}
           >
-            <div className="flex items-center gap-0.5">
-              {options.map(emoji => (
+            {browsing ? (
+              <EmojiCatalogPicker
+                mine={mine}
+                query={query}
+                onQueryChange={setQuery}
+                onBack={() => {
+                  setBrowsing(false);
+                  setQuery('');
+                }}
+                onPick={choose}
+              />
+            ) : (
+              <div className="flex items-center gap-0.5">
+                {options.map(emoji => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    aria-label={`React with ${emoji}`}
+                    aria-pressed={mine === emoji}
+                    className={cn(
+                      'flex size-[34px] items-center justify-center rounded-full text-[19px] leading-none transition-transform hover:scale-115 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      mine === emoji && 'bg-primary/12',
+                    )}
+                    onClick={() => choose(emoji)}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+                <span className="mx-0.5 h-5 w-px shrink-0 bg-border" aria-hidden="true" />
+                {/* The curated set is what the space recommends; anything else
+                    is still allowed, just one step further in. */}
                 <button
-                  key={emoji}
                   type="button"
-                  aria-label={`React with ${emoji}`}
-                  aria-pressed={mine === emoji}
-                  className={cn(
-                    'flex size-[34px] items-center justify-center rounded-full text-[19px] leading-none transition-transform hover:scale-115 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                    mine === emoji && 'bg-primary/12',
-                  )}
-                  onClick={() => choose(emoji)}
+                  aria-label="Choose another emoji"
+                  className="flex size-[34px] items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  onClick={() => setBrowsing(true)}
                 >
-                  {emoji}
+                  <Plus className="size-4" aria-hidden="true" />
                 </button>
-              ))}
-            </div>
+              </div>
+            )}
           </PopoverContent>
         </Popover>
       )}
@@ -218,6 +266,7 @@ export function PostReactions({
         <DialogContent
           className="max-w-sm gap-0 p-0"
           onClick={event => event.stopPropagation()}
+          onKeyDown={event => event.stopPropagation()}
         >
           <DialogHeader className="border-b px-4 py-3">
             <DialogTitle className="text-card-title">
@@ -251,5 +300,127 @@ export function PostReactions({
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+type EmojiCatalogPickerProps = {
+  mine: string | null;
+  query: string;
+  onQueryChange: (query: string) => void;
+  onBack: () => void;
+  onPick: (emoji: string) => void;
+};
+
+/** The "any emoji" half of the picker — search plus the grouped catalogue. */
+function EmojiCatalogPicker({ mine, query, onQueryChange, onBack, onPick }: EmojiCatalogPickerProps) {
+  const searching = query.trim().length > 0;
+  const results = searching ? searchEmoji(query) : [];
+
+  const cell = (emoji: string) => (
+    <button
+      key={emoji}
+      type="button"
+      aria-label={`React with ${emoji}`}
+      aria-pressed={mine === emoji}
+      className={cn(
+        'flex size-[32px] items-center justify-center rounded-md text-[19px] leading-none transition-transform hover:scale-110 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        mine === emoji && 'bg-primary/12',
+      )}
+      onClick={() => onPick(emoji)}
+    >
+      {emoji}
+    </button>
+  );
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center gap-1 pb-1.5">
+        <button
+          type="button"
+          aria-label="Back to the suggested emoji"
+          className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          onClick={onBack}
+        >
+          <ChevronLeft className="size-4" aria-hidden="true" />
+        </button>
+        <div className="relative flex-1">
+          <Search
+            className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <Input
+            autoFocus={true}
+            value={query}
+            onChange={event => onQueryChange(event.target.value)}
+            placeholder="Search emoji"
+            aria-label="Search emoji"
+            className="h-7 rounded-md pl-7 text-caption"
+          />
+        </div>
+      </div>
+
+      <div className="max-h-[15rem] overflow-y-auto">
+        {searching ? (
+          results.length > 0 ? (
+            <div className="grid grid-cols-8 gap-0.5 pb-0.5">{results.map(cell)}</div>
+          ) : (
+            <p className="px-1 py-6 text-center text-caption text-muted-foreground">
+              No emoji match “{query.trim()}”
+            </p>
+          )
+        ) : (
+          EMOJI_GROUPS.map(group => (
+            <div key={group.name} className="pb-1">
+              <p className="sticky top-0 bg-popover px-1 py-1 text-badge font-semibold uppercase tracking-wide text-muted-foreground">
+                {group.name}
+              </p>
+              <div className="grid grid-cols-8 gap-0.5">
+                {group.emoji.map(([emoji]) => cell(emoji))}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+type ReactionBarProps = {
+  /**
+   * Stable identity of the thing being reacted to. Drives the demo seed, so the
+   * same contribution keeps the same reactions between renders.
+   */
+  id: string;
+  options?: readonly string[];
+  canReact?: boolean;
+  className?: string;
+  onChange?: (reactions: PostReaction[]) => void;
+};
+
+/**
+ * `PostReactions` with its own state, for surfaces that don't own reaction data.
+ *
+ * Every contribution to a callout — post, whiteboard, memo, link, file, task,
+ * form response — is reactable on the same terms as the post it answers, and
+ * none of those cards carry a reaction store of their own. Callers that *do*
+ * own the data (the feed, the detail dialogs) keep using `PostReactions`.
+ */
+export function ReactionBar({ id, options, canReact = true, className, onChange }: ReactionBarProps) {
+  const [reactions, setReactions] = useState<PostReaction[]>(() => seedDemoReactions(id, options));
+
+  return (
+    <PostReactions
+      reactions={reactions}
+      options={options}
+      canReact={canReact}
+      className={className}
+      onToggle={emoji => {
+        setReactions(current => {
+          const next = toggleReaction(current, emoji);
+          onChange?.(next);
+          return next;
+        });
+      }}
+    />
   );
 }

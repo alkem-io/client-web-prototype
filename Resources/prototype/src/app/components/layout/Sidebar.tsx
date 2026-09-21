@@ -18,6 +18,9 @@ import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV
 import AlkemioLogo from "@/imports/AlkemioLogo";
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { spaceContainer } from "@/app/data/activity-data";
 
 export function Sidebar({ className }: { className?: string }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -25,6 +28,7 @@ export function Sidebar({ className }: { className?: string }) {
   const [showCreateSpace, setShowCreateSpace] = useState(false);
   const location = useLocation();
   const { t } = useLanguage();
+  const { hasContainerActivity } = useActivityIndicators();
 
   const navItems: Array<{
     icon: React.ElementType;
@@ -216,7 +220,10 @@ export function Sidebar({ className }: { className?: string }) {
             <div className="w-full h-px bg-sidebar-border/50 my-3 transition-opacity duration-300" />
           )}
           <div className="space-y-1">
-            {spaces.map((space) => (
+            {spaces.map((space) => {
+              const slug = space.href.replace("/space/", "");
+              const hasActivity = hasContainerActivity(spaceContainer(slug));
+              return (
               <Link
                 key={space.href}
                 to={space.href}
@@ -249,8 +256,13 @@ export function Sidebar({ className }: { className?: string }) {
                 >
                   {space.name}
                 </span>
+                {/* Collapsed-rail placement is deferred (spec 014, OQ-3). */}
+                {!isCollapsed && hasActivity && (
+                  <ActivityDot className="ml-auto" label={`${space.name} has new activity`} />
+                )}
               </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
 

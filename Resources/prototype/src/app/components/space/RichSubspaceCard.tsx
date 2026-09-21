@@ -1,5 +1,8 @@
 import { Link } from "react-router";
 import { Globe, Lock, ArrowRight, Building2, UserCheck } from "lucide-react";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { spaceOrSubspaceIds } from "@/app/data/activity-data";
 
 /**
  * RichSubspaceCard — the "rich" variant of a subspace card (Concept C).
@@ -64,6 +67,8 @@ function LeadAvatar({ lead }: { lead: RichSubspaceLead }) {
 
 export function RichSubspaceCard({ subspace, className }: RichSubspaceCardProps) {
   const href = `/space/${subspace.parentSlug}/subspaces/${subspace.slug}`;
+  const { hasContainerActivity } = useActivityIndicators();
+  const hasActivity = spaceOrSubspaceIds(subspace.slug).some(hasContainerActivity);
   const visibleLeads = subspace.leads.slice(0, 4);
 
   return (
@@ -122,6 +127,9 @@ export function RichSubspaceCard({ subspace, className }: RichSubspaceCardProps)
                 <Link to={href} className="hover:text-primary transition-colors outline-none focus-visible:underline">
                   {subspace.name}
                 </Link>
+                {hasActivity && (
+                  <ActivityDot className="ml-2 align-middle" label={`${subspace.name} has new activity`} />
+                )}
               </h3>
 
               <p className="mt-1 flex items-center gap-1.5 text-caption text-muted-foreground">

@@ -1,6 +1,9 @@
 import { Link, useLocation, useSearchParams } from "react-router";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { tabContainer } from "@/app/data/activity-data";
 
 interface SpaceNavigationTabsProps {
   spaceSlug: string;
@@ -36,6 +39,7 @@ export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange
   const [searchParams] = useSearchParams();
   const currentPath = location.pathname;
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { hasContainerActivity } = useActivityIndicators();
 
   // Preserve query params when navigating tabs
   const queryString = searchParams.toString();
@@ -43,6 +47,7 @@ export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange
 
   const tabs = SPACE_TABS.map(tab => ({
     ...tab,
+    key: tab.href === "/home" ? "home" : tab.href.replace("/", ""),
     href: `/space/${spaceSlug}${tab.href === "/home" ? "" : tab.href}${suffix}`
   }));
 
@@ -105,7 +110,12 @@ export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange
                 lineHeight: "20px",
               }}
             >
-              {tab.label}
+              <span className="inline-flex items-center gap-2">
+                {tab.label}
+                {hasContainerActivity(tabContainer(spaceSlug, tab.key)) && (
+                  <ActivityDot label={`${tab.label} has new activity`} />
+                )}
+              </span>
             </Link>
           );
         })}

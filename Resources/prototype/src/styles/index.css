@@ -22,3 +22,31 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Opera */
 }
+
+/* ─── New activity indicator (spec 014) ───
+   A halo ping rather than a colour change: it adds perceived presence without
+   making the resting dot any heavier. */
+@keyframes activity-dot-ping {
+  0%   { transform: scale(1);   opacity: 0.45; }
+  70%  { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+@keyframes activity-dot-breathe {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.65; }
+}
+.activity-dot-core {
+  animation: activity-dot-breathe 2.4s ease-in-out infinite;
+}
+.activity-dot-halo {
+  animation: activity-dot-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .activity-dot-core,
+  .activity-dot-halo {
+    animation: none;
+  }
+  .activity-dot-halo {
+    display: none;
+  }
+}

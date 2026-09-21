@@ -12,6 +12,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Separator } from "@/app/components/ui/separator";
+import { ReactionBar } from "@/app/components/space/PostReactions";
 
 interface ResponseDetailDialogProps {
  open: boolean;
@@ -245,6 +246,7 @@ export function ResponseDetailDialog({ open, onOpenChange, responseId }: Respons
  </Button>
  </div>
  </div>
+ <ReactionBar id={`response:${responseId ?? MOCK_RESPONSE.id}`} />
  </div>
  </div>
 

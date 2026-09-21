@@ -2,6 +2,7 @@ import { MessageSquare } from 'lucide-react';
 import { CollapsibleTagList } from '@/app/components/common/CollapsibleTagList';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
+import { ReactionBar } from '@/app/components/space/PostReactions';
 
 type ContributionPostCardProps = {
   title: string;
@@ -10,6 +11,10 @@ type ContributionPostCardProps = {
   description?: string;
   tags?: string[];
   commentCount?: number;
+  /** Identity for the reaction store; falls back to the title. */
+  reactionId?: string;
+  /** Hides the reaction row — previews and pickers don't want one. */
+  reactionsEnabled?: boolean;
   onClick?: () => void;
   className?: string;
 };
@@ -21,6 +26,8 @@ export function ContributionPostCard({
   description,
   tags,
   commentCount,
+  reactionId,
+  reactionsEnabled = true,
   onClick,
   className,
 }: ContributionPostCardProps) {
@@ -45,7 +52,7 @@ export function ContributionPostCard({
       tabIndex={0}
       className={cn(
         'w-full text-left p-4 border border-border rounded-lg bg-card hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        'flex flex-col h-[180px]',
+        'flex flex-col min-h-[180px]',
         className
       )}
       onClick={handleClick}
@@ -76,6 +83,11 @@ export function ContributionPostCard({
           </span>
         )}
       </div>
+      {reactionsEnabled && (
+        <div className="mt-2.5 pt-2.5 border-t border-border/60">
+          <ReactionBar id={reactionId ?? `contribution-post:${title}`} />
+        </div>
+      )}
     </div>
   );
 }

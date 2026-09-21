@@ -14,6 +14,9 @@ import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
 import { InvitationsDialog } from "@/app/components/dialogs/InvitationsDialog";
 import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV3";
 import { useLanguage } from "@/app/contexts/LanguageContext";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { spaceContainer } from "@/app/data/activity-data";
 
 interface DashboardSidebarProps {
   activityView: boolean;
@@ -29,6 +32,7 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
   const [showCreateSpace, setShowCreateSpace] = useState(false);
   const location = useLocation();
   const { t } = useLanguage();
+  const { hasContainerActivity } = useActivityIndicators();
 
   const navItems: Array<{
     icon: React.ElementType;
@@ -152,7 +156,10 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
           {t("nav.mySpaces")}
         </div>
         <div className="space-y-1">
-          {spaces.map((space) => (
+          {spaces.map((space) => {
+            const slug = space.href.replace("/space/", "");
+            const hasActivity = hasContainerActivity(spaceContainer(slug));
+            return (
             <Link
               key={space.href}
               to={space.href}
@@ -168,8 +175,12 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
                 </div>
               )}
               <span className="truncate">{space.name}</span>
+              {hasActivity && (
+                <ActivityDot className="ml-auto mr-1" label={`${space.name} has new activity`} />
+              )}
             </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
 
