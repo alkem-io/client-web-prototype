@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import { SearchOverlay } from "@/app/components/search/SearchOverlay";
-import { GridOverlayProvider } from "@/app/contexts/GridOverlayContext";
-import { GridOverlay } from "@/app/components/layout/GridOverlay";
+import { GridOverlayProvider } from "@/crd/hooks/useGridOverlay";
+import { GridOverlay } from "@/crd/layouts/components/GridOverlay";
 import { NotificationsProvider } from "@/app/contexts/NotificationsContext";
 import { NotificationsOverlay } from "@/app/components/layout/NotificationsOverlay";
 import { MessagesProvider } from "@/app/contexts/MessagesContext";

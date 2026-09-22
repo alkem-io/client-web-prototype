@@ -1,22 +1,22 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
-import { Button } from "@/app/components/ui/button";
-import { Textarea } from "@/app/components/ui/textarea";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
+import { Button } from "@/crd/primitives/button";
+import { Textarea } from "@/crd/primitives/textarea";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback } from "@/crd/primitives/avatar";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
+  DialogFooter
+} from "@/crd/primitives/dialog";
 import {
-  CheckCircle2, XCircle, Clock, MessageSquare, Zap, MapPin,
+  CheckCircle2, XCircle, Clock, MessageSquare, Zap, MapPin
 } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 import type { ApplicationFormConfig, SubspaceApplication } from "@/app/components/dialogs/SubspaceApplicationDialog";
 
 interface SubspaceApplicationsPanelProps {
@@ -34,7 +34,7 @@ const STATUS_CONFIG: Record<ApplicationStatus, { icon: typeof CheckCircle2; colo
   submitted: { icon: Clock, color: "text-amber-600", label: "Pending review" },
   "under-review": { icon: Zap, color: "text-blue-600", label: "Under review" },
   approved: { icon: CheckCircle2, color: "text-emerald-600", label: "Approved" },
-  rejected: { icon: XCircle, color: "text-red-600", label: "Declined" },
+  rejected: { icon: XCircle, color: "text-red-600", label: "Declined" }
 };
 
 export function SubspaceApplicationsPanel({
@@ -42,7 +42,7 @@ export function SubspaceApplicationsPanel({
   formConfig,
   spaceName,
   onApprove,
-  onReject,
+  onReject
 }: SubspaceApplicationsPanelProps) {
   const [selectedApp, setSelectedApp] = useState<SubspaceApplication | null>(null);
 
@@ -194,7 +194,7 @@ function ApplicationDetailDialog({
   spaceName,
   onClose,
   onApprove,
-  onReject,
+  onReject
 }: ApplicationDetailDialogProps) {
   const [reviewMode, setReviewMode] = useState<null | "approve" | "reject">(null);
   const [message, setMessage] = useState("");

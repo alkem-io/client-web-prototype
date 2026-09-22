@@ -7,33 +7,33 @@ import {
  MessageSquare, Home, Zap, StickyNote, Layout as LayoutIcon, Image as ImageIcon,
  BookOpen, List, Shield, ExternalLink, Grid, Paperclip, Settings, PenTool, MoreHorizontal
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
 import { 
  Accordion, 
  AccordionContent, 
  AccordionItem, 
  AccordionTrigger 
-} from "@/app/components/ui/accordion";
+} from "@/crd/primitives/accordion";
 import {
  Dialog,
  DialogContent,
  DialogDescription,
  DialogFooter,
  DialogHeader,
- DialogTitle,
-} from "@/app/components/ui/dialog";
+ DialogTitle
+} from "@/crd/primitives/dialog";
 import {
  Select,
  SelectContent,
  SelectItem,
  SelectTrigger,
- SelectValue,
-} from "@/app/components/ui/select";
-import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
+ SelectValue
+} from "@/crd/primitives/select";
+import { cn } from "@/crd/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/crd/primitives/tooltip";
 import { ALL_TEMPLATES } from "@/app/data/template-data";
 
 const MOCK_SPACES = [
@@ -201,7 +201,7 @@ function RenderSpaceContent({ structure }: { structure: any }) {
  
  {structure.samplePosts?.["About"] && (
  <div className="space-y-3">
- <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Pinned Content</h4>
+ <h4 className="text-body-emphasis text-muted-foreground uppercase tracking-wider">Pinned Content</h4>
  {structure.samplePosts["About"].map((post: any, i: number) => (
  <div key={i} className="bg-white p-4 rounded-lg border border-border flex items-start gap-3">
  <div className="w-8 h-8 rounded-full bg-info/10 flex items-center justify-center shrink-0">
@@ -321,9 +321,6 @@ function RenderSubspaceContent({ structure }: { structure: any }) {
  ? "border-primary text-primary font-semibold"
  : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
  )}
- style={{
- fontFamily: "'Inter', sans-serif",
- }}
  >
  {stage.name}
  </button>
@@ -555,7 +552,7 @@ function RenderBriefContent({ structure }: { structure: any }) {
  <div className="space-y-8">
  {structure.sections?.map((section: any, i: number) => (
  <div key={i} className="space-y-3">
- <h4 className="text-sm font-bold text-foreground uppercase tracking-wide">{section.title}</h4>
+ <h4 className="text-card-title font-bold text-foreground uppercase tracking-wide">{section.title}</h4>
  <p className="text-body text-muted-foreground italic">{section.description}</p>
  <div className="p-4 bg-muted/50 border border-border/50 rounded border-dashed min-h-[60px] flex items-center justify-center text-caption text-muted-foreground/60">
  {section.type} Input Area

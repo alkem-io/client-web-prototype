@@ -4,15 +4,15 @@ import {
  FileSpreadsheet, FileImage, Download, ExternalLink, ImagePlus, Images,
  Lock, Users, StickyNote
 } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle, DialogClose, DialogDescription } from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
-import { Textarea } from "@/app/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogTitle, DialogClose, DialogDescription } from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/crd/primitives/tabs";
+import { Textarea } from "@/crd/primitives/textarea";
+import { cn } from "@/crd/lib/utils";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { ResponseDetailDialog } from "@/app/components/dialogs/ResponseDetailDialog";
@@ -31,7 +31,7 @@ import {
  findAnswer,
  responsesAreRestricted,
  sortedQuestions,
- visibleResponses,
+ visibleResponses
 } from "@/app/components/callout/calloutFormTypes";
 
 interface PostDetailDialogProps {

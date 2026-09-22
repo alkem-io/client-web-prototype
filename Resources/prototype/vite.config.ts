@@ -1,19 +1,23 @@
-import { defineConfig } from 'vite'
-import path from 'path'
-import tailwindcss from '@tailwindcss/vite'
-import react from '@vitejs/plugin-react'
+import path from 'node:path';
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
   plugins: [
-    // The React and Tailwind plugins are both required for Make, even if
-    // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
+    // Required by the vendored CRD layer: several components import icons as
+    // `...svg?react` (SocialLinks, OrgProfileTabView, UserProfileTabView,
+    // CrdAddToCalendarIcons). Matches client-web's own vite config.
+    svgr(),
   ],
   resolve: {
     alias: {
-      // Alias @ to the src directory
+      // `@` maps to src, so the vendored layer's own `@/crd/...` imports
+      // resolve unchanged — that is what keeps the copy byte-identical.
       '@': path.resolve(__dirname, './src'),
     },
   },
-})
+});

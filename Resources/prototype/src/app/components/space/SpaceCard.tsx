@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { Lock, Globe, Users } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { cn } from "@/crd/lib/utils";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { ActivityDot } from "@/app/components/shared/ActivityDot";
@@ -66,7 +66,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
           className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
           style={{
             background: "var(--card)",
-            border: "1px solid var(--border)",
+            border: "1px solid var(--border)"
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.boxShadow = "var(--elevation-sm)";
@@ -83,7 +83,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
               <AvatarImage src={space.avatar} alt={space.name} className="object-cover" />
             ) : null}
             <AvatarFallback
-              className="rounded-lg text-xs font-semibold text-white"
+              className="rounded-lg text-caption font-semibold text-white"
               style={{ background: space.avatarColor }}
             >
               {space.initials}
@@ -92,20 +92,20 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
 
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+            <h3 className="text-body-emphasis text-foreground truncate group-hover:text-primary transition-colors">
               {space.name}
               {hasActivity && (
                 <ActivityDot className="ml-2 align-middle" label={`${space.name} has new activity`} />
               )}
             </h3>
-            <p className="text-xs text-muted-foreground truncate mt-0.5">
+            <p className="text-caption text-muted-foreground truncate mt-0.5">
               {space.description}
             </p>
           </div>
 
           {/* Meta */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 text-caption text-muted-foreground">
               <Users className="w-3.5 h-3.5" />
               <span>{space.memberCount}</span>
             </div>
@@ -123,7 +123,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
         style={{
           background: "var(--card)",
           border: "1px solid var(--border)",
-          boxShadow: "none",
+          boxShadow: "none"
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.boxShadow = "var(--elevation-sm)";
@@ -147,14 +147,14 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
               <div
                 className="w-full h-full"
                 style={{
-                  background: "linear-gradient(135deg, var(--muted) 0%, var(--accent) 100%)",
+                  background: "linear-gradient(135deg, var(--muted) 0%, var(--accent) 100%)"
                 }}
               />
             )}
             <div
               className="absolute inset-0"
               style={{
-                background: "linear-gradient(to top, color-mix(in srgb, var(--foreground) 25%, transparent) 0%, transparent 50%)",
+                background: "linear-gradient(to top, color-mix(in srgb, var(--foreground) 25%, transparent) 0%, transparent 50%)"
               }}
             />
           </div>
@@ -167,7 +167,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
                 background: space.isPrivate
                   ? "color-mix(in srgb, var(--foreground) 50%, transparent)"
                   : "color-mix(in srgb, var(--background) 85%, transparent)",
-                color: space.isPrivate ? "var(--primary-foreground)" : "var(--foreground)",
+                color: space.isPrivate ? "var(--primary-foreground)" : "var(--foreground)"
               }}
             >
               {space.isPrivate ? (
@@ -188,7 +188,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
           <h3
             className="truncate transition-colors duration-200 text-card-title"
             style={{
-              color: "var(--card-foreground)",
+              color: "var(--card-foreground)"
             }}
           >
             {space.name}
@@ -203,7 +203,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
               className="truncate text-caption"
               style={{
                 color: "var(--muted-foreground)",
-                marginTop: 2,
+                marginTop: 2
               }}
             >
               {t("common.in")}:{" "}
@@ -226,7 +226,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
             className="line-clamp-2 text-body"
             style={{
               color: "var(--muted-foreground)",
-              marginTop: 8,
+              marginTop: 8
             }}
           >
             {space.description}
@@ -243,7 +243,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
                     padding: "2px 8px",
                     borderRadius: "999px",
                     background: "var(--secondary)",
-                    color: "var(--secondary-foreground)",
+                    color: "var(--secondary-foreground)"
                   }}
                 >
                   {tag}
@@ -256,7 +256,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
                     padding: "2px 8px",
                     borderRadius: "999px",
                     background: "var(--muted)",
-                    color: "var(--muted-foreground)",
+                    color: "var(--muted-foreground)"
                   }}
                 >
                   +{space.tags.length - 3}
@@ -272,7 +272,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
           style={{
             padding: "12px 16px",
             marginTop: 12,
-            borderTop: "1px solid var(--border)",
+            borderTop: "1px solid var(--border)"
           }}
         >
           {/* Lead Avatars */}
@@ -280,7 +280,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
             <span
               className="text-badge uppercase"
               style={{
-                color: "var(--muted-foreground)",
+                color: "var(--muted-foreground)"
               }}
             >
               {t("common.leads")}
@@ -293,7 +293,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
                   style={{
                     width: 26,
                     height: 26,
-                    borderColor: "var(--card)",
+                    borderColor: "var(--card)"
                   }}
                   title={`${lead.name} (${lead.type})`}
                 >
@@ -303,7 +303,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
                       fontSize: "9px",
                       fontWeight: 600,
                       background: lead.type === "org" ? "var(--accent)" : "var(--secondary)",
-                      color: lead.type === "org" ? "var(--accent-foreground)" : "var(--secondary-foreground)",
+                      color: lead.type === "org" ? "var(--accent-foreground)" : "var(--secondary-foreground)"
                     }}
                   >
                     {lead.name.substring(0, 2).toUpperCase()}
@@ -320,7 +320,7 @@ export function SpaceCard({ space, className, compact = false }: SpaceCardProps)
                     background: "var(--muted)",
                     fontSize: "9px",
                     fontWeight: 600,
-                    color: "var(--muted-foreground)",
+                    color: "var(--muted-foreground)"
                   }}
                 >
                   +{overflowCount}
@@ -343,7 +343,7 @@ export function SpaceCardSkeleton() {
       className="overflow-hidden rounded-xl animate-pulse"
       style={{
         background: "var(--card)",
-        border: "1px solid var(--border)",
+        border: "1px solid var(--border)"
       }}
     >
       {/* Banner skeleton */}

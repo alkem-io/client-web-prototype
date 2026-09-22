@@ -6,20 +6,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Checkbox } from "@/app/components/ui/checkbox";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Checkbox } from "@/crd/primitives/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import {
-  Plus, Trash2, ChevronUp, ChevronDown,
+  Plus, Trash2, ChevronUp, ChevronDown
 } from "lucide-react";
 import type { ApplicationFormConfig, FormField, FormFieldType } from "./SubspaceApplicationDialog";
 
@@ -60,7 +60,7 @@ const TEMPLATES: FormTemplate[] = [
         description: "The name of your initiative",
         required: true,
         order: 0,
-        constraints: { maxLength: 80 },
+        constraints: { maxLength: 80 }
       },
       {
         id: "initiating-municipality",
@@ -68,7 +68,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "Initiating Municipality",
         required: true,
         order: 1,
-        constraints: { maxLength: 80 },
+        constraints: { maxLength: 80 }
       },
       {
         id: "first-lead",
@@ -77,7 +77,7 @@ const TEMPLATES: FormTemplate[] = [
         description: "Your contact details",
         required: true,
         order: 2,
-        constraints: { fields: ["name", "email", "organization"] },
+        constraints: { fields: ["name", "email", "organization"] }
       },
       {
         id: "second-lead",
@@ -86,7 +86,7 @@ const TEMPLATES: FormTemplate[] = [
         description: "Search for an existing member or invite someone new",
         required: false,
         order: 3,
-        constraints: { allowManualEntry: true, allowEmailInvite: true },
+        constraints: { allowManualEntry: true, allowEmailInvite: true }
       },
       {
         id: "supporting-municipalities",
@@ -102,8 +102,8 @@ const TEMPLATES: FormTemplate[] = [
             { id: "amsterdam", label: "Amsterdam" },
             { id: "rotterdam", label: "Rotterdam" },
             { id: "den-haag", label: "Den Haag" },
-          ],
-        },
+          ]
+        }
       },
       {
         id: "who",
@@ -111,7 +111,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "WHO? Goal and Target Audience",
         required: true,
         order: 5,
-        constraints: { maxWords: 250 },
+        constraints: { maxWords: 250 }
       },
       {
         id: "what-for",
@@ -119,7 +119,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "WHAT FOR? Strategic Contribution",
         required: true,
         order: 6,
-        constraints: { maxWords: 250 },
+        constraints: { maxWords: 250 }
       },
       {
         id: "why",
@@ -127,7 +127,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "WHY? Urgency and Value",
         required: true,
         order: 7,
-        constraints: { maxWords: 250 },
+        constraints: { maxWords: 250 }
       },
       {
         id: "how",
@@ -135,9 +135,9 @@ const TEMPLATES: FormTemplate[] = [
         label: "HOW? Development and Scaling",
         required: true,
         order: 8,
-        constraints: { maxWords: 250 },
+        constraints: { maxWords: 250 }
       },
-    ],
+    ]
   },
   {
     id: "research-project",
@@ -150,7 +150,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "Project Title",
         required: true,
         order: 0,
-        constraints: { maxLength: 100 },
+        constraints: { maxLength: 100 }
       },
       {
         id: "principal-investigator",
@@ -158,7 +158,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "Principal Investigator",
         required: true,
         order: 1,
-        constraints: { fields: ["name", "email", "organization"] },
+        constraints: { fields: ["name", "email", "organization"] }
       },
       {
         id: "co-investigators",
@@ -167,7 +167,7 @@ const TEMPLATES: FormTemplate[] = [
         description: "Add team members",
         required: false,
         order: 2,
-        constraints: { allowManualEntry: true, allowEmailInvite: true },
+        constraints: { allowManualEntry: true, allowEmailInvite: true }
       },
       {
         id: "research-focus",
@@ -175,7 +175,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "Research Focus & Objectives",
         required: true,
         order: 3,
-        constraints: { maxWords: 300 },
+        constraints: { maxWords: 300 }
       },
       {
         id: "methodology",
@@ -183,9 +183,9 @@ const TEMPLATES: FormTemplate[] = [
         label: "Proposed Methodology",
         required: true,
         order: 4,
-        constraints: { maxWords: 300 },
+        constraints: { maxWords: 300 }
       },
-    ],
+    ]
   },
   {
     id: "event-planning",
@@ -198,7 +198,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "Event Name",
         required: true,
         order: 0,
-        constraints: { maxLength: 120 },
+        constraints: { maxLength: 120 }
       },
       {
         id: "event-organizer",
@@ -206,7 +206,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "Primary Organizer",
         required: true,
         order: 1,
-        constraints: { fields: ["name", "email", "organization"] },
+        constraints: { fields: ["name", "email", "organization"] }
       },
       {
         id: "event-description",
@@ -214,7 +214,7 @@ const TEMPLATES: FormTemplate[] = [
         label: "Event Description & Goals",
         required: true,
         order: 2,
-        constraints: { maxWords: 250 },
+        constraints: { maxWords: 250 }
       },
       {
         id: "expected-audience",
@@ -222,9 +222,9 @@ const TEMPLATES: FormTemplate[] = [
         label: "Expected Audience Size",
         required: true,
         order: 3,
-        constraints: { maxLength: 80 },
+        constraints: { maxLength: 80 }
       },
-    ],
+    ]
   },
 ];
 
@@ -236,7 +236,7 @@ export function SubspaceFormBuilderDialog({
   spaceId,
   spaceName,
   initialConfig,
-  onSave,
+  onSave
 }: SubspaceFormBuilderDialogProps) {
   const [step, setStep] = useState<PickerStep>(!initialConfig ? "start" : "editor");
   const [questions, setQuestions] = useState<FormField[]>(initialConfig?.questions || []);
@@ -259,7 +259,7 @@ export function SubspaceFormBuilderDialog({
       label: "",
       required: true,
       order: questions.length,
-      constraints: getDefaultConstraints(fieldType),
+      constraints: getDefaultConstraints(fieldType)
     };
     setQuestions([...questions, newQuestion]);
   };
@@ -303,7 +303,7 @@ export function SubspaceFormBuilderDialog({
         isActive: true,
         questions,
         createdAt: initialConfig?.createdAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
 
       onSave?.(config);
@@ -327,7 +327,7 @@ export function SubspaceFormBuilderDialog({
               className="w-full border-2 border-dashed rounded-lg p-6 hover:bg-muted/50 transition-colors text-left"
             >
               <p className="font-semibold mb-1">Use a template</p>
-              <p className="text-sm text-muted-foreground">Start with a pre-built form designed for common use cases</p>
+              <p className="text-body text-muted-foreground">Start with a pre-built form designed for common use cases</p>
             </button>
 
             <button
@@ -335,7 +335,7 @@ export function SubspaceFormBuilderDialog({
               className="w-full border-2 border-dashed rounded-lg p-6 hover:bg-muted/50 transition-colors text-left"
             >
               <p className="font-semibold mb-1">Start from scratch</p>
-              <p className="text-sm text-muted-foreground">Create a completely custom form with your own questions</p>
+              <p className="text-body text-muted-foreground">Create a completely custom form with your own questions</p>
             </button>
           </div>
         </DialogContent>
@@ -360,8 +360,8 @@ export function SubspaceFormBuilderDialog({
                 className="border rounded-lg p-4 hover:bg-muted/50 transition-colors text-left"
               >
                 <h3 className="font-semibold mb-1">{template.name}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{template.description}</p>
-                <p className="text-xs text-muted-foreground">{template.questions.length} questions</p>
+                <p className="text-body text-muted-foreground mb-3">{template.description}</p>
+                <p className="text-caption text-muted-foreground">{template.questions.length} questions</p>
               </button>
             ))}
           </div>
@@ -412,7 +412,7 @@ export function SubspaceFormBuilderDialog({
                       className="cursor-pointer flex flex-col items-start py-2"
                     >
                       <div className="font-medium">{type.label}</div>
-                      <div className="text-xs text-muted-foreground">{type.description}</div>
+                      <div className="text-caption text-muted-foreground">{type.description}</div>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -430,12 +430,12 @@ export function SubspaceFormBuilderDialog({
                   <div key={question.id} className="border rounded-lg bg-card p-3 space-y-2 hover:border-primary/30 transition-colors">
                     {/* Question and actions - single row */}
                     <div className="flex gap-2 items-center">
-                      <span className="text-lg font-bold text-muted-foreground min-w-7">{index + 1}.</span>
+                      <span className="text-subsection-title font-bold text-muted-foreground min-w-7">{index + 1}.</span>
                       <Input
                         value={question.label}
                         onChange={(e) => handleUpdateQuestion(index, { label: e.target.value })}
                         placeholder="Write your question..."
-                        className="flex-1 text-xl font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 p-0 h-auto leading-relaxed"
+                        className="flex-1 text-section-title font-bold border-0 bg-transparent placeholder:text-muted-foreground/40 p-0 h-auto leading-relaxed"
                       />
                       <IconButton
                         variant="ghost"
@@ -466,7 +466,7 @@ export function SubspaceFormBuilderDialog({
                     </div>
 
                     {/* Settings - horizontal row */}
-                    <div className="flex flex-wrap gap-3 items-center pl-9 text-sm">
+                    <div className="flex flex-wrap gap-3 items-center pl-9 text-body">
                       <div className="flex items-center gap-1.5">
                         <span className="text-muted-foreground">Type:</span>
                         <select
@@ -474,10 +474,10 @@ export function SubspaceFormBuilderDialog({
                           onChange={(e) =>
                             handleUpdateQuestion(index, {
                               type: e.target.value as FormFieldType,
-                              constraints: getDefaultConstraints(e.target.value as FormFieldType),
+                              constraints: getDefaultConstraints(e.target.value as FormFieldType)
                             })
                           }
-                          className="px-2 py-1 text-sm border border-input rounded-md bg-background hover:bg-accent font-medium"
+                          className="px-2 py-1 text-body border border-input rounded-md bg-background hover:bg-accent font-medium"
                         >
                           {FIELD_TYPES.map((type) => (
                             <option key={type.id} value={type.id}>
@@ -505,10 +505,10 @@ export function SubspaceFormBuilderDialog({
                             value={question.constraints.maxLength || 255}
                             onChange={(e) =>
                               handleUpdateQuestion(index, {
-                                constraints: { ...question.constraints, maxLength: parseInt(e.target.value) || 255 },
+                                constraints: { ...question.constraints, maxLength: parseInt(e.target.value) || 255 }
                               })
                             }
-                            className="w-12 h-7 text-sm"
+                            className="w-12 h-7 text-body"
                           />
                           <span className="text-muted-foreground">chars</span>
                         </div>
@@ -522,10 +522,10 @@ export function SubspaceFormBuilderDialog({
                             value={question.constraints.maxWords || 500}
                             onChange={(e) =>
                               handleUpdateQuestion(index, {
-                                constraints: { ...question.constraints, maxWords: parseInt(e.target.value) || 500 },
+                                constraints: { ...question.constraints, maxWords: parseInt(e.target.value) || 500 }
                               })
                             }
-                            className="w-12 h-7 text-sm"
+                            className="w-12 h-7 text-body"
                           />
                           <span className="text-muted-foreground">words</span>
                         </div>
@@ -540,10 +540,10 @@ export function SubspaceFormBuilderDialog({
                               value={question.constraints.minSelections || 1}
                               onChange={(e) =>
                                 handleUpdateQuestion(index, {
-                                  constraints: { ...question.constraints, minSelections: parseInt(e.target.value) || 1 },
+                                  constraints: { ...question.constraints, minSelections: parseInt(e.target.value) || 1 }
                                 })
                               }
-                              className="w-16 h-8 text-sm"
+                              className="w-16 h-8 text-body"
                             />
                           </div>
                           <div className="flex items-center gap-2">
@@ -553,10 +553,10 @@ export function SubspaceFormBuilderDialog({
                               value={question.constraints.maxSelections || 10}
                               onChange={(e) =>
                                 handleUpdateQuestion(index, {
-                                  constraints: { ...question.constraints, maxSelections: parseInt(e.target.value) || 10 },
+                                  constraints: { ...question.constraints, maxSelections: parseInt(e.target.value) || 10 }
                                 })
                               }
-                              className="w-16 h-8 text-sm"
+                              className="w-16 h-8 text-body"
                             />
                           </div>
                         </>

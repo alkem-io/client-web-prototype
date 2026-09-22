@@ -15,9 +15,9 @@
  * where there is no byline to sit in.
  */
 import { ShieldCheck } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Button } from "@/crd/primitives/button";
+import { cn } from "@/crd/lib/utils";
 import type { Signer } from "./signingData";
 
 interface SignedCopiesTriggerProps {
@@ -34,7 +34,7 @@ export function SignedCopiesTrigger({
   signers,
   onClick,
   tone = "meta",
-  className,
+  className
 }: SignedCopiesTriggerProps) {
   if (count === 0) return null;
 

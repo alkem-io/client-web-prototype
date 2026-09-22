@@ -4,16 +4,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Separator } from "@/app/components/ui/separator";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Separator } from "@/crd/primitives/separator";
 import { useState } from "react";
 import { FileText, Users, Cloud, ImageIcon, Upload, FilePlus, Plus, X } from "lucide-react";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
-import { cn } from "@/lib/utils";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
+import { cn } from "@/crd/lib/utils";
 import {
   Select,
   SelectContent,
@@ -21,8 +21,8 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 export type AISource = "knowledge" | "space" | "external" | null;
 
@@ -37,21 +37,21 @@ const aiOptions = [
     icon: FileText,
     title: "Written knowledge",
     description: "Provide text-based knowledge in posts or documents",
-    badge: "AI Powered by Alkemio",
+    badge: "AI Powered by Alkemio"
   },
   {
     id: "space" as const,
     icon: Users,
     title: "Content of a Space",
     description: "Use the content from a Space or Subspace you host",
-    badge: "AI Powered by Alkemio",
+    badge: "AI Powered by Alkemio"
   },
   {
     id: "external" as const,
     icon: Cloud,
     title: "External AI",
     description: "Connect an external AI provider via API key",
-    badge: "External",
+    badge: "External"
   },
 ];
 
@@ -166,7 +166,7 @@ export function CreateVCDialog({ open, onOpenChange }: CreateVCDialogProps) {
                     value={description}
                     onChange={setDescription}
                     placeholder="What does this Virtual Contributor do?"
-                    minHeight="80px"
+                    className="min-h-[80px]"
                   />
                 </div>
 
@@ -282,7 +282,7 @@ export function CreateVCDialog({ open, onOpenChange }: CreateVCDialogProps) {
                         value={post.content}
                         onChange={(val) => updatePost(post.id, "content", val)}
                         placeholder="Write your knowledge content here..."
-                        minHeight="100px"
+                        className="min-h-[100px]"
                       />
                     </div>
                   ))}

@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { Plus, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
@@ -50,7 +50,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Community Workshop Guidelines",
       snippet: "Best practices and facilitation guide for running effective community engagement workshops. Covers preparation checklists, participant engagement techniques, and post-workshop follow-up templates.",
       timestamp: "2 weeks ago",
-      commentCount: 14,
+      commentCount: 14
     },
 
     // 2. Post with a whiteboard
@@ -67,7 +67,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Visual overview of the proposed smart grid architecture, including sensor networks, data pipelines, and control systems.",
       timestamp: "3 weeks ago",
       framingImageUrl: wb1,
-      commentCount: 9,
+      commentCount: 9
     },
 
     // 3. Post with a memo
@@ -84,7 +84,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Structured memo capturing the decision rationale for the community solar program design choices.",
       timestamp: "1 month ago",
       framingMemoMarkdown: "# Decision Record: Community Solar Program\n\n## Context\nMunicipality needs to decide between:\n1. Centralized solar farm\n2. Distributed rooftop program\n3. Hybrid approach\n\n## Decision\nHybrid approach selected.\n\n## Rationale\n- Maximizes community participation\n- Balances grid stability with local ownership\n- Eligible for both federal and state incentives",
-      commentCount: 6,
+      commentCount: 6
     },
 
     // 4. Post with a document
@@ -101,7 +101,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The comprehensive policy proposal covering grid modernization, community solar, building electrification, and fleet conversion — with updated budget projections.",
       timestamp: "1 month ago",
       framingDocumentType: "text",
-      commentCount: 11,
+      commentCount: 11
     },
 
     // 5. Post with a call to action
@@ -118,7 +118,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The Department of Energy Community Power Accelerator grant deadline is approaching. This is a $50M program for municipalities pursuing 100% clean energy.",
       timestamp: "5 weeks ago",
       framingCallToAction: { uri: "https://energy.gov/community-power", displayName: "Apply on Energy.gov", isExternal: true, isValid: true },
-      commentCount: 8,
+      commentCount: 8
     },
 
     // 6. Post with a media gallery
@@ -141,9 +141,9 @@ const INITIAL_POSTS: PostWithTags[] = [
           { id: "mg3", url: mg3 },
           { id: "mg4", url: mg4 },
         ],
-        totalCount: 24,
+        totalCount: 24
       },
-      commentCount: 15,
+      commentCount: 15
     },
 
     // 7. Post with a poll
@@ -159,7 +159,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Priority Vote: Next Infrastructure Investment",
       snippet: "Help us decide where to allocate the next round of infrastructure funding. Vote on which project should receive priority.",
       timestamp: "2 months ago",
-      commentCount: 22,
+      commentCount: 22
     },
 
     // ═══════════════════════════════════════════════════════════════
@@ -180,7 +180,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Collect: Energy Consumption Datasets & Tools",
       snippet: "We need links to publicly available energy consumption datasets, analysis tools, and benchmarking platforms. Share anything relevant to municipal-scale energy tracking.",
       timestamp: "2 months ago",
-      commentCount: 7,
+      commentCount: 7
     },
 
     // 9. Post with tasks (task board)
@@ -197,7 +197,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Community Outreach Programme — Task Tracker",
       snippet: "Track all tasks for the community outreach programme. Add new tasks and drag them between columns as they progress.",
       timestamp: "2 months ago",
-      commentCount: 18,
+      commentCount: 18
     },
 
     // 10. Post with a call for memos
@@ -214,7 +214,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Document: EV Charging Station Installation Guides",
       snippet: "Help build our knowledge base of installation procedures. Write up step-by-step guides covering site assessment, electrical requirements, and commissioning.",
       timestamp: "2.5 months ago",
-      commentCount: 11,
+      commentCount: 11
     },
 
     // 11. Post with a call for whiteboards
@@ -231,7 +231,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Sketch: Future Building Energy Retrofit Concepts",
       snippet: "Visualise your ideas for retrofitting municipal buildings with modern energy systems. Think heat pumps, solar integration, smart controls, and insulation strategies.",
       timestamp: "2.5 months ago",
-      commentCount: 8,
+      commentCount: 8
     },
 
     // ═══════════════════════════════════════════════════════════════
@@ -253,7 +253,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Here's our current grid topology diagram. Please share links to relevant vendor documentation, technical standards, and reference architectures.",
       timestamp: "3 months ago",
       framingImageUrl: wb2,
-      commentCount: 5,
+      commentCount: 5
     },
 
     // 13. Post with a whiteboard with a call for posts
@@ -271,7 +271,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "This whiteboard maps energy usage patterns across neighbourhoods. Share posts about what you've noticed in your area — unusual consumption patterns, infrastructure issues, or opportunities.",
       timestamp: "3 months ago",
       framingImageUrl: wb3,
-      commentCount: 10,
+      commentCount: 10
     },
 
     // 14. Post with a whiteboard with a call for memos
@@ -289,7 +289,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The whiteboard shows our substation upgrade sequence. Please contribute detailed procedure memos for each stage of the upgrade process.",
       timestamp: "3 months ago",
       framingImageUrl: wb4,
-      commentCount: 7,
+      commentCount: 7
     },
 
     // 15. Post with a whiteboard with a call for whiteboards
@@ -307,7 +307,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Here's our initial solar farm layout. We want alternative layout proposals — sketch your ideas considering terrain, access roads, and wildlife corridors.",
       timestamp: "3.5 months ago",
       framingImageUrl: wb1,
-      commentCount: 13,
+      commentCount: 13
     },
 
     // ═══════════════════════════════════════════════════════════════
@@ -329,7 +329,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "This memo outlines our compliance obligations. Please share links to the actual regulatory documents, official guidance, and relevant case law.",
       timestamp: "3.5 months ago",
       framingMemoMarkdown: "# Regulatory Compliance Summary\n\n## Federal Requirements\n- FERC Order 2222 compliance\n- EPA Clean Power Plan alignment\n- DOE reporting obligations\n\n## State Requirements\n- Renewable Portfolio Standard (35% by 2030)\n- Net metering regulations\n- Interconnection standards\n\n## Local Requirements\n- Building code updates\n- Zoning approvals for installations\n- Environmental impact assessments",
-      commentCount: 4,
+      commentCount: 4
     },
 
     // 17. Post with a memo with a call for posts
@@ -347,7 +347,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Our engagement plan is outlined in this memo. We'd love posts from community members with feedback, concerns, or suggestions for improvement.",
       timestamp: "4 months ago",
       framingMemoMarkdown: "# Stakeholder Engagement Plan\n\n## Phase 1: Inform (Month 1-2)\n- Public website launch\n- Newsletter campaign\n- Social media presence\n\n## Phase 2: Consult (Month 3-4)\n- Town halls (3 events)\n- Online surveys\n- Focus groups\n\n## Phase 3: Involve (Month 5-6)\n- Citizen advisory panel\n- Co-design workshops\n- Pilot program enrollment",
-      commentCount: 16,
+      commentCount: 16
     },
 
     // 18. Post with a memo with a call for memos
@@ -365,7 +365,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Here's our standard retrospective template. Use it to write up your project retrospectives and share them below.",
       timestamp: "4 months ago",
       framingMemoMarkdown: "# Project Retrospective Template\n\n## What Went Well\n- [List successes]\n\n## What Could Be Improved\n- [List areas for improvement]\n\n## Action Items\n| Action | Owner | Due Date |\n|--------|-------|----------|\n| | | |\n\n## Lessons Learned\n- [Key takeaways for future projects]",
-      commentCount: 9,
+      commentCount: 9
     },
 
     // 19. Post with a memo with a call for whiteboards
@@ -383,7 +383,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "This research brief outlines battery storage challenges. Sketch your proposed solutions — system architectures, placement strategies, or novel approaches.",
       timestamp: "4 months ago",
       framingMemoMarkdown: "# Battery Storage: Challenges & Opportunities\n\n## Current Challenges\n- Grid-scale storage costs still declining\n- Siting constraints in urban areas\n- Fire safety regulations\n- End-of-life recycling\n\n## Opportunities\n- Vehicle-to-grid (V2G) integration\n- Second-life EV batteries\n- Community battery schemes\n- Behind-the-meter residential\n\n## Open Questions\n- Optimal size for municipal deployment?\n- Centralised vs distributed topology?",
-      commentCount: 6,
+      commentCount: 6
     },
 
     // ═══════════════════════════════════════════════════════════════
@@ -405,7 +405,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The procurement guidelines document is ready for review. Please share links to example PPAs, legal precedents, and template contracts from other municipalities.",
       timestamp: "4.5 months ago",
       framingDocumentType: "text",
-      commentCount: 8,
+      commentCount: 8
     },
 
     // 21. Post with a document with a call for posts
@@ -423,7 +423,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The Q2 budget report is attached. Each department lead should submit a post with their spending highlights, variances, and projections for Q3.",
       timestamp: "4.5 months ago",
       framingDocumentType: "spreadsheet",
-      commentCount: 12,
+      commentCount: 12
     },
 
     // 22. Post with a document with a call for memos
@@ -441,7 +441,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The updated technical specification is attached. We need structured memos documenting the implementation procedure for each section.",
       timestamp: "5 months ago",
       framingDocumentType: "text",
-      commentCount: 6,
+      commentCount: 6
     },
 
     // 23. Post with a document with a call for whiteboards
@@ -459,7 +459,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The site assessment document identifies 8 candidate locations for solar installations. Sketch your proposed panel layouts for any of the sites.",
       timestamp: "5 months ago",
       framingDocumentType: "presentation",
-      commentCount: 10,
+      commentCount: 10
     },
 
     // ═══════════════════════════════════════════════════════════════
@@ -481,7 +481,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Use the grant portal link to submit our application. Below, share links to supporting documents, data sources, and letters of support that strengthen our case.",
       timestamp: "5 months ago",
       framingCallToAction: { uri: "https://grants.gov/energy-transition", displayName: "Open Grant Portal", isExternal: true, isValid: true },
-      commentCount: 5,
+      commentCount: 5
     },
 
     // 25. Post with a call to action with a call for posts
@@ -499,7 +499,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Register for the upcoming Energy Transition Summit using the link below. Then post your proposed discussion topics and questions for the panel sessions.",
       timestamp: "5.5 months ago",
       framingCallToAction: { uri: "https://events.municipality.org/summit-2026", displayName: "Register for Summit", isExternal: true, isValid: true },
-      commentCount: 14,
+      commentCount: 14
     },
 
     // 26. Post with a call to action with a call for memos
@@ -517,7 +517,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The state regulatory body is accepting public comments on the new energy code. Use the link to view the draft, then submit your position memos below for team review before filing.",
       timestamp: "5.5 months ago",
       framingCallToAction: { uri: "https://state.gov/energy-code-comments", displayName: "View Draft Energy Code", isExternal: true, isValid: true },
-      commentCount: 7,
+      commentCount: 7
     },
 
     // 27. Post with a call to action with a call for whiteboards
@@ -535,7 +535,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "Read the full competition brief using the link below. Then submit your visual design concepts as whiteboards — top entries will be presented to the mayor's office.",
       timestamp: "6 months ago",
       framingCallToAction: { uri: "https://design.municipality.org/competition-2026", displayName: "Read Competition Brief", isExternal: true, isValid: true },
-      commentCount: 19,
+      commentCount: 19
     },
 
     // ═══════════════════════════════════════════════════════════════
@@ -562,9 +562,9 @@ const INITIAL_POSTS: PostWithTags[] = [
           { id: "th2", url: mg2 },
           { id: "th3", url: mg3 },
         ],
-        totalCount: 18,
+        totalCount: 18
       },
-      commentCount: 6,
+      commentCount: 6
     },
 
     // 29. Post with a media gallery with a call for posts
@@ -588,9 +588,9 @@ const INITIAL_POSTS: PostWithTags[] = [
           { id: "ev3", url: mg1 },
           { id: "ev4", url: mg3 },
         ],
-        totalCount: 32,
+        totalCount: 32
       },
-      commentCount: 21,
+      commentCount: 21
     },
 
     // 30. Post with a media gallery with a call for memos
@@ -613,9 +613,9 @@ const INITIAL_POSTS: PostWithTags[] = [
           { id: "in2", url: mg1 },
           { id: "in3", url: mg4 },
         ],
-        totalCount: 12,
+        totalCount: 12
       },
-      commentCount: 8,
+      commentCount: 8
     },
 
     // 31. Post with a media gallery with a call for whiteboards
@@ -639,9 +639,9 @@ const INITIAL_POSTS: PostWithTags[] = [
           { id: "st3", url: mg1 },
           { id: "st4", url: mg3 },
         ],
-        totalCount: 6,
+        totalCount: 6
       },
-      commentCount: 11,
+      commentCount: 11
     },
 
     // ═══════════════════════════════════════════════════════════════
@@ -662,7 +662,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Vote: Preferred Energy Monitoring Platform — Share Reviews",
       snippet: "Vote on which energy monitoring platform we should adopt. After voting, share links to reviews, comparisons, and user testimonials for your preferred choice.",
       timestamp: "7 months ago",
-      commentCount: 15,
+      commentCount: 15
     },
 
     // 33. Post with a poll with a call for posts
@@ -679,7 +679,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Vote: Top Priority for Q4 — Explain Your Reasoning",
       snippet: "Cast your vote for the Q4 priority, then write a post explaining your reasoning. We'll compile the arguments for the steering committee.",
       timestamp: "7 months ago",
-      commentCount: 24,
+      commentCount: 24
     },
 
     // 34. Post with a poll with a call for memos
@@ -696,7 +696,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Vote: Best Battery Technology — Submit Technical Memos",
       snippet: "Vote on which battery technology we should prioritise. Then contribute a technical memo evaluating your chosen technology against our requirements.",
       timestamp: "7.5 months ago",
-      commentCount: 13,
+      commentCount: 13
     },
 
     // 35. Post with a poll with a call for whiteboards
@@ -713,7 +713,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       title: "Vote: Preferred Microgrid Topology — Sketch Your Design",
       snippet: "Vote on the microgrid topology that best fits our municipality. Then sketch your preferred implementation showing how it connects to existing infrastructure.",
       timestamp: "7.5 months ago",
-      commentCount: 17,
+      commentCount: 17
     },
   ];
 
@@ -735,7 +735,7 @@ export function SpaceKnowledgeFeed() {
     posts,
     setPosts,
     currentUser: MOCK_CURRENT_USER,
-    isAdmin: true,
+    isAdmin: true
   });
 
   // Persist collapse preference
@@ -815,7 +815,7 @@ export function SpaceKnowledgeFeed() {
               title="IEA District Heating Case Studies"
               description="Fifteen European district heating retrofits with outcome data"
             />
-          ],
+          ]
         };
       case 'posts':
         return {
@@ -864,7 +864,7 @@ export function SpaceKnowledgeFeed() {
               tags={["finance", "bonds", "PPA"]}
               commentCount={2}
             />
-          ],
+          ]
         };
       case 'memos':
         return {
@@ -893,7 +893,7 @@ export function SpaceKnowledgeFeed() {
               author="Alex Contributor"
               markdownContent="## Quarterly Maintenance\n\n- Panel cleaning\n- Inverter check\n- Wiring inspection\n- Performance data review\n\n## Annual Maintenance\n- Full system audit\n- Thermal imaging\n- Degradation assessment"
             />
-          ],
+          ]
         };
       case 'whiteboards':
         return {
@@ -932,7 +932,7 @@ export function SpaceKnowledgeFeed() {
               author="Michael Chang"
               previewUrl={wb3}
             />
-          ],
+          ]
         };
       default:
         return undefined;
@@ -1040,7 +1040,7 @@ export function SpaceKnowledgeFeed() {
             <PostCard
               post={{
                 ...post,
-                descriptionExpanded: !collapseEnabled,
+                descriptionExpanded: !collapseEnabled
               }}
               onClick={() => setSelectedPost(post)}
               onExpandClick={() => setSelectedPost(post)}

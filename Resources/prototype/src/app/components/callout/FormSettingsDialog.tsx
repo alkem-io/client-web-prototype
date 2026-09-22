@@ -15,11 +15,11 @@
  */
 import { useEffect, useState } from 'react';
 import { TriangleAlert } from 'lucide-react';
-import { Button } from '@/app/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/app/components/ui/dialog';
-import { Label } from '@/app/components/ui/label';
-import { Separator } from '@/app/components/ui/separator';
-import { Switch } from '@/app/components/ui/switch';
+import { Button } from '@/crd/primitives/button';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/crd/primitives/dialog';
+import { Label } from '@/crd/primitives/label';
+import { Separator } from '@/crd/primitives/separator';
+import { Switch } from '@/crd/primitives/switch';
 import type { CalloutFormData, CalloutFormResponseVisibility } from './calloutFormTypes';
 
 type FormSettingsDialogProps = {
@@ -46,7 +46,7 @@ export function FormSettingsDialog({ open, onOpenChange, form, onChange }: FormS
   const apply = (patch: Partial<Pick<CalloutFormData, 'responseVisibility' | 'allowMultipleResponses'>>) => {
     onChange({
       responseVisibility: patch.responseVisibility ?? form.responseVisibility,
-      allowMultipleResponses: patch.allowMultipleResponses ?? form.allowMultipleResponses,
+      allowMultipleResponses: patch.allowMultipleResponses ?? form.allowMultipleResponses
     });
   };
 

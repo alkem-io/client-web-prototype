@@ -1,176 +1,117 @@
-# prototype/ — Visual Design Guide
+# client-web-prototype
 
-This folder is a **design reference** for building `src/crd/` components. It demonstrates visual patterns and standards that developers should follow.
+Design prototype for [Alkemio client-web](https://github.com/alkem-io/client-web).
 
-## For Developers Building `src/crd/`
+## The one rule
 
-Use this prototype as a visual reference for:
-- Button patterns and variants
-- Dialog layouts and footer patterns
-- Placeholder card patterns (responses, resources, etc.)
-- Consistent sizing, spacing, and interaction patterns
+**`src/crd/` is production. Never edit it.**
 
-## Button System Standards
+It is a byte-identical copy of client-web's `src/crd/` design system, pinned to
+a commit recorded in [`src/crd/PROVENANCE.md`](src/crd/PROVENANCE.md). Every
+primitive, design token, typography token and shared component comes from there.
 
-### Primary CTAs (`variant="default"`)
-**Use for:** Main actions that move user forward
-- Create Space
-- Create Resource
-- Create Subspace
-- Post Comment
-- Save Changes
-- Submit Form
+If a CRD component needs to change, **the change belongs in client-web** and
+arrives here on the next sync. Editing `src/crd/` locally recreates exactly the
+prototype↔production drift this setup exists to remove.
 
-**Pattern:** Right side of dialog, paired with Cancel/Back on left
-**Size:** `default` (36px height) for standard, `lg` (40px) for hero sections
-
----
-
-### Secondary Buttons (`variant="secondary"`)
-**Use for:** Important alternative CTAs (rare)
-- Next Step (when primary is Confirm)
-- Preview (when primary is Publish)
-
-**Rule:** Use sparingly, always paired with primary button
-
----
-
-### Outline Buttons (`variant="outline"`)
-**Use for:** Navigation, secondary actions, tertiary CTAs
-- Load More
-- Browse All
-- Cancel (alternative to ghost)
-- Secondary navigation
-
-**Pattern:** `size="sm"` for compact, `default` for standard
-
----
-
-### Ghost Buttons (`variant="ghost"`)
-**Use for:** Minimal, contextual actions
-- Cancel in dialogs (left side of button pair)
-- Back buttons in multi-step flows (with left chevron icon)
-- Toolbar buttons
-- Icon buttons (use IconButton wrapper always)
-
-**Rule:** Back button: `size="sm"` with `className="gap-1 px-2"`
-
----
-
-### Link Buttons (`variant="link"`)
-**Use for:** Text-only actions in content
-- Show more / Show less (for expanded content)
-- Learn more in paragraphs
-- See all X (navigation links)
-
-**Pattern:** `size="sm"` for inline text, no size param for standard
-
----
-
-### Destructive Buttons (`variant="destructive"`)
-**Use for:** Dangerous actions in confirmation dialogs ONLY
-- Delete Space
-- Remove Member
-
-**Rule:** Never elsewhere. Pair with Cancel button on left.
-
----
-
-## Dialog Footer Pattern (Standard)
-
-**Multi-step dialog:**
 ```
-[← Back] [Cancel/ghost] [Primary action/default]
+src/crd/     ← production, read-only, synced        (the design system)
+src/app/     ← prototype explorations, yours to edit (the design work)
+src/mockups/ ← Figma Make mockup pipeline
 ```
 
-**Simple dialog:**
+`src/app/` imports from `@/crd/*`. Never the reverse.
+
+## Syncing with production
+
+```bash
+npm run sync:crd:check   # what changed upstream? (changes nothing)
+npm run sync:crd         # pull it in, then `npm run build`
 ```
-[Cancel/ghost] [Primary action/default]
-```
 
-**Destructive confirmation:**
-```
-[Keep/ghost or outline] [Delete/destructive]
-```
+A build failure after a sync is the *point*: it tells you a CRD API changed and
+prototype code needs updating. Fix the prototype, not the vendored layer.
 
----
+## Which component do I use?
 
-## PlaceholderCard Pattern
+1. **Does `src/crd/` have it, and does the prototype have no deliberate new
+   design for it?** Use production's. It wins — including where you would have
+   styled it differently. Disagreements get resolved in client-web so both move
+   together.
+2. **Is the prototype deliberately *ahead* of production here?** Then the
+   prototype's version stays. It adopts production's primitives, tokens,
+   typography and libraries — but keeps its own design, because being ahead is
+   the entire point of this repo. Do **not** replace it with production's.
+3. **Is it a new exploration?** Build it in `src/app/`, composed from
+   `@/crd/primitives/*` and CRD tokens. Then it is ready for dev to port across
+   with no translation step.
+4. **Never** copy a CRD component into `src/app/` to tweak it.
 
-**Use for:** Collections where users add multiple items
-- Response types (whiteboards, documents, posts)
-- Resources
-- Documents
-- Templates
-- Subspaces
+> **The distinction in rule 1 vs 2 matters, and it is easy to get wrong.**
+> "Production wins" settles *styling disagreements about the same thing*. It
+> does **not** mean "delete prototype work that production hasn't caught up to
+> yet". A component existing in both trees is not sufficient evidence that they
+> solve the same problem — check what the prototype's version does that
+> production's does not before replacing anything.
+>
+> This was got wrong once: the Space/Subspace Settings → Layout tab was
+> replaced with production's `SpaceSettingsLayoutView`, discarding the tab-icon
+> picker, the sidebar mode (expanded / railed / hidden), the `tags` widget and
+> the per-tab widget editor — none of which production has. It was restored
+> from `main` and rebased. A future sync agent must apply rule 2, not rule 1,
+> to any surface where the prototype leads.
 
-**Component:** `PlaceholderCard` in `src/app/components/ui/placeholder-card.tsx`
+`src/app/components/ui/` holds the 19 primitives the prototype has and
+production does not (sidebar, command, drawer, form, chart, hover-card,
+placeholder-card, …). They are fair game to edit — and they are also the
+shortlist of what to upstream next.
 
-**Sizes:**
-- `size="sm"` (160px) — Most collections
-- `size="lg"` (280px) — Prominent creates (spaces, VCs)
+## Typography
 
-**Pattern:** Use in grid alongside actual items. Much more discoverable than small buttons.
-
----
-
-## Icon Button Rule
-
-**Every icon-only button must use `IconButton` wrapper.**
-
-This component provides:
-- Automatic tooltips
-- Proper aria-labels
-- Consistent focus states
+Use the semantic tokens, never raw Tailwind size+weight combos. The full table
+is in [`src/crd/CLAUDE.md`](src/crd/CLAUDE.md) Golden Rule #8 — that document is
+the design system's own rulebook and applies here in full.
 
 ```tsx
-<IconButton
-  variant="ghost"
-  tooltipLabel="Delete"
->
-  <Trash className="w-4 h-4" />
-</IconButton>
+<h1 className="text-page-title">…</h1>     // not text-2xl font-bold
+<p className="text-body">…</p>             // not text-sm
+<span className="text-caption">…</span>    // not text-xs
 ```
 
----
+Two things worth knowing:
 
-## Size Pairings
+- **`text-control` uppercases.** Production's buttons, tabs, menu rows and
+  select triggers render UPPERCASE (12px/500). The CRD `Button` applies it
+  itself — do not add a size class to a `<Button>`, it overrides the token and
+  silently drops the uppercase. Production's own docs say 14px; the CSS says
+  12px and the CSS is what renders.
+- **`text-hero`, `text-display`, `text-subheader`, `text-sidebar-label` are not
+  registered in production's `cn()`.** Combined with a text colour they get
+  dropped entirely. See [`UPSTREAM-BUGS.md`](UPSTREAM-BUGS.md).
 
-| Button Size | Use Case | Icon Size |
-|---|---|---|
-| `sm` (32px) | Compact forms, dialogs, back buttons | w-4 h-4 |
-| `default` (36px) | Standard forms, CTAs, main buttons | w-4 h-4 |
-| `lg` (40px) | Hero CTAs, prominent actions | w-5 h-5 |
-| `icon` (36px square) | Icon-only, use IconButton wrapper | w-4 h-4 |
+## Stack
 
----
+Matched to client-web exactly, so copied components run unmodified.
 
-## Label Standards
+| | |
+|---|---|
+| React | 19.2.1 |
+| Vite | 7 |
+| Tailwind | 4 |
+| Radix + shadcn/ui | via `@/crd/primitives` |
+| Icons | `lucide-react` 1.x |
+| Drag & drop | `@dnd-kit` |
+| Markdown editor | TipTap (`@/crd/forms/markdown/MarkdownEditor`) |
+| i18n | `react-i18next`, `crd-*` namespaces, 27 namespaces × 6 languages |
 
-**Action Verbs:**
-- Create (new items): "Create Space", "Create Resource"
-- Add (to collection): "Add Member", "Add Resource"
-- Contribute (responses): "Add Whiteboard", "Add Document"
-- Submit/Save (forms): "Save Changes", "Submit Form"
-- View/Navigate: "Open Whiteboard", "View Details"
-- Load/Show: "Load More", "Show More"
-- Delete (danger): "Delete Space" (explicit label)
-- Cancel/Exit: "Cancel", "Close"
+Not available, deliberately: MUI, Emotion, react-quill, react-dnd. They were
+removed to match production and must not come back.
 
----
+## Running
 
-## For Designers & Stakeholders
-
-This prototype demonstrates:
-- ✅ Consistent button variants
-- ✅ Standardized dialog layouts
-- ✅ Placeholder card pattern for response discoverability
-- ✅ Proper icon button implementation with tooltips
-- ✅ Clear visual hierarchy and interaction patterns
-
-Reference this when reviewing designs or providing feedback to developers.
-
----
-
-**Last Updated:** June 30, 2026
-**Status:** Visual Design Guide (in progress)
+```bash
+npm install
+npm run dev        # prototype
+npm run build      # must stay green
+npm run typecheck
+```

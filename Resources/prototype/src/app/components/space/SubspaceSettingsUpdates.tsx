@@ -1,13 +1,11 @@
 import { useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Separator } from "@/app/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Separator } from "@/crd/primitives/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
 import {
  Plus,
  Megaphone,
@@ -15,16 +13,17 @@ import {
  Trash2,
  Calendar,
  MoreHorizontal,
- Send,
+ Send
 } from "lucide-react";
 import {
  DropdownMenu,
  DropdownMenuTrigger,
  DropdownMenuContent,
  DropdownMenuItem,
- DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+ DropdownMenuSeparator
+} from "@/crd/primitives/dropdown-menu";
+import { cn } from "@/crd/lib/utils";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 interface Update {
  id: string;
@@ -48,7 +47,7 @@ const MOCK_UPDATES: Update[] = [
  date: "2024-02-18",
  title: "Phase 2 Kickoff — What to Expect",
  body: "<p>We're excited to announce that Phase 2 of this challenge is now officially underway. Over the next four weeks, we'll be focusing on prototyping and testing the top 5 ideas that emerged from Phase 1.</p><p><strong>Key milestones:</strong></p><ul><li>Week 1–2: Rapid prototyping sessions</li><li>Week 3: Community voting on prototypes</li><li>Week 4: Final selection &amp; Phase 3 planning</li></ul>",
- pinned: true,
+ pinned: true
  },
  {
  id: "u2",
@@ -59,8 +58,7 @@ const MOCK_UPDATES: Update[] = [
  date: "2024-02-10",
  title: "Community Survey Results",
  body: "<p>Thank you to everyone who participated in our community survey! We received 47 responses and the results are in. The top priorities identified by the community are:</p><ol><li>More structured collaboration workshops</li><li>Regular progress updates from leads</li><li>Dedicated Q&A sessions with experts</li></ol>",
- pinned: false,
-
+ pinned: false
  },
  {
  id: "u3",
@@ -71,7 +69,7 @@ const MOCK_UPDATES: Update[] = [
  date: "2024-02-05",
  title: "Welcome & Phase 1 Recap",
  body: "<p>A warm welcome to all new members who joined this month! Here's a quick recap of what we accomplished in Phase 1...</p>",
- pinned: false,
+ pinned: false
  },
 ];
 
@@ -102,21 +100,12 @@ export function SubspaceSettingsUpdates() {
  date: new Date().toISOString().slice(0, 10),
  title: newTitle,
  body: newBody,
- pinned: false,
+ pinned: false
  };
  setUpdates((prev) => [update, ...prev]);
  setNewTitle("");
  setNewBody("");
  setComposing(false);
- };
-
- const quillModules = {
- toolbar: [
- ["bold", "italic", "underline"],
- [{ list: "ordered" }, { list: "bullet" }],
- ["link"],
- ["clean"],
- ],
  };
 
  return (
@@ -148,7 +137,7 @@ export function SubspaceSettingsUpdates() {
  className="rounded-lg p-5 space-y-4"
  style={{
  background: "var(--muted)",
- border: "1px solid var(--border)",
+ border: "1px solid var(--border)"
  }}
  >
  <h3 className="text-card-title">New Update</h3>
@@ -158,12 +147,10 @@ export function SubspaceSettingsUpdates() {
  onChange={(e) => setNewTitle(e.target.value)}
  className="font-semibold"
  />
- <div className="prose-editor">
- <ReactQuill
- theme="snow"
+ <div>
+ <MarkdownEditor
  value={newBody}
  onChange={setNewBody}
- modules={quillModules}
  placeholder="Write your update…"
  />
  </div>
@@ -204,7 +191,7 @@ export function SubspaceSettingsUpdates() {
  )}
  style={{
  background: "var(--muted)",
- border: "1px solid var(--border)",
+ border: "1px solid var(--border)"
  }}
  >
  {/* Top row — author + badges + actions */}
@@ -214,7 +201,7 @@ export function SubspaceSettingsUpdates() {
  {update.authorAvatar && (
  <AvatarImage src={update.authorAvatar} />
  )}
- <AvatarFallback className="text-xs">
+ <AvatarFallback className="text-caption">
  {update.authorInitials}
  </AvatarFallback>
  </Avatar>

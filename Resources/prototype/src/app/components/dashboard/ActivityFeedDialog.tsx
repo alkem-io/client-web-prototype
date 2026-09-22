@@ -2,8 +2,8 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
+  DialogTitle
+} from "@/crd/primitives/dialog";
 import { ActivityFeed } from "@/app/components/dashboard/ActivityFeed";
 
 interface ActivityFeedDialogProps {

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { ChevronsRight } from "lucide-react";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { ActivityDot } from "@/app/components/shared/ActivityDot";
@@ -32,7 +32,7 @@ export function CalloutTabs({
   tabs,
   activeTab,
   onTabChange,
-  activityOwner,
+  activityOwner
 }: CalloutTabsProps) {
   const { hasContainerActivity, visitContainer } = useActivityIndicators();
 
@@ -67,8 +67,7 @@ export function CalloutTabs({
                 )}
                 style={{
                   fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
-                  lineHeight: "20px",
+                  lineHeight: "20px"
                 }}
               >
               {tab.label}

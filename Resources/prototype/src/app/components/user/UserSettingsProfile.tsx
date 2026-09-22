@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { Input } from "@/app/components/ui/input";
-import { Button } from "@/app/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/app/components/ui/avatar";
-import { X, Plus, User, FileText, MapPin, Tag, Lightbulb, Link2, Bookmark, Upload, Linkedin, Github, Globe, Mail, Phone, Trash2 } from "lucide-react";
+import { Input } from "@/crd/primitives/input";
+import { Button } from "@/crd/primitives/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/crd/primitives/avatar";
+import { X, Plus, User, FileText, MapPin, Tag, Lightbulb, Link2, Bookmark, Upload, Globe, Mail, Phone, Trash2 } from "lucide-react";
+// lucide v1 dropped its brand glyphs; production ships its own social SVGs.
+import GitHubIcon from "@/crd/components/common/icons/social/GitHub.svg?react";
+import LinkedInIcon from "@/crd/components/common/icons/social/LinkedIn.svg?react";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 const INITIAL_DATA = {
   displayName: "Jeroen Nijkamp",
@@ -24,11 +26,11 @@ const INITIAL_DATA = {
   links: {
     linkedin: "https://linkedin.com/in/your-handle",
     twitter: "https://bsky.app/profile/your-handle",
-    github: "https://github.com/your-handle",
+    github: "https://github.com/your-handle"
   },
   references: [
     { title: "My Twitter", url: "https://x.com/alkemio_jeroen", description: "Because nobody uses blue sky" },
-  ],
+  ]
 };
 
 export function UserSettingsProfile() {
@@ -82,7 +84,7 @@ export function UserSettingsProfile() {
   const addReference = () => {
     setFormData((prev) => ({
       ...prev,
-      references: [...prev.references, { title: "", url: "", description: "" }],
+      references: [...prev.references, { title: "", url: "", description: "" }]
     }));
   };
 
@@ -94,16 +96,6 @@ export function UserSettingsProfile() {
 
   const removeReference = (index: number) => {
     setFormData((prev) => ({ ...prev, references: prev.references.filter((_, i) => i !== index) }));
-  };
-
-  const quillModules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "blockquote", "code-block"],
-      ["clean"],
-    ],
   };
 
   return (
@@ -169,12 +161,10 @@ export function UserSettingsProfile() {
               {/* Bio */}
               <div>
                 <label className="text-body-emphasis block mb-1.5">Bio</label>
-                <div className="[&_.ql-toolbar.ql-snow]:rounded-t-lg [&_.ql-container.ql-snow]:rounded-b-lg">
-                  <ReactQuill
-                    theme="snow"
+                <div>
+                  <MarkdownEditor
                     value={formData.bio}
                     onChange={(val) => setFormData((prev) => ({ ...prev, bio: val }))}
-                    modules={quillModules}
                     className="bg-background"
                   />
                 </div>
@@ -230,7 +220,7 @@ export function UserSettingsProfile() {
           <SettingsSection title="Social Links" icon={<Link2 className="w-4 h-4" />} iconColor="blue" defaultOpen={false}>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <Linkedin className="w-4 h-4 text-muted-foreground shrink-0" />
+                <LinkedInIcon className="w-4 h-4 text-muted-foreground shrink-0" />
                 <Input value={formData.links.linkedin} onChange={(e) => handleLinkChange("linkedin", e.target.value)} placeholder="https://linkedin.com/in/your-handle" className="flex-1" />
               </div>
               <div className="flex items-center gap-3">
@@ -238,7 +228,7 @@ export function UserSettingsProfile() {
                 <Input value={formData.links.twitter} onChange={(e) => handleLinkChange("twitter", e.target.value)} placeholder="https://bsky.app/profile/your-handle" className="flex-1" />
               </div>
               <div className="flex items-center gap-3">
-                <Github className="w-4 h-4 text-muted-foreground shrink-0" />
+                <GitHubIcon className="w-4 h-4 text-muted-foreground shrink-0" />
                 <Input value={formData.links.github} onChange={(e) => handleLinkChange("github", e.target.value)} placeholder="https://github.com/your-handle" className="flex-1" />
               </div>
             </div>
@@ -284,7 +274,7 @@ export function UserSettingsProfile() {
                 src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                 alt={formData.displayName}
               />
-              <AvatarFallback className="text-2xl font-bold bg-primary text-primary-foreground">JN</AvatarFallback>
+              <AvatarFallback className="text-page-title bg-primary text-primary-foreground">JN</AvatarFallback>
             </Avatar>
             <div className="text-center">
               <p className="text-body-emphasis">{formData.displayName}</p>

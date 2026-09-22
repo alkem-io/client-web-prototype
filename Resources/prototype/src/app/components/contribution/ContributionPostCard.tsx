@@ -1,7 +1,7 @@
 import { MessageSquare } from 'lucide-react';
-import { CollapsibleTagList } from '@/app/components/common/CollapsibleTagList';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
+import { CollapsibleTagList } from '@/crd/components/common/CollapsibleTagList';
+import { cn } from '@/crd/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
 import { ReactionBar } from '@/app/components/space/PostReactions';
 
 type ContributionPostCardProps = {
@@ -29,7 +29,7 @@ export function ContributionPostCard({
   reactionId,
   reactionsEnabled = true,
   onClick,
-  className,
+  className
 }: ContributionPostCardProps) {
   const handleClick = (event: React.MouseEvent) => {
     if (!onClick) return;

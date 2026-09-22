@@ -7,9 +7,9 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/app/components/ui/alert-dialog";
-import { buttonVariants } from "@/app/components/ui/button";
+  AlertDialogTitle
+} from "@/crd/primitives/alert-dialog";
+import { buttonVariants } from "@/crd/primitives/button";
 import { useBlocker } from "react-router";
 
 interface UnsavedChangesGuardProps {

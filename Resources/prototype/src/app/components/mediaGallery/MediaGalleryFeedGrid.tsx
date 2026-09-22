@@ -1,9 +1,9 @@
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { cn } from '@/lib/utils';
-import { IconButton } from '@/app/components/ui/icon-button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/app/components/ui/dialog';
-import { Button } from '@/app/components/ui/button';
+import { cn } from '@/crd/lib/utils';
+import { IconButton } from '@/crd/primitives/icon-button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/crd/primitives/dialog';
+import { Button } from '@/crd/primitives/button';
 
 export type MediaGalleryFeedThumbnail = {
   id: string;
@@ -35,7 +35,7 @@ export function MediaGalleryFeedGrid({
   totalCount,
   onOpenAt,
   onDeleteThumbnail,
-  className,
+  className
 }: MediaGalleryFeedGridProps) {
   const [pendingDelete, setPendingDelete] = useState<MediaGalleryFeedThumbnail | null>(null);
 

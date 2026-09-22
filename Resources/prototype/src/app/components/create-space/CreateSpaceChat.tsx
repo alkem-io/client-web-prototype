@@ -5,16 +5,16 @@ import {
  Briefcase, Lightbulb, GraduationCap, Target, Settings,
  BookOpen, ShieldCheck, Image as ImageIcon
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
-import { Separator } from "@/app/components/ui/separator";
-import { Progress } from "@/app/components/ui/progress";
-import { Switch } from "@/app/components/ui/switch";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/crd/primitives/card";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback } from "@/crd/primitives/avatar";
+import { Separator } from "@/crd/primitives/separator";
+import { Progress } from "@/crd/primitives/progress";
+import { Switch } from "@/crd/primitives/switch";
+import { cn } from "@/crd/lib/utils";
 
 // --- Types ---
 
@@ -99,7 +99,7 @@ const SUBSPACE_SUGGESTIONS: Record<string, InfoCard[]> = {
  default: [
  { id: "project_based", title: "By Project", description: "Separate space for each initiative.", items: ["Project Alpha", "Project Beta", "Internal Ops"] },
  { id: "simple", title: "Simple (No Subspaces)", description: "Keep everything in one place.", items: [] },
- ],
+ ]
 };
 
 const TEMPLATE_SUGGESTIONS: Record<string, InfoCard[]> = {
@@ -117,7 +117,7 @@ const TEMPLATE_SUGGESTIONS: Record<string, InfoCard[]> = {
  { id: "tasks", title: "Task Tracker", description: "Kanban board for to-dos.", tags: ["Board"] },
  { id: "meeting_notes", title: "Meeting Notes", description: "Shared document for minutes.", tags: ["Doc"] },
  { id: "decision_log", title: "Decision Log", description: "Record of key outcomes.", tags: ["List"] },
- ],
+ ]
 };
 
 const BANNER_OPTIONS: InfoCard[] = [
@@ -242,7 +242,7 @@ const PreviewPanel = ({ config }: { config: SpaceConfig }) => (
  
  <div className="px-4 lg:px-5 pb-5 relative">
  <div className="w-14 h-14 lg:w-16 lg:h-16 -mt-7 lg:-mt-8 mb-3 bg-background rounded-xl p-1 shadow-sm border border-border relative z-10">
- <div className="w-full h-full bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold text-xl">
+ <div className="w-full h-full bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold text-section-title">
  {config.purpose === 'innovation' ? <Lightbulb className="w-7 h-7" /> : 
  config.purpose === 'community' ? <Users className="w-7 h-7" /> :
  config.name.charAt(0) || <Layout className="w-7 h-7" />}
@@ -250,7 +250,7 @@ const PreviewPanel = ({ config }: { config: SpaceConfig }) => (
  </div>
 
  <div>
- <h3 className="font-bold text-foreground text-[length:var(--text-lg)] lg:text-[length:var(--text-xl)]">{config.name || "Untitled Space"}</h3>
+ <h3 className="font-bold text-foreground text-[length:var(--text-subsection-title)] lg:text-[length:var(--text-section-title)]">{config.name || "Untitled Space"}</h3>
  <div className="flex items-center gap-2 text-caption text-muted-foreground mt-1">
  <span className="capitalize px-1.5 py-0.5 bg-muted rounded">{config.visibility}</span>
  <span>•</span>
@@ -627,7 +627,7 @@ export function CreateSpaceChat({ onClose }: { onClose: () => void }) {
  case 6:
  nextMsg = {
  id: Date.now().toString(), sender: "bot", type: "text", timestamp: new Date(),
- content: "That looks great! Now, add some tags to help people find this space (separate with commas).",
+ content: "That looks great! Now, add some tags to help people find this space (separate with commas)."
  };
  break;
  case 7:

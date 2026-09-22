@@ -14,7 +14,7 @@ const recentSpaces = [
     image:
       "https://images.unsplash.com/photo-1623652554515-91c833e3080e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsYWJvcmF0aW9uJTIwdGVhbXdvcmslMjBpbm5vdmF0aW9uJTIwZGVzaWduJTIwdGhpbmtpbmclMjB3b3Jrc2hvcHxlbnwxfHx8fDE3NjkwODc1ODd8MA&ixlib=rb-4.1.0&q=80&w=1080",
     isPrivate: true,
-    initials: "IL",
+    initials: "IL"
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const recentSpaces = [
     image:
       "https://images.unsplash.com/photo-1735639013995-086e648eaa38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxicmFpbnN0b3JtaW5nJTIwY3JlYXRpdmUlMjB3b3Jrc2hvcCUyMHRlYW18ZW58MXx8fHwxNzY5MDg3NTg3fDA&ixlib=rb-4.1.0&q=80&w=1080",
     isPrivate: false,
-    initials: "DW",
+    initials: "DW"
   },
   {
     id: 3,
@@ -32,7 +32,7 @@ const recentSpaces = [
     image:
       "https://images.unsplash.com/photo-1768659347532-74d3b1efb0ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBtZWV0aW5nJTIwY29sbGFib3JhdGlvbiUyMHRlYW18ZW58MXx8fHwxNzY5MDg3NTg3fDA&ixlib=rb-4.1.0&q=80&w=1080",
     isPrivate: true,
-    initials: "TS",
+    initials: "TS"
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const recentSpaces = [
     image:
       "https://images.unsplash.com/photo-1676276376052-dc9c9c0b6917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbm5vdmF0aW9uJTIwbGFiJTIwdGVhbXdvcmslMjBtb2Rlcm4lMjBvZmZpY2V8ZW58MXx8fHwxNzY5MDg3NTg2fDA&ixlib=rb-4.1.0&q=80&w=1080",
     isPrivate: false,
-    initials: "FS",
+    initials: "FS"
   },
 ];
 
@@ -51,12 +51,12 @@ export function RecentSpaces() {
   const { hasContainerActivity } = useActivityIndicators();
 
   return (
-    <div className="space-y-4" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="space-y-4" >
       <div className="flex items-center justify-between">
         <h2
-          className="text-section-title font-bold"
+          className="text-section-title"
           style={{
-            color: "var(--foreground)",
+            color: "var(--foreground)"
           }}
         >
           Recent Spaces
@@ -73,7 +73,7 @@ export function RecentSpaces() {
               background: "var(--card)",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius)",
-              boxShadow: "none",
+              boxShadow: "none"
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.boxShadow = "var(--elevation-sm)")
@@ -95,7 +95,7 @@ export function RecentSpaces() {
                   style={{
                     background:
                       "color-mix(in srgb, var(--foreground) 50%, transparent)",
-                    color: "var(--primary-foreground)",
+                    color: "var(--primary-foreground)"
                   }}
                 >
                   <Lock className="w-3 h-3" />
@@ -107,7 +107,7 @@ export function RecentSpaces() {
               <div
                 className="w-10 h-10 rounded-lg shrink-0 overflow-hidden"
                 style={{
-                  border: "1.5px solid var(--border)",
+                  border: "1.5px solid var(--border)"
                 }}
               >
                 <img src={space.image} alt={space.name} className="w-full h-full object-cover" />
@@ -116,7 +116,7 @@ export function RecentSpaces() {
                 <h3
                   className="truncate text-card-title"
                   style={{
-                    color: "var(--card-foreground)",
+                    color: "var(--card-foreground)"
                   }}
                 >
                   {space.name}

@@ -4,18 +4,18 @@ import {
   Users as UsersIcon,
   MessageSquare,
   Plus,
-  BellOff,
+  BellOff
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { useMessagingHub } from "@/app/contexts/MessagingHubContext";
 import { CONVERSATIONS, type Conversation } from "./messagingData";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
-} from "@/app/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+  TooltipTrigger
+} from "@/crd/primitives/tooltip";
+import { cn } from "@/crd/lib/utils";
 
 /**
  * ChatRail — A collapsed vertical bar on the right side showing conversation icons.
@@ -46,7 +46,7 @@ export function ChatRail() {
         style={{
           width: 64,
           background: "var(--sidebar)",
-          borderLeft: "1px solid var(--sidebar-border)",
+          borderLeft: "1px solid var(--sidebar-border)"
         }}
       >
         {/* Header area — aligns with main header height */}
@@ -54,7 +54,7 @@ export function ChatRail() {
           className="flex items-center justify-center shrink-0"
           style={{
             height: 64,
-            borderBottom: "1px solid var(--sidebar-border)",
+            borderBottom: "1px solid var(--sidebar-border)"
           }}
         >
           <Tooltip>
@@ -66,7 +66,7 @@ export function ChatRail() {
                   width: 38,
                   height: 38,
                   background: "var(--sidebar-accent)",
-                  color: "var(--sidebar-foreground)",
+                  color: "var(--sidebar-foreground)"
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = "var(--sidebar-primary)";
@@ -89,9 +89,8 @@ export function ChatRail() {
                       padding: "0 4px",
                       background: "var(--primary)",
                       color: "var(--primary-foreground)",
-                      border: "2px solid var(--sidebar)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      border: "2px solid var(--sidebar)"
+                      }}
                   >
                     {totalUnread}
                   </span>
@@ -101,10 +100,7 @@ export function ChatRail() {
             <TooltipContent side="left" sideOffset={8}>
               <span
                 className="text-body"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                }}
-              >
+                >
                 All Messages
               </span>
             </TooltipContent>
@@ -115,7 +111,7 @@ export function ChatRail() {
         <div
           className="flex-1 overflow-y-auto overflow-x-hidden py-3 flex flex-col items-center gap-1"
           style={{
-            scrollbarWidth: "none",
+            scrollbarWidth: "none"
           }}
         >
           {sortedConversations.map((conv) => (
@@ -133,7 +129,7 @@ export function ChatRail() {
               height: 1,
               background: "var(--sidebar-border)",
               margin: "6px 0",
-              flexShrink: 0,
+              flexShrink: 0
             }}
           />
 
@@ -148,7 +144,7 @@ export function ChatRail() {
                   height: 40,
                   color: "var(--sidebar-foreground)",
                   opacity: 0.5,
-                  border: "1px dashed var(--sidebar-border)",
+                  border: "1px dashed var(--sidebar-border)"
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = "var(--sidebar-accent)";
@@ -165,10 +161,7 @@ export function ChatRail() {
             <TooltipContent side="left" sideOffset={8}>
               <span
                 className="text-body"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                }}
-              >
+                >
                 New Message
               </span>
             </TooltipContent>
@@ -186,7 +179,7 @@ export function ChatRail() {
 
 function ChatRailItem({
   conversation,
-  onClick,
+  onClick
 }: {
   conversation: Conversation;
   onClick: () => void;
@@ -201,7 +194,7 @@ function ChatRailItem({
           className="relative flex items-center justify-center rounded-md transition-all shrink-0"
           style={{
             width: 40,
-            height: 40,
+            height: 40
           }}
           onMouseEnter={(e) =>
             (e.currentTarget.style.background = "var(--sidebar-accent)")
@@ -216,7 +209,7 @@ function ChatRailItem({
               style={{
                 width: 32,
                 height: 32,
-                border: "1px solid var(--border)",
+                border: "1px solid var(--border)"
               }}
             >
               <AvatarImage src={conversation.avatar} alt={conversation.name} />
@@ -224,9 +217,8 @@ function ChatRailItem({
                 className="text-badge"
                 style={{
                   background: "var(--secondary)",
-                  color: "var(--secondary-foreground)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  color: "var(--secondary-foreground)"
+                  }}
               >
                 {conversation.initials}
               </AvatarFallback>
@@ -239,9 +231,8 @@ function ChatRailItem({
                 height: 32,
                 borderRadius: "calc(var(--radius))",
                 background: conversation.avatarColor ?? "var(--secondary)",
-                color: "var(--primary-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--primary-foreground)"
+                }}
             >
               {conversation.type === "space" ? (
                 <Hash style={{ width: 15, height: 15 }} />
@@ -261,7 +252,7 @@ function ChatRailItem({
                 background: "var(--success)",
                 border: "2px solid var(--sidebar)",
                 bottom: 4,
-                right: 4,
+                right: 4
               }}
             />
           )}
@@ -278,9 +269,8 @@ function ChatRailItem({
                 padding: "0 3px",
                 background: "var(--success)",
                 color: "var(--primary-foreground)",
-                border: "2px solid var(--sidebar)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                border: "2px solid var(--sidebar)"
+                }}
             >
               {conversation.unread}
             </span>
@@ -292,7 +282,7 @@ function ChatRailItem({
               className="absolute"
               style={{
                 bottom: 2,
-                right: 2,
+                right: 2
               }}
             >
               <BellOff
@@ -300,7 +290,7 @@ function ChatRailItem({
                   width: 8,
                   height: 8,
                   color: "var(--muted-foreground)",
-                  opacity: 0.5,
+                  opacity: 0.5
                 }}
               />
             </span>
@@ -312,9 +302,8 @@ function ChatRailItem({
           <span
             className={cn("text-body", hasUnread && "font-semibold")}
             style={{
-              color: "var(--popover-foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--popover-foreground)"
+              }}
           >
             {conversation.name}
           </span>
@@ -322,8 +311,7 @@ function ChatRailItem({
             className="truncate text-caption"
             style={{
               color: "var(--muted-foreground)",
-              fontFamily: "'Inter', sans-serif",
-              maxWidth: 200,
+              maxWidth: 200
             }}
           >
             {conversation.lastMessage}
@@ -332,9 +320,8 @@ function ChatRailItem({
             <span
               className="text-badge"
               style={{
-                color: "var(--primary)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--primary)"
+                }}
             >
               {conversation.unread} unread
             </span>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 type IconColor = 'primary' | 'purple' | 'orange' | 'green' | 'blue' | 'rose' | 'amber';
 
@@ -11,7 +11,7 @@ const ICON_COLORS: Record<IconColor, string> = {
   green: "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
   blue: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
   rose: "bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400",
-  amber: "bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400",
+  amber: "bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400"
 };
 
 interface SettingsSectionProps {
@@ -38,7 +38,7 @@ export function SettingsSection({
   open,
   onOpenChange,
   children,
-  className,
+  className
 }: SettingsSectionProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
   // Controlled when `open` is supplied — lets a caller react to the toggle

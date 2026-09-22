@@ -1,9 +1,9 @@
 import { useParams, Link } from "react-router";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Separator } from "@/app/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { Button } from "@/crd/primitives/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/crd/primitives/card";
+import { Separator } from "@/crd/primitives/separator";
 import {
   Bot,
   Settings,
@@ -25,7 +25,7 @@ import {
   CircuitBoard,
   Eye,
   Database,
-  ShieldCheck,
+  ShieldCheck
 } from "lucide-react";
 import { TransparencyCard } from "@/app/components/vc/TransparencyCard";
 import { FunctionalityCard } from "@/app/components/vc/FunctionalityCard";
@@ -44,7 +44,7 @@ export default function VCProfilePage() {
     host: {
       name: "Jeroen Nijkamp",
       avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      slug: "jnijkamp",
+      slug: "jnijkamp"
     },
     references: [
       { name: "UX Design Guidelines", url: "#" },
@@ -54,7 +54,7 @@ export default function VCProfilePage() {
       type: "space" as const,
       sourceName: "Lux-Lab",
       sourceAvatarUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80",
-      sourceSlug: "lux-lab",
+      sourceSlug: "lux-lab"
     },
     functionality: {
       capabilities: [
@@ -67,7 +67,7 @@ export default function VCProfilePage() {
         { label: "Posts & Contributions", enabled: false },
         { label: "Subspaces", enabled: false },
       ],
-      roleRequirements: "This VC needs to be granted **member rights** to function correctly",
+      roleRequirements: "This VC needs to be granted **member rights** to function correctly"
     },
     aiEngine: {
       name: "Alkemio AI",
@@ -76,8 +76,8 @@ export default function VCProfilePage() {
       knowledgeRestriction: true,
       webAccess: false,
       physicalLocation: "Sweden, EU",
-      technicalReferencesUrl: "#",
-    },
+      technicalReferencesUrl: "#"
+    }
   };
 
   return (

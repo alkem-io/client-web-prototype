@@ -10,7 +10,7 @@ import type { Person } from '../core/types';
 export function Cursor({
   person,
   at,
-  label,
+  label
 }: {
   person: Person;
   at: [number, number];

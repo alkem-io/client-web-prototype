@@ -35,7 +35,7 @@ export function SubspaceHeader({
   parentAvatarColor,
   onInfoClick,
   actionButtons,
-  variant = 1,
+  variant = 1
 }: SubspaceHeaderProps) {
   const scaledContainer = { maxWidth: 1536, margin: "0 auto", width: "100%" };
   const usesScaling = variant !== 1;
@@ -88,7 +88,7 @@ export function SubspaceHeader({
         style={{
           paddingTop: 12,
           paddingBottom: 12,
-          ...(!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : {}),
+          ...(!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : {})
         }}
       >
         <div style={usesScaling ? scaledContainer : undefined}>
@@ -102,7 +102,7 @@ export function SubspaceHeader({
                 </div>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.4 }}>
+                <p className="text-muted-foreground truncate text-body" style={{ lineHeight: 1.4 }}>
                   {description}
                 </p>
                 {actionButtons && (
@@ -123,7 +123,7 @@ export function SubspaceHeader({
                   </div>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.5 }}>
+                  <p className="text-muted-foreground truncate text-body" style={{ lineHeight: 1.5 }}>
                     {description}
                   </p>
                   {actionButtons && (

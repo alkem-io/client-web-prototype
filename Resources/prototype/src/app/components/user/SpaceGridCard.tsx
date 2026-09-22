@@ -1,8 +1,8 @@
-import { Badge } from "@/app/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { Card, CardContent, CardHeader } from "@/crd/primitives/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { Lock, Users, Globe, ShieldCheck } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface SpaceGridCardProps {
   title: string;
@@ -21,7 +21,7 @@ export function SpaceGridCard({
   isPrivate = false,
   role = "member",
   imageUrl,
-  className,
+  className
 }: SpaceGridCardProps) {
   return (
     <Card className={cn("overflow-hidden hover:shadow-md transition-all duration-300 group cursor-pointer h-full flex flex-col", className)}>

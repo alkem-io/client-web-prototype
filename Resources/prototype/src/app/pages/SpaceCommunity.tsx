@@ -8,7 +8,7 @@ export function SpaceCommunity() {
       <hr
         style={{
           border: "none",
-          borderTop: "1px solid var(--border)",
+          borderTop: "1px solid var(--border)"
         }}
       />
       <CommunityFeed />

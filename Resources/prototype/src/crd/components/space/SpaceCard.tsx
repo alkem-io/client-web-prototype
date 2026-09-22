@@ -1,0 +1,299 @@
+import { Globe, Lock, Pin, UserCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { CollapsibleTagList } from '@/crd/components/common/CollapsibleTagList';
+import { StackedAvatars } from '@/crd/components/common/StackedAvatars';
+import { backgroundGradient } from '@/crd/lib/backgroundGradient';
+import { cn } from '@/crd/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
+
+export type SpaceLead = {
+  name: string;
+  avatarUrl: string;
+  type: 'person' | 'org';
+};
+
+export type SpaceCardParent = {
+  name: string;
+  href: string;
+  avatarUrl?: string;
+  initials: string;
+  avatarColor: string;
+};
+
+/** Plain visibility variant (no GraphQL enum) used to drive the banner label. */
+export type SpaceCardVisibility = 'active' | 'demo' | 'inactive' | 'archived';
+
+// Label keys for the visibilities that get a banner ribbon. `active` is intentionally
+// absent — an active Space shows no ribbon.
+const VISIBILITY_LABEL_KEY = {
+  demo: 'crd-common:visibility.demo',
+  inactive: 'crd-common:visibility.inactive',
+  archived: 'crd-common:visibility.archived',
+} as const;
+
+export type SpaceCardData = {
+  id: string;
+  name: string;
+  description: string;
+  bannerImageUrl?: string;
+  /** Optional avatar image. When omitted the avatar renders initials on a coloured background. */
+  avatarUrl?: string;
+  initials: string;
+  /**
+   * Accent colour used for (1) the deterministic gradient on the banner when `bannerImageUrl` is
+   * missing, and (2) the avatar fallback when `avatarUrl` is missing. Always required for the
+   * banner gradient, even for L0 spaces that suppress the avatar block entirely.
+   */
+  avatarColor: string;
+  /**
+   * Suppress the avatar block (StackedAvatars) entirely. Set for L0 spaces, which per the
+   * canonical visual-fields rule do not show an avatar in cards (cards = title + cardBanner only).
+   */
+  hideAvatar?: boolean;
+  isPrivate: boolean;
+  isMember?: boolean;
+  isPinned?: boolean;
+  tags: string[];
+  leads: SpaceLead[];
+  href: string;
+  matchedTerms?: boolean;
+  parent?: SpaceCardParent;
+  /** Lifecycle status used for filter pills (e.g. 'active', 'archived'). */
+  status?: string;
+  /**
+   * Space visibility. When provided and not `active`, a centered ribbon (Demo / Inactive /
+   * Archived) is shown at the top of the banner — mirrors the MUI card. Omit (or `active`)
+   * to show no ribbon.
+   */
+  visibility?: SpaceCardVisibility;
+};
+
+export type SpaceCardProps = {
+  space: SpaceCardData;
+  onClick?: (space: SpaceCardData) => void;
+  onParentClick?: (parent: SpaceCardParent) => void;
+  className?: string;
+};
+
+const MAX_VISIBLE_LEADS = 4;
+
+export function SpaceCard({ space, onClick, onParentClick, className }: SpaceCardProps) {
+  const { t } = useTranslation(['crd-exploreSpaces', 'crd-common']);
+
+  const visibleLeads = space.leads.slice(0, MAX_VISIBLE_LEADS);
+  const overflowCount = space.leads.length - MAX_VISIBLE_LEADS;
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick(space);
+    }
+  };
+
+  return (
+    <a
+      href={space.href}
+      onClick={handleClick}
+      className={cn(
+        'group block h-full outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl',
+        className
+      )}
+    >
+      <article className="h-full flex flex-col rounded-xl bg-card border border-border shadow-none hover:shadow-[var(--elevation-sm)] hover:border-primary/30 transition-all duration-300">
+        {/* Banner Image */}
+        <div className="relative z-0">
+          <div className="overflow-hidden rounded-t-xl aspect-video">
+            {space.bannerImageUrl ? (
+              <img
+                src={space.bannerImageUrl}
+                alt={space.name}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <div className="w-full h-full" style={backgroundGradient(space.avatarColor)} aria-hidden="true" />
+            )}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(to top, color-mix(in srgb, var(--foreground) 25%, transparent) 0%, transparent 50%)',
+              }}
+            />
+          </div>
+
+          {/* Visibility ribbon — centered at the top of the banner for non-active Spaces
+              (Demo / Inactive / Archived), mirroring the MUI card. */}
+          {space.visibility && space.visibility !== 'active' && (
+            <span className="absolute top-0 left-1/2 z-[3] -translate-x-1/2 rounded-b-xl bg-primary px-3 py-1 text-caption font-semibold text-primary-foreground">
+              {t(VISIBILITY_LABEL_KEY[space.visibility])}
+            </span>
+          )}
+
+          {/* Member badge */}
+          {space.isMember && (
+            <div className="absolute top-3 left-4 z-[3]">
+              <output className="flex items-center gap-1 px-2 py-1 rounded-full bg-white text-primary text-badge">
+                <UserCheck aria-hidden="true" className="size-2.5" />
+                <span>{t('crd-common:member')}</span>
+              </output>
+            </div>
+          )}
+
+          {/* Privacy + pin badges */}
+          <div className="absolute top-3 right-3 z-[3] flex items-center gap-1">
+            {space.isPinned && (
+              <span className="flex items-center gap-1 px-2 py-1 rounded-full backdrop-blur-sm text-badge bg-background/85 text-foreground">
+                <Pin aria-hidden="true" className="size-2.5" />
+                <span className="sr-only">{t('crd-common:pinned')}</span>
+              </span>
+            )}
+            <div
+              className={cn(
+                'flex items-center gap-1 px-2 py-1 rounded-full backdrop-blur-sm text-badge',
+                space.isPrivate ? 'bg-foreground/50 text-primary-foreground' : 'bg-background/85 text-foreground'
+              )}
+            >
+              {space.isPrivate ? (
+                <Lock aria-hidden="true" className="size-2.5" />
+              ) : (
+                <Globe aria-hidden="true" className="size-2.5" />
+              )}
+              <span>{space.isPrivate ? t('crd-common:private') : t('crd-common:public')}</span>
+            </div>
+          </div>
+
+          {/* Space avatar — overlaps banner and card body. L0 cards (hideAvatar=true) suppress
+              this block entirely per the canonical visual-fields rule (L0 has no avatar). */}
+          {!space.hideAvatar && (
+            <div className="absolute left-4 -bottom-[18px] z-10">
+              <StackedAvatars
+                primary={{
+                  initials: space.initials,
+                  avatarColor: space.avatarColor,
+                  avatarUrl: space.avatarUrl,
+                  name: space.name,
+                }}
+                secondary={
+                  space.parent
+                    ? {
+                        initials: space.parent.initials,
+                        avatarUrl: space.parent.avatarUrl,
+                        avatarColor: space.parent.avatarColor,
+                        name: space.parent.name,
+                      }
+                    : undefined
+                }
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Card Body. pt-6 leaves room for the avatar overlap; pt-4 when there's no avatar (L0). */}
+        <div className={cn('flex flex-col flex-1 px-4 pb-4', space.hideAvatar ? 'pt-4' : 'pt-6')}>
+          {/* Name */}
+          <h3 className="truncate text-card-title text-card-foreground transition-colors duration-200">{space.name}</h3>
+
+          {/* Parent indicator for subspaces */}
+          {space.parent && (
+            <p className="truncate text-caption text-muted-foreground mt-0.5">
+              {t('spaces.in')}:{' '}
+              <button
+                type="button"
+                className="text-muted-foreground hover:underline cursor-pointer bg-transparent border-none p-0 font-inherit text-caption focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none rounded-sm"
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (space.parent) onParentClick?.(space.parent);
+                }}
+              >
+                {space.parent.name}
+              </button>
+            </p>
+          )}
+
+          {/* Description */}
+          <p className="line-clamp-2 text-body text-muted-foreground mt-2">{space.description}</p>
+
+          {/* Tags — capped at 2 rows that fit the card width: long tags
+              truncate (hover shows full), the overflow collapses into a +N
+              badge (hover lists the rest). Clicks inside this row don't
+              trigger card navigation. */}
+          {space.tags.length > 0 && (
+            // biome-ignore lint/a11y/noStaticElementInteractions: click-intercept wrapper (not an actionable element)
+            // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard activation happens on inner interactive elements; this only blocks pointer bubbling
+            <div
+              className="mt-2.5 mb-4 min-w-0"
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <CollapsibleTagList tags={space.tags} />
+            </div>
+          )}
+        </div>
+
+        {/* Card Footer — Leads only */}
+        {space.leads.length > 0 && (
+          <div className="flex items-center mt-3 px-4 py-3 border-t border-border">
+            <div className="flex items-center gap-2">
+              <span className="text-label text-muted-foreground uppercase">{t('crd-common:leads')}</span>
+              <div className="flex -space-x-2">
+                {visibleLeads.map(lead => (
+                  <Avatar
+                    key={lead.name}
+                    className="size-[26px] border-2 border-card"
+                    aria-label={`${lead.name} (${t(`crd-common:leadType.${lead.type}`)})`}
+                  >
+                    <AvatarImage src={lead.avatarUrl} alt="" />
+                    <AvatarFallback
+                      className={cn(
+                        'text-badge',
+                        lead.type === 'org'
+                          ? 'bg-accent text-accent-foreground'
+                          : 'bg-secondary text-secondary-foreground'
+                      )}
+                    >
+                      {lead.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                ))}
+                {overflowCount > 0 && (
+                  <span className="flex items-center justify-center size-[26px] border-2 border-card rounded-full bg-muted text-badge text-muted-foreground">
+                    <span aria-hidden="true">+{overflowCount}</span>
+                    <span className="sr-only">{t('spaces.moreLeads', { count: overflowCount })}</span>
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </article>
+    </a>
+  );
+}
+
+export function SpaceCardSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-xl animate-pulse bg-card border border-border">
+      <div className="aspect-video bg-muted" />
+      <div className="px-4 pt-6">
+        <div className="rounded w-[70%] h-3.5 bg-muted mb-2" />
+        <div className="rounded w-full h-3 bg-muted mb-1" />
+        <div className="rounded w-[60%] h-3 bg-muted mb-3" />
+        <div className="flex gap-1.5">
+          <div className="rounded-full w-12 h-[18px] bg-muted" />
+          <div className="rounded-full w-14 h-[18px] bg-muted" />
+        </div>
+      </div>
+      <div className="flex items-center justify-between px-4 py-3 mt-3 border-t border-border">
+        <div className="flex -space-x-2">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="rounded-full border-2 size-[26px] bg-muted border-card" />
+          ))}
+        </div>
+        <div className="rounded w-10 h-3 bg-muted" />
+      </div>
+    </div>
+  );
+}

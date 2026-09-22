@@ -20,13 +20,13 @@
  */
 import { useState } from "react";
 import { ArrowUpRight, Signature } from "lucide-react";
-import { Button, type ButtonProps } from "@/app/components/ui/button";
+import { Button, type ButtonProps } from "@/crd/primitives/button";
 import {
   HoverCard,
   HoverCardContent,
-  HoverCardTrigger,
+  HoverCardTrigger
 } from "@/app/components/ui/hover-card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { CLEVERBASE_DOCS_URL } from "./signingData";
 
 interface SignMemoButtonProps extends Omit<ButtonProps, "onClick"> {

@@ -10,7 +10,7 @@ import {
   MessageSquare,
   Presentation,
   Settings,
-  StickyNote,
+  StickyNote
 } from 'lucide-react';
 import { type MouseEvent as ReactMouseEvent, type ReactNode, useState, useRef, useEffect, useCallback } from 'react';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
@@ -18,32 +18,32 @@ import { ActivityDot } from '@/app/components/shared/ActivityDot';
 import { postItem } from '@/app/data/activity-data';
 import {
   CalloutCollaboraPreview,
-  type CollaboraDocumentPreviewType,
+  type CollaboraDocumentPreviewType
 } from '@/app/components/callout/CalloutCollaboraPreview';
 import type { CalloutFormData } from '@/app/components/callout/calloutFormTypes';
-import { CalloutLinkAction } from '@/app/components/callout/CalloutLinkAction';
+import { CalloutLinkAction } from '@/crd/components/callout/CalloutLinkAction';
 import {
   ReferencesAndTagsStrip,
-  type ReferencesAndTagsStripReference,
-} from '@/app/components/callout/ReferencesAndTagsStrip';
+  type ReferencesAndTagsStripReference
+} from '@/crd/components/callout/ReferencesAndTagsStrip';
 import {
   MediaGalleryFeedGrid,
-  type MediaGalleryFeedThumbnail,
+  type MediaGalleryFeedThumbnail
 } from '@/app/components/mediaGallery/MediaGalleryFeedGrid';
 
 export type { MediaGalleryFeedThumbnail };
-import { cn } from '@/lib/utils';
+import { cn } from '@/crd/lib/utils';
 import { PostReactions } from '@/app/components/space/PostReactions';
 import {
   type PostReaction,
   seedDemoReactions,
-  toggleReaction,
+  toggleReaction
 } from '@/app/components/space/post-reactions-data';
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
-import { Badge } from '@/app/components/ui/badge';
-import { Button } from '@/app/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/app/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/app/components/ui/collapsible';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
+import { Badge } from '@/crd/primitives/badge';
+import { Button } from '@/crd/primitives/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/crd/primitives/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/crd/primitives/collapsible';
 
 export type PostType = 'text' | 'whiteboard' | 'memo' | 'mediaGallery' | 'document' | 'callToAction' | 'poll';
 
@@ -71,7 +71,7 @@ export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKe
   document: { icon: FileText, labelKey: 'callout.document', label: 'Document' },
   mediaGallery: { icon: Images, labelKey: 'callout.mediaGallery', label: 'Media Gallery' },
   callToAction: { icon: Megaphone, labelKey: 'callout.callToAction', label: 'Call to Action' },
-  poll: { icon: BarChart3, labelKey: 'callout.poll', label: 'Poll' },
+  poll: { icon: BarChart3, labelKey: 'callout.poll', label: 'Poll' }
 };
 
 /**
@@ -83,7 +83,7 @@ function SimpleExpandableText({
   content,
   maxLines = 3,
   defaultExpanded = false,
-  embeddedImages,
+  embeddedImages
 }: {
   content: string;
   maxLines?: number;
@@ -343,7 +343,7 @@ export function PostCard({
   onReactionsChange,
   reactionsEnabled = true,
   canReact = true,
-  className,
+  className
 }: PostCardProps) {
   const TypeIcon = post.type && POST_TYPE_DESCRIPTORS[post.type] ? POST_TYPE_DESCRIPTORS[post.type].icon : FileText;
   const hasCollapsibleComments = commentsSlot !== undefined;
@@ -608,7 +608,7 @@ export function PostCard({
             className="relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 h-32 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {post.framingMemoMarkdown ? (
-              <div className="p-3 h-full overflow-hidden text-sm text-foreground line-clamp-4">
+              <div className="p-3 h-full overflow-hidden text-body text-foreground line-clamp-4">
                 {post.framingMemoMarkdown}
               </div>
             ) : (

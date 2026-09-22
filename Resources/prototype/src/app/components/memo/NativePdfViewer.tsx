@@ -24,9 +24,9 @@ import {
   Printer,
   Redo2,
   RotateCw,
-  Undo2,
+  Undo2
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface NativePdfViewerProps {
   fileName?: string;
@@ -79,7 +79,7 @@ export function NativePdfViewer({
   markdown,
   zoom = 100,
   showThumbnails = true,
-  className,
+  className
 }: NativePdfViewerProps) {
   // The page renders at the zoom the browser reports, so the 52% case looks
   // exactly as cramped here as it does in the screenshot.
@@ -140,7 +140,7 @@ export function NativePdfViewer({
             style={{
               width: 612,
               height: 792,
-              transform: `scale(${scale})`,
+              transform: `scale(${scale})`
             }}
           >
             <div className="px-16 pb-14 pt-16">

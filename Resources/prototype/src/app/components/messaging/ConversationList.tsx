@@ -6,10 +6,10 @@ import {
   Users as UsersIcon,
   BellOff,
   MessageSquare,
-  ArrowUpRight,
+  ArrowUpRight
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import type { Conversation, ConversationType } from "./messagingData";
 
 type FilterType = "all" | "dm" | "group" | "space";
@@ -47,7 +47,7 @@ export function ConversationList({
   searchQuery,
   onSearchChange,
   spaceChannelNavigates = false,
-  spaceNavigateLabel,
+  spaceNavigateLabel
 }: ConversationListProps) {
   const [filter, setFilter] = useState<FilterType>("all");
 
@@ -99,12 +99,11 @@ export function ConversationList({
               )}
               style={{
                 padding: "4px 12px",
-                fontFamily: "'Inter', sans-serif",
                 background: isActive ? "var(--primary)" : "var(--secondary)",
                 color: isActive
                   ? "var(--primary-foreground)"
                   : "var(--muted-foreground)",
-                border: "none",
+                border: "none"
               }}
             >
               {opt.label}
@@ -120,9 +119,8 @@ export function ConversationList({
                       : "var(--primary)",
                     color: isActive
                       ? "var(--primary)"
-                      : "var(--primary-foreground)",
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                      : "var(--primary-foreground)"
+                    }}
                 >
                   {unread}
                 </span>
@@ -139,7 +137,7 @@ export function ConversationList({
           style={{
             background: "var(--input-background)",
             border: "1px solid var(--border)",
-            borderRadius: "var(--radius)",
+            borderRadius: "var(--radius)"
           }}
         >
           <Search
@@ -148,7 +146,7 @@ export function ConversationList({
               left: 10,
               width: 14,
               height: 14,
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           />
           <input
@@ -159,9 +157,8 @@ export function ConversationList({
             className="w-full bg-transparent outline-none text-body"
             style={{
               padding: "7px 30px 7px 32px",
-              color: "var(--foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--foreground)"
+              }}
           />
           {searchQuery && (
             <button
@@ -169,7 +166,7 @@ export function ConversationList({
               className="absolute p-1 rounded-sm"
               style={{
                 right: 6,
-                color: "var(--muted-foreground)",
+                color: "var(--muted-foreground)"
               }}
             >
               <X style={{ width: 12, height: 12 }} />
@@ -191,15 +188,14 @@ export function ConversationList({
                 height: 32,
                 color: "var(--muted-foreground)",
                 opacity: 0.4,
-                marginBottom: 12,
+                marginBottom: 12
               }}
             />
             <p
               className="text-body"
               style={{
                 color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
-                maxWidth: 240,
+                maxWidth: 240
               }}
             >
               {searchQuery
@@ -229,7 +225,7 @@ function ConversationItem({
   conversation,
   onClick,
   navigatesOut = false,
-  navigateLabel,
+  navigateLabel
 }: {
   conversation: Conversation;
   onClick: () => void;
@@ -247,7 +243,7 @@ function ConversationItem({
           style={{
             width: 10,
             height: 10,
-            color: "var(--muted-foreground)",
+            color: "var(--muted-foreground)"
           }}
         />
       );
@@ -257,7 +253,7 @@ function ConversationItem({
           style={{
             width: 10,
             height: 10,
-            color: "var(--muted-foreground)",
+            color: "var(--muted-foreground)"
           }}
         />
       );
@@ -272,7 +268,7 @@ function ConversationItem({
         padding: "10px 16px",
         background: hasUnread
           ? "color-mix(in srgb, var(--primary) 4%, transparent)"
-          : "transparent",
+          : "transparent"
       }}
       onMouseEnter={(e) =>
         (e.currentTarget.style.background = hasUnread
@@ -294,9 +290,8 @@ function ConversationItem({
               className="text-caption font-semibold"
               style={{
                 background: "var(--secondary)",
-                color: "var(--secondary-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--secondary-foreground)"
+                }}
             >
               {conversation.initials}
             </AvatarFallback>
@@ -311,9 +306,8 @@ function ConversationItem({
               background: conversation.avatarColor ?? "var(--secondary)",
               color: "var(--primary-foreground)",
               fontSize: "13px",
-              fontWeight: 700,
-              fontFamily: "'Inter', sans-serif",
-            }}
+              fontWeight: 700
+              }}
           >
             {conversation.type === "space" ? (
               <Hash style={{ width: 18, height: 18 }} />
@@ -333,7 +327,7 @@ function ConversationItem({
               background: "var(--success)",
               border: "2px solid var(--card)",
               bottom: 0,
-              right: 0,
+              right: 0
             }}
           />
         )}
@@ -349,9 +343,8 @@ function ConversationItem({
                 hasUnread && "font-semibold",
               )}
               style={{
-                color: "var(--foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--foreground)"
+                }}
             >
               {conversation.name}
             </span>
@@ -362,7 +355,7 @@ function ConversationItem({
                   width: 10,
                   height: 10,
                   color: "var(--muted-foreground)",
-                  opacity: 0.6,
+                  opacity: 0.6
                 }}
               />
             )}
@@ -372,9 +365,8 @@ function ConversationItem({
             style={{
               color: hasUnread
                 ? "var(--primary)"
-                : "var(--muted-foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+                : "var(--muted-foreground)"
+              }}
           >
             {conversation.timeLabel}
           </span>
@@ -386,9 +378,8 @@ function ConversationItem({
               color: hasUnread
                 ? "var(--foreground)"
                 : "var(--muted-foreground)",
-              margin: 0,
-              fontFamily: "'Inter', sans-serif",
-            }}
+              margin: 0
+              }}
           >
             {conversation.lastMessage}
           </p>
@@ -400,9 +391,8 @@ function ConversationItem({
                 height: 18,
                 padding: "0 5px",
                 background: "var(--primary)",
-                color: "var(--primary-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--primary-foreground)"
+                }}
             >
               {conversation.unread}
             </span>
@@ -414,9 +404,8 @@ function ConversationItem({
           <div
             className="flex items-center gap-1 mt-1 text-badge font-medium"
             style={{
-              color: "var(--primary)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--primary)"
+              }}
           >
             <ArrowUpRight style={{ width: 10, height: 10 }} />
             <span>{navigateLabel ?? "Open in Space drawer"}</span>
@@ -428,7 +417,7 @@ function ConversationItem({
                   height: 16,
                   padding: "0 4px",
                   background: "var(--primary)",
-                  color: "var(--primary-foreground)",
+                  color: "var(--primary-foreground)"
                 }}
               >
                 {conversation.unread}

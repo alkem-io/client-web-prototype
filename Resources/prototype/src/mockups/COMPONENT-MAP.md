@@ -14,8 +14,8 @@ Status is one of **exists** · **exists but differs** · **does not exist**.
 |---|---|---|---|
 | Post card | `@/app/components/space/PostCard` | exists | The UI calls it a Post; the data layer calls it a Callout (`callout.post`, `callout.whiteboard`, …). Takes `PostCardData`. |
 | Reactions | `@/app/components/space/PostReactions` | **exists but differs** | Renders **one pill** — the emoji given, then a single total. Never a count per emoji: *"sorting by count would rank them, which is the comparative signal this whole concept avoids."* Set is fixed platform-wide for v1: ❤️ 🙋 👏 💡 🎯 ✅ 🚀, warm-only by rule. One reaction per person per post. |
-| Tags on a post | `@/app/components/common/CollapsibleTagList` | **exists but differs** | Secondary badges in a wrap row in the card **body**, via `ReferencesAndTagsStrip` — not header pills. Capped at two rows with an exact `+N` chip. |
-| References / files | `@/app/components/callout/ReferencesAndTagsStrip` | exists | One line per reference; files get a muted chip treatment. |
+| Tags on a post | `@/crd/components/common/CollapsibleTagList` | **exists but differs** | Secondary badges in a wrap row in the card **body**, via `ReferencesAndTagsStrip` — not header pills. Capped at two rows with an exact `+N` chip. |
+| References / files | `@/crd/components/callout/ReferencesAndTagsStrip` | exists | One line per reference; files get a muted chip treatment. |
 | Document / spreadsheet preview | `@/app/components/callout/CalloutCollaboraPreview` | **exists but differs** | The integration is **Collabora**. The feed shows an icon, a type chip (`text` / `spreadsheet` / `presentation`) and an Open Document button — **not** the table. The spec's "header row plus three data rows" only exists once the document is opened. |
 | Whiteboard thumbnail | `@/app/components/contribution/ContributionWhiteboardCard` | exists | A static image thumbnail with an Open Whiteboard hover overlay; falls back to a `Presentation` glyph. **There is no canvas** — Excalidraw is not a dependency of this repo. |
 | Task board | `@/app/components/contribution/TaskBoard` | exists | A **response type** (`tasks`), not a body attachment. |
@@ -53,9 +53,9 @@ Plus comments on/off. A post can carry **both** an attachment and a response typ
 
 All **exist** and are used directly:
 
-`@/app/components/ui/avatar` · `@/app/components/ui/badge` · `@/app/components/ui/button` ·
-`@/app/components/ui/card` · `@/app/components/ui/separator` · `@/app/components/ui/tooltip` ·
-`@/app/components/ui/breadcrumb` · `@/app/components/ui/placeholder-card`
+`@/crd/primitives/avatar` · `@/crd/primitives/badge` · `@/crd/primitives/button` ·
+`@/crd/primitives/card` · `@/crd/primitives/separator` · `@/crd/primitives/tooltip` ·
+`@/crd/primitives/breadcrumb` · `@/app/components/ui/placeholder-card`
 
 ---
 

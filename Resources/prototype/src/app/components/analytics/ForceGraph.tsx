@@ -120,7 +120,7 @@ const calculateLayout = (
         const row = Math.floor(i / cols);
         positions[node.id] = {
           x: startX + col * spacing,
-          y: startY - row * spacing,
+          y: startY - row * spacing
         };
       });
     }
@@ -305,7 +305,7 @@ const Edge = React.memo(({
           opacity={isActive ? 0.08 : 0.04}
           style={{
             filter: 'blur(4px)',
-            transition: 'opacity 0.4s ease',
+            transition: 'opacity 0.4s ease'
           }}
         />
       )}
@@ -321,7 +321,7 @@ const Edge = React.memo(({
           opacity={flowOpacity}
           style={{
             animation: `edgeFlow ${flowSpeed}s linear infinite`,
-            transition: 'opacity 0.4s ease',
+            transition: 'opacity 0.4s ease'
           } as React.CSSProperties}
         />
       )}
@@ -342,7 +342,7 @@ const NodeItem = React.memo(({
   isNeighbor,
   onClick, 
   onHover,
-  onDrag,
+  onDrag
 }: { 
   node: Node;
   posX: number;
@@ -417,7 +417,7 @@ const NodeItem = React.memo(({
         transform: `translate(${posX - totalSize / 2}px, ${posY - totalSize / 2}px)`,
         width: totalSize, 
         height: totalSize,
-        willChange: 'transform',
+        willChange: 'transform'
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -444,7 +444,7 @@ const NodeItem = React.memo(({
           transform: isHovered ? 'scale(1.12)' : (isDimmed && !shouldHighlight ? 'scale(0.88)' : 'scale(1)'),
           transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
           cursor: 'grab',
-          background: 'var(--background)',
+          background: 'var(--background)'
         }}
       >
         {node.imageUrl ? (
@@ -473,8 +473,7 @@ const NodeItem = React.memo(({
           style={{
             top: hitPadding + size + 6,
             transform: 'translateX(-50%)',
-            fontFamily: "'Inter', sans-serif",
-            fontSize: isSelected ? 'var(--text-sm)' : '11px',
+            fontSize: isSelected ? 'var(--text-body)' : '11px',
             fontWeight: isSelected ? 600 : (node.type === 'space' && node.level === 'L0' ? 600 : 500),
             color: isSelected ? 'var(--primary-foreground)' : 'var(--foreground)',
             background: isSelected ? 'var(--primary)' : 'var(--background)',
@@ -483,7 +482,7 @@ const NodeItem = React.memo(({
             border: isSelected ? 'none' : '1px solid var(--border)',
             boxShadow: 'var(--elevation-sm)',
             opacity: shouldHighlight ? 1 : 0.85,
-            transition: 'all 0.2s ease',
+            transition: 'all 0.2s ease'
           }}
         >
           {node.label}
@@ -691,7 +690,7 @@ export function ForceGraph({
           vy: 0,
           tx: target.x,
           ty: target.y,
-          settled: true,
+          settled: true
         });
       }
     });
@@ -775,7 +774,7 @@ export function ForceGraph({
         height, 
         background: 'var(--background)',
         cursor: isPanningRef.current ? 'grabbing' : 'grab',
-        touchAction: 'none',
+        touchAction: 'none'
       }}
       onPointerDown={handleCanvasPointerDown}
       onPointerMove={handleCanvasPointerMove}
@@ -796,7 +795,7 @@ export function ForceGraph({
         className="absolute inset-0 pointer-events-none"
         style={{
           background: 'radial-gradient(ellipse at center, transparent 40%, var(--muted) 120%)',
-          opacity: 0.15,
+          opacity: 0.15
         }}
       />
 
@@ -808,7 +807,7 @@ export function ForceGraph({
           transform: `translate(${viewState.panX}px, ${viewState.panY}px) scale(${viewState.zoom})`,
           width,
           height,
-          willChange: 'transform',
+          willChange: 'transform'
         }}
       >
         {/* Map Overlay — Real Netherlands GeoJSON provinces */}
@@ -848,12 +847,11 @@ export function ForceGraph({
                   dominantBaseline="central"
                   style={{
                     fontSize: '8px',
-                    fontFamily: "'Inter', sans-serif",
                     fontWeight: 600,
                     letterSpacing: '0.06em',
                     fill: 'var(--muted-foreground)',
                     opacity: 0.35,
-                    textTransform: 'uppercase',
+                    textTransform: 'uppercase'
                   } as React.CSSProperties}
                 >
                   {prov.name}
@@ -877,10 +875,9 @@ export function ForceGraph({
                     y={y + 1}
                     style={{
                       fontSize: city.capital ? '9px' : '7px',
-                      fontFamily: "'Inter', sans-serif",
                       fontWeight: city.capital ? 600 : 400,
                       fill: 'var(--muted-foreground)',
-                      opacity: 0.4,
+                      opacity: 0.4
                     }}
                     dominantBaseline="central"
                   >
@@ -904,7 +901,7 @@ export function ForceGraph({
               height: cluster.radius * 2,
               background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)',
               opacity: 0.25,
-              transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+              transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
           />
         ))}
@@ -918,7 +915,6 @@ export function ForceGraph({
               left: cluster.x,
               top: cluster.y - cluster.radius - 8,
               transform: 'translateX(-50%)',
-              fontFamily: "'Inter', sans-serif",
               fontSize: '10px',
               fontWeight: 600,
               letterSpacing: '0.08em',
@@ -926,7 +922,7 @@ export function ForceGraph({
               color: 'var(--muted-foreground)',
               opacity: 0.45,
               whiteSpace: 'nowrap',
-              transition: 'all 0.6s ease',
+              transition: 'all 0.6s ease'
             }}
           >
             {cluster.label}
@@ -1008,11 +1004,10 @@ export function ForceGraph({
             background: 'var(--background)',
             border: '1px solid var(--border)',
             boxShadow: 'var(--elevation-sm)',
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 'var(--text-sm)',
+            fontSize: 'var(--text-body)',
             color: 'var(--muted-foreground)',
             opacity: 0.9,
-            backdropFilter: 'blur(8px)',
+            backdropFilter: 'blur(8px)'
           }}
         >
           <Globe style={{ width: 14, height: 14 }} />
@@ -1028,7 +1023,7 @@ export function ForceGraph({
           border: '1px solid var(--border)',
           borderRadius: 'var(--radius)',
           boxShadow: 'var(--elevation-sm)',
-          overflow: 'hidden',
+          overflow: 'hidden'
         }}
       >
         <button
@@ -1041,8 +1036,7 @@ export function ForceGraph({
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
-            transition: 'background 0.15s ease',
+            transition: 'background 0.15s ease'
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--accent)'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -1054,17 +1048,16 @@ export function ForceGraph({
           style={{
             width: '100%',
             height: 1,
-            background: 'var(--border)',
+            background: 'var(--border)'
           }}
         />
         <div
           style={{
-            fontFamily: "'Inter', sans-serif",
             fontSize: '10px',
             fontWeight: 500,
             color: 'var(--muted-foreground)',
             padding: '2px 0',
-            userSelect: 'none',
+            userSelect: 'none'
           }}
         >
           {zoomPercent}%
@@ -1073,7 +1066,7 @@ export function ForceGraph({
           style={{
             width: '100%',
             height: 1,
-            background: 'var(--border)',
+            background: 'var(--border)'
           }}
         />
         <button
@@ -1086,8 +1079,7 @@ export function ForceGraph({
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
-            transition: 'background 0.15s ease',
+            transition: 'background 0.15s ease'
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--accent)'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -1099,7 +1091,7 @@ export function ForceGraph({
           style={{
             width: '100%',
             height: 1,
-            background: 'var(--border)',
+            background: 'var(--border)'
           }}
         />
         <button
@@ -1112,8 +1104,7 @@ export function ForceGraph({
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
-            transition: 'background 0.15s ease',
+            transition: 'background 0.15s ease'
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--accent)'; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -1130,10 +1121,9 @@ export function ForceGraph({
           background: 'var(--background)',
           border: '1px solid var(--border)',
           boxShadow: 'var(--elevation-sm)',
-          fontFamily: "'Inter', sans-serif",
           fontSize: '11px',
           color: 'var(--muted-foreground)',
-          opacity: 0.7,
+          opacity: 0.7
         }}
       >
         <span>{nodes.length} nodes</span>

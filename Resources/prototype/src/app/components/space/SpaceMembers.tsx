@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Search, MoreHorizontal, UserPlus, User, MapPin, ExternalLink, Users, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Button } from "@/crd/primitives/button";
+import { Card, CardContent } from "@/crd/primitives/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuSeparator
+} from "@/crd/primitives/dropdown-menu";
 import { Link } from "react-router";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
@@ -61,7 +61,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     bio: "Community Host. Driving sustainable innovation in urban planning.",
     tags: ["Leads", "Members", "Active"],
     skills: ["Urban Planning", "Sustainability", "Community Design", "Policy", "Innovation", "Public Engagement"],
-    location: "Barcelona, ES",
+    location: "Barcelona, ES"
   },
   {
     id: "u2",
@@ -74,7 +74,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     bio: "Energy systems analyst with a passion for green tech.",
     tags: ["Leads", "Members", "Active"],
     skills: ["Energy Systems", "Green Tech", "Data Analysis", "Renewable Energy", "Smart Grids", "Python", "Research"],
-    location: "Amsterdam, NL",
+    location: "Amsterdam, NL"
   },
   {
     id: "u3",
@@ -87,7 +87,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     bio: "Focusing on community engagement and policy.",
     tags: ["Leads", "Active", "Members"],
     skills: ["Community Engagement", "Policy Analysis", "Stakeholder Management", "Facilitation", "Workshop Design"],
-    location: "Berlin, DE",
+    location: "Berlin, DE"
   },
   {
     id: "u4",
@@ -100,7 +100,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     bio: "",
     tags: ["Members", "Active"],
     skills: ["Software Development", "React", "TypeScript", "UX Design"],
-    location: "Seoul, KR",
+    location: "Seoul, KR"
   },
   {
     id: "u5",
@@ -113,7 +113,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
     bio: "",
     tags: ["Members"],
     skills: ["EU Policy", "Renewable Directives", "Legal", "Research", "Comparative Analysis", "Climate Law"],
-    location: "Brussels, BE",
+    location: "Brussels, BE"
   },
   ...Array.from({ length: 24 }).map((_, i) => ({
     id: `m${i + 6}`,
@@ -136,7 +136,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
         "BS", "EG", "JB", "VA",
       ][i] || `M${i + 6}`,
     bio: i % 3 === 0 ? "" : "Passionate about contributing to the community space.",
-    tags: i < 3 ? ["Leads", "Active", "Members"] : (i < 8 ? ["Members", "Active"] : ["Members"]),
+    tags: i < 3 ? ["Leads", "Active", "Members"] : (i < 8 ? ["Members", "Active"] : ["Members"])
   })),
 ];
 
@@ -298,7 +298,7 @@ export function SpaceMembers() {
             className="inline-flex items-center justify-center w-12 h-12 mb-4"
             style={{
               borderRadius: "999px",
-              background: "var(--muted)",
+              background: "var(--muted)"
             }}
           >
             <User className="w-6 h-6" style={{ color: "var(--muted-foreground)" }} />
@@ -306,18 +306,16 @@ export function SpaceMembers() {
           <h3
             className="text-subheader"
             style={{
-              color: "var(--foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--foreground)"
+              }}
           >
             No results found
           </h3>
           <p
             className="mt-1 text-body"
             style={{
-              color: "var(--muted-foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--muted-foreground)"
+              }}
           >
             Try adjusting your search or filters.
           </p>
@@ -339,7 +337,7 @@ export function SpaceMembers() {
 
 // ── User Card ──
 function UserCard({
-  member,
+  member
 }: {
   member: MemberEntry;
 }) {
@@ -358,7 +356,7 @@ function UserCard({
                 bio: member.bio || undefined,
                 tags: member.skills,
                 location: member.location,
-                profileUrl: `/user/${member.name.toLowerCase().replace(/\s+/g, "-")}`,
+                profileUrl: `/user/${member.name.toLowerCase().replace(/\s+/g, "-")}`
               }}
             >
               <Link
@@ -369,10 +367,7 @@ function UserCard({
                   {member.avatar && <AvatarImage src={member.avatar} alt={member.name} />}
                   <AvatarFallback
                     className="text-card-title"
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                    }}
-                  >
+                    >
                     {member.initials}
                   </AvatarFallback>
                 </Avatar>
@@ -383,16 +378,14 @@ function UserCard({
                 to={`/user/${member.name.toLowerCase().replace(/\s+/g, "-")}`}
                 className="hover:text-primary transition-colors block text-card-title"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
-                  color: "var(--foreground)",
+                  color: "var(--foreground)"
                 }}
               >
                 {member.name}
               </Link>
               <div
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-medium border mt-1 bg-muted text-muted-foreground border-border"
-                style={{ fontFamily: "'Inter', sans-serif" }}
-              >
+                >
                 <User className="w-3 h-3" />
                 Member
               </div>
@@ -418,9 +411,8 @@ function UserCard({
           <p
             className={`line-clamp-2 text-body${member.bio ? "" : " italic"}`}
             style={{
-              color: "var(--muted-foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--muted-foreground)"
+              }}
           >
             {member.bio || "User has not filled in their bio"}
           </p>
@@ -440,9 +432,8 @@ function UserCard({
             <div
               className="mt-3 flex items-center gap-1 text-caption"
               style={{
-                color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--muted-foreground)"
+                }}
             >
               <MapPin className="w-3 h-3" />
               <span>{member.location}</span>
@@ -451,9 +442,8 @@ function UserCard({
           <div
             className="mt-auto flex items-center gap-1 pt-3 text-caption"
             style={{
-              color: "var(--muted-foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--muted-foreground)"
+              }}
           >
             <span>Joined this space {member.joinDate}</span>
           </div>
@@ -479,7 +469,7 @@ function OrgCard({ org }: { org: OrgEntry }) {
                 initials: org.initials,
                 location: org.location,
                 description: org.description,
-                tags: org.skillTags,
+                tags: org.skillTags
               }}
             >
               <Link
@@ -490,7 +480,7 @@ function OrgCard({ org }: { org: OrgEntry }) {
                 className="w-12 h-12"
                 style={{
                   borderRadius: "var(--radius)",
-                  border: "1px solid var(--border)",
+                  border: "1px solid var(--border)"
                 }}
               >
                 <AvatarImage
@@ -502,9 +492,8 @@ function OrgCard({ org }: { org: OrgEntry }) {
                   className="text-caption font-bold"
                   style={{
                     borderRadius: "var(--radius)",
-                    fontFamily: "'Inter', sans-serif",
                     background: "color-mix(in srgb, var(--info) 15%, transparent)",
-                    color: "var(--info)",
+                    color: "var(--info)"
                   }}
                 >
                   {org.initials}
@@ -517,8 +506,7 @@ function OrgCard({ org }: { org: OrgEntry }) {
                 to={`/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`}
                 className="hover:text-primary transition-colors block text-card-title"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
-                  color: "var(--foreground)",
+                  color: "var(--foreground)"
                 }}
               >
                 {org.name}
@@ -533,7 +521,7 @@ function OrgCard({ org }: { org: OrgEntry }) {
             className="shrink-0 p-1.5 transition-colors"
             style={{
               color: "var(--muted-foreground)",
-              borderRadius: "var(--radius)",
+              borderRadius: "var(--radius)"
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "var(--muted)")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
@@ -546,9 +534,8 @@ function OrgCard({ org }: { org: OrgEntry }) {
           <p
             className="line-clamp-2 min-h-[2.5rem] text-body"
             style={{
-              color: "var(--muted-foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--muted-foreground)"
+              }}
           >
             {org.description}
           </p>
@@ -568,9 +555,8 @@ function OrgCard({ org }: { org: OrgEntry }) {
             <div
               className="mt-3 flex items-center gap-1 text-caption"
               style={{
-                color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--muted-foreground)"
+                }}
             >
               <MapPin className="w-3 h-3" />
               <span>{org.location}</span>
@@ -579,9 +565,8 @@ function OrgCard({ org }: { org: OrgEntry }) {
           <div
             className="mt-auto flex items-center gap-1 pt-3 text-caption"
             style={{
-              color: "var(--muted-foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--muted-foreground)"
+              }}
           >
             <Users className="w-3 h-3" />
             <span>{org.members} members in this space</span>

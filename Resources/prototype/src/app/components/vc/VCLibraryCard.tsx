@@ -1,6 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { Card, CardContent } from "@/app/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { Card, CardContent } from "@/crd/primitives/card";
 import { Bot } from "lucide-react";
 import { VirtualContributor } from "./VirtualContributor";
 
@@ -19,7 +19,7 @@ export function VCLibraryCard({ vc, onSelect }: VCLibraryCardProps) {
         <div className="flex items-start justify-between gap-2">
           <Avatar className="w-10 h-10">
             <AvatarImage src={vc.avatarUrl} alt={vc.name} />
-            <AvatarFallback className="bg-primary/10 text-primary text-xs">
+            <AvatarFallback className="bg-primary/10 text-primary text-caption">
               <Bot className="w-5 h-5" />
             </AvatarFallback>
           </Avatar>

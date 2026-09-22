@@ -14,17 +14,17 @@ import {
   StickyNote,
   ChevronDown,
   Loader2,
-  ArrowRight,
+  ArrowRight
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
+import { cn } from "@/crd/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Button } from "@/crd/primitives/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import { SpaceCard, SpaceCardSkeleton } from "@/app/components/space/SpaceCard";
 import { useSearch } from "@/app/contexts/SearchContext";
 import {
@@ -35,7 +35,7 @@ import {
   type SearchPostResult,
   type SearchResponseResult,
   type SearchUserResult,
-  type SearchOrgResult,
+  type SearchOrgResult
 } from "./searchData";
 
 // ── Category order ──
@@ -53,7 +53,7 @@ const CATEGORY_ICONS: Record<SearchCategory, React.ReactNode> = {
   posts: <FileText style={{ width: 16, height: 16 }} />,
   responses: <MessageSquare style={{ width: 16, height: 16 }} />,
   users: <Users style={{ width: 16, height: 16 }} />,
-  organizations: <Building2 style={{ width: 16, height: 16 }} />,
+  organizations: <Building2 style={{ width: 16, height: 16 }} />
 };
 
 // ── Filter options ──
@@ -73,7 +73,7 @@ const SECTION_FILTERS: Partial<Record<SearchCategory, { value: string; label: st
     { value: "post", label: "Posts" },
     { value: "whiteboard", label: "Whiteboards" },
     { value: "memo", label: "Memos" },
-  ],
+  ]
 };
 
 // Initial results per section
@@ -91,7 +91,7 @@ function useCurrentSpace(): { name: string; slug: string } | null {
     "green-energy": "Green Energy Space",
     "sustainability-lab": "Sustainability Lab",
     "urban-mobility": "Urban Mobility Lab",
-    "ocean-health": "Ocean Health Initiative",
+    "ocean-health": "Ocean Health Initiative"
   };
   return { slug, name: nameMap[slug] || slug };
 }
@@ -299,7 +299,7 @@ export function SearchOverlay() {
   const loadMore = (category: SearchCategory) => {
     setVisibleCounts((prev) => ({
       ...prev,
-      [category]: (prev[category] || INITIAL_VISIBLE) + LOAD_MORE_COUNT,
+      [category]: (prev[category] || INITIAL_VISIBLE) + LOAD_MORE_COUNT
     }));
   };
 
@@ -346,7 +346,7 @@ export function SearchOverlay() {
               background: "var(--background)",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius-xl)",
-              boxShadow: "var(--elevation-sm)",
+              boxShadow: "var(--elevation-sm)"
             }}
           >
             {/* ── Top: Search input bar ── */}
@@ -368,9 +368,8 @@ export function SearchOverlay() {
                   placeholder="Search…"
                   className="flex-1 bg-transparent outline-none text-subheader font-normal"
                   style={{
-                    color: "var(--foreground)",
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    color: "var(--foreground)"
+                    }}
                   aria-label="Search input"
                 />
 
@@ -381,10 +380,9 @@ export function SearchOverlay() {
                       <button
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors whitespace-nowrap shrink-0 text-control"
                         style={{
-                          fontFamily: "'Inter', sans-serif",
                           background: scope !== "all" ? "var(--primary)" : "var(--secondary)",
                           color: scope !== "all" ? "var(--primary-foreground)" : "var(--secondary-foreground)",
-                          border: "1px solid var(--border)",
+                          border: "1px solid var(--border)"
                         }}
                       >
                         <Globe style={{ width: 14, height: 14 }} />
@@ -430,9 +428,8 @@ export function SearchOverlay() {
                       className="inline-flex items-center gap-1.5 rounded-full text-body-emphasis"
                       style={{
                         padding: "3px 10px 3px 12px",
-                        fontFamily: "'Inter', sans-serif",
                         background: "var(--primary)",
-                        color: "var(--primary-foreground)",
+                        color: "var(--primary-foreground)"
                       }}
                     >
                       {tag}
@@ -460,7 +457,7 @@ export function SearchOverlay() {
                       style={{
                         width: 48,
                         height: 48,
-                        background: "var(--secondary)",
+                        background: "var(--secondary)"
                       }}
                     >
                       <Search style={{ width: 22, height: 22, color: "var(--muted-foreground)" }} />
@@ -468,9 +465,8 @@ export function SearchOverlay() {
                     <p
                       className="text-subheader"
                       style={{
-                        fontFamily: "'Inter', sans-serif",
                         color: "var(--foreground)",
-                        marginBottom: 6,
+                        marginBottom: 6
                       }}
                     >
                       Type a search term and press Enter
@@ -478,8 +474,7 @@ export function SearchOverlay() {
                     <p
                       className="text-body"
                       style={{
-                        fontFamily: "'Inter', sans-serif",
-                        color: "var(--muted-foreground)",
+                        color: "var(--muted-foreground)"
                       }}
                     >
                       Search across Spaces, Posts, Responses, Users, and Organizations.
@@ -499,8 +494,7 @@ export function SearchOverlay() {
                     <p
                       className="text-body"
                       style={{
-                        fontFamily: "'Inter', sans-serif",
-                        color: "var(--muted-foreground)",
+                        color: "var(--muted-foreground)"
                       }}
                     >
                       Searching…
@@ -522,9 +516,8 @@ export function SearchOverlay() {
                     <p
                       className="text-subheader"
                       style={{
-                        fontFamily: "'Inter', sans-serif",
                         color: "var(--foreground)",
-                        marginBottom: 6,
+                        marginBottom: 6
                       }}
                     >
                       No results found for{" "}
@@ -533,8 +526,7 @@ export function SearchOverlay() {
                     <p
                       className="text-body"
                       style={{
-                        fontFamily: "'Inter', sans-serif",
-                        color: "var(--muted-foreground)",
+                        color: "var(--muted-foreground)"
                       }}
                     >
                       Try different keywords or broaden your search.
@@ -560,7 +552,7 @@ export function SearchOverlay() {
                   <nav
                     className="hidden md:flex flex-col col-span-2 py-4 overflow-y-auto"
                     style={{
-                      borderRight: "1px solid var(--border)",
+                      borderRight: "1px solid var(--border)"
                     }}
                     aria-label="Result categories"
                   >
@@ -572,16 +564,15 @@ export function SearchOverlay() {
                           key={cat}
                           onClick={() => scrollToSection(cat)}
                           className={cn(
-                            "flex items-center gap-2.5 px-5 py-2.5 text-left transition-colors text-control font-normal",
+                            "flex items-center gap-2.5 px-5 py-2.5 text-left transition-colors text-body font-normal",
                             isActive && "font-semibold",
                           )}
                           style={{
-                            fontFamily: "'Inter', sans-serif",
                             color: isActive ? "var(--foreground)" : "var(--muted-foreground)",
                             background: isActive ? "var(--accent)" : "transparent",
                             borderLeft: isActive
                               ? "2px solid var(--primary)"
-                              : "2px solid transparent",
+                              : "2px solid transparent"
                           }}
                           onMouseEnter={(e) => {
                             if (!isActive)
@@ -606,9 +597,8 @@ export function SearchOverlay() {
                               padding: "0 6px",
                               fontSize: "11px",
                               fontWeight: 600,
-                              fontFamily: "'Inter', sans-serif",
                               background: isActive ? "var(--primary)" : "var(--muted)",
-                              color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                              color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)"
                             }}
                           >
                             {count}
@@ -635,9 +625,8 @@ export function SearchOverlay() {
                             isActive && "font-semibold",
                           )}
                           style={{
-                            fontFamily: "'Inter', sans-serif",
                             background: isActive ? "var(--primary)" : "var(--secondary)",
-                            color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                            color: isActive ? "var(--primary-foreground)" : "var(--muted-foreground)"
                           }}
                         >
                           {CATEGORY_LABELS[cat]}
@@ -645,9 +634,8 @@ export function SearchOverlay() {
                             className="rounded-full text-badge"
                             style={{
                               padding: "0 5px",
-                              fontFamily: "'Inter', sans-serif",
                               background: isActive ? "var(--primary-foreground)" : "var(--muted)",
-                              color: isActive ? "var(--primary)" : "var(--muted-foreground)",
+                              color: isActive ? "var(--primary)" : "var(--muted-foreground)"
                             }}
                           >
                             {count}
@@ -670,9 +658,8 @@ export function SearchOverlay() {
                       <p
                         className="rounded-lg px-3 py-2 text-body"
                         style={{
-                          fontFamily: "'Inter', sans-serif",
                           color: "var(--muted-foreground)",
-                          background: "var(--secondary)",
+                          background: "var(--secondary)"
                         }}
                       >
                         These results may not represent the up to date state of the platform. Search results are updated on an interval.
@@ -706,8 +693,7 @@ export function SearchOverlay() {
                               <h3
                                 className="text-subheader font-semibold"
                                 style={{
-                                  fontFamily: "'Inter', sans-serif",
-                                  color: "var(--foreground)",
+                                  color: "var(--foreground)"
                                 }}
                               >
                                 {CATEGORY_LABELS[cat]}
@@ -716,9 +702,8 @@ export function SearchOverlay() {
                                 className="rounded-full text-caption font-semibold"
                                 style={{
                                   padding: "1px 8px",
-                                  fontFamily: "'Inter', sans-serif",
                                   background: "var(--muted)",
-                                  color: "var(--muted-foreground)",
+                                  color: "var(--muted-foreground)"
                                 }}
                               >
                                 {filtered.length}
@@ -732,10 +717,9 @@ export function SearchOverlay() {
                                   <button
                                     className="flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors text-control"
                                     style={{
-                                      fontFamily: "'Inter', sans-serif",
                                       color: currentFilter !== "all" ? "var(--primary)" : "var(--muted-foreground)",
                                       background: currentFilter !== "all" ? "color-mix(in srgb, var(--primary) 10%, transparent)" : "transparent",
-                                      border: "1px solid var(--border)",
+                                      border: "1px solid var(--border)"
                                     }}
                                   >
                                     <Filter style={{ width: 13, height: 13 }} />
@@ -749,7 +733,7 @@ export function SearchOverlay() {
                                       onClick={() =>
                                         setSectionFilters((prev) => ({
                                           ...prev,
-                                          [cat]: f.value,
+                                          [cat]: f.value
                                         }))
                                       }
                                       className={cn(
@@ -825,10 +809,7 @@ export function SearchOverlay() {
                                 size="sm"
                                 onClick={() => loadMore(cat)}
                                 className="gap-1.5 text-control"
-                                style={{
-                                  fontFamily: "'Inter', sans-serif",
-                                }}
-                              >
+                                >
                                 Load more
                                 <ArrowRight style={{ width: 14, height: 14 }} />
                               </Button>
@@ -856,7 +837,7 @@ export function SearchOverlay() {
 
 function PostResultCard({
   post,
-  onClick,
+  onClick
 }: {
   post: SearchPostResult;
   onClick: () => void;
@@ -867,7 +848,7 @@ function PostResultCard({
       className="group flex flex-col rounded-xl text-left transition-all duration-200 overflow-hidden outline-none"
       style={{
         background: "var(--card)",
-        border: "1px solid var(--border)",
+        border: "1px solid var(--border)"
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = "var(--elevation-sm)";
@@ -892,7 +873,7 @@ function PostResultCard({
           className="flex items-center justify-center"
           style={{
             aspectRatio: "16 / 9",
-            background: "var(--muted)",
+            background: "var(--muted)"
           }}
         >
           <PostTypeIcon type={post.type} />
@@ -908,9 +889,8 @@ function PostResultCard({
               style={{
                 fontSize: "8px",
                 fontWeight: 600,
-                fontFamily: "'Inter', sans-serif",
                 background: "var(--secondary)",
-                color: "var(--secondary-foreground)",
+                color: "var(--secondary-foreground)"
               }}
             >
               {post.author.name.substring(0, 2).toUpperCase()}
@@ -919,8 +899,7 @@ function PostResultCard({
           <span
             className="text-caption font-medium"
             style={{
-              fontFamily: "'Inter', sans-serif",
-              color: "var(--foreground)",
+              color: "var(--foreground)"
             }}
           >
             {post.author.name}
@@ -931,8 +910,7 @@ function PostResultCard({
         <h4
           className="line-clamp-2 transition-colors duration-200 group-hover:text-primary text-card-title"
           style={{
-            fontFamily: "'Inter', sans-serif",
-            color: "var(--card-foreground)",
+            color: "var(--card-foreground)"
           }}
         >
           {post.title}
@@ -942,8 +920,7 @@ function PostResultCard({
         <p
           className="line-clamp-2 flex-1 text-caption"
           style={{
-            fontFamily: "'Inter', sans-serif",
-            color: "var(--muted-foreground)",
+            color: "var(--muted-foreground)"
           }}
         >
           {post.snippet}
@@ -955,9 +932,8 @@ function PostResultCard({
             <span
               className="flex items-center gap-1 rounded-full px-2 py-0.5 text-badge"
               style={{
-                fontFamily: "'Inter', sans-serif",
                 background: "var(--secondary)",
-                color: "var(--secondary-foreground)",
+                color: "var(--secondary-foreground)"
               }}
             >
               <PostTypeIcon type={post.type} />
@@ -967,8 +943,7 @@ function PostResultCard({
           <span
             style={{
               fontSize: "10px",
-              fontFamily: "'Inter', sans-serif",
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           >
             {post.date}
@@ -979,8 +954,7 @@ function PostResultCard({
         <p
           className="truncate text-caption"
           style={{
-            fontFamily: "'Inter', sans-serif",
-            color: "var(--muted-foreground)",
+            color: "var(--muted-foreground)"
           }}
         >
           in: {post.spaceName}
@@ -992,7 +966,7 @@ function PostResultCard({
 
 function ResponseResultCard({
   response,
-  onClick,
+  onClick
 }: {
   response: SearchResponseResult;
   onClick: () => void;
@@ -1003,7 +977,7 @@ function ResponseResultCard({
       className="group flex flex-col rounded-xl text-left transition-all duration-200 overflow-hidden outline-none"
       style={{
         background: "var(--card)",
-        border: "1px solid var(--border)",
+        border: "1px solid var(--border)"
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = "var(--elevation-sm)";
@@ -1022,9 +996,8 @@ function ResponseResultCard({
             <AvatarFallback
               className="text-badge"
               style={{
-                fontFamily: "'Inter', sans-serif",
                 background: "var(--secondary)",
-                color: "var(--secondary-foreground)",
+                color: "var(--secondary-foreground)"
               }}
             >
               {response.author.name.substring(0, 2).toUpperCase()}
@@ -1033,8 +1006,7 @@ function ResponseResultCard({
           <span
             className="text-caption font-medium"
             style={{
-              fontFamily: "'Inter', sans-serif",
-              color: "var(--foreground)",
+              color: "var(--foreground)"
             }}
           >
             {response.author.name}
@@ -1043,8 +1015,7 @@ function ResponseResultCard({
             className="ml-auto"
             style={{
               fontSize: "10px",
-              fontFamily: "'Inter', sans-serif",
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           >
             {response.date}
@@ -1055,8 +1026,7 @@ function ResponseResultCard({
         <h4
           className="line-clamp-2 transition-colors duration-200 group-hover:text-primary text-card-title"
           style={{
-            fontFamily: "'Inter', sans-serif",
-            color: "var(--card-foreground)",
+            color: "var(--card-foreground)"
           }}
         >
           {response.title}
@@ -1066,8 +1036,7 @@ function ResponseResultCard({
         <p
           className="line-clamp-2 flex-1 text-caption"
           style={{
-            fontFamily: "'Inter', sans-serif",
-            color: "var(--muted-foreground)",
+            color: "var(--muted-foreground)"
           }}
         >
           {response.snippet}
@@ -1082,8 +1051,7 @@ function ResponseResultCard({
           <span
             className="truncate text-caption"
             style={{
-              fontFamily: "'Inter', sans-serif",
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           >
             Response to: {response.parentPostTitle}
@@ -1095,9 +1063,8 @@ function ResponseResultCard({
           <span
             className="flex items-center gap-1 rounded-full px-2 py-0.5 text-badge"
             style={{
-              fontFamily: "'Inter', sans-serif",
               background: "var(--secondary)",
-              color: "var(--secondary-foreground)",
+              color: "var(--secondary-foreground)"
             }}
           >
             <PostTypeIcon type={response.type} />
@@ -1106,8 +1073,7 @@ function ResponseResultCard({
           <span
             className="truncate text-caption"
             style={{
-              fontFamily: "'Inter', sans-serif",
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           >
             in: {response.spaceName}
@@ -1120,7 +1086,7 @@ function ResponseResultCard({
 
 function UserResultCard({
   user,
-  onClick,
+  onClick
 }: {
   user: SearchUserResult;
   onClick: () => void;
@@ -1131,7 +1097,7 @@ function UserResultCard({
       className="group flex flex-col items-center rounded-xl text-center transition-all duration-200 p-5 outline-none"
       style={{
         background: "var(--card)",
-        border: "1px solid var(--border)",
+        border: "1px solid var(--border)"
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = "var(--elevation-sm)";
@@ -1147,16 +1113,15 @@ function UserResultCard({
         style={{
           width: 56,
           height: 56,
-          border: "2px solid var(--border)",
+          border: "2px solid var(--border)"
         }}
       >
         <AvatarImage src={user.avatar} alt={user.name} />
         <AvatarFallback
           className="text-subheader font-semibold"
           style={{
-            fontFamily: "'Inter', sans-serif",
             background: "var(--primary)",
-            color: "var(--primary-foreground)",
+            color: "var(--primary-foreground)"
           }}
         >
           {user.name
@@ -1170,8 +1135,7 @@ function UserResultCard({
       <h4
         className="transition-colors duration-200 group-hover:text-primary text-card-title"
         style={{
-          fontFamily: "'Inter', sans-serif",
-          color: "var(--card-foreground)",
+          color: "var(--card-foreground)"
         }}
       >
         {user.name}
@@ -1179,8 +1143,7 @@ function UserResultCard({
       <p
         className="mt-1 truncate w-full text-caption"
         style={{
-          fontFamily: "'Inter', sans-serif",
-          color: "var(--muted-foreground)",
+          color: "var(--muted-foreground)"
         }}
       >
         {user.role}
@@ -1188,8 +1151,7 @@ function UserResultCard({
       <p
         className="mt-0.5 truncate w-full text-caption"
         style={{
-          fontFamily: "'Inter', sans-serif",
-          color: "var(--muted-foreground)",
+          color: "var(--muted-foreground)"
         }}
       >
         {user.email}
@@ -1200,7 +1162,7 @@ function UserResultCard({
 
 function OrgResultCard({
   org,
-  onClick,
+  onClick
 }: {
   org: SearchOrgResult;
   onClick: () => void;
@@ -1211,7 +1173,7 @@ function OrgResultCard({
       className="group flex flex-col items-center rounded-xl text-center transition-all duration-200 p-5 outline-none"
       style={{
         background: "var(--card)",
-        border: "1px solid var(--border)",
+        border: "1px solid var(--border)"
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = "var(--elevation-sm)";
@@ -1229,7 +1191,7 @@ function OrgResultCard({
           height: 56,
           borderRadius: "var(--radius-lg)",
           background: "var(--secondary)",
-          border: "2px solid var(--border)",
+          border: "2px solid var(--border)"
         }}
       >
         {org.avatar ? (
@@ -1244,7 +1206,7 @@ function OrgResultCard({
             style={{
               width: 24,
               height: 24,
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           />
         )}
@@ -1252,8 +1214,7 @@ function OrgResultCard({
       <h4
         className="transition-colors duration-200 group-hover:text-primary text-card-title"
         style={{
-          fontFamily: "'Inter', sans-serif",
-          color: "var(--card-foreground)",
+          color: "var(--card-foreground)"
         }}
       >
         {org.name}
@@ -1261,11 +1222,10 @@ function OrgResultCard({
       <span
         className="mt-1 text-badge"
         style={{
-          fontFamily: "'Inter', sans-serif",
           padding: "1px 8px",
           borderRadius: "999px",
           background: "var(--secondary)",
-          color: "var(--secondary-foreground)",
+          color: "var(--secondary-foreground)"
         }}
       >
         {org.type}
@@ -1273,8 +1233,7 @@ function OrgResultCard({
       <p
         className="mt-2 line-clamp-2 w-full text-caption"
         style={{
-          fontFamily: "'Inter', sans-serif",
-          color: "var(--muted-foreground)",
+          color: "var(--muted-foreground)"
         }}
       >
         {org.tagline}

@@ -10,17 +10,17 @@ import {
   MessageCircle,
   Pencil,
   ChevronDown,
-  Loader2,
+  Loader2
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
+import { cn } from "@/crd/lib/utils";
 import { SpaceChannelComposer } from "./SpaceChannelComposer";
 import type { Conversation, Message } from "./messagingData";
 import { CONVERSATIONS, MESSAGES, USERS } from "./messagingData";
@@ -50,7 +50,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
     unread: 0,
     muted: false,
     memberCount: 0,
-    spaceSlug,
+    spaceSlug
   };
 
   const messages = MESSAGES[fallbackChannel.id] ?? [];
@@ -97,7 +97,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({
         top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
+        behavior: "smooth"
       });
     }
     setShowNewMessageToast(false);
@@ -115,11 +115,11 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
         timestamp: new Date().toISOString(),
         timeLabel: new Date().toLocaleTimeString([], {
           hour: "2-digit",
-          minute: "2-digit",
+          minute: "2-digit"
         }),
         dateLabel: "Today",
         isOwn: true,
-        replyTo: replyTo ?? undefined,
+        replyTo: replyTo ?? undefined
       };
       setLocalMessages((prev) => [...prev, newMsg]);
       setReplyTo(null);
@@ -186,7 +186,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
         style={{
           padding: "14px 24px",
           borderBottom: "1px solid var(--border)",
-          background: "var(--card)",
+          background: "var(--card)"
         }}
       >
         <div className="flex items-center gap-3">
@@ -197,7 +197,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
               height: 38,
               borderRadius: "calc(var(--radius) + 2px)",
               background: fallbackChannel.avatarColor ?? "var(--secondary)",
-              color: "var(--primary-foreground)",
+              color: "var(--primary-foreground)"
             }}
           >
             <Hash style={{ width: 18, height: 18 }} />
@@ -207,18 +207,16 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
               <span
                 className="text-subheader font-semibold"
                 style={{
-                  color: "var(--foreground)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  color: "var(--foreground)"
+                  }}
               >
                 {fallbackChannel.name}
               </span>
               <span
                 className="text-body"
                 style={{
-                  color: "var(--muted-foreground)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  color: "var(--muted-foreground)"
+                  }}
               >
                 — Chat
               </span>
@@ -228,11 +226,10 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
               className="transition-colors text-caption"
               style={{
                 color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
                 background: "none",
                 border: "none",
                 padding: 0,
-                cursor: "pointer",
+                cursor: "pointer"
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.color = "var(--primary)")
@@ -255,7 +252,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
             }}
             className="p-2 rounded-md transition-colors"
             style={{
-              color: isSearching ? "var(--primary)" : "var(--muted-foreground)",
+              color: isSearching ? "var(--primary)" : "var(--muted-foreground)"
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.background = "var(--accent)")
@@ -302,10 +299,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                 <Users style={{ width: 14, height: 14 }} />
                 <span
                   className="text-control"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                >
+                  >
                   View Members
                 </span>
               </DropdownMenuItem>
@@ -314,10 +308,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                 <BellOff style={{ width: 14, height: 14 }} />
                 <span
                   className="text-control"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                >
+                  >
                   Mute Notifications
                 </span>
               </DropdownMenuItem>
@@ -325,10 +316,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                 <Clock style={{ width: 14, height: 14 }} />
                 <span
                   className="text-control"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                >
+                  >
                   Do Not Disturb
                 </span>
               </DropdownMenuItem>
@@ -345,7 +333,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
             padding: "8px 24px",
             borderBottom: "1px solid var(--border)",
             background:
-              "color-mix(in srgb, var(--primary) 3%, var(--background))",
+              "color-mix(in srgb, var(--primary) 3%, var(--background))"
           }}
         >
           <Search
@@ -353,7 +341,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
               width: 14,
               height: 14,
               color: "var(--muted-foreground)",
-              flexShrink: 0,
+              flexShrink: 0
             }}
           />
           <input
@@ -364,18 +352,16 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
             autoFocus
             className="flex-1 bg-transparent outline-none text-body"
             style={{
-              color: "var(--foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--foreground)"
+              }}
           />
           {searchQuery && (
             <span
               className="text-caption"
               style={{
                 color: "var(--muted-foreground)",
-                whiteSpace: "nowrap",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                whiteSpace: "nowrap"
+                }}
             >
               {filteredMessages.length} result
               {filteredMessages.length !== 1 ? "s" : ""}
@@ -418,16 +404,15 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                     height: 36,
                     color: "var(--muted-foreground)",
                     opacity: 0.3,
-                    marginBottom: 16,
+                    marginBottom: 16
                   }}
                 />
                 <p
                   className="text-body"
                   style={{
                     color: "var(--muted-foreground)",
-                    maxWidth: 320,
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    maxWidth: 320
+                    }}
                 >
                   No messages match "{searchQuery}".
                 </p>
@@ -441,7 +426,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                     height: 64,
                     background:
                       "color-mix(in srgb, var(--primary) 8%, transparent)",
-                    marginBottom: 20,
+                    marginBottom: 20
                   }}
                 >
                   <MessageCircle
@@ -449,7 +434,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                       width: 32,
                       height: 32,
                       color: "var(--primary)",
-                      opacity: 0.6,
+                      opacity: 0.6
                     }}
                   />
                 </div>
@@ -457,9 +442,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                   className="text-section-title"
                   style={{
                     color: "var(--foreground)",
-                    marginBottom: 8,
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    marginBottom: 8
+                    }}
                 >
                   Welcome to {fallbackChannel.name} chat!
                 </h3>
@@ -468,9 +452,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                   style={{
                     color: "var(--muted-foreground)",
                     maxWidth: 420,
-                    marginBottom: 24,
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    marginBottom: 24
+                    }}
                 >
                   This is a shared conversation for all Space members. Start the
                   discussion.
@@ -485,9 +468,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                           padding: "8px 20px",
                           background: "var(--secondary)",
                           color: "var(--foreground)",
-                          border: "1px solid var(--border)",
-                          fontFamily: "'Inter', sans-serif",
-                        }}
+                          border: "1px solid var(--border)"
+                          }}
                         onMouseEnter={(e) =>
                           (e.currentTarget.style.background = "var(--accent)")
                         }
@@ -516,9 +498,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                   padding: "6px 18px",
                   color: "var(--muted-foreground)",
                   background: "var(--secondary)",
-                  border: "1px solid var(--border)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  border: "1px solid var(--border)"
+                  }}
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.background = "var(--accent)")
                 }
@@ -556,9 +537,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                           color: "var(--muted-foreground)",
                           background: "var(--secondary)",
                           padding: "4px 16px",
-                          borderRadius: "999px",
-                          fontFamily: "'Inter', sans-serif",
-                        }}
+                          borderRadius: "999px"
+                          }}
                       >
                         {msg.dateLabel}
                       </span>
@@ -575,7 +555,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                       padding: showSender ? "12px 24px 4px" : "4px 24px",
                       background: msg.isOwn
                         ? "color-mix(in srgb, var(--primary) 3%, transparent)"
-                        : "transparent",
+                        : "transparent"
                     }}
                     onMouseEnter={(e) => {
                       if (!msg.isOwn)
@@ -594,7 +574,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                           style={{
                             width: 36,
                             height: 36,
-                            border: "1px solid var(--border)",
+                            border: "1px solid var(--border)"
                           }}
                         >
                           <AvatarImage
@@ -603,10 +583,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                           />
                           <AvatarFallback
                             className="text-caption font-semibold"
-                            style={{
-                              fontFamily: "'Inter', sans-serif",
-                            }}
-                          >
+                            >
                             {msg.senderInitials}
                           </AvatarFallback>
                         </Avatar>
@@ -624,18 +601,16 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                           <span
                             className="text-card-title"
                             style={{
-                              color: "var(--foreground)",
-                              fontFamily: "'Inter', sans-serif",
-                            }}
+                              color: "var(--foreground)"
+                              }}
                           >
                             {msg.senderName}
                           </span>
                           <span
                             className="text-caption"
                             style={{
-                              color: "var(--muted-foreground)",
-                              fontFamily: "'Inter', sans-serif",
-                            }}
+                              color: "var(--muted-foreground)"
+                              }}
                             title={getRelativeTime(msg.timeLabel, msg.dateLabel)}
                           >
                             {msg.timeLabel}
@@ -645,9 +620,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                               style={{
                                 fontSize: "10px",
                                 color: "var(--muted-foreground)",
-                                fontStyle: "italic",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
+                                fontStyle: "italic"
+                                }}
                             >
                               (edited)
                             </span>
@@ -665,9 +639,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                             background: "var(--muted)",
                             borderLeft: "3px solid var(--primary)",
                             marginBottom: 6,
-                            maxWidth: 480,
-                            fontFamily: "'Inter', sans-serif",
-                          }}
+                            maxWidth: 480
+                            }}
                           className="truncate text-caption"
                         >
                           <span className="font-semibold">
@@ -698,11 +671,10 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                             className="w-full resize-none outline-none rounded-md text-body"
                             style={{
                               color: "var(--foreground)",
-                              fontFamily: "'Inter', sans-serif",
                               padding: "8px 12px",
                               border: "1px solid var(--primary)",
                               background: "var(--input-background)",
-                              borderRadius: "var(--radius)",
+                              borderRadius: "var(--radius)"
                             }}
                           />
                           <div className="flex items-center gap-2">
@@ -714,9 +686,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                                 background: "var(--primary)",
                                 color: "var(--primary-foreground)",
                                 border: "none",
-                                borderRadius: "var(--radius)",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
+                                borderRadius: "var(--radius)"
+                                }}
                             >
                               Save
                             </button>
@@ -731,18 +702,16 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                                 background: "transparent",
                                 color: "var(--muted-foreground)",
                                 border: "1px solid var(--border)",
-                                borderRadius: "var(--radius)",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
+                                borderRadius: "var(--radius)"
+                                }}
                             >
                               Cancel
                             </button>
                             <span
                               style={{
                                 fontSize: "10px",
-                                color: "var(--muted-foreground)",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
+                                color: "var(--muted-foreground)"
+                                }}
                             >
                               Esc to cancel, Enter to save
                             </span>
@@ -753,8 +722,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                           className="text-body"
                           style={{
                             color: "var(--foreground)",
-                            fontFamily: "'Inter', sans-serif",
-                            wordBreak: "break-word" as const,
+                            wordBreak: "break-word" as const
                           }}
                         >
                           {/* Render @mentions as highlighted chips */}
@@ -769,7 +737,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                                     background:
                                       "color-mix(in srgb, var(--primary) 10%, transparent)",
                                     padding: "1px 4px",
-                                    borderRadius: "var(--radius)",
+                                    borderRadius: "var(--radius)"
                                   }}
                                 >
                                   {part}
@@ -791,7 +759,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                             borderRadius: "var(--radius)",
                             background: "var(--card)",
                             border: "1px solid var(--border)",
-                            maxWidth: 360,
+                            maxWidth: 360
                           }}
                         >
                           <span style={{ fontSize: "14px" }}>
@@ -806,18 +774,16 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                               className="truncate text-body-emphasis"
                               style={{
                                 margin: 0,
-                                color: "var(--foreground)",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
+                                color: "var(--foreground)"
+                                }}
                             >
                               {msg.attachment.name}
                             </p>
                             <span
                               className="text-caption"
                               style={{
-                                color: "var(--muted-foreground)",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
+                                color: "var(--muted-foreground)"
+                                }}
                             >
                               {msg.attachment.size}
                             </span>
@@ -842,9 +808,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                                   : "1px solid var(--border)",
                                 background: r.reacted
                                   ? "color-mix(in srgb, var(--primary) 10%, transparent)"
-                                  : "var(--card)",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
+                                  : "var(--card)"
+                                }}
                               title={
                                 r.reacted
                                   ? `You and ${r.count - 1} others`
@@ -857,7 +822,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                                 style={{
                                   color: r.reacted
                                     ? "var(--primary)"
-                                    : "var(--muted-foreground)",
+                                    : "var(--muted-foreground)"
                                 }}
                               >
                                 {r.count}
@@ -873,7 +838,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                               fontSize: "13px",
                               border: "1px solid var(--border)",
                               background: "var(--card)",
-                              color: "var(--muted-foreground)",
+                              color: "var(--muted-foreground)"
                             }}
                             onMouseEnter={(e) =>
                               (e.currentTarget.style.background =
@@ -898,10 +863,9 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                             left: 24,
                             fontSize: "10px",
                             color: "var(--muted-foreground)",
-                            fontFamily: "'Inter', sans-serif",
                             width: 36,
                             textAlign: "center",
-                            marginTop: 2,
+                            marginTop: 2
                           }}
                         >
                           {msg.timeLabel}
@@ -921,7 +885,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                           className="p-1 rounded-sm transition-colors"
                           style={{
                             fontSize: "13px",
-                            lineHeight: 1,
+                            lineHeight: 1
                           }}
                           onMouseEnter={(e) =>
                             (e.currentTarget.style.background = "var(--accent)")
@@ -938,7 +902,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                         className="p-1 rounded-sm transition-colors text-caption"
                         style={{
                           color: "var(--muted-foreground)",
-                          lineHeight: 1,
+                          lineHeight: 1
                         }}
                         onMouseEnter={(e) =>
                           (e.currentTarget.style.background = "var(--accent)")
@@ -949,7 +913,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                         onClick={() =>
                           setReplyTo({
                             senderName: msg.senderName,
-                            content: msg.content,
+                            content: msg.content
                           })
                         }
                         title="Reply"
@@ -962,7 +926,7 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
                           className="p-1 rounded-sm transition-colors"
                           style={{
                             color: "var(--muted-foreground)",
-                            lineHeight: 1,
+                            lineHeight: 1
                           }}
                           onMouseEnter={(e) =>
                             (e.currentTarget.style.background =
@@ -1004,9 +968,8 @@ export function SpaceChannelView({ spaceSlug }: SpaceChannelViewProps) {
               color: "var(--primary-foreground)",
               boxShadow: "var(--elevation-sm)",
               border: "none",
-              fontFamily: "'Inter', sans-serif",
               width: "fit-content",
-              display: "flex",
+              display: "flex"
             }}
           >
             New messages

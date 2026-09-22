@@ -1,7 +1,7 @@
 import { useParams, Link, useLocation, Navigate } from "react-router";
 import { User, CreditCard, Users, Bell, Settings, Shield, Building2 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import { UserSettingsProfile } from "@/app/components/user/UserSettingsProfile";
 import { UserSettingsSecurity } from "@/app/components/user/UserSettingsSecurity";
 import { UserSettingsNotifications } from "@/app/components/user/UserSettingsNotifications";

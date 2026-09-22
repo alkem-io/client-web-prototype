@@ -1,16 +1,16 @@
 import { ChevronLeft, Plus, Search, Smile } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
-import { Input } from '@/app/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
-import { cn } from '@/lib/utils';
+  DialogTitle
+} from '@/crd/primitives/dialog';
+import { Input } from '@/crd/primitives/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/crd/primitives/popover';
+import { cn } from '@/crd/lib/utils';
 import { EMOJI_GROUPS, searchEmoji } from '@/app/components/space/emoji-catalog';
 import {
   DEFAULT_REACTION_OPTIONS,
@@ -18,7 +18,7 @@ import {
   type ReactionUser,
   seedDemoReactions,
   toggleReaction,
-  VIEWER,
+  VIEWER
 } from '@/app/components/space/post-reactions-data';
 
 /** Position in the space's set; anything no longer offered sorts to the end. */
@@ -65,7 +65,7 @@ export function PostReactions({
   onToggle,
   canReact = true,
   viewer = VIEWER,
-  className,
+  className
 }: PostReactionsProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [listOpen, setListOpen] = useState(false);

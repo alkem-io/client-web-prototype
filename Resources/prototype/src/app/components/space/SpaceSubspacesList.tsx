@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useParams } from "react-router";
 import { Plus, Folder } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { SpaceCard, type SpaceCardData } from "@/app/components/space/SpaceCard";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 
 // Subspace avatar colors
@@ -38,7 +38,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     leads: [
       { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
       { name: "Green Future Org", avatar: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
-    ],
+    ]
   },
   {
     id: "sub-2",
@@ -56,7 +56,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     filterTags: ["Active", "Planning"],
     leads: [
       { name: "David Kim", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
-    ],
+    ]
   },
   {
     id: "sub-3",
@@ -76,7 +76,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
       { name: "Emily Davis", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
       { name: "City Planning Dept", avatar: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
       { name: "James Wilson", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
-    ],
+    ]
   },
   {
     id: "sub-4",
@@ -94,7 +94,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     filterTags: ["Archived"],
     leads: [
       { name: "Policy Institute", avatar: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
-    ],
+    ]
   },
   {
     id: "sub-5",
@@ -113,7 +113,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     leads: [
       { name: "Anna Martinez", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
       { name: "Local Council", avatar: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
-    ],
+    ]
   },
   {
     id: "sub-6",
@@ -132,7 +132,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     leads: [
       { name: "Tech Innovations", avatar: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
       { name: "Robert Fox", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
-    ],
+    ]
   },
 ];
 
@@ -153,8 +153,8 @@ export function SpaceSubspacesList() {
       slug,
       bannerImage: PARENT_BANNER,
       initials: slug.substring(0, 2).toUpperCase(),
-      avatarColor: "#2563eb",
-    },
+      avatarColor: "#2563eb"
+    }
   }));
 
   const filteredSubspaces = subspacesWithParent.filter((s) => {
@@ -175,7 +175,7 @@ export function SpaceSubspacesList() {
   });
 
   return (
-    <div className="space-y-6" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="space-y-6" >
       {/* Card Grid/List — uses the shared SpaceCard component */}
       {filteredSubspaces.length > 0 ? (
         <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" : "flex flex-col gap-3"}>
@@ -192,7 +192,7 @@ export function SpaceSubspacesList() {
           className="flex flex-col items-center justify-center py-16"
           style={{
             border: "2px dashed var(--border)",
-            borderRadius: "var(--radius)",
+            borderRadius: "var(--radius)"
           }}
         >
           <Folder
@@ -201,13 +201,13 @@ export function SpaceSubspacesList() {
               width: 40,
               height: 40,
               color: "var(--muted-foreground)",
-              opacity: 0.5,
+              opacity: 0.5
             }}
           />
           <h3
             className="text-subsection-title font-medium"
             style={{
-              color: "var(--foreground)",
+              color: "var(--foreground)"
             }}
           >
             No subspaces found
@@ -215,7 +215,7 @@ export function SpaceSubspacesList() {
           <p
             className="text-body"
             style={{
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           >
             No subspaces match your current filter.

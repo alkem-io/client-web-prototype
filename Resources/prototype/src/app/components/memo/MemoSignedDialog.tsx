@@ -19,16 +19,16 @@
  */
 import { useRef } from "react";
 import { BadgeCheck } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
+  DialogTitle
+} from "@/crd/primitives/dialog";
 import { SignedCopyCard } from "./SignedCopyCard";
 import type { SignedCopy } from "./signingData";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface MemoSignedDialogProps {
   open: boolean;
@@ -59,7 +59,7 @@ const CONFETTI = Array.from({ length: 11 }, (_, i) => {
       "bg-blue-400",
       "bg-rose-400",
     ][i % 5],
-    round: i % 2 === 0,
+    round: i % 2 === 0
   };
 });
 
@@ -68,7 +68,7 @@ export function MemoSignedDialog({
   onOpenChange,
   memoTitle,
   copy,
-  onViewAll,
+  onViewAll
 }: MemoSignedDialogProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -107,7 +107,7 @@ export function MemoSignedDialog({
                   style={{
                     width: dot.size,
                     height: dot.size,
-                    animationDelay: `${dot.delay}ms`,
+                    animationDelay: `${dot.delay}ms`
                   }}
                 />
               </span>

@@ -2,11 +2,11 @@ import * as React from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  MoreHorizontalIcon,
+  MoreHorizontalIcon
 } from "lucide-react";
 
-import { cn } from "./utils";
-import { Button, buttonVariants } from "./button";
+import { cn } from "@/crd/lib/utils";
+import { Button, buttonVariants } from "@/crd/primitives/button";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
@@ -56,7 +56,7 @@ function PaginationLink({
       className={cn(
         buttonVariants({
           variant: isActive ? "outline" : "ghost",
-          size,
+          size
         }),
         className,
       )}
@@ -123,5 +123,5 @@ export {
   PaginationItem,
   PaginationPrevious,
   PaginationNext,
-  PaginationEllipsis,
+  PaginationEllipsis
 };

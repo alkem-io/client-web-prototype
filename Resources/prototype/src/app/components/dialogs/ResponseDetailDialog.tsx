@@ -1,17 +1,17 @@
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { Textarea } from "@/app/components/ui/textarea";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { Textarea } from "@/crd/primitives/textarea";
 import { 
  X, Share2, MoreHorizontal, PenTool, FileText, Link as LinkIcon, 
  Layout, ChevronLeft, ChevronRight, Send, Smile, AtSign, Trash2, Edit2
 } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { toast } from "sonner";
-import { Separator } from "@/app/components/ui/separator";
+import { Separator } from "@/crd/primitives/separator";
 import { ReactionBar } from "@/app/components/space/PostReactions";
 
 interface ResponseDetailDialogProps {

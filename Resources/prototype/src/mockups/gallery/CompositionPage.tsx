@@ -26,7 +26,7 @@ export default function CompositionPage() {
     return {
       ...base,
       overflow: mode ?? base.overflow,
-      surface: surface ?? base.surface,
+      surface: surface ?? base.surface
     };
   }, [base, mode, surface]);
 
@@ -68,7 +68,7 @@ export default function CompositionPage() {
                 borderColor: composition.overflow === m ? 'var(--primary)' : 'var(--border)',
                 background: composition.overflow === m ? 'var(--primary)' : 'var(--card)',
                 color:
-                  composition.overflow === m ? 'var(--primary-foreground)' : 'var(--foreground)',
+                  composition.overflow === m ? 'var(--primary-foreground)' : 'var(--foreground)'
               }}
             >
               {m}
@@ -88,7 +88,7 @@ export default function CompositionPage() {
                     borderColor: composition.surface === s ? 'var(--primary)' : 'var(--border)',
                     background: composition.surface === s ? 'var(--primary)' : 'var(--card)',
                     color:
-                      composition.surface === s ? 'var(--primary-foreground)' : 'var(--foreground)',
+                      composition.surface === s ? 'var(--primary-foreground)' : 'var(--foreground)'
                   }}
                 >
                   {s}
@@ -132,7 +132,7 @@ export default function CompositionPage() {
                       style={{
                         background:
                           f.severity === 'error' ? 'rgba(220,38,38,.12)' : 'rgba(217,119,6,.14)',
-                        color: f.severity === 'error' ? '#B91C1C' : '#92400E',
+                        color: f.severity === 'error' ? '#B91C1C' : '#92400E'
                       }}
                     >
                       {f.rule}

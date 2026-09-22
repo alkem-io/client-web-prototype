@@ -12,7 +12,7 @@ import { BEZEL, DEVICE_SHADOW } from '../core/tokens';
 export function LaptopFrame({
   id,
   at,
-  children,
+  children
 }: {
   id: string;
   at: Rect;
@@ -32,7 +32,7 @@ export function LaptopFrame({
           width: baseWidth,
           height: 16,
           background: '#22323D',
-          borderRadius: '0 0 10px 10px',
+          borderRadius: '0 0 10px 10px'
         }}
       />
       <div
@@ -44,7 +44,7 @@ export function LaptopFrame({
           width: baseWidth - 120,
           height: 22,
           background:
-            'radial-gradient(ellipse at center, rgba(16,35,50,.20), rgba(16,35,50,0) 70%)',
+            'radial-gradient(ellipse at center, rgba(16,35,50,.20), rgba(16,35,50,0) 70%)'
         }}
       />
       <div
@@ -57,7 +57,7 @@ export function LaptopFrame({
           background: '#2A3B47',
           borderRadius: 16,
           padding: bezel,
-          boxShadow: DEVICE_SHADOW.laptop,
+          boxShadow: DEVICE_SHADOW.laptop
         }}
       >
         <div
@@ -68,7 +68,7 @@ export function LaptopFrame({
             height: at.height - bezel * 2,
             background: 'var(--background)',
             borderRadius: 4,
-            overflow: 'hidden',
+            overflow: 'hidden'
           }}
         >
           {children}

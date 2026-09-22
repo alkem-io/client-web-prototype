@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Bell, Check, X } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { Badge } from "@/crd/primitives/badge";
 
 const MOCK_SPACE_INVITATIONS = [
   {
@@ -10,7 +10,7 @@ const MOCK_SPACE_INVITATIONS = [
     spaceInitials: "GE",
     spaceColor: "#16a34a",
     invitedBy: "Elena Martinez",
-    invitedDate: "2024-02-18",
+    invitedDate: "2024-02-18"
   },
   {
     id: "si2",
@@ -18,7 +18,7 @@ const MOCK_SPACE_INVITATIONS = [
     spaceInitials: "UM",
     spaceColor: "#7c3aed",
     invitedBy: "Sarah Chen",
-    invitedDate: "2024-02-20",
+    invitedDate: "2024-02-20"
   },
 ];
 
@@ -50,7 +50,7 @@ export function OrgSettingsInvitations() {
             >
               <div className="flex items-center gap-3">
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0"
+                  className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-body shrink-0"
                   style={{ backgroundColor: inv.spaceColor }}
                 >
                   {inv.spaceInitials}
@@ -62,13 +62,13 @@ export function OrgSettingsInvitations() {
                     {new Date(inv.invitedDate).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
-                      year: "numeric",
+                      year: "numeric"
                     })}
                   </div>
                 </div>
                 <Badge
                   variant="outline"
-                  className="ml-1 bg-amber-500/10 text-amber-600 border-amber-500/20 text-xs"
+                  className="ml-1 bg-amber-500/10 text-amber-600 border-amber-500/20 text-caption"
                 >
                   <Bell className="w-3 h-3 mr-1" /> Pending
                 </Badge>

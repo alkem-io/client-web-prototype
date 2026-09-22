@@ -22,25 +22,25 @@ import {
  Dialog,
  DialogContent,
  DialogHeader,
- DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+ DialogTitle
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
 import {
  DropdownMenu,
  DropdownMenuContent,
  DropdownMenuItem,
  DropdownMenuTrigger,
  DropdownMenuSeparator
-} from "@/app/components/ui/dropdown-menu";
+} from "@/crd/primitives/dropdown-menu";
 import {
  Collapsible,
  CollapsibleContent,
- CollapsibleTrigger,
-} from "@/app/components/ui/collapsible";
-import { cn } from "@/lib/utils";
+ CollapsibleTrigger
+} from "@/crd/primitives/collapsible";
+import { cn } from "@/crd/lib/utils";
 
 // --- Types ---
 
@@ -208,7 +208,7 @@ function ClassificationTemplateCard({ template, onAction }: {
  // Mock values for display
  const MOCK_VALUES: Record<string, string[]> = {
  "UN Sustainable Development Goals": ["SDG 1 – No Poverty", "SDG 2 – Zero Hunger", "SDG 3 – Good Health", "SDG 7 – Clean Energy", "SDG 13 – Climate Action"],
- "Sector": ["Energy", "Healthcare", "Education", "Agriculture", "Finance", "Technology"],
+ "Sector": ["Energy", "Healthcare", "Education", "Agriculture", "Finance", "Technology"]
  };
  const values = MOCK_VALUES[template.name] || ["Value 1", "Value 2", "Value 3"];
 
@@ -450,7 +450,7 @@ export function SpaceSettingsTemplates() {
  Whiteboard: true,
  Post: true,
  Classification: true,
- CommunityGuidelines: true,
+ CommunityGuidelines: true
  });
  const [createClassificationOpen, setCreateClassificationOpen] = useState(false);
  const [selectFromLibraryOpen, setSelectFromLibraryOpen] = useState(false);
@@ -634,7 +634,7 @@ export function SpaceSettingsTemplates() {
  image: "",
  category: "Classification",
  isCustom: true,
- tags: [template.cardinality === "multi" ? "Multi-select" : "Single-select"],
+ tags: [template.cardinality === "multi" ? "Multi-select" : "Single-select"]
  }]);
  }}
  />
@@ -654,7 +654,7 @@ export function SpaceSettingsTemplates() {
  image: "",
  category: "Classification" as TemplateCategory,
  isCustom: false,
- tags: [template.cardinality === "multi" ? "Multi-select" : "Single-select"],
+ tags: [template.cardinality === "multi" ? "Multi-select" : "Single-select"]
  }]);
  setSelectFromLibraryOpen(false);
  }}

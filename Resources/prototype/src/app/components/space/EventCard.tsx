@@ -15,13 +15,13 @@ export function EventCard({ title, date, time, onClick }: EventCardProps) {
       style={{ border: "1px solid var(--border)" }}
     >
       {/* Date — slightly larger and emphasized */}
-      <p className="text-sm font-semibold text-foreground mb-1">{date}</p>
+      <p className="text-card-title text-foreground mb-1">{date}</p>
 
       {/* Title */}
-      <p className="text-sm font-medium text-foreground truncate mb-2">{title}</p>
+      <p className="text-body-emphasis text-foreground truncate mb-2">{title}</p>
 
       {/* Time */}
-      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <div className="flex items-center gap-1.5 text-caption text-muted-foreground">
         <Clock className="w-3 h-3 shrink-0" />
         <span>{time}</span>
       </div>

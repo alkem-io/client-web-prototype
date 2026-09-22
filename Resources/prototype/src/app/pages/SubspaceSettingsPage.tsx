@@ -6,7 +6,7 @@ import { SubspaceSettingsUpdates } from "@/app/components/space/SubspaceSettings
 import { SubspaceSettingsSubspaces } from "@/app/components/space/SubspaceSettingsSubspaces";
 import { SubspaceSettingsSettings } from "@/app/components/space/SubspaceSettingsSettings";
 import { Info, Layout, Users, Megaphone, Layers, Settings } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface SubspaceInfo {
   title: string;
@@ -30,7 +30,7 @@ const SUBSPACE_MAP: Record<string, SubspaceInfo> = {
     avatarImage: "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200",
     parentInitials: "GE",
     parentAvatarColor: "#2563eb",
-    memberCount: 24,
+    memberCount: 24
   },
   "urban-mobility-lab": {
     title: "Urban Mobility Lab",
@@ -41,7 +41,7 @@ const SUBSPACE_MAP: Record<string, SubspaceInfo> = {
     avatarImage: "https://images.unsplash.com/photo-1556741533-6e6a62bd8b49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200",
     parentInitials: "GE",
     parentAvatarColor: "#2563eb",
-    memberCount: 18,
+    memberCount: 18
   },
   "green-infrastructure": {
     title: "Green Infrastructure",
@@ -52,8 +52,8 @@ const SUBSPACE_MAP: Record<string, SubspaceInfo> = {
     avatarImage: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=200",
     parentInitials: "GE",
     parentAvatarColor: "#2563eb",
-    memberCount: 12,
-  },
+    memberCount: 12
+  }
 };
 
 const DEFAULT_INFO: SubspaceInfo = {
@@ -64,7 +64,7 @@ const DEFAULT_INFO: SubspaceInfo = {
   avatarColor: "#64748b",
   parentInitials: "SP",
   parentAvatarColor: "#475569",
-  memberCount: 10,
+  memberCount: 10
 };
 
 export default function SubspaceSettingsPage() {
@@ -79,7 +79,7 @@ export default function SubspaceSettingsPage() {
     ...DEFAULT_INFO,
     title: (subspaceSlug || "subspace")
       .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase()),
+      .replace(/\b\w/g, (c) => c.toUpperCase())
   };
 
   // Redirect to 'about' if no tab
@@ -167,7 +167,7 @@ export default function SubspaceSettingsPage() {
                 style={{
                   background: "var(--card)",
                   border: "1px solid var(--border)",
-                  borderRadius: "var(--radius)",
+                  borderRadius: "var(--radius)"
                 }}
               >
                 {tab === "about" ? (
@@ -199,7 +199,7 @@ export default function SubspaceSettingsPage() {
                         className="w-8 h-8 rounded-md"
                         style={{
                           background:
-                            "color-mix(in srgb, var(--muted-foreground) 20%, transparent)",
+                            "color-mix(in srgb, var(--muted-foreground) 20%, transparent)"
                         }}
                       />
                     </div>
@@ -214,7 +214,7 @@ export default function SubspaceSettingsPage() {
                         className="text-body"
                         style={{
                           color: "var(--muted-foreground)",
-                          marginTop: 4,
+                          marginTop: 4
                         }}
                       >
                         This section is under construction.

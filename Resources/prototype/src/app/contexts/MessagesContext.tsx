@@ -9,7 +9,7 @@ interface MessagesContextValue {
 const MessagesContext = createContext<MessagesContextValue>({
   isOpen: false,
   openMessages: () => {},
-  closeMessages: () => {},
+  closeMessages: () => {}
 });
 
 export function MessagesProvider({ children }: { children: React.ReactNode }) {

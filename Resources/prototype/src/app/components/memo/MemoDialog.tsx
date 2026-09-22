@@ -34,13 +34,13 @@ import {
   Smile,
   Table,
   Wifi,
-  X,
+  X
 } from "lucide-react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/app/components/ui/dialog";
-import { IconButton } from "@/app/components/ui/icon-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/crd/primitives/dialog";
+import { IconButton } from "@/crd/primitives/icon-button";
 import { MemoSignedDialog } from "./MemoSignedDialog";
 import { SignMemoButton } from "./SignMemoButton";
 import { SignMemoDialog } from "./SignMemoDialog";
@@ -94,7 +94,7 @@ const MARKDOWN_COMPONENTS = {
   ),
   td: (props: { children?: React.ReactNode }) => (
     <td className="border-b px-3 py-2 last:border-0" {...props} />
-  ),
+  )
 };
 
 export function MemoDialog({
@@ -104,7 +104,7 @@ export function MemoDialog({
   title,
   markdown,
   author,
-  timestamp = "Today",
+  timestamp = "Today"
 }: MemoDialogProps) {
   const { cleverbaseLinked, signingEnabled } = useMemoSigning();
   const copies = useSignedCopies(memoId);

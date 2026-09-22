@@ -1,5 +1,5 @@
 import { Link, useLocation, useSearchParams } from "react-router";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { useEffect, useRef } from "react";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { ActivityDot } from "@/app/components/shared/ActivityDot";
@@ -69,7 +69,7 @@ export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange
         activeTab.scrollIntoView({
           behavior: "smooth",
           block: "nearest",
-          inline: "center",
+          inline: "center"
         });
       }
     }
@@ -106,8 +106,7 @@ export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange
               )}
               style={{
                 fontSize: 14,
-                fontFamily: "'Inter', sans-serif",
-                lineHeight: "20px",
+                lineHeight: "20px"
               }}
             >
               <span className="inline-flex items-center gap-2">

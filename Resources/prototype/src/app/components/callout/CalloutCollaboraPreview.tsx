@@ -1,6 +1,6 @@
 import { FileText, Presentation, Sheet } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/app/components/ui/button';
+import { cn } from '@/crd/lib/utils';
+import { Button } from '@/crd/primitives/button';
 
 export type CollaboraDocumentPreviewType = 'text' | 'spreadsheet' | 'presentation';
 
@@ -16,20 +16,20 @@ type CalloutCollaboraPreviewProps = {
 const iconByType: Record<CollaboraDocumentPreviewType, typeof FileText> = {
   text: FileText,
   spreadsheet: Sheet,
-  presentation: Presentation,
+  presentation: Presentation
 };
 
 const typeLabelMap: Record<CollaboraDocumentPreviewType, string> = {
   text: 'Document',
   spreadsheet: 'Spreadsheet',
-  presentation: 'Presentation',
+  presentation: 'Presentation'
 };
 
 export function CalloutCollaboraPreview({
   documentType,
   onOpen,
   size = 'default',
-  className,
+  className
 }: CalloutCollaboraPreviewProps) {
   const Icon = iconByType[documentType];
   const typeLabel = typeLabelMap[documentType];

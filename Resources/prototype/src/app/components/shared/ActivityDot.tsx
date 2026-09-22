@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 /**
  * Ambient "new activity" marker (spec 014). Deliberately unlike the notification

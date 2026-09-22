@@ -5,16 +5,16 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Input } from "@/app/components/ui/input";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { Input } from "@/crd/primitives/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 import { MembershipItem } from "@/app/components/memberships/membershipData";
 
 interface ShowMoreModalProps {
@@ -28,14 +28,14 @@ export function ShowMoreModal({
   open,
   onOpenChange,
   category,
-  spaces,
+  spaces
 }: ShowMoreModalProps) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
   const titles = {
     lead: "Spaces I Lead & Administer",
-    host: "Spaces I Host",
+    host: "Spaces I Host"
   };
 
   const filteredSpaces = useMemo(() => {
@@ -95,7 +95,7 @@ export function ShowMoreModal({
                   className="w-10 h-10 rounded-lg shrink-0 overflow-hidden mt-0.5 relative"
                   style={{
                     border: "1px solid var(--border)",
-                    background: space.color,
+                    background: space.color
                   }}
                 >
                   {space.image ? (
@@ -105,7 +105,7 @@ export function ShowMoreModal({
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
+                    <div className="w-full h-full flex items-center justify-center text-white text-caption font-bold">
                       {space.initials}
                     </div>
                   )}
@@ -114,7 +114,7 @@ export function ShowMoreModal({
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-medium truncate">
+                    <h3 className="text-body-emphasis truncate">
                       {space.name}
                     </h3>
                     {space.isPrivate && (
@@ -122,7 +122,7 @@ export function ShowMoreModal({
                     )}
                   </div>
                   {space.tagline && (
-                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                    <p className="text-caption text-muted-foreground line-clamp-1 mt-0.5">
                       {space.tagline}
                     </p>
                   )}
@@ -130,7 +130,7 @@ export function ShowMoreModal({
 
                 {/* Subspace count (if any) */}
                 {space.parentId === undefined && (
-                  <div className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
+                  <div className="text-caption text-muted-foreground whitespace-nowrap shrink-0">
                     2 subspaces
                   </div>
                 )}

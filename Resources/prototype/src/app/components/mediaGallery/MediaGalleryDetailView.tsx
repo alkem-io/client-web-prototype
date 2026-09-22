@@ -1,9 +1,9 @@
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import { useState, useCallback } from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/app/components/ui/button';
-import { IconButton } from '@/app/components/ui/icon-button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/app/components/ui/dialog';
+import { cn } from '@/crd/lib/utils';
+import { Button } from '@/crd/primitives/button';
+import { IconButton } from '@/crd/primitives/icon-button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/crd/primitives/dialog';
 import { MediaGalleryFeedThumbnail } from './MediaGalleryFeedGrid';
 
 type MediaGalleryDetailViewProps = {
@@ -17,7 +17,7 @@ export function MediaGalleryDetailView({
   thumbnails,
   initialIndex = 0,
   onDeleteThumbnail,
-  className,
+  className
 }: MediaGalleryDetailViewProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [pendingDelete, setPendingDelete] = useState<MediaGalleryFeedThumbnail | null>(null);

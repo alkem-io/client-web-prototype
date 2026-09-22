@@ -1,7 +1,7 @@
 import { Children, type ReactNode, useState } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/crd/lib/utils';
 import { PlaceholderCard } from '@/app/components/ui/placeholder-card';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/crd/primitives/button';
 
 type ContributionGridProps = {
   children: ReactNode;

@@ -6,19 +6,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import {
   X, ImageIcon, ChevronLeft, Sparkles, Palette, Users, Globe, Lock,
   UserPlus, BookOpen, Target, Lightbulb, UsersRound, Search,
-  type LucideIcon,
+  type LucideIcon
 } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    Welcome to your Space — Post-creation setup dialog
@@ -33,7 +33,7 @@ interface WelcomeSpaceDialogProps {
 export function WelcomeSpaceDialog({
   open,
   onOpenChange,
-  spaceName = "your space",
+  spaceName = "your space"
 }: WelcomeSpaceDialogProps) {
   const [currentStep, setCurrentStep] = useState<number>(-1); // -1 = welcome screen
   const [direction, setDirection] = useState<"forward" | "back">("forward");
@@ -208,7 +208,7 @@ function WelcomeScreen({ spaceName, onJumpToStep }: { spaceName: string; onJumpT
         <Sparkles className="w-8 h-8 text-primary" />
       </div>
       <div>
-        <h3 className="text-lg font-semibold text-foreground">Your space is ready!</h3>
+        <h3 className="text-subsection-title text-foreground">Your space is ready!</h3>
         <p className="text-body text-muted-foreground mt-2">
           Would you like to personalize it now? You can add branding, describe its purpose, and set up access controls.
         </p>
@@ -261,7 +261,7 @@ function SetupBranding({
   banner, setBanner,
   tags, setTags,
   currentTag, setCurrentTag,
-  handleTagKeyDown,
+  handleTagKeyDown
 }: {
   avatar: string | null; setAvatar: (v: string | null) => void;
   banner: string | null; setBanner: (v: string | null) => void;
@@ -272,7 +272,7 @@ function SetupBranding({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-lg font-semibold text-foreground">Make it visually yours</h3>
+        <h3 className="text-subsection-title text-foreground">Make it visually yours</h3>
         <p className="text-caption text-muted-foreground mt-1">All optional — you can add these later in settings.</p>
       </div>
 
@@ -357,7 +357,7 @@ function SetupBranding({
 
 function SetupPurpose({
   why, setWhy,
-  who, setWho,
+  who, setWho
 }: {
   why: string; setWhy: (v: string) => void;
   who: string; setWho: (v: string) => void;
@@ -365,7 +365,7 @@ function SetupPurpose({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-lg font-semibold text-foreground">What's the purpose?</h3>
+        <h3 className="text-subsection-title text-foreground">What's the purpose?</h3>
         <p className="text-caption text-muted-foreground mt-1">Help people understand why this space exists.</p>
       </div>
 
@@ -378,7 +378,7 @@ function SetupPurpose({
           value={why}
           onChange={setWhy}
           placeholder="e.g. We believe collaboration is key to solving climate challenges..."
-          minHeight="80px"
+          className="min-h-[80px]"
         />
       </div>
 
@@ -391,7 +391,7 @@ function SetupPurpose({
           value={who}
           onChange={setWho}
           placeholder="e.g. Engineers, designers, and researchers passionate about sustainability..."
-          minHeight="80px"
+          className="min-h-[80px]"
         />
       </div>
     </div>
@@ -404,7 +404,7 @@ function SetupPurpose({
 
 function SetupAccess({
   visibility, setVisibility,
-  membershipMode, setMembershipMode,
+  membershipMode, setMembershipMode
 }: {
   visibility: string; setVisibility: (v: string) => void;
   membershipMode: string; setMembershipMode: (v: string) => void;
@@ -412,7 +412,7 @@ function SetupAccess({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-lg font-semibold text-foreground">Who can see and join?</h3>
+        <h3 className="text-subsection-title text-foreground">Who can see and join?</h3>
         <p className="text-caption text-muted-foreground mt-1">You can change this anytime in settings.</p>
       </div>
 

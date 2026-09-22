@@ -46,7 +46,7 @@ export default function ExportPage() {
           width: box.width,
           height: box.height,
           overflow: 'hidden',
-          background: transparent ? 'transparent' : 'var(--background)',
+          background: transparent ? 'transparent' : 'var(--background)'
         }}
       >
         <div style={{ position: 'absolute', left: 0, top: -box.offsetY }}>
@@ -76,7 +76,7 @@ export function ManifestPage() {
     overflow: c.overflow,
     devices: c.devices.map(d => ({ id: d.id, kind: d.kind, screenKind: d.screenKind })),
     cards: c.cards.map(c2 => c2.id),
-    uses: c.uses,
+    uses: c.uses
   }));
   return (
     <script

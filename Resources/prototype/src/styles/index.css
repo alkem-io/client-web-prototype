@@ -1,17 +1,65 @@
-@import './fonts.css';
-@import './tailwind.css';
-@import './theme.css';
-@import './typography.css';
+/*
+ * Prototype stylesheet entry.
+ *
+ * Design tokens, typography and base resets all come from the vendored CRD
+ * layer — this file must never redefine them. See src/crd/PROVENANCE.md.
+ *
+ * Note on fonts: see the TYPEFACE SWITCH below.
+ */
 
-/* Round Quill editor containers to match design system */
-.ql-toolbar.ql-snow {
-  border-radius: 0.5rem 0.5rem 0 0;
-}
-.ql-container.ql-snow {
-  border-radius: 0 0 0.5rem 0.5rem;
-}
-.ql-toolbar.ql-snow + .ql-container.ql-snow {
-  border-top: 0;
+/* ─── TYPEFACE SWITCH ───────────────────────────────────────────────────────
+ * Production declares Inter but never loads it, so alkem.io actually renders
+ * in the OS system font (SF Pro on macOS, Segoe UI on Windows). Measured
+ * 2026-09-21 — see UPSTREAM-BUGS.md #1.
+ *
+ * ENABLED: the prototype loads Inter, so it shows the design as the tokens
+ * intend. This is deliberately AHEAD of production — alkem.io will match once
+ * client-web ships the Inter webfont (two lines, see UPSTREAM-BUGS.md #1).
+ *
+ * To see what production looks like today instead, comment the import out.
+ * Nothing else needs changing: the font is declared once, on `.crd-root` in
+ * the vendored crd.css, and every component inherits it.
+ *
+ * Must come first: `@import url()` has to precede every other rule.
+ * ───────────────────────────────────────────────────────────────────────── */
+@import './fonts.css';
+
+/* Production design system — pulls in Tailwind, tw-animate-css, theme.css,
+   typography.css, the markdown-editor styles, and the .crd-root resets. */
+@import '../crd/styles/crd.css';
+
+/* Production's GLOBAL app stylesheet — the other half of what alkem.io renders.
+   Lives outside src/crd/ in client-web, so vendoring the design system alone
+   missed it. Supplies the reserved scrollbar gutter (which sets the real page
+   width), scroll-lock compensation, #root layout, and all .markdown/.tiptap
+   typography. Imported AFTER crd.css, matching client-web's src/index.tsx. */
+@import '../vendor/client-web-index.css';
+
+/* crd.css declares @source for its own folders only; add the prototype's. */
+@source '../app/**/*.{ts,tsx}';
+@source '../mockups/**/*.{ts,tsx}';
+@source '../imports/**/*.{ts,tsx}';
+
+/* The prototype uses `prose` classes in its markdown surfaces; production
+   hand-rolls its editor CSS instead and does not ship this plugin. */
+@plugin "@tailwindcss/typography";
+
+/* ─── Prototype-only utilities ───
+   Everything below is exploration scaffolding with no production equivalent.
+   Nothing here may redefine a CRD token. */
+
+/* Grid metrics for the GridOverlay design tool and the few fixed-position
+   surfaces that size themselves to N grid columns (SubspaceSidebar,
+   SubspaceCommunityDialog). The prototype's old theme.css defined these;
+   production's does not, because CRD places content with grid classes
+   (`contentColumnClass`) rather than computing pixel widths. They are kept
+   here — not in the vendored layer — because they are prototype scaffolding,
+   not design tokens. Values match GridOverlay: 12 cols, 24px gutter. */
+:root {
+  --grid-columns: 12;
+  --grid-gutter: 24px;
+  --grid-margin-mobile: 24px;
+  --grid-margin-desktop: 32px;
 }
 
 /* Hide scrollbar while keeping scroll functionality */

@@ -1,13 +1,13 @@
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { Check, X, Calendar } from "lucide-react";
 import { useState } from "react";
 

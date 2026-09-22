@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import {
   Search, Plus, Mail, UserPlus, List, FileText, Calendar, ChevronDown,
   Menu, Filter, X, Home, Users, Layers, BookOpen, MessageSquare,
   PanelLeftOpen, GripHorizontal, ArrowUp, ChevronUp
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger
-} from "@/app/components/ui/sheet";
+} from "@/crd/primitives/sheet";
 
 /* ═══════════════════════════════════════════════════════════════════
    RESPONSIVE SIDEBAR DEMO PAGE
@@ -34,7 +34,7 @@ function SidebarContent({ compact = false }: { compact?: boolean }) {
   return (
     <div className={cn("flex flex-col w-full", compact ? "gap-3" : "gap-4")}>
       {/* Description */}
-      <p className="text-sm text-foreground/85 leading-relaxed">
+      <p className="text-body text-foreground/85 leading-relaxed">
         Explore the subspaces within this collaborative space. Filter by topic or search for specific areas.
       </p>
 
@@ -60,7 +60,7 @@ function SidebarContent({ compact = false }: { compact?: boolean }) {
           placeholder="Search subspaces…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full h-9 pl-8 pr-3 text-sm rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+          className="w-full h-9 pl-8 pr-3 text-body rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
         />
       </div>
 
@@ -71,7 +71,7 @@ function SidebarContent({ compact = false }: { compact?: boolean }) {
             key={tag}
             onClick={() => toggleTag(tag)}
             className={cn(
-              "px-2 py-0.5 rounded-full text-xs border transition-colors",
+              "px-2 py-0.5 rounded-full text-caption border transition-colors",
               activeTags.includes(tag)
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
@@ -84,10 +84,10 @@ function SidebarContent({ compact = false }: { compact?: boolean }) {
 
       {/* Filter feedback */}
       {(search || activeTags.length > 0) && (
-        <div className="flex items-center justify-between gap-2 p-2 rounded-md text-xs"
+        <div className="flex items-center justify-between gap-2 p-2 rounded-md text-caption"
           style={{
             background: "color-mix(in srgb, var(--primary) 10%, transparent)",
-            color: "var(--primary)",
+            color: "var(--primary)"
           }}
         >
           <span>Filtering active</span>
@@ -102,16 +102,16 @@ function SidebarContent({ compact = false }: { compact?: boolean }) {
 
       {/* Events */}
       <div>
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Events</p>
+        <p className="text-caption text-muted-foreground uppercase tracking-wider mb-2">Events</p>
         <div className="flex flex-col gap-1">
           {[
             { title: "GovTechDay", date: "Today" },
             { title: "Stakeholder Workshop", date: "Jun 14" },
             { title: "Community Solar Session", date: "Jun 18" },
           ].map((e) => (
-            <div key={e.title} className="flex items-center justify-between py-1.5 text-sm">
+            <div key={e.title} className="flex items-center justify-between py-1.5 text-body">
               <span className="text-foreground/85">{e.title}</span>
-              <span className="text-xs text-muted-foreground">{e.date}</span>
+              <span className="text-caption text-muted-foreground">{e.date}</span>
             </div>
           ))}
         </div>
@@ -149,8 +149,8 @@ function MockContent() {
               <Layers className="w-5 h-5 text-primary" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-sm font-medium text-foreground truncate">{card.title}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">{card.type} · {card.author}</p>
+              <h3 className="text-body-emphasis text-foreground truncate">{card.title}</h3>
+              <p className="text-caption text-muted-foreground mt-0.5">{card.type} · {card.author}</p>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@ function MockTabs() {
           key={tab.id}
           onClick={() => setActive(tab.id)}
           className={cn(
-            "flex items-center gap-1.5 px-3 py-2 text-sm whitespace-nowrap border-b-2 transition-colors -mb-px",
+            "flex items-center gap-1.5 px-3 py-2 text-body whitespace-nowrap border-b-2 transition-colors -mb-px",
             active === tab.id
               ? "border-primary text-foreground font-medium"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -205,7 +205,7 @@ function Option1SheetDrawer() {
           <SheetTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2">
               <Menu className="w-4 h-4" />
-              <span className="text-sm">Filters & Actions</span>
+              <span className="text-body">Filters & Actions</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[300px] sm:w-[340px] overflow-y-auto">
@@ -279,15 +279,15 @@ function Option2BottomSheet() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Filters & Actions</span>
+              <span className="text-body-emphasis">Filters & Actions</span>
             </div>
             <div className="flex gap-1">
-              <Button size="sm" variant="ghost" className="h-7 px-2 text-xs"
+ <Button size="sm" variant="ghost" className="h-7 px-2"
                 onClick={() => setSheetState(sheetState === "open" ? "peek" : "open")}>
                 {sheetState === "open" ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
               </Button>
               {sheetState !== "closed" && (
-                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs"
+ <Button size="sm" variant="ghost" className="h-7 px-2"
                   onClick={() => setSheetState("closed")}>
                   <X className="w-3.5 h-3.5" />
                 </Button>
@@ -296,10 +296,10 @@ function Option2BottomSheet() {
           </div>
           {/* Quick action buttons visible in peek */}
           <div className="flex gap-2 mt-2">
-            <Button size="sm" className="h-7 text-xs gap-1.5">
+ <Button size="sm" className="h-7 gap-1.5">
               <Plus className="w-3.5 h-3.5" /> Post
             </Button>
-            <Button size="sm" variant="outline" className="h-7 text-xs gap-1.5">
+ <Button size="sm" variant="outline" className="h-7 gap-1.5">
               <Plus className="w-3.5 h-3.5" /> Subspace
             </Button>
           </div>
@@ -320,7 +320,7 @@ function Option2BottomSheet() {
           onClick={() => setSheetState("peek")}
         >
           <ArrowUp className="w-4 h-4 text-muted-foreground mr-2" />
-          <span className="text-xs text-muted-foreground">Show panel</span>
+          <span className="text-caption text-muted-foreground">Show panel</span>
         </button>
       )}
     </div>
@@ -349,7 +349,7 @@ function Option3CollapsibleInline() {
         >
           <div className="flex items-center gap-2">
             <PanelLeftOpen className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Filters, Search & Actions</span>
+            <span className="text-body-emphasis">Filters, Search & Actions</span>
           </div>
           <ChevronDown className={cn("w-4 h-4 text-muted-foreground transition-transform", expanded && "rotate-180")} />
         </button>
@@ -430,7 +430,7 @@ function Option4BottomNavFAB() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold">Filters & Actions</h3>
+              <h3 className="text-card-title">Filters & Actions</h3>
               <button onClick={() => setFilterOpen(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="w-4 h-4" />
               </button>
@@ -497,7 +497,7 @@ function Option5TabBarBelow() {
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
                 className={cn(
-                  "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap",
+                  "shrink-0 px-3 py-1.5 rounded-full text-caption border transition-colors whitespace-nowrap",
                   activeFilter === filter
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-background text-muted-foreground border-border hover:border-primary/50"
@@ -542,7 +542,7 @@ const OPTIONS: Record<number, { label: string; component: React.FC }> = {
   2: { label: "Bottom Sheet", component: Option2BottomSheet },
   3: { label: "Collapsible Inline", component: Option3CollapsibleInline },
   4: { label: "Bottom Nav + FAB", component: Option4BottomNavFAB },
-  5: { label: "Tab Bar + Filter Icon", component: Option5TabBarBelow },
+  5: { label: "Tab Bar + Filter Icon", component: Option5TabBarBelow }
 };
 
 export default function ResponsiveSidebarDemo() {
@@ -555,10 +555,10 @@ export default function ResponsiveSidebarDemo() {
       {/* Minimal header showing which option is active */}
       <div className="sticky top-0 z-[60] bg-background/95 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <h1 className="text-sm font-medium text-foreground">
+          <h1 className="text-body-emphasis text-foreground">
             Option {v}: {label}
           </h1>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-caption text-muted-foreground">
             ?v=1…5 · Resize to &lt; 1024px
           </span>
         </div>

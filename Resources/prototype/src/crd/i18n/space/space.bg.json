@@ -1,0 +1,1145 @@
+{
+  "common": {
+    "Callout": "Известие",
+    "callout": "известие",
+    "Callouts": "Известия",
+    "callouts": "известия"
+  },
+  "banner": {
+    "homeSpace": "Начално пространство",
+    "homeSpaceSettings": "Настройки на началното пространство"
+  },
+  "tabs": {
+    "dashboard": "Табло",
+    "community": "Общност",
+    "subspaces": "Подпространства",
+    "knowledgeBase": "База знания"
+  },
+  "visibility": {
+    "archived": "Това пространство е архивирано и е само за четене.",
+    "archivedContact": "Свържете се с ръководителя на пространството за повече информация.",
+    "demo": "Това е демонстрационно пространство за тестови цели.",
+    "inactive": "Това пространство е неактивно в момента."
+  },
+  "knowledge": {
+    "searchPlaceholder": "Търсене на публикации...",
+    "searchLabel": "Търсене на публикации",
+    "noResults": "Няма съвпадения",
+    "search": {
+      "emptyTitle": "Няма съвпадения",
+      "emptyDescription": "Няма съдържание в този раздел, което да отговаря на търсенето ви.",
+      "errorTitle": "Търсенето е недостъпно",
+      "errorDescription": "Възникна грешка при търсенето. Моля, опитайте отново.",
+      "retry": "Опитайте отново",
+      "loadingLabel": "Зареждане на резултатите от търсенето",
+      "appendingLabel": "Зареждане на още резултати",
+      "tagLabel_one": "таг",
+      "tagLabel_other": "тагове",
+      "matchText_one": "<b>{{count}}</b> елемент, свързан с <text></text>",
+      "matchText_other": "<b>{{count}}</b> елемента, свързани с <text></text>",
+      "matchTextMore": "<b>{{count}}+</b> елемента, свързани с <text></text>",
+      "matchTags_one": "<b>{{count}}</b> елемент, свързан с {{tagLabel}} <tags></tags>",
+      "matchTags_other": "<b>{{count}}</b> елемента, свързани с {{tagLabel}} <tags></tags>",
+      "matchTagsMore": "<b>{{count}}+</b> елемента, свързани с {{tagLabel}} <tags></tags>",
+      "matchBoth_one": "<b>{{count}}</b> елемент, свързан с <text></text> и {{tagLabel}} <tags></tags>",
+      "matchBoth_other": "<b>{{count}}</b> елемента, свързани с <text></text> и {{tagLabel}} <tags></tags>",
+      "matchBothMore": "<b>{{count}}+</b> елемента, свързани с <text></text> и {{tagLabel}} <tags></tags>"
+    },
+    "viewGrid": "Изглед с карти",
+    "viewList": "Списъчен изглед",
+    "count": {
+      "post_one": "{{count}} публикация",
+      "post_other": "{{count}} публикации",
+      "whiteboard_one": "{{count}} дъска",
+      "whiteboard_other": "{{count}} дъски",
+      "memo_one": "{{count}} бележка",
+      "memo_other": "{{count}} бележки",
+      "link_one": "{{count}} връзка",
+      "link_other": "{{count}} връзки",
+      "document_one": "{{count}} документ",
+      "document_other": "{{count}} документа"
+    }
+  },
+  "postIndexDialog": {
+    "close": "Затвори",
+    "loadingLabel": "Зареждане на индекса на публикациите",
+    "empty": "Все още няма публикации"
+  },
+  "sidebar": {
+    "aboutSpace": "За това пространство",
+    "subspaces": "Подпространства",
+    "showAll": "Покажи всички",
+    "create": "Създай",
+    "events": "Събития",
+    "noEvents": "Няма предстоящи събития",
+    "showCalendar": "Покажи календар",
+    "spaceLead": "Ръководител на пространството",
+    "spaceLeads": "Ръководители на пространството",
+    "contactLead": "Свържи се с ръководителите",
+    "invite": "Покани",
+    "virtualContributors": "Виртуални сътрудници",
+    "communityGuidelines": "Насоки на общността",
+    "updates": "Новини",
+    "updatesSeeAll": "Вижте всички новини",
+    "updatesEmpty": "Все още няма публикувани новини.",
+    "updatesLoading": "Зареждане на новини",
+    "postIndex": "Индекс на публикациите",
+    "readMore": "Прочети повече",
+    "editDescription": "Редактиране на описанието",
+    "addEvent": "Добави събитие",
+    "eventDateRelative": {
+      "today": "Днес",
+      "tomorrow": "Утре",
+      "in_days_one": "след 1 ден",
+      "in_days_other": "след {{count}} дни"
+    },
+    "inviteVirtualContributor": "Покани виртуален сътрудник"
+  },
+  "calendar": {
+    "title": "Събития",
+    "addEvent": "Добавяне на събитие",
+    "editEvent": "Редактиране на събитие",
+    "eventDetail": "Събитие: {{title}}",
+    "noUpcomingEvents": "Няма предстоящи събития",
+    "pastEvents": "Минали събития",
+    "back": "Назад",
+    "save": "Запази",
+    "cancel": "Отказ",
+    "edit": "Редактирай",
+    "deleteConfirm": {
+      "title": "Изтриване на събитие",
+      "body": "Сигурни ли сте, че искате да изтриете „{{title}}“ от това {{entity}}?",
+      "confirm": "Изтрий",
+      "cancel": "Отказ"
+    },
+    "fields": {
+      "displayName": "Заглавие",
+      "type": "Тип",
+      "date": "Дата",
+      "startTime": "Начален час",
+      "endTime": "Краен час",
+      "duration": "Продължителност",
+      "startDate": "Начална дата",
+      "endDate": "Крайна дата",
+      "durationOption": {
+        "minutes": "{{count}} мин",
+        "hours_one": "{{count}} час",
+        "hours_other": "{{count}} часа",
+        "hoursMinutes": "{{hours}}ч {{minutes}}мин"
+      },
+      "wholeDay": "Цял ден",
+      "description": "Описание",
+      "location": "Местоположение",
+      "tags": "Етикети",
+      "visibleOnParentCalendar": "Видимо в родителския календар",
+      "endsAt": "завършва в {{time}}"
+    },
+    "validation": {
+      "displayNameRequired": "Заглавието е задължително",
+      "typeRequired": "Типът е задължителен",
+      "invalidDuration": "Невалидна продължителност",
+      "endBeforeStart": "Краят трябва да е след началото",
+      "descriptionTooLong": "Описанието е твърде дълго"
+    },
+    "type": {
+      "DEADLINE": "Краен срок",
+      "EVENT": "Събитие",
+      "MEETING": "Среща",
+      "MILESTONE": "Етап",
+      "OTHER": "Друго",
+      "TRAINING": "Обучение",
+      "unknown": "Събитие"
+    },
+    "addToCalendar": {
+      "trigger": "Добави в календара",
+      "google": "Google Calendar",
+      "outlook": "Outlook",
+      "ics": "Изтегли ICS",
+      "exportAll": "Експортиране на предстоящи събития в ICS",
+      "loading": "Зареждане…"
+    },
+    "calendarA11y": {
+      "previousMonth": "Предишен месец",
+      "nextMonth": "Следващ месец",
+      "pickDate": "Избери дата",
+      "dayWithEvents_one": "{{date}}, 1 събитие",
+      "dayWithEvents_other": "{{date}}, {{count}} събития"
+    },
+    "tooltip": {
+      "wholeDayPrefix": "Цял ден"
+    },
+    "details": {
+      "comments": "Коментари",
+      "references": "Препратки",
+      "tags": "Етикети",
+      "loadingEvent": "Зареждане на събитие…",
+      "subspaceLabel": "в {{name}}",
+      "createdBy": "от {{name}} • {{date}}"
+    },
+    "entity": {
+      "space": "Пространство",
+      "subspace": "Подпространство"
+    },
+    "notFound": {
+      "title": "Събитието не е намерено",
+      "body": "Това събитие вече не съществува или е премахнато.",
+      "backToList": "Обратно към събитията"
+    }
+  },
+  "feed": {
+    "addPost": "Добави публикация",
+    "showMore": "Покажи повече",
+    "activity": "Активност",
+    "noCallouts": "Все още няма съдържание",
+    "loading": "Зареждане на съдържание..."
+  },
+  "callout": {
+    "openAria": "Отвори {{title}}",
+    "draft": "Чернова",
+    "expand": "Покажи повече",
+    "fullscreen": "Цял екран",
+    "collapse": "Покажи по-малко",
+    "openWhiteboard": "Отвори дъска",
+    "openMemo": "Отвори бележка",
+    "openDocument": "Отвори документ",
+    "openDocumentPdf": "Преглед",
+    "document": "Документ",
+    "documentText": "Текстов документ",
+    "documentSpreadsheet": "Електронна таблица",
+    "documentPresentation": "Презентация",
+    "documentPdf": "PDF",
+    "addDocument": "Добави документ",
+    "defaultDocumentName": "Нов документ",
+    "createDocument": "Създай нов документ",
+    "documentNameLabel": "Заглавие на документа",
+    "documentTypeLabel": "Тип документ",
+    "createNew": "Създай нов",
+    "documentImportOr": "или",
+    "documentImportHint": "Плъзнете файл или щракнете, за да качите",
+    "documentImportMaxSize": ".docx, .xlsx, .pptx, .pdf до {{cap}} MB",
+    "documentReplaceAccepts": "{{ext}} до {{cap}} MB",
+    "documentImportRemoveFile": "Премахни файла",
+    "documentImportErrorUnsupported": "Този тип файл не се поддържа. Опитайте с {{formats}}.",
+    "documentImportErrorTooLarge": "Файлът е твърде голям. Максималният размер е {{cap}} MB.",
+    "documentImportErrorMultiple": "Качвайте само по един файл.",
+    "documentImportErrorFolder": "Качете файл, а не папка.",
+    "documentImportErrorServiceUnavailable": "Услугата за документи временно не е налична. Моля, опитайте отново след малко.",
+    "documentReplace": "Замяна на файла",
+    "documentReplaceTitle": "Замяна на файла",
+    "documentReplaceDescription": "Качването на заместващ файл презаписва текущия файл за всички и не може да бъде отменено.",
+    "documentReplaceCurrentTitleLabel": "Текущ документ",
+    "documentReplaceTitleFieldLabel": "Заглавие",
+    "documentReplaceConfirm": "Замяна на файла",
+    "documentReplaceErrorSameType": "Заместващият файл трябва да е същият вид документ като текущия: {{type}} ({{ext}}).",
+    "documentReplaceSuccess": "Файлът е заменен.",
+    "documentReplaceError": "Файлът не можа да бъде заменен. Моля, опитайте отново.",
+    "comments": "{{count}} коментара",
+    "commentsZero": "0 коментара",
+    "expandComments": "Разгъни коментарите",
+    "collapseComments": "Сгъни коментарите",
+    "post": "Публикация",
+    "whiteboard": "Дъска",
+    "collection": "Колекция",
+    "callForWhiteboards": "Покана за дъски",
+    "poll": "Анкета",
+    "link": "Връзка",
+    "callToAction": "Призив за действие",
+    "mediaGallery": "Медийна галерия",
+    "memo": "Бележка",
+    "moreWhiteboards": "+{{count}} още",
+    "moreContributions": "+{{count}} още",
+    "contributionsHeader": "Приноси ({{count}})",
+    "vote": "Гласувай",
+    "votes": "{{count}} гласа",
+    "totalVotes": "{{count}} гласа общо",
+    "sendComment": "Изпрати коментар",
+    "addWhiteboard": "Добави бяла дъска",
+    "createWhiteboard": "Създаване на нова бяла дъска",
+    "defaultWhiteboardName": "Нова бяла дъска",
+    "whiteboardNameLabel": "Заглавие на бялата дъска",
+    "addMemo": "Добави бележка",
+    "createMemo": "Създай нова бележка",
+    "defaultMemoName": "Нова бележка",
+    "memoNameLabel": "Заглавие на бележка",
+    "addLinkOrFile": "Добави връзка или файл",
+    "createLink": "Добави връзки или прикачи документи",
+    "editLink": "Редактиране на връзка",
+    "linkSave": "Запази",
+    "linkCreate": "Добави",
+    "linkAddAnother": "Добави още една връзка",
+    "linkRemoveRow": "Премахни тази връзка",
+    "linkDefaultName": "Нова връзка",
+    "linkDefaultNameNumbered": "Нова връзка ({{count}})",
+    "linkCancelConfirmTitle": "Отказване на промените?",
+    "linkCancelConfirmDescription": "Ако затворите сега, добавените тук връзки няма да бъдат запазени.",
+    "linkCancelConfirm": "Откажи",
+    "linkUrlLabel": "URL",
+    "linkUrlPlaceholder": "https://",
+    "linkNameLabel": "Име за показване",
+    "linkNamePlaceholder": "Дайте име на връзката",
+    "linkDescriptionLabel": "Описание",
+    "linkDescriptionPlaceholder": "За какво е тази връзка?",
+    "linkTermsHelper": "<terms>Кликнете тук</terms> за общите условия.",
+    "linkUrlInvalid": "Въведете валиден URL (трябва да започва с http:// или https://).",
+    "linkNameRequired": "Името за показване е задължително.",
+    "linkEditAriaLabel": "Редактиране на връзка",
+    "linkDeleteAriaLabel": "Изтриване на връзка",
+    "linkDelete": "Изтрий връзката",
+    "linkDeleteConfirmTitle": "Изтриване на тази връзка?",
+    "linkDeleteConfirmDescription": "Това ще премахне връзката от $t(common.callout) за постоянно. Действието не може да бъде отменено.",
+    "addPost": "Добави публикация",
+    "createPost": "Създай публикация",
+    "editPost": "Редактирай публикацията",
+    "defaultPostName": "Нова публикация",
+    "postNameLabel": "Заглавие",
+    "postDescriptionLabel": "Описание",
+    "postDescriptionPlaceholder": "Напиши публикацията си...",
+    "postTagsLabel": "Етикети",
+    "postSave": "Запази",
+    "postCreate": "Публикувай",
+    "createTask": "Създай задача",
+    "editTask": "Редактирай задачата",
+    "taskCreate": "Създай задача",
+    "tasksHeader": "Задачи ({{count}})",
+    "postDelete": "Изтрий публикацията",
+    "postDeleteConfirmTitle": "Да се изтрие ли тази публикация?",
+    "postDeleteConfirmDescription": "Това ще премахне публикацията и всички коментари за постоянно. Действието е необратимо.",
+    "postUnsavedCloseTitle": "Да се отхвърлят ли незапазените промени?",
+    "postUnsavedCloseDescription": "Имаш незапазени промени. Ако затвориш сега, те ще бъдат загубени.",
+    "postUnsavedCloseConfirm": "Отхвърли промените",
+    "postUnsavedCloseCancel": "Продължи редактирането",
+    "uploadAfterCreateFailed": "Известието беше създадено, но качването на визуализацията се провали. Можете да опитате отново от диалога за редактиране на известието.",
+    "pollOptionsSaveFailed": "Една или повече промени на опциите на анкетата не бяха запазени. Можете да опитате отново от този диалог.",
+    "referencesSaveFailed": "Една или повече нови референции не бяха запазени. Останалите промени не бяха приложени. Моля, опитайте отново.",
+    "updateFailed": "Промените в $t(common.callout) не бяха запазени. Моля, опитайте отново.",
+    "contributors": "Сътрудници",
+    "subspaces": "Подпространства"
+  },
+  "contribution": {
+    "edit": "Редактирай",
+    "share": "Сподели",
+    "close": "Затвори",
+    "previous": "Предишен",
+    "next": "Следващ"
+  },
+  "framing": {
+    "newWhiteboard": "Нова дъска",
+    "readyToCreate": "Готово за създаване",
+    "configured": "Конфигурирано",
+    "configure": "Конфигурирай",
+    "edit": "Редактиране",
+    "memo": "Бележка",
+    "richTextEditor": "Редактор за форматиран текст",
+    "comingSoon": "Скоро",
+    "memoPlaceholder": "Напишете бележката си…",
+    "memoOpenHint": "Съдържанието на бележката се редактира в отделен диалог.",
+    "openMemo": "Отвори бележка",
+    "openWhiteboard": "Отвори дъска",
+    "openWhiteboardHint": "Съдържанието на дъската се редактира в отделен диалог.",
+    "officeDocumentsNotEnabled": "Офис документите не са активирани за това пространство."
+  },
+  "members": {
+    "subtitle": "{{users}} членове и {{organizations}} организации в това пространство.",
+    "search": "Търсене на членове или организации...",
+    "filterAll": "Всички",
+    "filterLead": "Ръководител",
+    "filterOrganization": "Организация",
+    "noMembers": "Не са намерени членове",
+    "previousPage": "Предишна",
+    "nextPage": "Следваща",
+    "pageOf": "Страница {{current}} от {{total}}",
+    "empty": {
+      "title": "Няма намерени резултати",
+      "description": "Опитайте да промените търсенето или филтрите.",
+      "clearFilters": "Изчисти филтрите"
+    },
+    "role": {
+      "lead": "Ръководител",
+      "member": "Член",
+      "organization": "Организация"
+    }
+  },
+  "subspaces": {
+    "title": "Подпространства",
+    "subtitle": "Разгледайте целеви работни направления и предизвикателства в това пространство.",
+    "createSubspace": "Създай подпространство",
+    "search": "Търсене на подпространства...",
+    "showMore": "Покажи още {{count}}",
+    "showLess": "Покажи по-малко",
+    "filter": {
+      "all": "Всички",
+      "active": "Активни",
+      "archived": "Архивирани"
+    },
+    "empty": {
+      "title": "Няма намерени подпространства",
+      "description": "Няма подпространства, съответстващи на текущото търсене или филтър.",
+      "clearFilters": "Изчисти филтрите"
+    }
+  },
+  "about": {
+    "title": "Относно",
+    "location": "Местоположение",
+    "metrics": "Ключови показатели",
+    "who": "Кой",
+    "why": "Защо",
+    "host": "Домакин",
+    "hostedBy": "Хоствано от",
+    "members": "членове",
+    "editMembers": "Редактиране на членове",
+    "editProfile": "Редактиране на профила на пространството",
+    "manageCommunity": "Управление на общността",
+    "leads": "Лидери",
+    "leadUsers": "Водещи потребители",
+    "leadOrganizations": "Водещи организации",
+    "guidelines": "Насоки на общността",
+    "guidelinesAdminsOnly": "Само администраторите могат да виждат този раздел. Добави насоки на общността, за да знаят членовете какво да очакват.",
+    "references": "Референции",
+    "close": "Затвори",
+    "edit": "Редактирай",
+    "readMore": "Прочети повече",
+    "lockTooltip": "Нямаш достъп до това пространство.",
+    "learnWhy": "Научи как да кандидатстваш",
+    "hostTooltip": "The host organization or person responsible for this space.",
+    "contactHost": "Свържи се с домакина",
+    "apply": "Кандидатствай",
+    "join": "Присъедини се",
+    "member": "Член",
+    "applyPending": "Чакаща кандидатура",
+    "parentPending": "Чакаща кандидатура за основното пространство",
+    "applyDisabled": "Кандидатстването не е достъпно",
+    "acceptInvitation": "Приеми поканата",
+    "signIn": "Влез, за да кандидатстваш",
+    "signInHelper": "Първо ще бъдеш пренасочен да влезеш в Alkemio.",
+    "context": {
+      "L0": {
+        "why": "Защо сме тук?",
+        "who": "Кой участва?"
+      },
+      "L1": {
+        "why": "Защо това подпространство?",
+        "who": "Кой участва?"
+      },
+      "L2": {
+        "why": "Защо това подпространство?",
+        "who": "Кой участва?"
+      }
+    },
+    "tags": "Етикети"
+  },
+  "apply": {
+    "apply": "Кандидатствай",
+    "join": "Присъедини се",
+    "cancel": "Отказ",
+    "processing": "Обработва се…",
+    "applyTitle": "Кандидатствай за {{name}}",
+    "joinTitle": "Присъедини се към {{name}}",
+    "subheader": "Разкажи ни малко защо искаш да се присъединиш.",
+    "subheaderJoin": "На път си да се присъединиш към {{name}}.",
+    "required": "Това поле е задължително.",
+    "maxLength": "Максимум {{count}} символа.",
+    "submitted": {
+      "title": "Кандидатурата е изпратена",
+      "body": "Кандидатурата ти за {{communityName}} беше изпратена.",
+      "review": "Кандидатурата ти ще бъде разгледана. След като бъде одобрена, ще получиш известие <bell/> и ще можеш да влезеш в общността от таблото си Начало."
+    }
+  },
+  "mobile": {
+    "menu": "Меню",
+    "activity": "Активност",
+    "videoCall": "Видеоразговор",
+    "share": "Сподели",
+    "settings": "Настройки",
+    "expandWidth": "Разшири до пълна ширина",
+    "collapseWidth": "Свий до центрирано оформление"
+  },
+  "contextMenu": {
+    "edit": "Редактирай",
+    "publish": "Публикувай",
+    "unpublish": "Оттегли публикация",
+    "share": "Сподели",
+    "sortContributions": "Сортирай приносите",
+    "saveAsTemplate": "Запази като шаблон",
+    "saveAsTemplateUnsupported": "Запазването на документи като шаблон все още не се поддържа",
+    "moveToTop": "Премести най-горе",
+    "moveUp": "Премести нагоре",
+    "moveDown": "Премести надолу",
+    "moveToBottom": "Премести най-долу",
+    "delete": "Изтрий",
+    "moveFailed": "Пренареждането не бе успешно. Опитайте отново."
+  },
+  "visibilityChange": {
+    "publishTitle": "Да публикувам ли този $t(common.callout)?",
+    "publishDescription": "$t(common.Callout)-ът ще стане видим за всички членове на пространството.",
+    "publishConfirm": "Публикувай",
+    "unpublishTitle": "Да върна ли този $t(common.callout) в чернова?",
+    "unpublishDescription": "$t(common.Callout)-ът вече няма да е видим за членовете на пространството.",
+    "unpublishConfirm": "Към чернова",
+    "notifyMembers": "Уведоми членовете на пространството",
+    "saveFailed": "Видимостта не можа да бъде променена. Опитайте отново."
+  },
+  "sortContributions": {
+    "title": "Сортирай приносите",
+    "description": "Влачете, за да пренаредите. Новият ред се прилага при запис.",
+    "empty": "Този $t(common.callout) все още няма приноси за сортиране.",
+    "confirm": "Запази реда",
+    "dragHandle": "Влачи за пренареждане",
+    "saveFailed": "Новият ред не можа да бъде запазен. Опитайте отново."
+  },
+  "deleteCallout": {
+    "title": "Да изтрия ли този $t(common.callout)?",
+    "description": "“{{title}}” ще бъде изтрит окончателно. Това действие не може да бъде отменено.",
+    "confirm": "Изтрий",
+    "confirmAll": "Изтрий $t(common.callout)то и цялото съдържание",
+    "headerContributions_one": "Ще се изтрие {{count}} принос",
+    "headerContributions_other": "Ще се изтрият {{count}} приноса",
+    "headerRich": "Ще се изтрие {{content}}",
+    "headerRichContributions_one": "Ще се изтрият {{content}} и {{count}} принос",
+    "headerRichContributions_other": "Ще се изтрият {{content}} и {{count}} приноса",
+    "headerRichPoll": "Ще се изтрият анкетата и резултатите от нея",
+    "headerRichPollContributions_one": "Ще се изтрият анкетата, резултатите и {{count}} принос",
+    "headerRichPollContributions_other": "Ще се изтрият анкетата, резултатите и {{count}} приноса",
+    "callToAction": "Призив за действие",
+    "moreContributions_one": "още {{count}} принос...",
+    "moreContributions_other": "още {{count}} приноса...",
+    "attachmentsNote": "включително прикачените файлове и връзки",
+    "contentType": {
+      "whiteboard": "дъската",
+      "memo": "бележката",
+      "mediaGallery": "медийната галерия",
+      "document": "документа"
+    },
+    "moreLinks_one": "и още {{count}} връзка",
+    "moreLinks_other": "и още {{count}} връзки",
+    "comments_one": "Ще се изтрие {{count}} коментар",
+    "comments_other": "Ще се изтрият {{count}} коментара",
+    "success": "$t(common.Callout)-ът “{{title}}” беше изтрит.",
+    "saveFailed": "$t(common.Callout)-ът не можа да бъде изтрит. Опитайте отново."
+  },
+  "deleteTask": {
+    "title": "Да изтрия ли тази задача?"
+  },
+  "deleteContribution": {
+    "title": "Да изтрия ли този принос?",
+    "description": "“{{title}}” ще бъде изтрит окончателно. Това действие не може да бъде отменено.",
+    "confirm": "Изтрий",
+    "saveFailed": "Приносът не можа да бъде изтрит. Опитайте отново."
+  },
+  "saveAsTemplate": {
+    "saveFailed": "Шаблонът не можа да бъде запазен. Опитайте отново."
+  },
+  "findTemplate": {
+    "overwriteTitle": "Да заменя ли текущото съдържание?",
+    "overwriteDescription": "Зареждането на този шаблон ще замени полетата, които вече сте попълнили. Това действие не може да бъде отменено.",
+    "overwriteConfirm": "Зареди шаблон",
+    "saveAsTemplateTitle": "Запази като шаблон"
+  },
+  "dates": {
+    "today": "Днес",
+    "yesterday": "Вчера",
+    "daysAgo": "преди {{count}}д",
+    "weeksAgo": "преди {{count}}сед"
+  },
+  "validation": {
+    "titleRequired": "Заглавието е задължително",
+    "urlRequired": "URL адресът е задължителен",
+    "urlInvalid": "Моля, въведете валиден URL адрес",
+    "displayNameRequired": "Показваното име е задължително",
+    "questionRequired": "Въпросът е задължителен",
+    "required": "Това поле е задължително",
+    "minDisplayName": "Трябва да е поне {{count}} знака",
+    "maxSmall": "Трябва да е {{count}} знака или по-малко",
+    "maxMid": "Трябва да е {{count}} знака или по-малко",
+    "maxMarkdown": "Трябва да е {{count}} знака или по-малко",
+    "minPollOptions": "Изискват се поне {{count}} опции",
+    "maxPollOptions": "Допускат се най-много {{count}} опции",
+    "pollOptionRequired": "Текстът на опцията е задължителен",
+    "referenceTitleRequired": "Заглавието е задължително, когато е предоставен URL",
+    "linkRowTitleRequired": "Заглавието е задължително, когато е предоставен URL",
+    "contributorTypesRequired": "Изберете поне един тип сътрудник."
+  },
+  "forms": {
+    "titleLabel": "Заглавие",
+    "titlePlaceholder": "Дайте заглавие на публикацията си...",
+    "insertEmoji": "Вмъкване на емоджи",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Напишете нещо...",
+    "tagsLabel": "Етикети",
+    "tagsPlaceholder": "Добави етикет и натисни Enter",
+    "tagsTooShort": "Всеки етикет трябва да е поне {{min}} знака.",
+    "framingType": "Добавяне към публикация",
+    "typeLockedHint": "Настройките за допълнително съдържание не могат да се променят след създаването",
+    "visibility": "Видимост",
+    "publishedLabel": "Публикувано",
+    "draftLabel": "Чернова",
+    "notifyMembers": "Уведоми членовете на пространството",
+    "titleRequiredHint": "Добавете заглавие на вашето $t(common.callout), за да продължите",
+    "saveDraft": "Запази чернова",
+    "save": "Запази",
+    "publish": "Публикувай",
+    "createPost": "Създай публикация",
+    "editPost": "Редактирай публикация",
+    "moreOptions": "Още опции",
+    "findTemplate": "Намери шаблон",
+    "contributionTypes": "Разрешени приноси",
+    "commentsEnabled": "Активирай коментари",
+    "linkUrl": "URL",
+    "linkUrlPlaceholder": "https://",
+    "linkDisplayName": "Показвано име",
+    "pollQuestion": "Въпрос",
+    "pollOption": "Опция {{number}}",
+    "addOption": "Добави опция",
+    "removeOption": "Премахни опция",
+    "allowComments": "Разреши коментари",
+    "allowCommentsDescription": "Членовете могат да публикуват коментари върху рамката на известието.",
+    "titleCharacterCount": "{{current}}/{{max}}",
+    "selection": {
+      "label": "Ръчен избор",
+      "contributors": {
+        "autoDescription": "Показвайте сътрудниците на тази общност като самообновяваща се колекция.",
+        "customDescription": "Показва само сътрудниците, които изберете."
+      },
+      "spaces": {
+        "autoDescription": "Автоматично показва всички подпространства и се обновява, когато се добавят или премахнат.",
+        "customDescription": "Показва само подпространствата, които изберете по-долу."
+      },
+      "noLongerAvailable": "Вече не е налично",
+      "searchPlaceholder": "Търсене на членове…",
+      "searchAriaLabel": "Търсене на членове",
+      "searchSubspacePlaceholder": "Търсене на подпространства…",
+      "searchSubspaceAriaLabel": "Търсене на подпространства",
+      "noResults": "Няма съвпадащи резултати",
+      "loading": "Зареждане…",
+      "loadMore": "Зареждане на още…",
+      "removeAriaLabel": "Премахване на {{name}}",
+      "clearSearch": "Изчистване на търсенето"
+    }
+  },
+  "contributionSettings": {
+    "heading": "Отговори",
+    "typeLockedHint": "Настройките за приноси не могат да се променят след създаването",
+    "types": {
+      "link": "Връзки и файлове",
+      "post": "Публикации",
+      "memo": "Бележки",
+      "whiteboard": "Бели дъски",
+      "document": "Документи"
+    },
+    "actors": {
+      "members": "Членовете могат да добавят",
+      "admins": "Администраторите могат да добавят"
+    },
+    "commentsEnabled": "Активирай коментари",
+    "setDefaults": "Настрой стойности по подразбиране",
+    "prePopulate": {
+      "heading": "Предварително попълване",
+      "description": "Добавете връзки, които се появяват веднага след създаването на известието.",
+      "empty": "Все още няма предварително добавени връзки.",
+      "titleLabel": "Заглавие",
+      "titlePlaceholder": "Заглавие на връзката",
+      "urlLabel": "URL",
+      "urlPlaceholder": "https://",
+      "descriptionLabel": "Описание",
+      "descriptionPlaceholder": "По избор описание",
+      "addRow": "Добави нова връзка",
+      "removeRow": "Премахни връзката",
+      "attachFile": "Прикачи файл"
+    }
+  },
+  "responseDefaults": {
+    "srDescription": "Настройте стойностите по подразбиране за новите приноси в това известие.",
+    "title": {
+      "post": "Стойности по подразбиране за публикации",
+      "memo": "Стойности по подразбиране за бележки",
+      "whiteboard": "Стойности по подразбиране за бели дъски",
+      "document": "Стойности по подразбиране за документи",
+      "generic": "Стойности по подразбиране"
+    },
+    "defaultTitle": "Заглавие по подразбиране",
+    "defaultTitlePlaceholder": "Задайте заглавие по подразбиране за новите приноси",
+    "defaultDescription": "Описание по подразбиране",
+    "defaultDescriptionPlaceholder": "Насоки, които се показват при започване на нов принос",
+    "defaultWhiteboard": "Бяла дъска по подразбиране",
+    "configureWhiteboard": "Конфигурирай бяла дъска",
+    "editWhiteboard": "Редактирай бяла дъска",
+    "template": "Шаблон",
+    "templatePlaceholder": "Избери шаблон…",
+    "templateLoading": "Зареждане на шаблоните…",
+    "whiteboardConfigured": "Конфигурирана е бяла дъска по подразбиране.",
+    "whiteboardNotConfigured": "Новите приноси ще започват с празна бяла дъска.",
+    "clearWhiteboard": "Изчистване по подразбиране",
+    "save": "Запази"
+  },
+  "calloutDialog": {
+    "close": "Затвори диалога",
+    "share": "Сподели",
+    "more": "Още опции",
+    "discussion": "Дискусия",
+    "reactions": "Реагирай",
+    "reactionCount": "{{count}} реакции",
+    "reactionCount_one": "1 реакция",
+    "contributions": "Приноси"
+  },
+  "memo": {
+    "close": "Затвори",
+    "stubDialog": {
+      "message": "Редакторът на бележки предстои — показва се преглед на обикновен текст."
+    },
+    "displayName": {
+      "inputLabel": "Заглавие",
+      "edit": "Редактиране на заглавието на бележката",
+      "save": "Запазване на заглавието на бележката",
+      "cancel": "Отказ от редактиране"
+    },
+    "footer": {
+      "connected": "Свързан",
+      "connecting": "Свързване…",
+      "disconnected": "Прекъсната връзка",
+      "saved": "Запазено",
+      "saving": "Запазване…",
+      "finalizing": "Завършване на промените…",
+      "offline": "Офлайн — ще се синхронизира автоматично",
+      "saveFailed": "Промените не могат да бъдат запазени",
+      "membersOnline_one": "1 член онлайн",
+      "membersOnline_other": "{{count}} члена онлайн",
+      "connectedUsersLabel": "Свързани потребители",
+      "moreConnectedUsers_one": "Още {{count}} свързан потребител",
+      "moreConnectedUsers_other": "Още {{count}} свързани потребители",
+      "guestWarning": "Редактирате като гост",
+      "delete": "Изтриване на бележка",
+      "readonlyReason": {
+        "connecting": "Свързване със сървиса за сътрудничество…",
+        "notSynced": "Синхронизиране… отворете бележката отново, за да продължите редактирането.",
+        "unauthenticated": "Влезте, за да редактирате тази бележка.",
+        "contentUpdatePolicy": "Нямате разрешение да редактирате тази бележка. Помолете собственика, <ownerlink>{{ownerName}}</ownerlink>, да промени настройките за споделяне.",
+        "contentUpdatePolicyNoOwner": "Нямате разрешение да редактирате тази бележка. Собственикът вече не е наличен — помолете администратор на това пространство да промени настройките за споделяне.",
+        "noMembership": "Само членове на това пространство могат да редактират тази бележка. Присъединете се, за да допринесете."
+      }
+    },
+    "errors": {
+      "loading": "Зареждане на бележка…",
+      "loadFailed": "Неуспешно зареждане на бележка"
+    },
+    "unsavedClose": {
+      "title": "Незапазени промени в бележката",
+      "description": "Тези промени не могат да бъдат запазени сега. Оставете бележката отворена, експортирайте ги или ги отхвърлете изрично.",
+      "wait": "Оставете отворено и изчакайте",
+      "discard": "Отхвърлете и затворете",
+      "export": "Първо експортирайте",
+      "exportFailed": "Бележката не можа да бъде експортирана. Тя остава отворена."
+    },
+    "deleteConfirm": {
+      "title": "Изтриване на бележка",
+      "body": "Сигурни ли сте, че искате да изтриете тази бележка? Това действие не може да бъде отменено.",
+      "confirm": "Изтрий"
+    },
+    "signing": {
+      "title": "Подписване на бележка",
+      "description": "Прегледайте PDF файла, който ще бъде използван за този опит за подписване.",
+      "previewTitle": "Преглед за подписване на бележката",
+      "openPreview": "Отваряне в нов раздел",
+      "continue": "Продължаване към Cleverbase",
+      "continuing": "Преминаване към Cleverbase",
+      "signedCopies": "Подписани копия",
+      "signedCopiesCount": "Подписани копия ({{count}})",
+      "unknownSigner": "Неизвестен подписващ",
+      "savedTitle": "Подписано е",
+      "snapshotExplanation": "Вашият подписан документ е готов.",
+      "resultTitle": "Резултат от подписването",
+      "whatHappensNext": "Какво следва",
+      "steps": {
+        "provider": {
+          "title": "Cleverbase се отваря",
+          "description": "Този раздел отваря услугата, използвана за сесията за подписване."
+        },
+        "identity": {
+          "title": "Потвърждавате самоличността си",
+          "description": "Cleverbase ви подканва да използвате свързания си метод за идентификация."
+        },
+        "return": {
+          "title": "Връщате се в Alkemio",
+          "description": "След сесията Alkemio показва резултата от вашия опит за подписване."
+        }
+      },
+      "editableTitle": "Бележката остава редактируема",
+      "editableDescription": "Подписването създава отделно PDF копие и не променя кой може да редактира бележката.",
+      "cleverbaseRequired": "Свържете Cleverbase, преди да подпишете.",
+      "connectCleverbase": "Как да свържете Cleverbase",
+      "historyDescription": "Всеки ред е подписано PDF копие. Бележката остава редактируема.",
+      "historyCount": "Подписани копия: {{count}}",
+      "historyLoading": "Зареждане на подписаните копия",
+      "historyError": "Подписаните копия не можаха да бъдат заредени",
+      "historyEmpty": "Все още няма запазени подписани копия",
+      "recorded": "Подписано",
+      "openSignedPdf": "Отваряне на подписания PDF",
+      "download": "Изтегляне",
+      "downloadFailed": "Подписаният PDF не можа да бъде изтеглен",
+      "standardTools": "Изтеглените PDF файлове могат да бъдат проверени със съвместими инструменти за PDF подписи.",
+      "verify": "Проверка на подписа",
+      "verification": {
+        "checking": "Проверка на подписа",
+        "verified": "Криптографският подпис е проверен",
+        "invalid": "Невалиден подпис",
+        "unavailable": "Проверката не бе възможна"
+      },
+      "stage": {
+        "idle": "Готово за подготовка на копие за подписване",
+        "preparing": "Подготовка на точното копие на бележката за подписване",
+        "preview": "Прегледайте точния PDF, преди да продължите",
+        "continuing": "Отваряне на сесията за подписване",
+        "checking": "Проверка на резултата от подписването",
+        "pending": "Подписването все още е в ход. Затворете този резултат, след което по-късно отворете подписаните копия на съответната бележка, за да проверите за завършено копие.",
+        "signed": "PDF файлът е подписан успешно",
+        "cancelled": "Подписването е отменено",
+        "failed": "PDF файлът не можа да бъде подписан",
+        "expired": "Този опит за подписване е изтекъл",
+        "prepare-error": "Точното копие на бележката не можа да бъде подготвено",
+        "continue-error": "Сесията за подписване не можа да бъде стартирана. Подгответе ново копие и опитайте отново.",
+        "return-error": "Резултатът от подписването не можа да бъде зареден"
+      }
+    }
+  },
+  "callToAction": {
+    "externalLinkDisclaimer": "Тази връзка отваря външен сайт в нов раздел.",
+    "linkAriaLabel": "{{displayName}} (отваря {{url}})",
+    "linkAriaLabelExternal": "{{displayName}} (отваря {{url}} в нов раздел)",
+    "validation": {
+      "invalidUrl": "Невалиден URL адрес"
+    }
+  },
+  "collabora": {
+    "rename": {
+      "inputLabel": "Име на документа",
+      "edit": "Преименуване",
+      "save": "Запази",
+      "cancel": "Отказ",
+      "saving": "Записване…",
+      "errors": {
+        "blank": "Моля, въведете име.",
+        "tooShort": "Името трябва да е поне {{min}} знака.",
+        "tooLong": "Името може да е най-много {{max}} знака.",
+        "invalid": "Моля, въведете валидно име.",
+        "saveFailed": "Документът не можа да бъде преименуван. Моля, опитайте отново."
+      }
+    },
+    "editor": {
+      "error": {
+        "runtime": "Грешка в Collabora: {{message}}",
+        "sessionClosed": "Сесията за съвместна работа беше прекратена."
+      }
+    },
+    "footer": {
+      "connected": "Свързано",
+      "connecting": "Свързване…",
+      "disconnected": "Прекъснато",
+      "saved": "Запазено",
+      "saving": "Запазване…",
+      "unsaved": "Незапазени промени",
+      "error": "Грешка при запазване",
+      "membersOnline_one": "1 онлайн член",
+      "membersOnline_other": "{{count}} онлайн членове",
+      "connectedUsersLabel": "Свързани потребители",
+      "moreConnectedUsers_one": "още {{count}} свързан потребител",
+      "moreConnectedUsers_other": "още {{count}} свързани потребители",
+      "guestWarning": "Редактирате като гост",
+      "delete": "Изтриване на документа",
+      "readonlyReason": {
+        "connecting": "Свързване с услугата за съвместна работа…",
+        "unauthenticated": "Влезте, за да редактирате този документ.",
+        "contentUpdatePolicy": "Нямате права да редактирате този документ. Помолете собственика да промени настройките за споделяне.",
+        "noMembership": "Само членовете на това пространство могат да редактират този документ. Присъединете се, за да допринасяте."
+      },
+      "disconnect": {
+        "atRisk": "Връзката е прекъсната — последните промени може да не са запазени",
+        "status": "Връзката е прекъсната",
+        "cause": {
+          "network": "Изглежда сте офлайн.",
+          "tokenExpiry": "Сесията ви за редактиране изтече.",
+          "service": "Услуга временно е недостъпна.",
+          "unknown": "Връзката е загубена.",
+          "unloading": "Документът все още се затваря от предишна сесия. Опитайте отново след момент."
+        },
+        "reconnect": "Свързване отново",
+        "reload": "Презареждане",
+        "terminal": {
+          "notFound": "Този документ вече не е наличен.",
+          "forbidden": "Вече нямате достъп до този документ.",
+          "generic": "Този документ не може да бъде отворен отново."
+        },
+        "warning": {
+          "reconnectTitle": "Да се свърже ли редакторът отново?",
+          "reconnectBody": "Това прекратява текущата сесия за редактиране и отваря документа отново на място — страницата няма да се презарежда. Промените след последното запазване може да бъдат загубени, затова първо копирайте каквото ви трябва.",
+          "reconnectConfirm": "Свързване отново",
+          "reloadTitle": "Да се презареди ли страницата?",
+          "reloadBody": "Това презарежда цялата страница и отваря документа отначало. Промените след последното запазване може да бъдат загубени, затова първо копирайте каквото ви трябва.",
+          "reloadConfirm": "Презареждане на страницата",
+          "cancel": "Отказ"
+        },
+        "reconnecting": "Повторно свързване…"
+      }
+    },
+    "serviceUnavailable": {
+      "message": "Услуга е недостъпна. Моля, запазете работата си, тъй като незапазените данни може да бъдат загубени."
+    }
+  },
+  "mediaGallery": {
+    "openImage": "Отвори изображение",
+    "more_one": "+{{count}} още",
+    "more_other": "+{{count}} още",
+    "previous": "Предишно изображение",
+    "next": "Следващо изображение",
+    "goToImage": "Премини към изображение {{index}}",
+    "thumbnailsLabel": "Миниатюри на изображения",
+    "download": "Изтегли изображение",
+    "fullscreen": "Цял екран",
+    "exitFullscreen": "Изход от цял екран",
+    "emptyState": {
+      "title": "Все още няма изображения",
+      "action": "Добави изображения"
+    },
+    "altTextLabel": "Алтернативен текст",
+    "deleteImage": "Изтрий изображение",
+    "reorderImage": "Преподреди изображение",
+    "dismissError": "Затвори грешката",
+    "uploading": "Качване…",
+    "downloadError": "Изображението не може да бъде изтеглено.",
+    "validation": {
+      "type": "Неподдържан тип файл",
+      "tooSmall": "Изображението е твърде малко",
+      "tooLarge": "Изображението е твърде голямо"
+    }
+  },
+  "postSnippet": {
+    "readMore": "… Прочети повече",
+    "readLess": "Прочети по-малко",
+    "seeFullDescription": "Виж пълното описание"
+  },
+  "postPreview": {
+    "createdBy": "Създадено от",
+    "label": "Преглед на избрания отговор",
+    "edit": "Редактиране на отговора",
+    "share": "Споделяне на отговора",
+    "delete": "Изтриване на отговора",
+    "close": "Затваряне на прегледа",
+    "emptyDescription": "Няма описание",
+    "references": "Препратки"
+  },
+  "postLocation": {
+    "label": "Местоположение на публикацията",
+    "warning": "Внимавайте при смяна на местоположението на отговора. Преместването му в друга публикация ще го премахне от текущата. Това може да затрудни хората, включително автора на отговора, да го открият. Отговори могат да се преместват само в рамките на едно и също Пространство или Подпространство.",
+    "moved": "Отговорът е преместен успешно.",
+    "moveFailed": "Отговорът не може да бъде преместен. Моля, опитайте отново."
+  },
+  "whiteboardPreview": {
+    "label": "Преглед на избрания whiteboard",
+    "edit": "Редактиране на whiteboard",
+    "share": "Споделяне на whiteboard",
+    "delete": "Изтриване на whiteboard",
+    "close": "Затваряне на прегледа",
+    "openFull": "Кликнете, за да видите целия whiteboard"
+  },
+  "comments": {
+    "title": "Дискусия",
+    "showMore": "Показване на повече",
+    "showLess": "Показване на по-малко",
+    "reply": "Отговор",
+    "replyInThread": "Отговор в тази тема",
+    "delete": "Изтриване",
+    "deleted": "Този коментар беше изтрит",
+    "deleteConfirmTitle": "Изтриване на коментара?",
+    "deleteConfirmDescription": "Сигурни ли сте, че искате да изтриете този коментар?",
+    "addComment": "Добавете коментар...",
+    "mention": "Споменаване на потребител",
+    "mentionVirtualContributor": "AI",
+    "send": "Изпращане",
+    "charCount": "{{count}}/{{max}}",
+    "reactions": {
+      "add": "Добавяне на реакция",
+      "overflow": "+{{count}} още",
+      "unknownReactors": "Неизвестно"
+    },
+    "count": "{{count}} коментара",
+    "count_one": "1 коментар",
+    "loading": "Зареждане на коментари...",
+    "empty": "Още без коментари",
+    "unknownUser": "Непознат потребител",
+    "signInToComment": "Влезте, за да коментирате, отговаряте или реагирате.",
+    "cantComment": "Нямате права да коментирате, отговаряте или реагирате тук."
+  },
+  "dialogs": {
+    "cancel": "Отказ",
+    "close": "Затвори",
+    "create": "Създай",
+    "discardChanges": {
+      "title": "Отхвърляне на промените?",
+      "description": "Имате незапазени промени. Ако затворите този диалог, те ще бъдат загубени.",
+      "confirm": "Да, затвори",
+      "cancel": "Продължи редактирането"
+    },
+    "deleteFraming": {
+      "title": "Премахване на рамковото съдържание?",
+      "description": "Рамковото съдържание на този $t(common.callout) ще бъде премахнато. Това действие не може да бъде отменено.",
+      "confirm": "Премахни",
+      "cancel": "Запази"
+    },
+    "confirmClose": {
+      "title": "Затваряне на този диалог?",
+      "description": "Незапазеният текст на коментара ще бъде загубен.",
+      "confirm": "Затвори",
+      "cancel": "Остави отворен"
+    }
+  },
+  "poll": {
+    "status": {
+      "preparingVote": "Подготовка на гласуването...",
+      "submitting": "Изпращане...",
+      "addingOption": "Добавяне на опция...",
+      "voted": "Гласувано",
+      "removeMyVote": "Премахни моя глас",
+      "closed": "Тази анкета е затворена",
+      "anonymous": "Анонимна анкета"
+    },
+    "vote": {
+      "maxReached": "Достигнат е максимумът от {{max}} избора",
+      "minRequired": "Изберете поне {{min}} опции"
+    },
+    "results": {
+      "totalVotes": "{{count}} гласа общо",
+      "noVotes": "Все още няма гласове",
+      "votersMore": "+{{count}} още"
+    },
+    "removeVoteConfirm": {
+      "title": "Премахване на вашия глас?",
+      "description": "Вашият глас ще бъде премахнат от тази анкета. Можете да гласувате отново по всяко време.",
+      "confirm": "Премахни глас"
+    },
+    "customOption": {
+      "placeholder": "Добавете собствена опция..."
+    },
+    "error": {
+      "voteFailed": "Неуспешно изпращане на вашия глас. Моля, опитайте отново."
+    },
+    "subscription": {
+      "voteRevoked": "Вашият глас беше премахнат."
+    }
+  },
+  "pollForm": {
+    "settings": "Настройки",
+    "settings.title": "Настройки на анкетата",
+    "settings.votingOptions": "Опции за гласуване",
+    "settings.allowMultiple": "Разрешаване на множество отговори",
+    "settings.allowCustomOptions": "Разрешаване на сътрудниците да добавят опции",
+    "settings.displayOptions": "Опции за показване",
+    "settings.hideResultsUntilVoted": "Скриване на резултатите до гласуване",
+    "settings.showVoterAvatars": "Показване на аватарите на гласувалите",
+    "settings.close": "Затвори",
+    "closePoll": "Затваряне на анкетата",
+    "reopenPoll": "Отвори отново анкетата",
+    "closePollHint": {
+      "open": "Тази анкета е отворена за гласуване",
+      "closed": "Никой повече няма да може да гласува в тази анкета"
+    },
+    "statusChange": {
+      "closeSuccess": "Анкетата вече е затворена.",
+      "reopenSuccess": "Анкетата вече е отворена за гласуване.",
+      "failed": "Статусът на анкетата не можа да бъде променен. Моля, опитайте отново."
+    },
+    "closePollConfirm": {
+      "title": "Затваряне на тази анкета?",
+      "description": "Затварянето на анкетата ще предотврати нови гласове и ще заключи редактирането. Можете да я отворите отново по-късно.",
+      "confirm": "Затвори анкетата"
+    },
+    "reopenPollConfirm": {
+      "title": "Отваряне отново на тази анкета?",
+      "description": "Отварянето отново на анкетата ще позволи нови гласове и редактиране.",
+      "confirm": "Отвори отново анкетата"
+    },
+    "deleteOptionConfirm": {
+      "title": "Изтриване на опцията?",
+      "description": "Тази опция ще бъде премахната от анкетата.",
+      "descriptionWithText": "„{{text}}“ ще бъде премахната от анкетата."
+    },
+    "dragHandle": "Плъзнете за пренареждане"
+  },
+  "a11y": {
+    "spaceBanner": "Банер на пространството за {{name}}",
+    "tabNavigation": "Навигационни табове на пространството",
+    "sidebarNavigation": "Странична лента на пространството",
+    "feedRegion": "Поток със съдържание на пространството",
+    "membersGrid": "Решетка с членове на общността",
+    "subspacesGrid": "Решетка с подпространства",
+    "statusFilter": "Филтрирай подпространствата по статус",
+    "visibilityNotice": "Известие за видимост на пространството",
+    "mobileTabBar": "Навигация с табове",
+    "moreActionsDrawer": "Допълнителни действия",
+    "close": "Затвори",
+    "loadingPost": "Зареждане на публикация",
+    "loadingContributions": "Зареждане на приноси",
+    "loadingSubspaces": "Зареждане на подпространства",
+    "loadingLeads": "Зареждане на ръководителите на пространството",
+    "loadingTags": "Зареждане на тагове",
+    "loadingMembership": "Зареждане на статуса на членство"
+  },
+  "activity": {
+    "dialogTitle": "Скорошна активност"
+  },
+  "contributors": {
+    "title": "Сътрудници",
+    "search": "Търсене по име…",
+    "empty": "Няма сътрудници за показване.",
+    "emptySearch": "Няма сътрудници, отговарящи на търсенето.",
+    "noLocationData": "Няма данни за местоположение",
+    "noLocationDescription": "Тези сътрудници нямат зададени данни за местоположение.",
+    "viewList": "Списък",
+    "viewMap": "Карта",
+    "expandMap": "Разгъване на картата",
+    "closeMap": "Затваряне на картата",
+    "types": {
+      "user": "Хора",
+      "organization": "Организации",
+      "virtualContributor": "Виртуални сътрудници"
+    },
+    "counts": {
+      "users": "{{count}} хора",
+      "organizations": "{{count}} организации",
+      "virtualContributors": "{{count}} виртуални сътрудници"
+    },
+    "config": {
+      "title": "Сътрудници",
+      "typesLabel": "Типове сътрудници",
+      "typesHint": "Изберете поне един тип за включване.",
+      "defaultTypeLabel": "Тип по подразбиране",
+      "defaultTypeHint": "Типът, който се показва първи.",
+      "defaultViewLabel": "Изглед по подразбиране",
+      "viewList": "Списък",
+      "viewMap": "Карта"
+    },
+    "mapView": {
+      "helper": "Изберете началната позиция, която всички виждат на картата, или я оставете да се напасне автоматично към сътрудниците.",
+      "stateAutomatic": "Изглед на картата: автоматичен",
+      "stateFixed": "Изглед на картата: фиксиран",
+      "useCurrent": "Използвай текущия изглед",
+      "resetAuto": "Нулиране до автоматично",
+      "mapAriaLabel": "Предварителен преглед на картата на участниците — плъзгайте и мащабирайте за зададен фиксиран изглед",
+      "captureHint": "Плъзгайте и мащабирайте картата, след което кликнете 'Използвай текущия изглед', за да фиксирате началната позиция.",
+      "controlAriaLabel": "Настройки на изглед на картата"
+    }
+  },
+  "spaceCollection": {
+    "search": "Търсене на подпространства...",
+    "empty": {
+      "title": "Все още няма подпространства",
+      "description": "Това пространство все още няма подпространства."
+    }
+  },
+  "classifications": {
+    "emptyGroup": "No values selected yet.",
+    "editHint": "Add values in Settings → About.",
+    "hiddenBadge": "Not shown on the Space page",
+    "editInSettings": "Edit in Settings",
+    "sectionTitle": "Класификации"
+  },
+  "parentStack": {
+    "goTo": "Към {{name}}"
+  }
+}

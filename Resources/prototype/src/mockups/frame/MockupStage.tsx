@@ -9,7 +9,7 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { MemoryRouter } from 'react-router';
-import { TooltipProvider } from '@/app/components/ui/tooltip';
+import { TooltipProvider } from '@/crd/primitives/tooltip';
 import type { Composition, Finding } from '../core/types';
 import { placeCard, toStyle } from '../core/layout';
 import { validate } from '../core/validate';
@@ -31,7 +31,7 @@ export function MockupStage({
   fit = true,
   scale: fixedScale,
   showFindings = false,
-  onValidated,
+  onValidated
 }: {
   composition: Composition;
   fit?: boolean;
@@ -92,7 +92,7 @@ export function MockupStage({
         position: 'relative',
         width: '100%',
         aspectRatio: `${canvas.width} / ${canvas.height}`,
-        overflow: 'hidden',
+        overflow: 'hidden'
       }}
     >
       <TooltipProvider delayDuration={0}>
@@ -105,7 +105,7 @@ export function MockupStage({
               width: canvas.width,
               height: canvas.height,
               transformOrigin: 'top left',
-              transform: `scale(${scale})`,
+              transform: `scale(${scale})`
             }}
           >
             {usePhoto ? (
@@ -166,7 +166,7 @@ export function MockupStage({
                       outline: `2px solid ${f.severity === 'error' ? '#DC2626' : '#D97706'}`,
                       background:
                         f.severity === 'error' ? 'rgba(220,38,38,.14)' : 'rgba(217,119,6,.12)',
-                      pointerEvents: 'none',
+                      pointerEvents: 'none'
                     }}
                   />
                 ))}

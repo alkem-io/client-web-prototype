@@ -10,15 +10,15 @@ import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext"
 import { spaceContainer } from "@/app/data/activity-data";
 import { AboutThisSpaceDialog } from "./AboutThisSpaceDialog";
 import { WelcomeSpaceDialog } from "@/app/components/dialogs/WelcomeSpaceDialog";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/components/ui/sheet";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/crd/primitives/sheet";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/crd/primitives/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/crd/primitives/tooltip";
+import { cn } from "@/crd/lib/utils";
 import {
   loadSpaceSidebarWidgets,
-  spaceTabDefaults,
+  spaceTabDefaults
 } from "@/app/components/space/SidebarWidgets";
 
 /**
@@ -48,7 +48,7 @@ export function SpaceShell() {
     if (cleared === 0) return;
     toast(`${cleared} item${cleared === 1 ? "" : "s"} marked as read`, {
       duration: 6000,
-      action: { label: "Undo", onClick: undo },
+      action: { label: "Undo", onClick: undo }
     });
   };
 
@@ -60,7 +60,7 @@ export function SpaceShell() {
       home: 'home',
       community: 'community',
       workspaces: 'subspaces',
-      knowledge: 'knowledge',
+      knowledge: 'knowledge'
     };
     const tabId = variantMap[getSidebarVariant()] || 'home';
     return allTabWidgets[tabId] ?? spaceTabDefaults(tabId);
@@ -96,7 +96,7 @@ export function SpaceShell() {
         onClick={() => setAboutOpen(true)}
         style={{
           background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-          color: "var(--muted-foreground)",
+          color: "var(--muted-foreground)"
         }}
       >
         <Info className="w-3.5 h-3.5" />
@@ -106,7 +106,7 @@ export function SpaceShell() {
         className="w-7 h-7"
         style={{
           background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-          color: "var(--muted-foreground)",
+          color: "var(--muted-foreground)"
         }}
       >
         <Activity className="w-3.5 h-3.5" />
@@ -116,7 +116,7 @@ export function SpaceShell() {
         className="w-7 h-7"
         style={{
           background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-          color: "var(--muted-foreground)",
+          color: "var(--muted-foreground)"
         }}
       >
         <Video className="w-3.5 h-3.5" />
@@ -126,7 +126,7 @@ export function SpaceShell() {
         className="w-7 h-7"
         style={{
           background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-          color: "var(--muted-foreground)",
+          color: "var(--muted-foreground)"
         }}
       >
         <Share2 className="w-3.5 h-3.5" />
@@ -137,7 +137,7 @@ export function SpaceShell() {
         asChild
         style={{
           background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-          color: "var(--muted-foreground)",
+          color: "var(--muted-foreground)"
         }}
       >
         <Link to={`/space/${slug}/settings`}>
@@ -151,7 +151,7 @@ export function SpaceShell() {
           onClick={handleMarkSpaceRead}
           style={{
             background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-            color: "var(--muted-foreground)",
+            color: "var(--muted-foreground)"
           }}
         >
           <CheckCheck className="w-3.5 h-3.5" />
@@ -183,7 +183,7 @@ export function SpaceShell() {
                   background:
                     "color-mix(in srgb, var(--background) 95%, transparent)",
                   backdropFilter: "blur(8px)",
-                  WebkitBackdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)"
                 }}
               >
                 <SpaceNavigationTabs spaceSlug={slug} onActiveTabChange={handleActiveTabChange} />
@@ -223,7 +223,7 @@ export function SpaceShell() {
                       {/* User collapse toggle */}
                       <button
                         onClick={() => setSidebarCollapsed(true)}
-                        className="hidden lg:flex items-center gap-1.5 w-full mt-2 px-2 py-1.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        className="hidden lg:flex items-center gap-1.5 w-full mt-2 px-2 py-1.5 rounded-md text-caption text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         title="Collapse sidebar"
                       >
                         <PanelLeftClose className="w-3.5 h-3.5" />
@@ -261,13 +261,13 @@ export function SpaceShell() {
 
       {/* Mobile strategy indicator badge */}
       {mobileStrategy > 0 && (
-        <div className="fixed top-20 right-4 z-[100] bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-lg">
+        <div className="fixed top-20 right-4 z-[100] bg-primary text-primary-foreground text-caption px-3 py-1.5 rounded-full shadow-lg">
           Mobile Option {mobileStrategy} · ?m=1…5
         </div>
       )}
       {/* Panel mode indicator badge */}
       {effectivePanelMode !== "full" && (
-        <div className="fixed top-20 right-4 z-[100] bg-primary text-primary-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-lg">
+        <div className="fixed top-20 right-4 z-[100] bg-primary text-primary-foreground text-caption px-3 py-1.5 rounded-full shadow-lg">
           Panel: {effectivePanelMode} · {sidebarCollapsed ? "collapsed" : "expanded"}
         </div>
       )}
@@ -339,7 +339,7 @@ function MobileSheetDrawer({ slug, sidebarVariant, activeTabDescription, usesSca
           <div className="mb-3 bg-background rounded-2xl border border-border shadow-2xl max-h-[60vh] overflow-y-auto animate-in slide-in-from-bottom-2 duration-200">
             <div className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold">
+                <span className="text-card-title">
                   {activePanel === "search" ? "Search & Filter" : "Space Panel"}
                 </span>
                 <button onClick={() => setActivePanel("none")} className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-muted">
@@ -355,7 +355,7 @@ function MobileSheetDrawer({ slug, sidebarVariant, activeTabDescription, usesSca
         <div className="flex items-center gap-2 px-3 py-2.5 rounded-2xl bg-background/95 backdrop-blur-md border border-border shadow-xl">
           {/* Primary CTA */}
           <Button size="sm" className="gap-1.5 h-9 flex-1">
-            <span className="text-base leading-none">+</span>
+            <span className="text-subheader font-normal leading-none">+</span>
             {actions.primary}
           </Button>
 
@@ -415,13 +415,13 @@ function MobileBottomSheet({ slug, sidebarVariant, activeTabDescription, usesSca
         <div className="flex items-center gap-2 px-4 py-2.5">
           {/* Primary CTA */}
           <Button size="sm" className="gap-1.5 h-8">
-            <span className="text-base leading-none">+</span>
+            <span className="text-subheader font-normal leading-none">+</span>
             {actions.primary}
           </Button>
 
           {actions.secondary && (
             <Button size="sm" variant="outline" className="gap-1.5 h-8">
-              <span className="text-base leading-none">+</span>
+              <span className="text-subheader font-normal leading-none">+</span>
               <span className="hidden sm:inline">{actions.secondary}</span>
             </Button>
           )}
@@ -482,12 +482,12 @@ function MobileCollapsibleInline({ slug, sidebarVariant, activeTabDescription, u
           style={{
             background: "color-mix(in srgb, var(--background) 95%, transparent)",
             backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)"
           }}
         >
           {/* Primary CTA */}
           <Button size="sm" className="gap-1.5 h-8 shrink-0">
-            <span className="text-base leading-none">+</span>
+            <span className="text-subheader font-normal leading-none">+</span>
             {actions.primary}
           </Button>
 
@@ -497,7 +497,7 @@ function MobileCollapsibleInline({ slug, sidebarVariant, activeTabDescription, u
             <input
               type="text"
               placeholder="Search…"
-              className="w-full h-8 pl-8 pr-3 text-sm rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+              className="w-full h-8 pl-8 pr-3 text-body rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
             />
           </div>
 
@@ -575,7 +575,7 @@ function MobileBottomNavFAB({ slug, sidebarVariant, activeTabDescription, usesSc
           style={{
             background: "color-mix(in srgb, var(--background) 95%, transparent)",
             backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)"
           }}
         >
           {/* Inline search */}
@@ -584,7 +584,7 @@ function MobileBottomNavFAB({ slug, sidebarVariant, activeTabDescription, usesSc
             <input
               type="text"
               placeholder="Search…"
-              className="w-full h-8 pl-8 pr-3 text-sm rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+              className="w-full h-8 pl-8 pr-3 text-body rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
             />
           </div>
 
@@ -659,7 +659,7 @@ function MobileBottomNavFAB({ slug, sidebarVariant, activeTabDescription, usesSc
                   key={tab.id}
                   to={tab.href}
                   className={cn(
-                    "shrink-0 px-4 py-2.5 text-sm whitespace-nowrap transition-colors",
+                    "shrink-0 px-4 py-2.5 text-body whitespace-nowrap transition-colors",
                     active
                       ? "text-foreground font-semibold"
                       : "text-muted-foreground"
@@ -705,7 +705,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
     home: ["Updates", "Announcements", "Events", "Ideas", "Questions", "Partnerships", "Research", "Progress"],
     community: ["Active", "Leads", "New Members", "Organizations", "Mentors"],
     workspaces: ["Energy", "Strategy", "Transport", "Urban", "Policy", "Community", "Digital"],
-    knowledge: ["Reports", "Research", "Policy", "Technical", "Templates", "Community", "Data", "Funding"],
+    knowledge: ["Reports", "Research", "Policy", "Technical", "Templates", "Community", "Data", "Funding"]
   };
 
   const SUBSPACE_LINKS = [
@@ -827,7 +827,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
             {/* Search & Filter combined popover */}
             {activePopover === "search" && (
               <div className="space-y-4">
-                <h4 className="text-sm font-semibold">Search & Filter</h4>
+                <h4 className="text-card-title">Search & Filter</h4>
                 {features.search && (
                   <div className="relative">
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -836,13 +836,13 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
                       placeholder="Search posts, comments, documents…"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
-                      className="w-full h-9 pl-8 pr-3 text-sm rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+                      className="w-full h-9 pl-8 pr-3 text-body rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
                       autoFocus
                     />
                   </div>
                 )}
                 {searchValue && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-caption text-muted-foreground">
                     Filtering by: <span className="font-medium text-foreground">"{searchValue}"</span>
                     <button onClick={() => setSearchValue("")} className="ml-2 text-primary hover:underline">Clear</button>
                   </p>
@@ -850,9 +850,9 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
                 {features.tags && (
                   <>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Tags</span>
+                      <span className="text-caption text-muted-foreground uppercase tracking-wide">Tags</span>
                       {activeTags.length > 0 && (
-                        <button onClick={clearTags} className="text-xs text-primary hover:underline">
+                        <button onClick={clearTags} className="text-caption text-primary hover:underline">
                           Clear all
                         </button>
                       )}
@@ -863,7 +863,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
                           key={tag}
                           onClick={() => toggleTag(tag)}
                           className={cn(
-                            "px-2.5 py-1 rounded-full text-xs font-medium transition-colors",
+                            "px-2.5 py-1 rounded-full text-caption transition-colors",
                             activeTags.includes(tag)
                               ? "bg-primary text-primary-foreground"
                               : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
@@ -881,7 +881,7 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
             {/* Post popover */}
             {activePopover === "post" && (
               <div className="space-y-3">
-                <h4 className="text-sm font-semibold">Contribute</h4>
+                <h4 className="text-card-title">Contribute</h4>
                 <div className="space-y-2">
                   {features.post && (
                     <Button size="sm" className="w-full justify-start gap-2" onClick={() => { window.dispatchEvent(new Event("open-add-post-modal")); setActivePopover(null); }}>
@@ -908,13 +908,13 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
             {/* Subspaces popover */}
             {activePopover === "subspaces" && (
               <div className="space-y-3">
-                <h4 className="text-sm font-semibold">Subspaces</h4>
+                <h4 className="text-card-title">Subspaces</h4>
                 <div className="space-y-1">
                   {SUBSPACE_LINKS.map((sub) => (
                     <Link
                       key={sub.name}
                       to={sub.href}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-body text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                     >
                       <Layers className="w-3.5 h-3.5" />
                       {sub.name}
@@ -945,7 +945,7 @@ const TAB_QUICK_FILTERS: Record<string, string[]> = {
   home: ["All", "Updates", "Events", "Ideas", "Announcements"],
   community: ["All", "Members", "Active", "Leads", "New"],
   workspaces: ["All", "Energy", "Strategy", "Transport", "Urban", "Policy", "Community", "Digital"],
-  knowledge: ["All", "Reports", "Policy", "Research", "Data", "Technical", "Funding"],
+  knowledge: ["All", "Reports", "Policy", "Research", "Data", "Technical", "Funding"]
 };
 
 function MobileTabBarFilter({ slug, sidebarVariant, activeTabDescription, usesScaling }: MobileStrategyProps) {
@@ -963,7 +963,7 @@ function MobileTabBarFilter({ slug, sidebarVariant, activeTabDescription, usesSc
           style={{
             background: "color-mix(in srgb, var(--background) 95%, transparent)",
             backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)"
           }}
         >
           <div className="flex items-center gap-2">
@@ -974,7 +974,7 @@ function MobileTabBarFilter({ slug, sidebarVariant, activeTabDescription, usesSc
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
                   className={cn(
-                    "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors whitespace-nowrap",
+                    "shrink-0 px-3 py-1.5 rounded-full text-caption border transition-colors whitespace-nowrap",
                     activeFilter === filter
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
@@ -1022,12 +1022,12 @@ function MobileTabBarFilter({ slug, sidebarVariant, activeTabDescription, usesSc
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-background/95 backdrop-blur-md border-t border-border">
         <div className="flex items-center gap-2 px-4 py-2.5">
           <Button size="sm" className="gap-1.5 h-9 flex-1">
-            <span className="text-base leading-none">+</span>
+            <span className="text-subheader font-normal leading-none">+</span>
             {actions.primary}
           </Button>
           {actions.secondary && (
             <Button size="sm" variant="outline" className="gap-1.5 h-9">
-              <span className="text-base leading-none">+</span>
+              <span className="text-subheader font-normal leading-none">+</span>
               {actions.secondary}
             </Button>
           )}

@@ -1,10 +1,10 @@
 import { useParams, Link } from "react-router";
 import { Plus, MoreVertical, Layout, Bot, FileBox, Home, Settings, CreditCard, Users, Bell, User } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/crd/primitives/card";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import { useState } from "react";
 import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV3";
 import { CreateVCDialogV3 } from "@/app/components/dialogs/CreateVCDialogV3";
@@ -35,19 +35,19 @@ export default function UserAccountPage() {
       id: 1,
       name: "Green Energy Space Alpha",
       description: "Central collaborative workspace for the Q1 innovation sprint.",
-      image: "https://images.unsplash.com/photo-1765728617352-895327fcf036?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBvZmZpY2UlMjBjb2xsYWJvcmF0aW9uJTIwc3BhY2V8ZW58MXx8fHwxNzY5MTczMjEyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1765728617352-895327fcf036?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBvZmZpY2UlMjBjb2xsYWJvcmF0aW9uJTIwc3BhY2V8ZW58MXx8fHwxNzY5MTczMjEyfDA&ixlib=rb-4.1.0&q=80&w=1080"
     },
     {
       id: 2,
       name: "Design System Workshop",
       description: "A dedicated room for auditing and updating our design tokens.",
-      image: "https://images.unsplash.com/photo-1568992688243-52608227497d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVhdGl2ZSUyMHdvcmtzcGFjZSUyMG1lZXRpbmd8ZW58MXx8fHwxNzY5MTczMjEyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1568992688243-52608227497d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVhdGl2ZSUyMHdvcmtzcGFjZSUyMG1lZXRpbmd8ZW58MXx8fHwxNzY5MTczMjEyfDA&ixlib=rb-4.1.0&q=80&w=1080"
     },
     {
       id: 3,
       name: "Remote Team Lounge",
       description: "Casual hangout space for distributed team members.",
-      image: "https://images.unsplash.com/photo-1623251606108-512c7c4a3507?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwbm9tYWQlMjB3b3Jrc3BhY2V8ZW58MXx8fHwxNzY5MTczMjEyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1623251606108-512c7c4a3507?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaWdpdGFsJTIwbm9tYWQlMjB3b3Jrc3BhY2V8ZW58MXx8fHwxNzY5MTczMjEyfDA&ixlib=rb-4.1.0&q=80&w=1080"
     }
   ];
 
@@ -56,12 +56,12 @@ export default function UserAccountPage() {
     {
       id: 1,
       name: "Research Assistant Bot",
-      description: "AI agent specialized in summarizing lengthy documents and reports.",
+      description: "AI agent specialized in summarizing lengthy documents and reports."
     },
     {
       id: 2,
       name: "Data Visualizer",
-      description: "Automatically generates charts from CSV uploads.",
+      description: "Automatically generates charts from CSV uploads."
     }
   ];
 
@@ -70,7 +70,7 @@ export default function UserAccountPage() {
     {
       id: 1,
       name: "Agile Sprint Pack",
-      description: "Complete set of templates for running agile ceremonies.",
+      description: "Complete set of templates for running agile ceremonies."
     }
   ];
 
@@ -80,7 +80,7 @@ export default function UserAccountPage() {
       id: 1,
       name: "VNG Innovation Hub",
       slug: "vng-innovation-hub",
-      description: "Open innovatiehub voor samenwerking tussen en voor de gemeentes.",
+      description: "Open innovatiehub voor samenwerking tussen en voor de gemeentes."
     },
   ];
 
@@ -89,7 +89,7 @@ export default function UserAccountPage() {
     spaces: 5,
     virtualContributors: 3,
     templatePacks: 3,
-    customHomepages: 2,
+    customHomepages: 2
   };
 
   return (

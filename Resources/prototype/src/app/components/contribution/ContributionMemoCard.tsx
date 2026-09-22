@@ -1,6 +1,6 @@
 import { StickyNote } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { CroppedMarkdown } from '@/app/components/ui/croppedMarkdown';
+import { cn } from '@/crd/lib/utils';
+import { CroppedMarkdown } from '@/crd/primitives/croppedMarkdown';
 import { ReactionBar } from '@/app/components/space/PostReactions';
 
 type ContributionMemoCardProps = {
@@ -22,7 +22,7 @@ export function ContributionMemoCard({
   reactionId,
   reactionsEnabled = true,
   onClick,
-  className,
+  className
 }: ContributionMemoCardProps) {
   return (
     // The reaction bar is a sibling of the card, not a child: the card itself is

@@ -4,21 +4,21 @@ import {
  DialogContent,
  DialogHeader,
  DialogTitle,
- DialogDescription,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+ DialogDescription
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Card, CardContent } from "@/crd/primitives/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
  DropdownMenu,
  DropdownMenuContent,
  DropdownMenuItem,
  DropdownMenuTrigger,
- DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
+ DropdownMenuSeparator
+} from "@/crd/primitives/dropdown-menu";
 import { Link } from "react-router";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import {
  Search,
  MoreHorizontal,
@@ -30,7 +30,7 @@ import {
  ExternalLink,
  Users,
  ChevronLeft,
- ChevronRight,
+ ChevronRight
 } from "lucide-react";
 
 // ── Types ──
@@ -75,7 +75,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
  joinDate: "Apr 2024",
  avatar: null as string | null,
  initials: ["JW", "ET", "LO", "SL", "OS", "AP", "WC", "IG", "HW", "MK", "AW"][i] || `M${i}`,
- bio: i % 2 === 0 ? "Contributing to the subspace community." : "",
+ bio: i % 2 === 0 ? "Contributing to the subspace community." : ""
  })),
 ];
 
@@ -88,7 +88,7 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
  avatar: "https://images.unsplash.com/photo-1769697264314-28f093151bbd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "GF",
  members: 4,
- website: "https://greenfuturelabs.org",
+ website: "https://greenfuturelabs.org"
  },
  {
  id: "sorg2",
@@ -98,7 +98,7 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
  avatar: "https://images.unsplash.com/photo-1631599143424-5bc234fbebf1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "UU",
  members: 3,
- website: "https://uu.nl",
+ website: "https://uu.nl"
  },
 ];
 
@@ -202,12 +202,11 @@ export function SubspaceCommunityDialog({ open, onOpenChange }: SubspaceCommunit
  onChange={(e) => handleSearchChange(e.target.value)}
  className="w-full h-10 pl-9 pr-4 transition-all text-body"
  style={{
- fontFamily: "'Inter', sans-serif",
  borderRadius: "var(--radius)",
  border: "1px solid var(--border)",
  background: "var(--input-background)",
  color: "var(--foreground)",
- outline: "none",
+ outline: "none"
  }}
  onFocus={(e) => {
  e.currentTarget.style.borderColor = "var(--primary)";
@@ -227,11 +226,10 @@ export function SubspaceCommunityDialog({ open, onOpenChange }: SubspaceCommunit
  onClick={() => handleFilterChange(filter)}
  className="px-3 py-2 whitespace-nowrap transition-colors text-control"
  style={{
- fontFamily: "'Inter', sans-serif",
  borderRadius: "var(--radius)",
  border: `1px solid ${selectedFilter === filter ? "var(--primary)" : "var(--border)"}`,
  background: selectedFilter === filter ? "var(--primary)" : "var(--background)",
- color: selectedFilter === filter ? "var(--primary-foreground)" : "var(--muted-foreground)",
+ color: selectedFilter === filter ? "var(--primary-foreground)" : "var(--muted-foreground)"
  }}
  >
  {filter}
@@ -295,13 +293,12 @@ export function SubspaceCommunityDialog({ open, onOpenChange }: SubspaceCommunit
  <h3
  className="text-subheader"
  style={{
- color: "var(--foreground)",
- fontFamily: "'Inter', sans-serif",
+ color: "var(--foreground)"
  }}
  >
  No results found
  </h3>
- <p className="mt-1 text-body" style={{ color: "var(--muted-foreground)", fontFamily: "'Inter', sans-serif" }}>
+ <p className="mt-1 text-body" style={{ color: "var(--muted-foreground)" }}>
  Try adjusting your search or filters.
  </p>
  <Button
@@ -327,7 +324,7 @@ export function SubspaceCommunityDialog({ open, onOpenChange }: SubspaceCommunit
 function UserCard({
  member,
  getRoleBadgeColor,
- getRoleIcon,
+ getRoleIcon
 }: {
  member: MemberEntry;
  getRoleBadgeColor: (rt: string) => string;
@@ -346,9 +343,6 @@ function UserCard({
  {member.avatar && <AvatarImage src={member.avatar} alt={member.name} />}
  <AvatarFallback
  className="text-card-title"
- style={{
- fontFamily: "'Inter', sans-serif",
- }}
  >
  {member.initials}
  </AvatarFallback>
@@ -359,8 +353,7 @@ function UserCard({
  to={`/user/${member.name.toLowerCase().replace(/\s+/g, "-")}`}
  className="hover:text-primary transition-colors block text-card-title"
  style={{
- fontFamily: "'Inter', sans-serif",
- color: "var(--foreground)",
+ color: "var(--foreground)"
  }}
  >
  {member.name}
@@ -370,7 +363,6 @@ function UserCard({
  "inline-flex items-center px-2 py-0.5 rounded-full text-caption font-medium border mt-1",
  getRoleBadgeColor(member.roleType)
  )}
- style={{ fontFamily: "'Inter', sans-serif" }}
  >
  {getRoleIcon(member.roleType)}
  {member.role}
@@ -398,8 +390,7 @@ function UserCard({
  <p
  className="line-clamp-2 text-body"
  style={{
- color: "var(--muted-foreground)",
- fontFamily: "'Inter', sans-serif",
+ color: "var(--muted-foreground)"
  }}
  >
  {member.bio}
@@ -408,8 +399,7 @@ function UserCard({
  <div
  className={cn("flex items-center gap-1 text-caption", member.bio ? "mt-4" : "mt-1")}
  style={{
- color: "var(--muted-foreground)",
- fontFamily: "'Inter', sans-serif",
+ color: "var(--muted-foreground)"
  }}
  >
  <span>Joined {member.joinDate}</span>
@@ -440,9 +430,8 @@ function OrgCard({ org }: { org: OrgEntry }) {
  className="text-caption font-bold"
  style={{
  borderRadius: "var(--radius)",
- fontFamily: "'Inter', sans-serif",
  background: "color-mix(in srgb, var(--info) 15%, transparent)",
- color: "var(--info)",
+ color: "var(--info)"
  }}
  >
  {org.initials}
@@ -454,8 +443,7 @@ function OrgCard({ org }: { org: OrgEntry }) {
  to={`/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`}
  className="hover:text-primary transition-colors block text-card-title"
  style={{
- fontFamily: "'Inter', sans-serif",
- color: "var(--foreground)",
+ color: "var(--foreground)"
  }}
  >
  {org.name}
@@ -464,11 +452,10 @@ function OrgCard({ org }: { org: OrgEntry }) {
  <span
  className="inline-flex items-center gap-1 px-2 py-0.5 text-caption font-medium"
  style={{
- fontFamily: "'Inter', sans-serif",
  color: "var(--info)",
  background: "color-mix(in srgb, var(--info) 10%, transparent)",
  border: "1px solid color-mix(in srgb, var(--info) 20%, transparent)",
- borderRadius: "999px",
+ borderRadius: "999px"
  }}
  >
  <Building2 className="w-3 h-3" />
@@ -495,8 +482,7 @@ function OrgCard({ org }: { org: OrgEntry }) {
  <p
  className="line-clamp-2 min-h-[2.5rem] text-body"
  style={{
- color: "var(--muted-foreground)",
- fontFamily: "'Inter', sans-serif",
+ color: "var(--muted-foreground)"
  }}
  >
  {org.description}
@@ -504,8 +490,7 @@ function OrgCard({ org }: { org: OrgEntry }) {
  <div
  className="flex items-center gap-1 mt-4 text-caption"
  style={{
- color: "var(--muted-foreground)",
- fontFamily: "'Inter', sans-serif",
+ color: "var(--muted-foreground)"
  }}
  >
  <Users className="w-3 h-3" />

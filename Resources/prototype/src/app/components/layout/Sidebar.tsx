@@ -7,12 +7,12 @@ import {
   Tag,
   ChevronsLeft,
   ChevronsRight,
-  Bot,
+  Bot
 } from "lucide-react";
 import { Link, useLocation } from "react-router";
-import { cn } from "@/lib/utils";
-import { Switch } from "@/app/components/ui/switch";
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
+import { cn } from "@/crd/lib/utils";
+import { Switch } from "@/crd/primitives/switch";
+import { Avatar, AvatarFallback } from "@/crd/primitives/avatar";
 import { InvitationsDialog } from "@/app/components/dialogs/InvitationsDialog";
 import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV3";
 import AlkemioLogo from "@/imports/AlkemioLogo";
@@ -41,7 +41,7 @@ export function Sidebar({ className }: { className?: string }) {
       icon: Mail,
       label: t("nav.invitations"),
       onClick: () => setShowInvitations(true),
-      badge: 2,
+      badge: 2
     },
     { icon: Rocket, label: "Create my own Space", onClick: () => setShowCreateSpace(true) },
     { icon: Lightbulb, label: "Tips & Tricks", href: "#" },
@@ -53,17 +53,17 @@ export function Sidebar({ className }: { className?: string }) {
     {
       name: "Green Energy Space",
       initials: "GE",
-      href: "/space/green-energy",
+      href: "/space/green-energy"
     },
     {
       name: "Community Garden",
       initials: "CG",
-      href: "/space/community-garden",
+      href: "/space/community-garden"
     },
     {
       name: "Digital Transformation",
       initials: "DT",
-      href: "/space/digital-trans",
+      href: "/space/digital-trans"
     },
   ];
 
@@ -79,8 +79,7 @@ export function Sidebar({ className }: { className?: string }) {
         isCollapsed ? "w-[80px]" : "w-64",
         className
       )}
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
+      >
       {/* Logo area with integrated collapse toggle */}
       <div className="h-16 relative flex items-center border-b border-sidebar-border/50 bg-sidebar shrink-0 px-4">
         {/* Full logo — visible when expanded */}
@@ -152,7 +151,7 @@ export function Sidebar({ className }: { className?: string }) {
                   <item.icon className="w-5 h-5 shrink-0" />
                   <span
                     className={cn(
-                      "whitespace-nowrap transition-all duration-300 text-control",
+                      "whitespace-nowrap transition-all duration-300 text-body",
                       isCollapsed
                         ? "w-0 opacity-0 overflow-hidden hidden"
                         : "w-auto opacity-100 block"
@@ -167,7 +166,7 @@ export function Sidebar({ className }: { className?: string }) {
                     style={{
                       background: "var(--primary)",
                       color: "var(--primary-foreground)",
-                      padding: "1px 6px",
+                      padding: "1px 6px"
                     }}
                   >
                     {item.badge}
@@ -210,7 +209,7 @@ export function Sidebar({ className }: { className?: string }) {
               className="text-label uppercase px-3 mb-3 whitespace-nowrap overflow-hidden transition-opacity duration-300"
               style={{
                 color: "var(--sidebar-foreground)",
-                opacity: 0.5,
+                opacity: 0.5
               }}
             >
               {t("nav.mySpaces")}
@@ -228,11 +227,11 @@ export function Sidebar({ className }: { className?: string }) {
                 key={space.href}
                 to={space.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-md transition-colors h-10 text-control",
+                  "flex items-center gap-3 rounded-md transition-colors h-10 text-body",
                   isCollapsed ? "justify-center px-0" : "px-3"
                 )}
                 style={{
-                  color: "color-mix(in srgb, var(--sidebar-foreground) 70%, transparent)",
+                  color: "color-mix(in srgb, var(--sidebar-foreground) 70%, transparent)"
                 }}
                 title={isCollapsed ? space.name : undefined}
               >
@@ -241,7 +240,7 @@ export function Sidebar({ className }: { className?: string }) {
                   style={{
                     background:
                       "color-mix(in srgb, var(--primary) 10%, transparent)",
-                    color: "var(--primary)",
+                    color: "var(--primary)"
                   }}
                 >
                   {space.initials}
@@ -273,7 +272,7 @@ export function Sidebar({ className }: { className?: string }) {
               className="text-label uppercase px-3 mb-3 whitespace-nowrap overflow-hidden transition-opacity duration-300"
               style={{
                 color: "var(--sidebar-foreground)",
-                opacity: 0.5,
+                opacity: 0.5
               }}
             >
               Virtual Contributors
@@ -291,7 +290,7 @@ export function Sidebar({ className }: { className?: string }) {
                   isCollapsed ? "justify-center px-0" : "px-3"
                 )}
                 style={{
-                  color: "color-mix(in srgb, var(--sidebar-foreground) 70%, transparent)",
+                  color: "color-mix(in srgb, var(--sidebar-foreground) 70%, transparent)"
                 }}
                 title={isCollapsed ? vc.name : undefined}
               >
@@ -301,7 +300,7 @@ export function Sidebar({ className }: { className?: string }) {
                     style={{
                       background:
                         "color-mix(in srgb, var(--chart-2) 15%, transparent)",
-                      color: "var(--chart-2)",
+                      color: "var(--chart-2)"
                     }}
                   >
                     <Bot className="w-3.5 h-3.5" />
@@ -339,9 +338,9 @@ export function Sidebar({ className }: { className?: string }) {
           {!isCollapsed ? (
             <>
               <div
-                className="flex items-center gap-2 whitespace-nowrap overflow-hidden text-control"
+                className="flex items-center gap-2 whitespace-nowrap overflow-hidden text-body"
                 style={{
-                  color: "color-mix(in srgb, var(--sidebar-foreground) 80%, transparent)",
+                  color: "color-mix(in srgb, var(--sidebar-foreground) 80%, transparent)"
                 }}
               >
                 <Eye className="w-4 h-4" />
@@ -353,7 +352,7 @@ export function Sidebar({ className }: { className?: string }) {
             <Eye
               className="w-4 h-4"
               style={{
-                color: "color-mix(in srgb, var(--sidebar-foreground) 70%, transparent)",
+                color: "color-mix(in srgb, var(--sidebar-foreground) 70%, transparent)"
               }}
             />
           )}

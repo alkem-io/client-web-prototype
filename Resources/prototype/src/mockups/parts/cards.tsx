@@ -8,8 +8,8 @@
  * COMPONENT-MAP.md as mockup-local so nobody mistakes them for shipped UI.
  */
 import { BarChart3, MessageSquare } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/app/components/ui/avatar';
-import { Separator } from '@/app/components/ui/separator';
+import { Avatar, AvatarFallback } from '@/crd/primitives/avatar';
+import { Separator } from '@/crd/primitives/separator';
 import { CardLabel } from '../frame/SpillCard';
 import { AvatarStack } from '../core/density';
 import type { Person } from '../core/types';
@@ -36,7 +36,7 @@ export function PollCard({
   question,
   options,
   totalVotes,
-  voters,
+  voters
 }: {
   question: string;
   options: { label: string; share: number }[];
@@ -79,7 +79,7 @@ export function PollCard({
 export function CommentThreadCard({
   onPost,
   comments,
-  composer = 'Write a comment…',
+  composer = 'Write a comment…'
 }: {
   onPost: string;
   comments: { person: Person; at: string; text: string; mention?: Person }[];
@@ -134,7 +134,7 @@ export function Mention({ person }: { person: Person }) {
  */
 export function PhaseFlowCard({
   phases,
-  currentId,
+  currentId
 }: {
   phases: { id: string; label: string; description: string }[];
   currentId: string;
@@ -154,7 +154,7 @@ export function PhaseFlowCard({
               className="mt-1 block size-[9px] shrink-0 rounded-full border-[1.5px]"
               style={{
                 background: current ? 'var(--primary)' : 'var(--card)',
-                borderColor: current ? 'var(--primary)' : '#CBD5E1',
+                borderColor: current ? 'var(--primary)' : '#CBD5E1'
               }}
             />
             <div>

@@ -4,12 +4,12 @@ import {
   Bell, Layout, CreditCard, Users, Settings, User, 
   Mail, Smartphone, Info
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Switch } from "@/app/components/ui/switch";
-import { Separator } from "@/app/components/ui/separator";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { Switch } from "@/crd/primitives/switch";
+import { Separator } from "@/crd/primitives/separator";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/crd/primitives/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import { toast } from "sonner";
 
 export default function UserNotificationsPage() {
@@ -113,7 +113,7 @@ export default function UserNotificationsPage() {
     user_dm: { inApp: true, email: true },
     user_invite: { inApp: true, email: true },
     user_join: { inApp: true, email: false },
-    vc_invite: { inApp: true, email: true },
+    vc_invite: { inApp: true, email: true }
   });
 
   const handleToggle = (id: string, channel: 'inApp' | 'email') => {
@@ -197,7 +197,7 @@ export default function UserNotificationsPage() {
               <Card>
                 <CardHeader className="py-4 border-b bg-muted/20">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm text-muted-foreground uppercase tracking-wider pl-1">Activity</span>
+                    <span className="text-body-emphasis text-muted-foreground uppercase tracking-wider pl-1">Activity</span>
                     <div className="flex items-center gap-8 md:gap-16 pr-4">
                       <div className="flex flex-col items-center gap-1 w-12">
                         <Bell className="w-4 h-4 text-muted-foreground" />

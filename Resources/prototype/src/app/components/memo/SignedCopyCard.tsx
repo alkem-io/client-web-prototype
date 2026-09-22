@@ -23,18 +23,18 @@ import {
   Loader2,
   RefreshCw,
   ShieldCheck,
-  TriangleAlert,
+  TriangleAlert
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/crd/primitives/tooltip";
+import { cn } from "@/crd/lib/utils";
 import {
   formatSignedAtPrecise,
   formatSignedAtRelative,
   type SignedCopy,
-  type VerificationState,
+  type VerificationState
 } from "./signingData";
 
 interface SignedCopyCardProps {
@@ -55,21 +55,21 @@ const VERIFICATION: Record<
     icon: ShieldCheck,
     label: "Verified",
     detail: "Re-checked against the signature inside the file — not a byte has changed since it was signed.",
-    chip: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400",
+    chip: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400"
   },
   checking: {
     icon: Loader2,
     label: "Checking…",
     detail: "Re-hashing the file against the signature it carries.",
     chip: "bg-muted text-muted-foreground",
-    spin: true,
+    spin: true
   },
   modified: {
     icon: TriangleAlert,
     label: "Altered — does not match",
     detail: "The file no longer matches the signature it carries. Treat this copy as untrustworthy.",
-    chip: "bg-destructive/10 text-destructive",
-  },
+    chip: "bg-destructive/10 text-destructive"
+  }
 };
 
 /** A page, drawn small. Faux lines come from the copy so no two look identical. */
@@ -111,7 +111,7 @@ export function SignedCopyCard({
   onOpen,
   onDownload,
   onRecheck,
-  className,
+  className
 }: SignedCopyCardProps) {
   const state = VERIFICATION[copy.verification];
   const compact = density === "compact";

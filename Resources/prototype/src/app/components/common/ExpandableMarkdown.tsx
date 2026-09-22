@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { MarkdownContent } from '@/app/components/common/MarkdownContent';
-import { cn } from '@/lib/utils';
+import { cn } from '@/crd/lib/utils';
 
 type ExpandableMarkdownProps = {
   content: string;
@@ -29,7 +29,7 @@ type ExpandableMarkdownProps = {
 
 const surfaceClasses = {
   card: { fade: 'bg-gradient-to-b from-transparent to-card', chip: 'bg-card' },
-  background: { fade: 'bg-gradient-to-b from-transparent to-background', chip: 'bg-background' },
+  background: { fade: 'bg-gradient-to-b from-transparent to-background', chip: 'bg-background' }
 } as const;
 
 /** Whether the content exceeds `maxLines` — independent of the display mode. */
@@ -65,7 +65,7 @@ export function ExpandableMarkdown({
   surface = 'card',
   expandLabel,
   collapseLabel,
-  className,
+  className
 }: ExpandableMarkdownProps) {
   const [overflow, setOverflow] = useState<Overflow>('unknown');
   // `null` → follow the `defaultExpanded` setting. Set only by an explicit

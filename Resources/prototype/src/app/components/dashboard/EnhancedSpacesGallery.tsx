@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { ChevronRight, ChevronDown, Lock, Plus, Clock, Calendar, Mail, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { MOCK_MEMBERSHIPS, MembershipItem } from "@/app/components/memberships/membershipData";
 import { ShowMoreModal } from "./ShowMoreModal";
 import { BrowseAndPinModal } from "./BrowseAndPinModal";
@@ -16,7 +16,7 @@ const MOCK_OPEN_APPLICATIONS = [
     spaceInitials: "SG",
     spaceColor: "#059669",
     submittedDate: "3 hours ago",
-    status: "pending" as const,
+    status: "pending" as const
   },
 ];
 
@@ -31,7 +31,7 @@ const MOCK_PENDING_INVITATIONS = [
     spaceColor: "#2563eb",
     invitedBy: "Marc Johnson",
     invitedDate: "1 day ago",
-    role: "Member",
+    role: "Member"
   },
 ];
 
@@ -52,7 +52,7 @@ function OpenApplicationCard({ application, onClick }: { application: typeof MOC
             <img src={application.spaceImage} alt={application.space} className="w-full h-full object-cover" />
           ) : (
             <div
-              className="w-full h-full flex items-center justify-center text-white text-xs font-bold"
+              className="w-full h-full flex items-center justify-center text-white text-caption font-bold"
               style={{ background: application.spaceColor }}
             >
               {application.spaceInitials}
@@ -60,12 +60,12 @@ function OpenApplicationCard({ application, onClick }: { application: typeof MOC
           )}
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-medium" style={{ color: "var(--card-foreground)" }}>
+          <span className="text-body-emphasis" style={{ color: "var(--card-foreground)" }}>
             Application to join <span className="font-bold text-primary">{application.space}</span>
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 shrink-0">
+      <div className="flex items-center gap-1 text-caption text-amber-600 dark:text-amber-400 shrink-0">
         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block" />
         Pending review
       </div>
@@ -90,7 +90,7 @@ function PendingInvitationCard({ invitation, onClick }: { invitation: typeof MOC
             <img src={invitation.spaceImage} alt={invitation.space} className="w-full h-full object-cover" />
           ) : (
             <div
-              className="w-full h-full flex items-center justify-center text-white text-xs font-bold"
+              className="w-full h-full flex items-center justify-center text-white text-caption font-bold"
               style={{ background: invitation.spaceColor }}
             >
               {invitation.spaceInitials}
@@ -98,7 +98,7 @@ function PendingInvitationCard({ invitation, onClick }: { invitation: typeof MOC
           )}
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-medium" style={{ color: "var(--card-foreground)" }}>
+          <span className="text-body-emphasis" style={{ color: "var(--card-foreground)" }}>
             <span className="font-bold">{invitation.invitedBy}</span> invited you to join <span className="font-bold text-primary">{invitation.space}</span>
           </span>
 
@@ -131,7 +131,7 @@ function toSpaceCardData(item: MembershipItem): SpaceCardData {
     leads: [
       { name: "User 1", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=64", type: "person" },
       { name: "User 2", avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=64", type: "person" },
-    ],
+    ]
   };
 }
 
@@ -142,7 +142,7 @@ function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       className="group cursor-pointer transition-all overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/30 hover:border-primary hover:bg-primary/5 relative"
       style={{
-        background: "var(--card)",
+        background: "var(--card)"
       }}
       role="button"
       tabIndex={0}
@@ -158,7 +158,7 @@ function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
         <div className="flex items-center justify-center rounded-full bg-muted shadow-sm mb-2 size-10">
           <Plus className="text-muted-foreground group-hover:text-primary transition-colors" size={20} />
         </div>
-        <span className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
+        <span className="text-body-emphasis text-muted-foreground group-hover:text-primary transition-colors">
           Pin a space
         </span>
       </div>
@@ -179,7 +179,7 @@ function SpaceCardCompact({ item, onClick }: { item: MembershipItem; onClick: ()
         background: "var(--card)",
         border: "1px solid var(--border)",
         borderRadius: "var(--radius)",
-        boxShadow: "none",
+        boxShadow: "none"
       }}
       onMouseEnter={(e) =>
         (e.currentTarget.style.boxShadow = "var(--elevation-sm)")
@@ -200,7 +200,7 @@ function SpaceCardCompact({ item, onClick }: { item: MembershipItem; onClick: ()
           <div
             className="w-full h-full"
             style={{
-              background: `linear-gradient(135deg, ${item.color}, ${item.color}88)`,
+              background: `linear-gradient(135deg, ${item.color}, ${item.color}88)`
             }}
           />
         )}
@@ -210,7 +210,7 @@ function SpaceCardCompact({ item, onClick }: { item: MembershipItem; onClick: ()
             style={{
               background:
                 "color-mix(in srgb, var(--foreground) 50%, transparent)",
-              color: "var(--primary-foreground)",
+              color: "var(--primary-foreground)"
             }}
           >
             <Lock className="w-3 h-3" />
@@ -224,7 +224,7 @@ function SpaceCardCompact({ item, onClick }: { item: MembershipItem; onClick: ()
           className="w-8 h-8 rounded-lg shrink-0 overflow-hidden"
           style={{
             border: "1px solid var(--border)",
-            background: item.color,
+            background: item.color
           }}
         >
           {item.image ? (
@@ -234,15 +234,15 @@ function SpaceCardCompact({ item, onClick }: { item: MembershipItem; onClick: ()
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-full h-full flex items-center justify-center text-white text-caption font-bold">
               {item.initials}
             </div>
           )}
         </div>
         <h3
-          className="truncate text-sm font-medium"
+          className="truncate text-body-emphasis"
           style={{
-            color: "var(--card-foreground)",
+            color: "var(--card-foreground)"
           }}
         >
           {item.name}
@@ -373,7 +373,7 @@ export function EnhancedSpacesGallery({ newUserView = false, hasPending = true }
               className="rounded-lg p-6 md:p-8 flex items-center justify-between gap-6 relative overflow-hidden"
               style={{
                 background: "color-mix(in srgb, var(--primary) 95%, white)",
-                color: "white",
+                color: "white"
               }}
             >
               {/* Subtle background flair */}
@@ -384,8 +384,8 @@ export function EnhancedSpacesGallery({ newUserView = false, hasPending = true }
               </div>
 
               <div className="relative">
-                <h2 className="text-lg font-semibold mb-1.5">Welcome to Alkemio!</h2>
-                <p className="text-sm opacity-80 max-w-md leading-relaxed">
+                <h2 className="text-section-title mb-1.5">Welcome to Alkemio!</h2>
+                <p className="text-body opacity-80 max-w-md leading-relaxed">
                   Great to have you here. Alkemio is where people collaborate on the
                   challenges that matter. Start by visiting our Welcome Space to learn
                   the basics and get the most out of the platform.
@@ -423,8 +423,8 @@ export function EnhancedSpacesGallery({ newUserView = false, hasPending = true }
               type="button"
             >
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold">Pending Applications & Invitations</h2>
-                <span className="rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-xs font-bold px-2 py-0.5">
+                <h2 className="text-subsection-title">Pending Applications & Invitations</h2>
+                <span className="rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 text-caption font-bold px-2 py-0.5">
                   {MOCK_OPEN_APPLICATIONS.length + MOCK_PENDING_INVITATIONS.length} pending
                 </span>
               </div>
@@ -463,7 +463,7 @@ export function EnhancedSpacesGallery({ newUserView = false, hasPending = true }
                 className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
                 type="button"
               >
-                <h2 className="text-lg font-semibold">Explore Spaces</h2>
+                <h2 className="text-subsection-title">Explore Spaces</h2>
                 {collapsedRows.has("explore") ? (
                   <ChevronRight className="w-5 h-5" />
                 ) : (
@@ -524,7 +524,7 @@ export function EnhancedSpacesGallery({ newUserView = false, hasPending = true }
             className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
             type="button"
           >
-            <h2 className="text-lg font-semibold">Last Active In</h2>
+            <h2 className="text-subsection-title">Last Active In</h2>
             {collapsedRows.has("recent") ? (
               <ChevronRight className="w-5 h-5" />
             ) : (
@@ -553,7 +553,7 @@ export function EnhancedSpacesGallery({ newUserView = false, hasPending = true }
               className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
               type="button"
             >
-              <h2 className="text-lg font-semibold">Spaces with Most Activity</h2>
+              <h2 className="text-subsection-title">Spaces with Most Activity</h2>
               {collapsedRows.has("activity") ? (
                 <ChevronRight className="w-5 h-5" />
               ) : (
@@ -582,7 +582,7 @@ export function EnhancedSpacesGallery({ newUserView = false, hasPending = true }
               className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
               type="button"
             >
-              <h2 className="text-lg font-semibold">Spaces I Lead & Administer</h2>
+              <h2 className="text-subsection-title">Spaces I Lead & Administer</h2>
               {collapsedRows.has("lead") ? (
                 <ChevronRight className="w-5 h-5" />
               ) : (
@@ -625,7 +625,7 @@ export function EnhancedSpacesGallery({ newUserView = false, hasPending = true }
               className="w-full flex items-center justify-between mb-4 hover:opacity-75 transition-opacity"
               type="button"
             >
-              <h2 className="text-lg font-semibold">Spaces I Host</h2>
+              <h2 className="text-subsection-title">Spaces I Host</h2>
               {collapsedRows.has("host") ? (
                 <ChevronRight className="w-5 h-5" />
               ) : (

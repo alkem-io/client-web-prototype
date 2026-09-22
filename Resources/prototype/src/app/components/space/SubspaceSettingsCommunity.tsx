@@ -23,51 +23,51 @@ import {
  ArrowUpDown,
  ArrowUp,
  ArrowDown,
- Send,
+ Send
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
 import {
  Table,
  TableBody,
  TableCell,
  TableHead,
  TableHeader,
- TableRow,
-} from "@/app/components/ui/table";
+ TableRow
+} from "@/crd/primitives/table";
 import {
  DropdownMenu,
  DropdownMenuContent,
  DropdownMenuItem,
  DropdownMenuTrigger,
- DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
+ DropdownMenuSeparator
+} from "@/crd/primitives/dropdown-menu";
 import {
  Collapsible,
  CollapsibleContent,
- CollapsibleTrigger,
-} from "@/app/components/ui/collapsible";
+ CollapsibleTrigger
+} from "@/crd/primitives/collapsible";
 import {
  Dialog,
  DialogContent,
  DialogHeader,
  DialogTitle,
  DialogDescription,
- DialogFooter,
-} from "@/app/components/ui/dialog";
+ DialogFooter
+} from "@/crd/primitives/dialog";
 import {
  Select,
  SelectContent,
  SelectItem,
  SelectTrigger,
- SelectValue,
-} from "@/app/components/ui/select";
-import { Textarea } from "@/app/components/ui/textarea";
-import { Separator } from "@/app/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+ SelectValue
+} from "@/crd/primitives/select";
+import { Textarea } from "@/crd/primitives/textarea";
+import { Separator } from "@/crd/primitives/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 
 type MemberRole = "Lead" | "Admin" | "Member";
 type MemberStatus = "Active" | "Pending" | "Invited";
@@ -92,7 +92,7 @@ const MOCK_MEMBERS: Member[] = [
  status: "Active",
  avatar: "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "EM",
- date: "2023-10-15",
+ date: "2023-10-15"
  },
  {
  id: "2",
@@ -102,7 +102,7 @@ const MOCK_MEMBERS: Member[] = [
  status: "Active",
  avatar: "https://images.unsplash.com/photo-1757347398206-7425300ef990?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "SC",
- date: "2023-11-02",
+ date: "2023-11-02"
  },
  {
  id: "3",
@@ -112,7 +112,7 @@ const MOCK_MEMBERS: Member[] = [
  status: "Active",
  avatar: null,
  initials: "DK",
- date: "2024-01-05",
+ date: "2024-01-05"
  },
  {
  id: "4",
@@ -122,7 +122,7 @@ const MOCK_MEMBERS: Member[] = [
  status: "Active",
  avatar: null,
  initials: "MR",
- date: "2023-12-10",
+ date: "2023-12-10"
  },
  {
  id: "5",
@@ -132,7 +132,7 @@ const MOCK_MEMBERS: Member[] = [
  status: "Active",
  avatar: null,
  initials: "RF",
- date: "2024-01-12",
+ date: "2024-01-12"
  },
  {
  id: "6",
@@ -142,7 +142,7 @@ const MOCK_MEMBERS: Member[] = [
  status: "Pending",
  avatar: null,
  initials: "MC",
- date: "2024-02-20",
+ date: "2024-02-20"
  },
  {
  id: "7",
@@ -152,7 +152,7 @@ const MOCK_MEMBERS: Member[] = [
  status: "Invited",
  avatar: null,
  initials: "JA",
- date: "2024-02-21",
+ date: "2024-02-21"
  },
  ...Array.from({ length: 8 }).map((_, i) => ({
  id: `m${i + 8}`,
@@ -162,7 +162,7 @@ const MOCK_MEMBERS: Member[] = [
  status: "Active" as MemberStatus,
  role: (i < 1 ? "Lead" : "Member") as MemberRole,
  avatar: null,
- initials: ["JW", "ET", "LO", "SL", "OS", "AP", "WC", "IG"][i] || `M${i + 8}`,
+ initials: ["JW", "ET", "LO", "SL", "OS", "AP", "WC", "IG"][i] || `M${i + 8}`
  })),
 ];
 
@@ -231,7 +231,7 @@ function SectionHeader({
  title,
  description,
  isOpen,
- onToggle,
+ onToggle
 }: {
  icon: React.ElementType;
  title: string;
@@ -261,7 +261,7 @@ function InviteOrgDialog({
  open,
  onOpenChange,
  onInvite,
- alreadyInvited,
+ alreadyInvited
 }: {
  open: boolean;
  onOpenChange: (v: boolean) => void;
@@ -376,13 +376,13 @@ export function SubspaceSettingsCommunity() {
  const [inviteVCOpen, setInviteVCOpen] = useState(false);
  const [sortConfig, setSortConfig] = useState<{ key: keyof Member | null; direction: "asc" | "desc" }>({
  key: null,
- direction: "asc",
+ direction: "asc"
  });
  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
  form: false,
  guidelines: false,
  orgs: false,
- vcs: false,
+ vcs: false
  });
 
  const toggleSection = (section: string) => {
@@ -400,7 +400,7 @@ export function SubspaceSettingsCommunity() {
  invitedDate: new Date().toISOString().slice(0, 10),
  status: 'pending' as OrgInviteStatus,
  role,
- message: message || undefined,
+ message: message || undefined
  },
  ]);
  };
@@ -416,7 +416,7 @@ export function SubspaceSettingsCommunity() {
  const handleSort = (key: keyof Member) => {
  setSortConfig((current) => ({
  key,
- direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
+ direction: current.key === key && current.direction === "asc" ? "desc" : "asc"
  }));
  };
 
@@ -494,7 +494,7 @@ export function SubspaceSettingsCommunity() {
  <stat.icon className="w-4 h-4" />
  <span className="text-caption font-medium">{stat.label}</span>
  </div>
- <p className="text-2xl font-bold">{stat.value}</p>
+ <p className="text-page-title">{stat.value}</p>
  </div>
  ))}
  </div>
@@ -638,7 +638,7 @@ export function SubspaceSettingsCommunity() {
  <div className="flex items-center gap-3">
  <Avatar className="w-8 h-8 border border-border">
  {member.avatar && <AvatarImage src={member.avatar} />}
- <AvatarFallback className="text-xs">{member.initials}</AvatarFallback>
+ <AvatarFallback className="text-caption">{member.initials}</AvatarFallback>
  </Avatar>
  <div>
  <div className="text-body-emphasis">{member.name}</div>
@@ -932,7 +932,7 @@ export function SubspaceSettingsCommunity() {
  className="w-10 h-10 rounded-md flex items-center justify-center"
  style={{
  background: "color-mix(in srgb, var(--primary) 10%, transparent)",
- color: "var(--primary)",
+ color: "var(--primary)"
  }}
  >
  <Bot className="w-5 h-5" />

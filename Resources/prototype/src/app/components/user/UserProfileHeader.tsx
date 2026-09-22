@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
 import { Mail, MapPin, Send, Settings } from "lucide-react";
 
 interface UserProfileHeaderProps {

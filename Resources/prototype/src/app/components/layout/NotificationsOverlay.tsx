@@ -9,12 +9,12 @@ import {
   CheckCheck,
   Clock,
   Settings,
-  X,
+  X
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import { useNotifications } from "@/app/contexts/NotificationsContext";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { SpaceActivityPanel } from "@/app/components/layout/SpaceActivityPanel";
@@ -45,7 +45,7 @@ const NOTIFICATIONS: Notification[] = [
     time: "2 minutes ago",
     read: false,
     type: "comment",
-    space: "Green Energy Space",
+    space: "Green Energy Space"
   },
   {
     id: "2",
@@ -55,7 +55,7 @@ const NOTIFICATIONS: Notification[] = [
     target: "Urban Mobility Lab",
     time: "1 hour ago",
     read: false,
-    type: "invite",
+    type: "invite"
   },
   {
     id: "3",
@@ -66,7 +66,7 @@ const NOTIFICATIONS: Notification[] = [
     time: "3 hours ago",
     read: false,
     type: "mention",
-    space: "Sustainable Futures",
+    space: "Sustainable Futures"
   },
   {
     id: "4",
@@ -76,7 +76,7 @@ const NOTIFICATIONS: Notification[] = [
     target: "New template library features are live",
     time: "5 hours ago",
     read: true,
-    type: "system",
+    type: "system"
   },
   {
     id: "6",
@@ -86,7 +86,7 @@ const NOTIFICATIONS: Notification[] = [
     target: "Design Thinking Practice",
     time: "Yesterday",
     read: true,
-    type: "invite",
+    type: "invite"
   },
   {
     id: "7",
@@ -97,7 +97,7 @@ const NOTIFICATIONS: Notification[] = [
     time: "2 days ago",
     read: true,
     type: "comment",
-    space: "Urban Development Network",
+    space: "Urban Development Network"
   },
   {
     id: "8",
@@ -108,7 +108,7 @@ const NOTIFICATIONS: Notification[] = [
     time: "3 days ago",
     read: true,
     type: "mention",
-    space: "Health Innovation Alliance",
+    space: "Health Innovation Alliance"
   },
 ];
 
@@ -116,7 +116,7 @@ const TYPE_ICON: Record<NotificationType, React.ReactNode> = {
   comment: <MessageSquare className="w-3 h-3" />,
   invite: <UserPlus className="w-3 h-3" />,
   mention: <Check className="w-3 h-3" />,
-  system: <Bell className="w-3 h-3" />,
+  system: <Bell className="w-3 h-3" />
 };
 
 export function NotificationsOverlay() {
@@ -153,7 +153,7 @@ export function NotificationsOverlay() {
     if (cleared === 0) return;
     toast(`${listed} update${listed === 1 ? "" : "s"} marked as read`, {
       duration: 6000,
-      action: { label: "Undo", onClick: undo },
+      action: { label: "Undo", onClick: undo }
     });
   };
 
@@ -208,7 +208,7 @@ export function NotificationsOverlay() {
               background: "var(--background)",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius-xl)",
-              boxShadow: "var(--elevation-sm)",
+              boxShadow: "var(--elevation-sm)"
             }}
           >
             {/* Header */}
@@ -270,7 +270,8 @@ export function NotificationsOverlay() {
               {(
                 [
                   { key: "notifications", label: "Notifications", count: unreadCount },
-                  { key: "activity", label: "Recent activity", count: newChangeCount },
+                  // No count: activity is an ambient signal, not a queue to empty.
+                  { key: "activity", label: "Recent activity", count: 0 },
                 ] as const
               ).map((t) => (
                 <button
@@ -290,7 +291,7 @@ export function NotificationsOverlay() {
                       className="rounded-full text-badge font-bold px-1.5"
                       style={{
                         background: tab === t.key ? "var(--primary)" : "var(--secondary)",
-                        color: tab === t.key ? "var(--primary-foreground)" : "var(--muted-foreground)",
+                        color: tab === t.key ? "var(--primary-foreground)" : "var(--muted-foreground)"
                       }}
                     >
                       {t.count}
@@ -361,7 +362,7 @@ export function NotificationsOverlay() {
                         style={{
                           background: "var(--primary)",
                           color: "var(--primary-foreground)",
-                          border: "2px solid var(--background)",
+                          border: "2px solid var(--background)"
                         }}
                       >
                         {TYPE_ICON[n.type]}

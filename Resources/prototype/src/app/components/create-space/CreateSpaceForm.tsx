@@ -1,10 +1,10 @@
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
 import { useState } from "react";
 import { X, LayoutTemplate, ImageIcon, Upload } from "lucide-react";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 
 interface CreateSpaceFormProps {
   showTemplates?: boolean;
@@ -78,7 +78,7 @@ export function CreateSpaceForm(_props: CreateSpaceFormProps) {
           value={description}
           onChange={setDescription}
           placeholder="Explain what this space is about..."
-          minHeight="120px"
+          className="min-h-[120px]"
         />
         <p className="text-caption text-muted-foreground">Explain what this space is about. Markdown supported.</p>
       </div>

@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Type, Eye } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/crd/primitives/card";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/crd/primitives/tabs";
 
 /* ─── Typography Token Data ─── */
 
@@ -30,9 +30,8 @@ const platformTokens: TypographyToken[] = [
     weight: 800,
     weightLabel: "ExtraBold",
     lineHeight: "1.0",
-    fontFamily: "Inter",
     usage: "Page titles, hero sections",
-    category: "platform",
+    category: "platform"
   },
   {
     name: "Heading 2",
@@ -42,9 +41,8 @@ const platformTokens: TypographyToken[] = [
     weight: 600,
     weightLabel: "SemiBold",
     lineHeight: "1.2",
-    fontFamily: "Inter",
     usage: "Section headings, card titles",
-    category: "platform",
+    category: "platform"
   },
   {
     name: "Heading 3",
@@ -54,9 +52,8 @@ const platformTokens: TypographyToken[] = [
     weight: 600,
     weightLabel: "SemiBold",
     lineHeight: "1.33",
-    fontFamily: "Inter",
     usage: "Sub-section headings, dialog titles",
-    category: "platform",
+    category: "platform"
   },
   {
     name: "Heading 4",
@@ -66,9 +63,8 @@ const platformTokens: TypographyToken[] = [
     weight: 600,
     weightLabel: "SemiBold",
     lineHeight: "1.4",
-    fontFamily: "Inter",
     usage: "Card headings, sidebar titles",
-    category: "platform",
+    category: "platform"
   },
   {
     name: "Body",
@@ -78,9 +74,8 @@ const platformTokens: TypographyToken[] = [
     weight: 400,
     weightLabel: "Regular",
     lineHeight: "1.75",
-    fontFamily: "Inter",
     usage: "Paragraph text, descriptions",
-    category: "platform",
+    category: "platform"
   },
   {
     name: "Body Small / Label",
@@ -90,9 +85,8 @@ const platformTokens: TypographyToken[] = [
     weight: 500,
     weightLabel: "Medium",
     lineHeight: "1.43",
-    fontFamily: "Inter",
     usage: "Form labels, captions, metadata",
-    category: "platform",
+    category: "platform"
   },
   {
     name: "Button",
@@ -102,9 +96,8 @@ const platformTokens: TypographyToken[] = [
     weight: 500,
     weightLabel: "Medium",
     lineHeight: "1.5",
-    fontFamily: "Inter",
     usage: "Button labels, CTAs",
-    category: "platform",
+    category: "platform"
   },
   {
     name: "Input",
@@ -114,9 +107,8 @@ const platformTokens: TypographyToken[] = [
     weight: 400,
     weightLabel: "Regular",
     lineHeight: "1.5",
-    fontFamily: "Inter",
     usage: "Form inputs, text fields",
-    category: "platform",
+    category: "platform"
   },
 ];
 
@@ -129,9 +121,8 @@ const userContentTokens: TypographyToken[] = [
     weight: 600,
     weightLabel: "SemiBold",
     lineHeight: "1.2",
-    fontFamily: "Inter",
     usage: "Space names, post titles",
-    category: "user-content",
+    category: "user-content"
   },
   {
     name: "User Subtitle",
@@ -141,9 +132,8 @@ const userContentTokens: TypographyToken[] = [
     weight: 600,
     weightLabel: "SemiBold",
     lineHeight: "1.33",
-    fontFamily: "Inter",
     usage: "Subspace names, section headers in posts",
-    category: "user-content",
+    category: "user-content"
   },
   {
     name: "User Body",
@@ -153,9 +143,8 @@ const userContentTokens: TypographyToken[] = [
     weight: 400,
     weightLabel: "Regular",
     lineHeight: "1.75",
-    fontFamily: "Inter",
     usage: "Post content, descriptions, comments",
-    category: "user-content",
+    category: "user-content"
   },
   {
     name: "User Caption",
@@ -165,9 +154,8 @@ const userContentTokens: TypographyToken[] = [
     weight: 400,
     weightLabel: "Regular",
     lineHeight: "1.43",
-    fontFamily: "Inter",
     usage: "Timestamps, author names, tags",
-    category: "user-content",
+    category: "user-content"
   },
   {
     name: "User Small",
@@ -177,9 +165,8 @@ const userContentTokens: TypographyToken[] = [
     weight: 400,
     weightLabel: "Regular",
     lineHeight: "1.5",
-    fontFamily: "Inter",
     usage: "Badge text, counters, fine print",
-    category: "user-content",
+    category: "user-content"
   },
 ];
 
@@ -192,21 +179,21 @@ function TypeScaleBar({ token }: { token: TypographyToken }) {
   return (
     <div className="flex items-center gap-4 py-3 border-b border-border/50 last:border-0">
       <div className="w-28 shrink-0">
-        <p className="text-sm font-medium text-foreground">{token.name}</p>
-        <p className="text-xs text-muted-foreground">&lt;{token.element}&gt;</p>
+        <p className="text-body-emphasis text-foreground">{token.name}</p>
+        <p className="text-caption text-muted-foreground">&lt;{token.element}&gt;</p>
       </div>
       <div className="flex-1 min-w-0">
         <div
           className="h-6 rounded bg-primary/10 border border-primary/20 flex items-center px-2"
           style={{ width: `${Math.max(widthPercent, 20)}%` }}
         >
-          <span className="text-xs text-primary font-medium truncate">
+          <span className="text-caption text-primary font-medium truncate">
             {token.size} / {token.weightLabel}
           </span>
         </div>
       </div>
       <div className="w-16 text-right shrink-0">
-        <span className="text-xs text-muted-foreground">LH {token.lineHeight}</span>
+        <span className="text-caption text-muted-foreground">LH {token.lineHeight}</span>
       </div>
     </div>
   );
@@ -219,12 +206,12 @@ function TypePreview({ token }: { token: TypographyToken }) {
     <div className="py-4 border-b border-border/50 last:border-0">
       <div className="flex items-baseline justify-between mb-2">
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-caption">
             {token.element}
           </Badge>
-          <span className="text-sm font-medium">{token.name}</span>
+          <span className="text-body-emphasis">{token.name}</span>
         </div>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-caption text-muted-foreground">
           {token.size} · {token.weightLabel} ({token.weight}) · {token.fontFamily}
         </span>
       </div>
@@ -233,13 +220,13 @@ function TypePreview({ token }: { token: TypographyToken }) {
           fontSize: token.size,
           fontWeight: token.weight,
           lineHeight: token.lineHeight,
-          fontFamily: `'${token.fontFamily}', sans-serif`,
+          fontFamily: `'${token.fontFamily}', sans-serif`
         }}
         className="text-foreground"
       >
         The quick brown fox jumps over the lazy dog
       </div>
-      <p className="text-xs text-muted-foreground mt-1">{token.usage}</p>
+      <p className="text-caption text-muted-foreground mt-1">{token.usage}</p>
     </div>
   );
 }
@@ -249,7 +236,7 @@ function TypePreview({ token }: { token: TypographyToken }) {
 function TypeTable({ tokens }: { tokens: TypographyToken[] }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-body">
         <thead>
           <tr className="border-b border-border text-left">
             <th className="py-2 pr-4 font-medium text-muted-foreground">Name</th>
@@ -266,7 +253,7 @@ function TypeTable({ tokens }: { tokens: TypographyToken[] }) {
             <tr key={token.name} className="border-b border-border/50">
               <td className="py-2 pr-4 font-medium">{token.name}</td>
               <td className="py-2 pr-4">
-                <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{token.element}</code>
+                <code className="text-caption bg-muted px-1.5 py-0.5 rounded">{token.element}</code>
               </td>
               <td className="py-2 pr-4">{token.fontFamily}</td>
               <td className="py-2 pr-4">{token.size}</td>
@@ -294,7 +281,7 @@ export default function TypographySystemPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/design-system"
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1 text-body text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Design System
@@ -302,7 +289,7 @@ export default function TypographySystemPage() {
             <Separator orientation="vertical" className="h-5" />
             <div className="flex items-center gap-2">
               <Type className="w-5 h-5 text-primary" />
-              <h1 className="text-xl font-semibold">Typography System</h1>
+              <h1 className="text-section-title">Typography System</h1>
             </div>
           </div>
           <Badge variant="secondary">Inter · {platformTokens.length + userContentTokens.length} styles</Badge>
@@ -321,7 +308,7 @@ export default function TypographySystemPage() {
 
         {/* Type Scale Overview */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Type Scale</h2>
+          <h2 className="text-page-title font-semibold mb-4">Type Scale</h2>
           <Card>
             <CardContent className="pt-6">
               {[...platformTokens].sort((a, b) => b.sizePx - a.sizePx).map((token) => (
@@ -336,7 +323,7 @@ export default function TypographySystemPage() {
         {/* Detailed view with tabs */}
         <Tabs defaultValue="platform" className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">Style Reference</h2>
+            <h2 className="text-page-title font-semibold">Style Reference</h2>
             <TabsList>
               <TabsTrigger value="platform">Platform UI</TabsTrigger>
               <TabsTrigger value="user-content">User Content</TabsTrigger>
@@ -406,13 +393,13 @@ export default function TypographySystemPage() {
 
         {/* Design Decisions */}
         <section>
-          <h2 className="text-2xl font-semibold mb-4">Design Decisions</h2>
+          <h2 className="text-page-title font-semibold mb-4">Design Decisions</h2>
           <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Font Family</CardTitle>
+                <CardTitle className="text-subheader font-normal">Font Family</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
+              <CardContent className="text-body text-muted-foreground">
                 <p className="font-semibold text-foreground mb-1">Inter</p>
                 Single typeface across all UI and content. Optimized for screen readability
                 with optical sizing and variable weight support (300–800).
@@ -420,9 +407,9 @@ export default function TypographySystemPage() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Scale Ratio</CardTitle>
+                <CardTitle className="text-subheader font-normal">Scale Ratio</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
+              <CardContent className="text-body text-muted-foreground">
                 <p className="font-semibold text-foreground mb-1">Major Third (~1.25×)</p>
                 Sizes progress: 12 → 14 → 16 → 20 → 24 → 30 → 48px.
                 Provides clear hierarchy without extreme jumps.
@@ -430,9 +417,9 @@ export default function TypographySystemPage() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Weight Strategy</CardTitle>
+                <CardTitle className="text-subheader font-normal">Weight Strategy</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
+              <CardContent className="text-body text-muted-foreground">
                 <p className="font-semibold text-foreground mb-1">3 weights max</p>
                 Regular (400) for body, Medium (500) for interactive/labels,
                 SemiBold (600) for headings. ExtraBold (800) reserved for page titles only.

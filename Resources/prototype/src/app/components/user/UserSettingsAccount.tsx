@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { CreditCard, Layers, Bot, FileBox, Home, AlertTriangle, Plus, MoreVertical, Settings } from "lucide-react";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Badge } from "@/crd/primitives/badge";
+import { Button } from "@/crd/primitives/button";
+import { Card, CardContent, CardHeader } from "@/crd/primitives/card";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 import { Link } from "react-router";
 

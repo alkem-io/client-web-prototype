@@ -1,18 +1,17 @@
-import { Outlet } from "react-router";
-import { Header } from "@/app/components/layout/Header";
-import { Footer } from "@/app/components/layout/Footer";
+import { Outlet } from 'react-router';
+import { Footer } from '@/app/components/layout/Footer';
+import { Header } from '@/app/components/layout/Header';
 
+/** Space pages: same shell as MainLayout — see the note there on why there is
+ *  no wrapper element. */
 export function SpaceLayout() {
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <>
       <Header />
-
-      {/* Page content — full-width, no sidebar */}
       <main className="flex-1 flex flex-col">
         <Outlet />
       </main>
-
       <Footer />
-    </div>
+    </>
   );
 }

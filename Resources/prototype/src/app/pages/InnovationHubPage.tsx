@@ -1,10 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router";
 import { Settings, Search, X, ChevronDown, SlidersHorizontal, FolderOpen, Bot, Layers } from "lucide-react";
-import { Input } from "@/app/components/ui/input";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Input } from "@/crd/primitives/input";
+import { Button } from "@/crd/primitives/button";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 
 import {
   DropdownMenu,
@@ -12,8 +12,8 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import { SpaceCard, SpaceCardSkeleton, type SpaceCardData } from "@/app/components/space/SpaceCard";
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
 
@@ -23,7 +23,7 @@ const hubData = {
   name: "VNG Innovation Hub",
   tagline: "innovatie met en door de gemeentes",
   bannerImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920",
-  description: `De <strong>open innovatiehub</strong> voor <strong>samenwerking tussen en voor de gemeentes</strong> in Nederland.<br/>Hier vind je communities die werken aan nieuwe vormen van publieke dienstverlening die aansluiten bij de leefwereld van mensen.<br/>Een plek waar de <strong>overheid, markt, wetenschap</strong> en <strong>samenleving</strong> samen kunnen werken aan <em>maatschappelijke missies</em>.`,
+  description: `De <strong>open innovatiehub</strong> voor <strong>samenwerking tussen en voor de gemeentes</strong> in Nederland.<br/>Hier vind je communities die werken aan nieuwe vormen van publieke dienstverlening die aansluiten bij de leefwereld van mensen.<br/>Een plek waar de <strong>overheid, markt, wetenschap</strong> en <strong>samenleving</strong> samen kunnen werken aan <em>maatschappelijke missies</em>.`
 };
 
 const hubSpaces: SpaceCardData[] = [
@@ -42,7 +42,7 @@ const hubSpaces: SpaceCardData[] = [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=1", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
       { name: "IP", avatar: "https://i.pravatar.cc/40?img=3", type: "org" },
-    ],
+    ]
   },
   {
     id: "2",
@@ -58,7 +58,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=5", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "3",
@@ -75,7 +75,7 @@ const hubSpaces: SpaceCardData[] = [
       { name: "User1", avatar: "https://i.pravatar.cc/40?img=10", type: "person" },
       { name: "User2", avatar: "https://i.pravatar.cc/40?img=12", type: "person" },
       { name: "User3", avatar: "https://i.pravatar.cc/40?img=14", type: "person" },
-    ],
+    ]
   },
   {
     id: "4",
@@ -91,7 +91,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=15", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "5",
@@ -107,7 +107,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=20", type: "person" },
       { name: "User2", avatar: "https://i.pravatar.cc/40?img=22", type: "person" },
-    ],
+    ]
   },
   {
     id: "6",
@@ -124,7 +124,7 @@ const hubSpaces: SpaceCardData[] = [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=25", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
       { name: "User3", avatar: "https://i.pravatar.cc/40?img=27", type: "person" },
-    ],
+    ]
   },
   {
     id: "7",
@@ -139,7 +139,7 @@ const hubSpaces: SpaceCardData[] = [
     memberCount: 21,
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=30", type: "person" },
-    ],
+    ]
   },
   {
     id: "8",
@@ -156,7 +156,7 @@ const hubSpaces: SpaceCardData[] = [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=33", type: "person" },
       { name: "User2", avatar: "https://i.pravatar.cc/40?img=35", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "9",
@@ -172,7 +172,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=40", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "10",
@@ -188,7 +188,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=42", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "11",
@@ -203,7 +203,7 @@ const hubSpaces: SpaceCardData[] = [
     memberCount: 31,
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=44", type: "person" },
-    ],
+    ]
   },
   {
     id: "12",
@@ -219,7 +219,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=46", type: "person" },
       { name: "User2", avatar: "https://i.pravatar.cc/40?img=48", type: "person" },
-    ],
+    ]
   },
   {
     id: "13",
@@ -235,7 +235,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=50", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "14",
@@ -250,7 +250,7 @@ const hubSpaces: SpaceCardData[] = [
     memberCount: 67,
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=52", type: "person" },
-    ],
+    ]
   },
   {
     id: "15",
@@ -266,7 +266,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=54", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "16",
@@ -281,7 +281,7 @@ const hubSpaces: SpaceCardData[] = [
     memberCount: 41,
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=56", type: "person" },
-    ],
+    ]
   },
   {
     id: "17",
@@ -298,7 +298,7 @@ const hubSpaces: SpaceCardData[] = [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=58", type: "person" },
       { name: "User2", avatar: "https://i.pravatar.cc/40?img=60", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "18",
@@ -313,7 +313,7 @@ const hubSpaces: SpaceCardData[] = [
     memberCount: 23,
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=62", type: "person" },
-    ],
+    ]
   },
   {
     id: "19",
@@ -329,7 +329,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=64", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "20",
@@ -344,7 +344,7 @@ const hubSpaces: SpaceCardData[] = [
     memberCount: 32,
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=66", type: "person" },
-    ],
+    ]
   },
   {
     id: "21",
@@ -359,7 +359,7 @@ const hubSpaces: SpaceCardData[] = [
     memberCount: 18,
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=68", type: "person" },
-    ],
+    ]
   },
   {
     id: "22",
@@ -375,7 +375,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=70", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
   {
     id: "23",
@@ -390,7 +390,7 @@ const hubSpaces: SpaceCardData[] = [
     memberCount: 39,
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=72", type: "person" },
-    ],
+    ]
   },
   {
     id: "24",
@@ -406,7 +406,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=74", type: "person" },
       { name: "User2", avatar: "https://i.pravatar.cc/40?img=76", type: "person" },
-    ],
+    ]
   },
   {
     id: "25",
@@ -422,7 +422,7 @@ const hubSpaces: SpaceCardData[] = [
     leads: [
       { name: "User", avatar: "https://i.pravatar.cc/40?img=78", type: "person" },
       { name: "VNG", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/VNG_logo.svg/40px-VNG_logo.svg.png", type: "org" },
-    ],
+    ]
   },
 ];
 
@@ -436,7 +436,7 @@ const hubPacks = [
     image: "https://images.unsplash.com/photo-1554103210-26d928978fb5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
     initials: "GI",
     color: "bg-blue-100 text-blue-700",
-    tags: ["innovatie", "gemeenten", "processen"],
+    tags: ["innovatie", "gemeenten", "processen"]
   },
   {
     id: "p2",
@@ -446,7 +446,7 @@ const hubPacks = [
     image: "https://images.unsplash.com/photo-1631203924388-644782a70944?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
     initials: "DT",
     color: "bg-green-100 text-green-700",
-    tags: ["digitaal", "transformatie", "strategie"],
+    tags: ["digitaal", "transformatie", "strategie"]
   },
   {
     id: "p3",
@@ -456,7 +456,7 @@ const hubPacks = [
     image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
     initials: "BP",
     color: "bg-purple-100 text-purple-700",
-    tags: ["participatie", "inwoners", "beleid"],
+    tags: ["participatie", "inwoners", "beleid"]
   },
   {
     id: "p4",
@@ -466,7 +466,7 @@ const hubPacks = [
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
     initials: "DG",
     color: "bg-orange-100 text-orange-700",
-    tags: ["data", "governance", "ethiek"],
+    tags: ["data", "governance", "ethiek"]
   },
 ];
 
@@ -478,7 +478,7 @@ const hubVCs = [
     description: "AI-assistent gespecialiseerd in gemeentelijke regelgeving, VNG-resoluties en best practices.",
     avatar: null,
     initials: "VK",
-    tags: ["kennisbank", "regelgeving"],
+    tags: ["kennisbank", "regelgeving"]
   },
   {
     id: "vc2",
@@ -486,7 +486,7 @@ const hubVCs = [
     description: "Helpt gemeenten bij het vinden en aanvragen van relevante subsidies en fondsen.",
     avatar: null,
     initials: "SN",
-    tags: ["subsidies", "financiering"],
+    tags: ["subsidies", "financiering"]
   },
   {
     id: "vc3",
@@ -494,7 +494,7 @@ const hubVCs = [
     description: "Automatische analyse van gemeentelijke datasets en generatie van inzichten en rapportages.",
     avatar: null,
     initials: "DA",
-    tags: ["data", "analyse", "rapportage"],
+    tags: ["data", "analyse", "rapportage"]
   },
   {
     id: "vc4",
@@ -502,7 +502,7 @@ const hubVCs = [
     description: "Ondersteunt bij aanbestedingen en inkooptrajecten conform gemeentelijke richtlijnen.",
     avatar: null,
     initials: "IA",
-    tags: ["inkoop", "aanbesteding"],
+    tags: ["inkoop", "aanbesteding"]
   },
   {
     id: "vc5",
@@ -510,7 +510,7 @@ const hubVCs = [
     description: "Helpt bij het schrijven van heldere inwonercommunicatie en beleidsteksten.",
     avatar: null,
     initials: "CC",
-    tags: ["communicatie", "tekst"],
+    tags: ["communicatie", "tekst"]
   },
   {
     id: "vc6",
@@ -518,7 +518,7 @@ const hubVCs = [
     description: "Adviseert over AVG-compliance, DPIA's en privacybeleid voor gemeentelijke systemen.",
     avatar: null,
     initials: "PO",
-    tags: ["privacy", "AVG", "compliance"],
+    tags: ["privacy", "AVG", "compliance"]
   },
 ];
 
@@ -639,7 +639,7 @@ export default function InnovationHubPage() {
           className="text-caption"
           style={{
             color: "var(--muted-foreground)",
-            lineHeight: 1.6,
+            lineHeight: 1.6
           }}
           dangerouslySetInnerHTML={{ __html: hubData.description }}
         />
@@ -660,7 +660,7 @@ export default function InnovationHubPage() {
                 left: 14,
                 width: 16,
                 height: 16,
-                color: "var(--muted-foreground)",
+                color: "var(--muted-foreground)"
               }}
             />
             <Input
@@ -677,7 +677,7 @@ export default function InnovationHubPage() {
                 background: "var(--input-background)",
                 border: "1px solid var(--border)",
                 borderRadius: "var(--radius)",
-                color: "var(--foreground)",
+                color: "var(--foreground)"
               }}
             />
             {searchQuery && (
@@ -704,7 +704,7 @@ export default function InnovationHubPage() {
                   height: 40,
                   borderRadius: "var(--radius)",
                   color: activeFilterCount > 0 ? "var(--primary)" : "var(--foreground)",
-                  borderColor: activeFilterCount > 0 ? "var(--primary)" : "var(--border)",
+                  borderColor: activeFilterCount > 0 ? "var(--primary)" : "var(--border)"
                 }}
               >
                 <SlidersHorizontal style={{ width: 14, height: 14 }} />
@@ -718,7 +718,7 @@ export default function InnovationHubPage() {
                       background: "var(--primary)",
                       color: "var(--primary-foreground)",
                       borderRadius: "999px",
-                      marginLeft: 2,
+                      marginLeft: 2
                     }}
                   >
                     {activeFilterCount}
@@ -731,7 +731,7 @@ export default function InnovationHubPage() {
                 className="text-badge font-bold uppercase"
                 style={{
                   letterSpacing: "0.08em",
-                  color: "var(--muted-foreground)",
+                  color: "var(--muted-foreground)"
                 }}
               >
                 Privacy
@@ -765,7 +765,7 @@ export default function InnovationHubPage() {
                       className="w-full justify-start gap-2 text-control"
                       style={{
                         color: "var(--destructive)",
-                        height: 32,
+                        height: 32
                       }}
                     >
                       <X style={{ width: 12, height: 12 }} />
@@ -789,7 +789,7 @@ export default function InnovationHubPage() {
                   padding: "4px 10px",
                   borderRadius: "999px",
                   background: "var(--secondary)",
-                  color: "var(--secondary-foreground)",
+                  color: "var(--secondary-foreground)"
                 }}
                 onClick={() => setSearchQuery("")}
               >
@@ -805,7 +805,7 @@ export default function InnovationHubPage() {
                   padding: "4px 10px",
                   borderRadius: "999px",
                   background: "var(--secondary)",
-                  color: "var(--secondary-foreground)",
+                  color: "var(--secondary-foreground)"
                 }}
                 onClick={() => setPrivacyFilter("all")}
               >
@@ -843,7 +843,7 @@ export default function InnovationHubPage() {
             <div
               className="grid gap-4"
               style={{
-                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))"
               }}
             >
               {displayedSpaces.map((space) => (
@@ -870,7 +870,7 @@ export default function InnovationHubPage() {
                     height: 40,
                     paddingLeft: 24,
                     paddingRight: 24,
-                    borderRadius: "var(--radius)",
+                    borderRadius: "var(--radius)"
                   }}
                 >
                   <ChevronDown style={{ width: 16, height: 16 }} />
@@ -887,7 +887,7 @@ export default function InnovationHubPage() {
               padding: "64px 24px",
               border: "1px dashed var(--border)",
               borderRadius: "calc(var(--radius) + 4px)",
-              background: "var(--muted)",
+              background: "var(--muted)"
             }}
           >
             <FolderOpen
@@ -896,14 +896,14 @@ export default function InnovationHubPage() {
                 height: 40,
                 color: "var(--muted-foreground)",
                 opacity: 0.5,
-                marginBottom: 12,
+                marginBottom: 12
               }}
             />
             <h3
               className="text-subheader font-semibold"
               style={{
                 color: "var(--foreground)",
-                marginBottom: 4,
+                marginBottom: 4
               }}
             >
               No spaces found
@@ -913,7 +913,7 @@ export default function InnovationHubPage() {
               style={{
                 color: "var(--muted-foreground)",
                 maxWidth: 360,
-                marginBottom: 16,
+                marginBottom: 16
               }}
             >
               Try adjusting your search or filter criteria
@@ -963,7 +963,7 @@ export default function InnovationHubPage() {
                   style={{
                     background: "rgba(0,0,0,0.6)",
                     color: "#fff",
-                    fontSize: "var(--text-caption)",
+                    fontSize: "var(--text-caption)"
                   }}
                 >
                   {pack.templateCount} templates
@@ -973,7 +973,7 @@ export default function InnovationHubPage() {
               <div style={{ padding: 16 }}>
                 <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
                   <div
-                    className={`flex items-center justify-center rounded-md text-xs font-medium ${pack.color}`}
+                    className={`flex items-center justify-center rounded-md text-caption ${pack.color}`}
                     style={{ width: 28, height: 28, fontSize: 11 }}
                   >
                     {pack.initials}
@@ -992,7 +992,7 @@ export default function InnovationHubPage() {
                   style={{
                     fontSize: "var(--text-caption)",
                     color: "var(--muted-foreground)",
-                    marginBottom: 10,
+                    marginBottom: 10
                   }}
                 >
                   {pack.description}
@@ -1064,7 +1064,7 @@ export default function InnovationHubPage() {
                   style={{
                     fontSize: "var(--text-caption)",
                     color: "var(--muted-foreground)",
-                    marginBottom: 8,
+                    marginBottom: 8
                   }}
                 >
                   {vc.description}

@@ -1,5 +1,5 @@
 import { Presentation } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/crd/lib/utils';
 import { ReactionBar } from '@/app/components/space/PostReactions';
 
 type ContributionWhiteboardCardProps = {
@@ -20,7 +20,7 @@ export function ContributionWhiteboardCard({
   reactionId,
   reactionsEnabled = true,
   onClick,
-  className,
+  className
 }: ContributionWhiteboardCardProps) {
   return (
     // The reaction bar is a sibling of the card, not a child: the card itself is

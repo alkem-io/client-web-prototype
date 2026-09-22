@@ -7,14 +7,14 @@ import {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  BreadcrumbEllipsis,
-} from "@/app/components/ui/breadcrumb";
+  BreadcrumbEllipsis
+} from "@/crd/primitives/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import { useBreadcrumbs, type BreadcrumbSegment } from "@/app/hooks/useBreadcrumbs";
 import { useIsMobile } from "@/app/components/ui/use-mobile";
 

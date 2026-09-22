@@ -1,0 +1,97 @@
+import { useTranslation } from 'react-i18next';
+import { getInitials } from '@/crd/lib/getInitials';
+import { cn } from '@/crd/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
+import { Skeleton } from '@/crd/primitives/skeleton';
+
+type PendingInvitationCardData = {
+  id: string;
+  spaceName: string;
+  spaceAvatarUrl?: string;
+  senderName: string;
+  welcomeMessageExcerpt?: string;
+  timeElapsed: string;
+  /** Deterministic accent colour, shown as the avatar fallback when
+   * `spaceAvatarUrl` is missing. */
+  color?: string;
+  /**
+   * Set for an organization invitation — the invited organization's name.
+   * When present, the card leads with this (the decision-relevant fact for
+   * an org admin skimming several invitations) and demotes `spaceName` to
+   * the subtitle row `senderName` normally occupies.
+   */
+  organizationName?: string;
+};
+
+type PendingInvitationCardProps = {
+  invitation: PendingInvitationCardData;
+  onClick?: () => void;
+  className?: string;
+};
+
+function PendingInvitationCard({ invitation, onClick, className }: PendingInvitationCardProps) {
+  const primaryLabel = invitation.organizationName ?? invitation.spaceName;
+  const secondaryLabel = invitation.organizationName ? invitation.spaceName : invitation.senderName;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'w-full min-h-11 rounded-lg border border-border bg-card p-4 text-left transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none cursor-pointer',
+        'flex items-center gap-3',
+        className
+      )}
+    >
+      {/* The avatar is always the Space's card banner, on both the Space and the
+          organization variant of this card — so it is described by the Space name, never
+          by `primaryLabel` (which is the organization on an org invitation). */}
+      <Avatar className="size-10 shrink-0 rounded-lg">
+        {invitation.spaceAvatarUrl ? (
+          <AvatarImage src={invitation.spaceAvatarUrl} alt={invitation.spaceName} className="rounded-lg object-cover" />
+        ) : null}
+        <AvatarFallback
+          className={cn('rounded-lg text-caption', invitation.color && 'text-white')}
+          color={invitation.color}
+        >
+          {/* Same rule as the `alt` above: this slot stands in for the Space's
+              card banner when there isn't one, so it must carry the SPACE's
+              initials. Using `primaryLabel` made one widget show two different
+              identities for the same org invitation — the Space when the Space
+              had a banner, the organization when it did not. */}
+          {getInitials(invitation.spaceName)}
+        </AvatarFallback>
+      </Avatar>
+
+      <div className="flex-1 min-w-0">
+        <p className="text-card-title leading-tight truncate">{primaryLabel}</p>
+        <p className="text-caption text-muted-foreground mt-0.5 truncate">{secondaryLabel}</p>
+        {invitation.welcomeMessageExcerpt && (
+          <p className="text-caption text-muted-foreground mt-0.5 line-clamp-1">{invitation.welcomeMessageExcerpt}</p>
+        )}
+      </div>
+
+      <span className="text-caption text-muted-foreground shrink-0">{invitation.timeElapsed}</span>
+    </button>
+  );
+}
+
+function PendingInvitationCardSkeleton() {
+  const { t } = useTranslation('crd-dashboard');
+  return (
+    <output
+      aria-label={t('pendingMemberships.loadingInvitation')}
+      className="flex rounded-lg border border-border bg-card p-4 items-center gap-3"
+    >
+      <Skeleton className="size-10 rounded-lg shrink-0" />
+      <div className="flex-1 space-y-1.5">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-3 w-24" />
+      </div>
+      <Skeleton className="h-3 w-16 shrink-0" />
+    </output>
+  );
+}
+
+export { PendingInvitationCard, PendingInvitationCardSkeleton };
+export type { PendingInvitationCardData, PendingInvitationCardProps };

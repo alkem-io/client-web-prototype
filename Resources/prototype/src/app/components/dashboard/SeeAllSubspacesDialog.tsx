@@ -2,8 +2,8 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
+  DialogTitle
+} from "@/crd/primitives/dialog";
 import { MembershipItem } from "@/app/components/memberships/membershipData";
 import { SpaceCard, SpaceCardData } from "@/app/components/space/SpaceCard";
 
@@ -30,7 +30,7 @@ function toSpaceCardData(sub: MembershipItem, _parentSlug: string): SpaceCardDat
     leads: [
       { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&h=64", type: "person" },
       { name: "Mike Ross", avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=64&h=64", type: "person" },
-    ],
+    ]
   };
 }
 
@@ -39,7 +39,7 @@ export function SeeAllSubspacesDialog({
   onOpenChange,
   spaceName,
   spaceSlug = "",
-  subspaces,
+  subspaces
 }: SeeAllSubspacesDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -10,19 +10,19 @@ import {
   Filter,
   Settings,
   Trash2,
-  MailOpen,
+  MailOpen
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Button } from "@/crd/primitives/button";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
+import { cn } from "@/crd/lib/utils";
 
 type NotificationType = "comment" | "invite" | "mention" | "system";
 
@@ -48,7 +48,7 @@ const NOTIFICATIONS: Notification[] = [
     time: "2 minutes ago",
     read: false,
     type: "comment",
-    space: "Green Energy Space",
+    space: "Green Energy Space"
   },
   {
     id: "2",
@@ -58,7 +58,7 @@ const NOTIFICATIONS: Notification[] = [
     target: "Urban Mobility Lab",
     time: "1 hour ago",
     read: false,
-    type: "invite",
+    type: "invite"
   },
   {
     id: "3",
@@ -69,7 +69,7 @@ const NOTIFICATIONS: Notification[] = [
     time: "3 hours ago",
     read: false,
     type: "mention",
-    space: "Sustainable Futures",
+    space: "Sustainable Futures"
   },
   {
     id: "4",
@@ -79,7 +79,7 @@ const NOTIFICATIONS: Notification[] = [
     target: "New template library features are live",
     time: "5 hours ago",
     read: true,
-    type: "system",
+    type: "system"
   },
   {
     id: "6",
@@ -89,7 +89,7 @@ const NOTIFICATIONS: Notification[] = [
     target: "Design Thinking Practice",
     time: "Yesterday",
     read: true,
-    type: "invite",
+    type: "invite"
   },
   {
     id: "7",
@@ -100,7 +100,7 @@ const NOTIFICATIONS: Notification[] = [
     time: "2 days ago",
     read: true,
     type: "comment",
-    space: "Urban Development Network",
+    space: "Urban Development Network"
   },
   {
     id: "8",
@@ -111,7 +111,7 @@ const NOTIFICATIONS: Notification[] = [
     time: "3 days ago",
     read: true,
     type: "mention",
-    space: "Health Innovation Alliance",
+    space: "Health Innovation Alliance"
   },
 ];
 
@@ -119,7 +119,7 @@ const TYPE_ICON: Record<NotificationType, React.ReactNode> = {
   comment: <MessageSquare className="w-3 h-3" />,
   invite: <UserPlus className="w-3 h-3" />,
   mention: <Check className="w-3 h-3" />,
-  system: <Bell className="w-3 h-3" />,
+  system: <Bell className="w-3 h-3" />
 };
 
 export default function NotificationsPage() {
@@ -150,9 +150,8 @@ export default function NotificationsPage() {
       className="w-full px-6 md:px-8"
       style={{
         paddingTop: 32,
-        paddingBottom: 64,
-        fontFamily: "'Inter', sans-serif",
-      }}
+        paddingBottom: 64
+        }}
     >
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-start-2 lg:col-span-10">
@@ -169,7 +168,7 @@ export default function NotificationsPage() {
             className="text-body"
             style={{
               color: "var(--muted-foreground)",
-              marginTop: 4,
+              marginTop: 4
             }}
           >
             {unreadCount > 0
@@ -220,10 +219,7 @@ export default function NotificationsPage() {
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground hover:bg-accent"
             )}
-            style={{
-              fontFamily: "'Inter', sans-serif",
-            }}
-          >
+            >
             {f.label}
           </button>
         ))}
@@ -237,10 +233,7 @@ export default function NotificationsPage() {
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-muted-foreground hover:bg-accent"
             )}
-            style={{
-              fontFamily: "'Inter', sans-serif",
-            }}
-          >
+            >
             <MailOpen className="w-3.5 h-3.5" />
             Unread only
           </button>
@@ -258,7 +251,7 @@ export default function NotificationsPage() {
                 !n.read && "bg-primary/5"
               )}
               style={{
-                borderBottom: "1px solid var(--border)",
+                borderBottom: "1px solid var(--border)"
               }}
               onClick={() => toggleRead(n.id)}
             >
@@ -268,7 +261,7 @@ export default function NotificationsPage() {
                   user={{
                     name: n.author,
                     avatarUrl: n.avatar,
-                    initials: n.author.substring(0, 2).toUpperCase(),
+                    initials: n.author.substring(0, 2).toUpperCase()
                   }}
                 >
                   <button type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full">
@@ -287,7 +280,7 @@ export default function NotificationsPage() {
                   style={{
                     background: "var(--primary)",
                     color: "var(--primary-foreground)",
-                    border: "2px solid var(--background)",
+                    border: "2px solid var(--background)"
                   }}
                 >
                   {TYPE_ICON[n.type]}
@@ -299,9 +292,8 @@ export default function NotificationsPage() {
                 <p
                   className="text-body leading-snug"
                   style={{
-                    color: "var(--foreground)",
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    color: "var(--foreground)"
+                    }}
                 >
                   <span className="font-semibold">{n.author}</span>{" "}
                   {n.action}{" "}
@@ -313,9 +305,8 @@ export default function NotificationsPage() {
                   <span
                     className="flex items-center gap-1 text-caption"
                     style={{
-                      color: "var(--muted-foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--muted-foreground)"
+                      }}
                   >
                     <Clock className="w-3 h-3" />
                     {n.time}
@@ -324,10 +315,7 @@ export default function NotificationsPage() {
                     <Badge
                       variant="secondary"
                       className="text-caption"
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                      }}
-                    >
+                      >
                       {n.space}
                     </Badge>
                   )}
@@ -361,9 +349,8 @@ export default function NotificationsPage() {
             <p
               className="text-body"
               style={{
-                color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--muted-foreground)"
+                }}
             >
               {showUnreadOnly
                 ? "No unread notifications"

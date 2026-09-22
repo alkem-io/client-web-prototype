@@ -5,10 +5,10 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
-} from "@/app/components/ui/dialog";
+  DialogClose
+} from "@/crd/primitives/dialog";
 import { X } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { CreateSpaceForm } from "../create-space/CreateSpaceForm";
 import { useState } from "react";
 
@@ -19,7 +19,7 @@ interface CreateSpaceDialogProps {
 
 export function CreateSpaceDialog({
   open,
-  onOpenChange,
+  onOpenChange
 }: CreateSpaceDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleClose = () => {

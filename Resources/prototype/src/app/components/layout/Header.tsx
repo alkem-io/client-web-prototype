@@ -15,22 +15,22 @@ import {
   Check,
   UserPlus,
   Moon,
-  Sun,
+  Sun
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
+import { cn } from "@/crd/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Button } from "@/crd/primitives/button";
+import { Badge } from "@/crd/primitives/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import { useSearch } from "@/app/contexts/SearchContext";
-import { useGridOverlay } from "@/app/contexts/GridOverlayContext";
+import { useGridOverlay } from "@/crd/hooks/useGridOverlay";
 import { useNotifications } from "@/app/contexts/NotificationsContext";
 import { useMessages } from "@/app/contexts/MessagesContext";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
@@ -54,7 +54,7 @@ const PREVIEW_MESSAGES = [
 
 export function Header({
   className,
-  onMenuClick,
+  onMenuClick
 }: {
   className?: string;
   onMenuClick?: () => void;
@@ -109,7 +109,7 @@ export function Header({
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
         borderRadius: "8px",
-        padding: "4px 12px",
+        padding: "4px 12px"
       }
     : undefined;
 
@@ -265,8 +265,7 @@ export function Header({
                 variant="secondary"
                 className="absolute -bottom-1 -right-1 px-1 py-0 h-4 border border-border text-badge"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
-                  lineHeight: "14px",
+                  lineHeight: "14px"
                 }}
               >
                 Beta

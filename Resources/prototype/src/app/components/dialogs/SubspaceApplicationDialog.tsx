@@ -5,28 +5,28 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Textarea } from "@/app/components/ui/textarea";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
+  DialogDescription
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Textarea } from "@/crd/primitives/textarea";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { Checkbox } from "@/crd/primitives/checkbox";
+import { Avatar, AvatarFallback } from "@/crd/primitives/avatar";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 import {
   ChevronRight, CheckCircle2, Building2,
   Users, MessageSquare, Zap,
-  type LucideIcon,
+  type LucideIcon
 } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 
 export interface FormFieldConstraints {
   maxLength?: number;
@@ -124,7 +124,7 @@ function deriveStepsFromConfig(formConfig: ApplicationFormConfig): StepConfig[] 
         title: question.label || "Question",
         icon: stepIcons[(question.order - 1) % stepIcons.length],
         iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-        fieldIds: [question.id],
+        fieldIds: [question.id]
       };
       steps.push(step);
     }
@@ -136,7 +136,7 @@ function deriveStepsFromConfig(formConfig: ApplicationFormConfig): StepConfig[] 
     title: "You're all set!",
     icon: CheckCircle2,
     iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-    fieldIds: [],
+    fieldIds: []
   });
 
   return steps;
@@ -148,35 +148,35 @@ const VNG_STEPS: StepConfig[] = [
     title: "Let's start with the basics",
     icon: Building2,
     iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-    fieldIds: ["title", "initiating-municipality"],
+    fieldIds: ["title", "initiating-municipality"]
   },
   {
     id: 1,
     title: "Who are the leads?",
     icon: Users,
     iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-    fieldIds: ["first-lead", "second-lead"],
+    fieldIds: ["first-lead", "second-lead"]
   },
   {
     id: 2,
     title: "Who else is in?",
     icon: Users,
     iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-    fieldIds: ["supporting-municipalities"],
+    fieldIds: ["supporting-municipalities"]
   },
   {
     id: 3,
     title: "What's the vision?",
     icon: Zap,
     iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-    fieldIds: ["who", "what-for", "why", "how"],
+    fieldIds: ["who", "what-for", "why", "how"]
   },
   {
     id: 4,
     title: "You're all set!",
     icon: CheckCircle2,
     iconColor: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
-    fieldIds: [],
+    fieldIds: []
   },
 ];
 
@@ -186,7 +186,7 @@ export function SubspaceApplicationDialog({
   formConfig,
   spaceName,
   currentUser,
-  onSuccess,
+  onSuccess
 }: SubspaceApplicationDialogProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
@@ -202,8 +202,8 @@ export function SubspaceApplicationDialog({
         "first-lead": {
           name: currentUser.name,
           email: currentUser.email,
-          organization: currentUser.organization || "",
-        },
+          organization: currentUser.organization || ""
+        }
       }));
     }
   }, [formConfig, currentUser, answers]);
@@ -283,7 +283,7 @@ export function SubspaceApplicationDialog({
   const handleAnswerChange = (fieldId: string, value: any) => {
     setAnswers((prev) => ({
       ...prev,
-      [fieldId]: value,
+      [fieldId]: value
     }));
     if (errors[fieldId]) {
       setErrors((prev) => {
@@ -405,7 +405,7 @@ function FormFieldRenderer({
   value,
   onChange,
   error,
-  currentUser,
+  currentUser
 }: FormFieldRendererProps) {
   const [searchMode, setSearchMode] = useState<"search" | "invite">("search");
   const [searchQuery, setSearchQuery] = useState("");
@@ -444,7 +444,7 @@ function FormFieldRenderer({
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={field.label}
-          className="bg-background h-12 text-base"
+          className="bg-background h-12 text-subheader font-normal"
         />
         {error && <p className="text-caption text-red-600">{error}</p>}
       </div>
@@ -460,7 +460,7 @@ function FormFieldRenderer({
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={field.label}
-          className="bg-background min-h-32 text-base"
+          className="bg-background min-h-32 text-subheader font-normal"
         />
         <div className="flex items-center justify-between">
           <div>
@@ -522,7 +522,7 @@ function FormFieldRenderer({
                 <p className="text-caption text-muted-foreground mt-1">Search our community members</p>
               </div>
               {searchMode === "search" && (
-                <div className="text-primary/60 text-lg">✓</div>
+                <div className="text-primary/60 text-subsection-title">✓</div>
               )}
             </div>
 
@@ -559,10 +559,10 @@ function FormFieldRenderer({
                           <AvatarFallback>{member.name.slice(0, 2).toUpperCase()}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                          <p className="text-body-emphasis text-sm">{member.name}</p>
+                          <p className="text-body-emphasis text-body">{member.name}</p>
                           <p className="text-caption text-muted-foreground">{member.email}</p>
                         </div>
-                        {value === member.id && <span className="text-primary text-lg">✓</span>}
+                        {value === member.id && <span className="text-primary text-subsection-title">✓</span>}
                       </button>
                     ))
                   ) : searchQuery ? (
@@ -597,7 +597,7 @@ function FormFieldRenderer({
                 <p className="text-caption text-muted-foreground mt-1">They'll join Alkemio and this initiative</p>
               </div>
               {searchMode === "invite" && (
-                <div className="text-primary/60 text-lg">✓</div>
+                <div className="text-primary/60 text-subsection-title">✓</div>
               )}
             </div>
 
@@ -620,9 +620,9 @@ function FormFieldRenderer({
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-caption text-muted-foreground">Invite</p>
-                      <p className="text-body-emphasis text-sm truncate">{value}</p>
+                      <p className="text-body-emphasis text-body truncate">{value}</p>
                     </div>
-                    <span className="text-emerald-600 dark:text-emerald-400 text-lg">✓</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 text-subsection-title">✓</span>
                   </div>
                 )}
               </div>

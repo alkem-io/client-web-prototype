@@ -162,13 +162,13 @@ export function RichSubspaceCard({ subspace, className }: RichSubspaceCardProps)
             </div>
             <div className="flex flex-col gap-3">
               <div>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Why</span>
+                <span className="text-badge uppercase tracking-[0.06em] text-muted-foreground">Why</span>
                 <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
                   {subspace.why}
                 </p>
               </div>
               <div>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">Who</span>
+                <span className="text-badge uppercase tracking-[0.06em] text-muted-foreground">Who</span>
                 <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed text-muted-foreground line-clamp-2">
                   {subspace.who}
                 </p>

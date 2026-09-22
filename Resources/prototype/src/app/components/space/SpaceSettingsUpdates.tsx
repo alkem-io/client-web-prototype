@@ -1,11 +1,9 @@
 import { useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Separator } from "@/app/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Separator } from "@/crd/primitives/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
 import {
  Plus,
  Megaphone,
@@ -13,16 +11,17 @@ import {
  Calendar,
  MoreHorizontal,
  Send,
- Loader2,
+ Loader2
 } from "lucide-react";
 import {
  DropdownMenu,
  DropdownMenuTrigger,
  DropdownMenuContent,
- DropdownMenuItem,
-} from "@/app/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+ DropdownMenuItem
+} from "@/crd/primitives/dropdown-menu";
+import { cn } from "@/crd/lib/utils";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 interface Update {
  id: string;
@@ -46,7 +45,7 @@ const MOCK_UPDATES: Update[] = [
  date: "2024-02-18",
  title: "2024 Roadmap & Community Goals",
  body: "<p>We've finalized the 2024 roadmap for this space. Our three strategic pillars this year are:</p><ul><li><strong>Decarbonization:</strong> Accelerating the transition to net-zero energy systems</li><li><strong>Community Building:</strong> Growing from 150 to 500 active contributors</li><li><strong>Knowledge Sharing:</strong> Publishing quarterly insight reports</li></ul><p>Stay tuned for detailed challenge briefs rolling out over the next two weeks.</p>",
- pinned: true,
+ pinned: true
  },
  {
  id: "u2",
@@ -57,7 +56,7 @@ const MOCK_UPDATES: Update[] = [
  date: "2024-02-10",
  title: "New Subspaces Now Open",
  body: "<p>We've launched three new subspaces based on community feedback:</p><ol><li>Urban Mobility Lab — focused on sustainable city transport</li><li>Green Infrastructure — planning urban green spaces</li><li>Circular Economy — reducing waste through systemic design</li></ol><p>Each subspace has dedicated leads and an innovation flow already set up. Jump in!</p>",
- pinned: false,
+ pinned: false
  },
  {
  id: "u3",
@@ -68,7 +67,7 @@ const MOCK_UPDATES: Update[] = [
  date: "2024-01-15",
  title: "Welcome to the Green Energy Space!",
  body: "<p>Welcome to all new members! This space is our shared home for exploring sustainable energy solutions. Check out the knowledge base for background reading, and introduce yourself in the community feed.</p>",
- pinned: false,
+ pinned: false
  },
 ];
 
@@ -92,21 +91,12 @@ export function SpaceSettingsUpdates() {
  date: new Date().toISOString().slice(0, 10),
  title: newTitle,
  body: newBody,
- pinned: false,
+ pinned: false
  };
  setUpdates((prev) => [update, ...prev]);
  setNewTitle("");
  setNewBody("");
  setComposing(false);
- };
-
- const quillModules = {
- toolbar: [
- ["bold", "italic", "underline"],
- [{ list: "ordered" }, { list: "bullet" }],
- ["link"],
- ["clean"],
- ],
  };
 
  return (
@@ -120,12 +110,10 @@ export function SpaceSettingsUpdates() {
  >
  {composing ? (
  <div className="space-y-4">
- <div className="prose-editor">
- <ReactQuill
- theme="snow"
+ <div>
+ <MarkdownEditor
  value={newBody}
  onChange={setNewBody}
- modules={quillModules}
  placeholder="Write your update…"
  />
  </div>
@@ -173,7 +161,7 @@ export function SpaceSettingsUpdates() {
  )}
  style={{
  background: "var(--muted)",
- border: "1px solid var(--border)",
+ border: "1px solid var(--border)"
  }}
  >
  {/* Top row — author + badges + actions */}

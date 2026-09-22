@@ -10,11 +10,11 @@ import {
   useFormState,
   type ControllerProps,
   type FieldPath,
-  type FieldValues,
+  type FieldValues
 } from "react-hook-form";
 
-import { cn } from "./utils";
-import { Label } from "./label";
+import { cn } from "@/crd/lib/utils";
+import { Label } from "@/crd/primitives/label";
 
 const Form = FormProvider;
 
@@ -61,7 +61,7 @@ const useFormField = () => {
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
-    ...fieldState,
+    ...fieldState
   };
 };
 
@@ -164,5 +164,5 @@ export {
   FormControl,
   FormDescription,
   FormMessage,
-  FormField,
+  FormField
 };

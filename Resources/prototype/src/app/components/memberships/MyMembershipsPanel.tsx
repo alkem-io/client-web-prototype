@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
+import { Button } from "@/crd/primitives/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 import {
   Search,
   X,
@@ -17,15 +17,15 @@ import {
   Globe,
   Layers,
   SearchX,
-  ChevronRight,
+  ChevronRight
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Separator } from "@/app/components/ui/separator";
-import { Skeleton } from "@/app/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Separator } from "@/crd/primitives/separator";
+import { Skeleton } from "@/crd/primitives/skeleton";
 import {
   MOCK_MEMBERSHIPS,
   type MembershipItem,
-  type MembershipRole,
+  type MembershipRole
 } from "./membershipData";
 
 interface MyMembershipsPanelProps {
@@ -66,7 +66,7 @@ function initials(item: MembershipItem) {
 
 export function MyMembershipsPanel({
   open,
-  onOpenChange,
+  onOpenChange
 }: MyMembershipsPanelProps) {
   const navigate = useNavigate();
 
@@ -101,7 +101,7 @@ export function MyMembershipsPanel({
       parent,
       subspaces: subspaces
         .filter((s) => s.parentId === parent.id)
-        .sort((a, b) => a.name.localeCompare(b.name)),
+        .sort((a, b) => a.name.localeCompare(b.name))
     }));
   }, []);
 
@@ -219,7 +219,7 @@ export function MyMembershipsPanel({
             <div
               className="w-full h-full"
               style={{
-                background: `linear-gradient(135deg, ${parent.color}, color-mix(in srgb, ${parent.color} 40%, black))`,
+                background: `linear-gradient(135deg, ${parent.color}, color-mix(in srgb, ${parent.color} 40%, black))`
               }}
             />
           )}
@@ -299,7 +299,7 @@ export function MyMembershipsPanel({
         style={{
           background:
             "color-mix(in srgb, var(--foreground) 50%, transparent)",
-          backdropFilter: "blur(2px)",
+          backdropFilter: "blur(2px)"
         }}
         onClick={() => onOpenChange(false)}
         aria-hidden
@@ -318,7 +318,7 @@ export function MyMembershipsPanel({
             background: "var(--background)",
             border: "1px solid var(--border)",
             borderRadius: "var(--radius-xl)",
-            boxShadow: "var(--elevation-sm)",
+            boxShadow: "var(--elevation-sm)"
           }}
         >
           {/* Header */}

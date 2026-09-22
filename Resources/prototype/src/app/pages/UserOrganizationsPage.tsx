@@ -6,19 +6,19 @@ import {
   LogOut, ExternalLink, Building2, MapPin, 
   CheckCircle2, Globe, ShieldCheck, AlertCircle
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Input } from "@/app/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Button } from "@/crd/primitives/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/crd/primitives/card";
+import { Badge } from "@/crd/primitives/badge";
+import { Input } from "@/crd/primitives/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -26,10 +26,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/app/components/ui/dialog";
-import { Label } from "@/app/components/ui/label";
-import { cn } from "@/lib/utils";
+  DialogTrigger
+} from "@/crd/primitives/dialog";
+import { Label } from "@/crd/primitives/label";
+import { cn } from "@/crd/lib/utils";
 import { toast } from "sonner";
 
 export default function UserOrganizationsPage() {

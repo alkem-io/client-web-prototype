@@ -8,18 +8,18 @@ import {
  CheckCheck,
  Clock,
  Settings,
- MailOpen,
+ MailOpen
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
  Popover,
  PopoverContent,
- PopoverTrigger,
-} from "@/app/components/ui/popover";
-import { cn } from "@/lib/utils";
+ PopoverTrigger
+} from "@/crd/primitives/popover";
+import { cn } from "@/crd/lib/utils";
 
 type NotificationType = "comment" | "invite" | "mention" | "system";
 
@@ -45,7 +45,7 @@ const NOTIFICATIONS: Notification[] = [
  time: "2 minutes ago",
  read: false,
  type: "comment",
- space: "Green Energy Space",
+ space: "Green Energy Space"
  },
  {
  id: "2",
@@ -55,7 +55,7 @@ const NOTIFICATIONS: Notification[] = [
  target: "Urban Mobility Lab",
  time: "1 hour ago",
  read: false,
- type: "invite",
+ type: "invite"
  },
  {
  id: "3",
@@ -66,7 +66,7 @@ const NOTIFICATIONS: Notification[] = [
  time: "3 hours ago",
  read: false,
  type: "mention",
- space: "Sustainable Futures",
+ space: "Sustainable Futures"
  },
  {
  id: "4",
@@ -76,7 +76,7 @@ const NOTIFICATIONS: Notification[] = [
  target: "New template library features are live",
  time: "5 hours ago",
  read: true,
- type: "system",
+ type: "system"
  },
  {
  id: "6",
@@ -86,7 +86,7 @@ const NOTIFICATIONS: Notification[] = [
  target: "Design Thinking Practice",
  time: "Yesterday",
  read: true,
- type: "invite",
+ type: "invite"
  },
  {
  id: "7",
@@ -97,7 +97,7 @@ const NOTIFICATIONS: Notification[] = [
  time: "2 days ago",
  read: true,
  type: "comment",
- space: "Urban Development Network",
+ space: "Urban Development Network"
  },
  {
  id: "8",
@@ -108,7 +108,7 @@ const NOTIFICATIONS: Notification[] = [
  time: "3 days ago",
  read: true,
  type: "mention",
- space: "Health Innovation Alliance",
+ space: "Health Innovation Alliance"
  },
 ];
 
@@ -116,7 +116,7 @@ const TYPE_ICON: Record<NotificationType, React.ReactNode> = {
  comment: <MessageSquare className="w-3 h-3" />,
  invite: <UserPlus className="w-3 h-3" />,
  mention: <Check className="w-3 h-3" />,
- system: <Bell className="w-3 h-3" />,
+ system: <Bell className="w-3 h-3" />
 };
 
 export function NotificationsPopover() {
@@ -162,7 +162,6 @@ export function NotificationsPopover() {
  <PopoverContent
  align="end"
  className="w-[420px] p-0 overflow-hidden"
- style={{ fontFamily: "'Inter', sans-serif" }}
  sideOffset={8}
  >
  {/* Header */}
@@ -170,7 +169,7 @@ export function NotificationsPopover() {
  className="flex items-center justify-between px-4 py-3"
  style={{
  borderBottom: "1px solid var(--border)",
- background: "color-mix(in srgb, var(--muted) 30%, transparent)",
+ background: "color-mix(in srgb, var(--muted) 30%, transparent)"
  }}
  >
  <h3 className="text-card-title">Notifications</h3>
@@ -260,7 +259,7 @@ export function NotificationsPopover() {
  style={{
  background: "var(--primary)",
  color: "var(--primary-foreground)",
- border: "2px solid var(--background)",
+ border: "2px solid var(--background)"
  }}
  >
  {TYPE_ICON[n.type]}

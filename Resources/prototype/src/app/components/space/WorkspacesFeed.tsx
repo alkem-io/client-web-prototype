@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { Plus } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
@@ -21,14 +21,14 @@ const INITIAL_WORKSPACES_POSTS: PostWithTags[] = [
     author: {
       name: "David Kim",
       avatarUrl:
-        "https://images.unsplash.com/photo-1723537742563-15c3d351dbf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdCUyMGJ1c2luZXNzfGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256",
+        "https://images.unsplash.com/photo-1723537742563-15c3d351dbf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdCUyMGJ1c2luZXNzfGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256"
     },
     title: "Subspace updates: Q1 progress across all workstreams",
     snippet:
       "Quick recap of where each subspace stands heading into March. The Mobility Hub has finalized its stakeholder interviews, Circular Economy is preparing their pilot proposal, and the Energy Transition subspace just onboarded three new contributors. Please check in with your respective leads if you have deliverables due this sprint.",
     timestamp: "5 hours ago",
     stats: { likes: 24, comments: 9 },
-    commentTexts: ["Mobility Hub is on track — stakeholder report due Friday.", "Circular Economy pilot needs budget approval first.", "Welcome to the three new Energy Transition contributors!", "Can we get a Gantt chart for all subspace timelines?", "Sprint deliverables should include the Q2 milestone check."],
+    commentTexts: ["Mobility Hub is on track — stakeholder report due Friday.", "Circular Economy pilot needs budget approval first.", "Welcome to the three new Energy Transition contributors!", "Can we get a Gantt chart for all subspace timelines?", "Sprint deliverables should include the Q2 milestone check."]
   },
   {
     id: "ws-2",
@@ -37,7 +37,7 @@ const INITIAL_WORKSPACES_POSTS: PostWithTags[] = [
     author: {
       name: "Sophia Li",
       avatarUrl:
-        "https://images.unsplash.com/photo-1758599543113-3de73604e916?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGN1cmx5JTIwaGFpciUyMHByb2Zlc3Npb25hbCUyMHBvcnRyYWl0fGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256",
+        "https://images.unsplash.com/photo-1758599543113-3de73604e916?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGN1cmx5JTIwaGFpciUyMHByb2Zlc3Npb25hbCUyMHBvcnRyYWl0fGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256"
     },
     title: "Proposal: new subspace for Digital Infrastructure",
     snippet:
@@ -49,18 +49,18 @@ const INITIAL_WORKSPACES_POSTS: PostWithTags[] = [
           title: "Digital Infra Scope",
           imageUrl:
             "https://images.unsplash.com/photo-1542744094-24638eff58bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsYWJvcmF0aXZlJTIwd2hpdGVib2FyZCUyMGJyYWluc3Rvcm0lMjBzdHJhdGVneXxlbnwxfHx8fDE3NzIxMTUxMzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-          author: "Sophia Li",
+          author: "Sophia Li"
         },
         {
           title: "Roadmap Draft",
           imageUrl:
             "https://images.unsplash.com/photo-1676276374782-39159bc5e7b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9qZWN0JTIwcm9hZG1hcCUyMHRpbWVsaW5lJTIwcGxhbm5pbmd8ZW58MXx8fHwxNzcyMTE1MTMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-          author: "David Kim",
+          author: "David Kim"
         },
-      ],
+      ]
     },
     stats: { likes: 37, comments: 16 },
-    commentTexts: ["Great idea — open data platforms are a big gap right now.", "I'd be happy to co-lead this with someone from the tech side.", "We should align with the EU interoperability framework.", "Smart-city APIs are essential for our monitoring dashboard.", "Let's not make scope too broad — focus on municipal data first."],
+    commentTexts: ["Great idea — open data platforms are a big gap right now.", "I'd be happy to co-lead this with someone from the tech side.", "We should align with the EU interoperability framework.", "Smart-city APIs are essential for our monitoring dashboard.", "Let's not make scope too broad — focus on municipal data first."]
   },
   {
     id: "ws-tasks",
@@ -69,12 +69,12 @@ const INITIAL_WORKSPACES_POSTS: PostWithTags[] = [
     contributionType: "tasks",
     author: {
       name: "David Kim",
-      avatarUrl: "https://images.unsplash.com/photo-1723537742563-15c3d351dbf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdCUyMGJ1c2luZXNzfGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256",
+      avatarUrl: "https://images.unsplash.com/photo-1723537742563-15c3d351dbf2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdCUyMGJ1c2luZXNzfGVufDF8fHx8MTc3MjExNTEzMHww&ixlib=rb-4.1.0&q=80&w=256"
     },
     title: "Workstream Tasks — Week 12",
     snippet: "Weekly task board. Add items and move them as you complete work.",
     timestamp: "1 hour ago",
-    stats: { likes: 5, comments: 3 },
+    stats: { likes: 5, comments: 3 }
   },
 ];
 
@@ -88,7 +88,7 @@ export function WorkspacesFeed() {
     posts,
     setPosts,
     currentUser: MOCK_CURRENT_USER,
-    isAdmin: true,
+    isAdmin: true
   });
 
   function getContributionPreview(post: PostWithTags) {
@@ -143,9 +143,8 @@ export function WorkspacesFeed() {
         <h2
           className="text-section-title"
           style={{
-            color: "var(--foreground)",
-            fontFamily: "var(--font-family, 'Inter', sans-serif)",
-          }}
+            color: "var(--foreground)"
+            }}
         >
           Workspace Posts
         </h2>

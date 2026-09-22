@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Mail, Megaphone, Users, Shield, Circle } from "lucide-react";
 import { toast } from "sonner";
-import { Switch } from "@/app/components/ui/switch";
-import { Button } from "@/app/components/ui/button";
+import { Switch } from "@/crd/primitives/switch";
+import { Button } from "@/crd/primitives/button";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
@@ -17,7 +17,7 @@ const INITIAL_PREFS = {
   memberRequests: false,
   applicationStatus: true,
   roleChanges: true,
-  platformAnnouncements: true,
+  platformAnnouncements: true
 };
 
 export function UserSettingsNotifications() {
@@ -36,7 +36,7 @@ export function UserSettingsNotifications() {
     }
     toast(`${cleared} item${cleared === 1 ? "" : "s"} marked as read`, {
       duration: 6000,
-      action: { label: "Undo", onClick: undo },
+      action: { label: "Undo", onClick: undo }
     });
   };
 

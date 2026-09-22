@@ -5,34 +5,35 @@
  * - ConfigureTaskColumnsDialog: admin dialog for defining columns
  */
 import { useState, useRef, useCallback, useMemo } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowLeft,
-  GripVertical,
   Maximize2,
   MessageSquare,
   Plus,
   Send,
   Trash2,
-  X,
+  X
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Textarea } from "@/app/components/ui/textarea";
+import { cn } from "@/crd/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Textarea } from "@/crd/primitives/textarea";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
+  DialogFooter
+} from "@/crd/primitives/dialog";
 import { ReactionBar } from "@/app/components/space/PostReactions";
+import {
+  TaskBoardView,
+  type TaskBoardColumnModel
+} from "@/crd/components/callout/task-board/TaskBoardView";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -52,197 +53,6 @@ export interface TaskColumnDef {
   id: string;
   label: string;
   color?: string;
-}
-
-// ─── DnD ──────────────────────────────────────────────────────────────────────
-
-const TASK_CARD = "TASK_BOARD_CARD";
-
-interface TaskDragItem {
-  id: string;
-  index: number;
-  sourceColumnId: string;
-}
-
-// ─── Task Card (no author/date in feed) ───────────────────────────────────────
-
-function DraggableTaskCard({
-  task,
-  index,
-  columnId,
-  moveInColumn,
-  moveBetweenColumns,
-  onClick,
-}: {
-  task: TaskItem;
-  index: number;
-  columnId: string;
-  moveInColumn: (colId: string, dragIdx: number, hoverIdx: number) => void;
-  moveBetweenColumns: (srcCol: string, dragIdx: number, tgtCol: string, tgtIdx: number) => void;
-  onClick?: (task: TaskItem) => void;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [{ handlerId }, drop] = useDrop<TaskDragItem, void, { handlerId: string | symbol | null }>({
-    accept: TASK_CARD,
-    collect: (monitor) => ({ handlerId: monitor.getHandlerId() }),
-    hover(item, monitor) {
-      if (!ref.current) return;
-      if (item.sourceColumnId === columnId && item.index === index) return;
-      const rect = ref.current.getBoundingClientRect();
-      const midY = (rect.bottom - rect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      if (!clientOffset) return;
-      const hoverY = clientOffset.y - rect.top;
-      if (item.sourceColumnId === columnId) {
-        if (item.index < index && hoverY < midY) return;
-        if (item.index > index && hoverY > midY) return;
-        moveInColumn(columnId, item.index, index);
-        item.index = index;
-        return;
-      }
-      moveBetweenColumns(item.sourceColumnId, item.index, columnId, index);
-      item.sourceColumnId = columnId;
-      item.index = index;
-    },
-  });
-
-  const [{ isDragging }, drag] = useDrag({
-    type: TASK_CARD,
-    item: (): TaskDragItem => ({ id: task.id, index, sourceColumnId: columnId }),
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
-
-  drag(drop(ref));
-
-  return (
-    <motion.div
-      ref={ref}
-      data-handler-id={handlerId}
-      layout
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6, height: 0 }}
-      transition={{ duration: 0.12 }}
-      className={cn(
-        "group/item bg-background border border-border rounded-lg p-3",
-        "cursor-grab active:cursor-grabbing hover:border-primary/30 hover:shadow-sm transition-all",
-        isDragging && "opacity-30 border-dashed"
-      )}
-      onClick={(e) => { e.stopPropagation(); onClick?.(task); }}
-    >
-      <div className="flex items-start gap-2">
-        <GripVertical className="w-3.5 h-3.5 mt-0.5 text-muted-foreground/20 group-hover/item:text-muted-foreground/50 shrink-0" />
-        <div className="flex-1 min-w-0 space-y-1.5">
-          <p className="text-sm font-medium leading-snug line-clamp-2 text-foreground">{task.title}</p>
-          {task.description && (
-            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">{task.description}</p>
-          )}
-          {/* Footer: tags + comments only — NO author/date */}
-          <div className="flex items-center justify-between gap-2 pt-1">
-            {task.tags && task.tags.length > 0 ? (
-              <div className="flex flex-wrap gap-1 min-w-0">
-                {task.tags.slice(0, 2).map((tag) => (
-                  <span key={tag} className="text-[10px] bg-muted text-muted-foreground rounded px-1.5 py-0.5">{tag}</span>
-                ))}
-                {task.tags.length > 2 && (
-                  <span className="text-[10px] text-muted-foreground/60">+{task.tags.length - 2}</span>
-                )}
-              </div>
-            ) : <div />}
-            {task.commentCount !== undefined && task.commentCount > 0 && (
-              <span className="flex items-center gap-0.5 text-xs text-muted-foreground shrink-0">
-                <MessageSquare className="w-3 h-3" />
-                {task.commentCount}
-              </span>
-            )}
-          </div>
-          <ReactionBar id={`task:${task.id}`} className="pt-0.5" />
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Column ───────────────────────────────────────────────────────────────────
-
-function TaskColumn({
-  column,
-  tasks,
-  moveInColumn,
-  moveBetweenColumns,
-  onTaskClick,
-  onAddClick,
-}: {
-  column: TaskColumnDef;
-  tasks: TaskItem[];
-  moveInColumn: (colId: string, dragIdx: number, hoverIdx: number) => void;
-  moveBetweenColumns: (srcCol: string, dragIdx: number, tgtCol: string, tgtIdx: number) => void;
-  onTaskClick?: (task: TaskItem) => void;
-  onAddClick?: (columnId: string) => void;
-}) {
-  const [{ isOver }, dropRef] = useDrop<TaskDragItem, void, { isOver: boolean }>({
-    accept: TASK_CARD,
-    collect: (monitor) => ({ isOver: monitor.isOver({ shallow: true }) }),
-    hover(item) {
-      if (item.sourceColumnId !== column.id && tasks.length === 0) {
-        moveBetweenColumns(item.sourceColumnId, item.index, column.id, 0);
-        item.sourceColumnId = column.id;
-        item.index = 0;
-      }
-    },
-  });
-
-  return (
-    <div
-      ref={dropRef as any}
-      className={cn(
-        "flex flex-col w-[260px] shrink-0 transition-colors",
-        isOver && "bg-primary/5 rounded-xl"
-      )}
-    >
-      <div className="px-3 pt-1 pb-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h4 className="text-sm font-semibold text-foreground truncate">{column.label}</h4>
-          </div>
-          <span className="text-xs text-muted-foreground tabular-nums bg-muted rounded-full px-2 py-0.5">
-            {tasks.length}
-          </span>
-        </div>
-      </div>
-      <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[360px]">
-        <AnimatePresence initial={false}>
-          {tasks.map((task, idx) => (
-            <DraggableTaskCard
-              key={task.id}
-              task={task}
-              index={idx}
-              columnId={column.id}
-              moveInColumn={moveInColumn}
-              moveBetweenColumns={moveBetweenColumns}
-              onClick={onTaskClick}
-            />
-          ))}
-        </AnimatePresence>
-        {tasks.length === 0 && (
-          <div className="flex items-center justify-center h-16 text-xs text-muted-foreground/50 border border-dashed border-border/40 rounded-lg">
-            Drop tasks here
-          </div>
-        )}
-      </div>
-      <div className="p-2 pt-0">
-        <button
-          type="button"
-          onClick={() => onAddClick?.(column.id)}
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg border border-dashed border-border/50 hover:border-border transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          Add task
-        </button>
-      </div>
-    </div>
-  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -268,38 +78,26 @@ export function TaskBoardPreview({ columns, tasks: initialTasks }: TaskBoardPrev
     return map;
   }, [tasks, columns]);
 
-  const moveInColumn = useCallback((colId: string, dragIdx: number, hoverIdx: number) => {
-    setTasks((prev) => {
-      const colTasks = prev.filter((t) => t.status === colId);
-      const others = prev.filter((t) => t.status !== colId);
-      const [moved] = colTasks.splice(dragIdx, 1);
-      colTasks.splice(hoverIdx, 0, moved);
-      return [...others, ...colTasks];
+  /**
+   * TaskBoardView reports the board's full new card order rather than drag/hover
+   * indices, so reordering is a single reconciliation: re-tag the moved card's
+   * column, then sort every task by its position in the reported order.
+   */
+  const applyOrder = useCallback((orderedCardIds: string[], movedId?: string, toColumnId?: string) => {
+    setTasks(prev => {
+      const rank = new Map(orderedCardIds.map((id, i) => [id, i]));
+      return prev
+        .map(t => (movedId && toColumnId && t.id === movedId ? { ...t, status: toColumnId } : t))
+        .sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0));
     });
   }, []);
-
-  const moveBetweenColumns = useCallback(
-    (srcCol: string, dragIdx: number, tgtCol: string, tgtIdx: number) => {
-      setTasks((prev) => {
-        const srcTasks = prev.filter((t) => t.status === srcCol);
-        const [moved] = srcTasks.splice(dragIdx, 1);
-        const updated = { ...moved, status: tgtCol };
-        const rest = prev.filter((t) => t.id !== moved.id);
-        const tgtTasks = rest.filter((t) => t.status === tgtCol);
-        const others = rest.filter((t) => t.status !== tgtCol);
-        tgtTasks.splice(tgtIdx, 0, updated);
-        return [...others, ...tgtTasks];
-      });
-    },
-    []
-  );
 
   const handleAddTask = useCallback((colId: string, title: string, desc: string, tags: string[]) => {
     setTasks((prev) => [...prev, {
       id: `task-${Date.now()}`,
       title, description: desc || undefined,
       tags: tags.length > 0 ? tags : undefined,
-      status: colId, author: "You", createdDate: "just now", commentCount: 0, comments: [],
+      status: colId, author: "You", createdDate: "just now", commentCount: 0, comments: []
     }]);
   }, []);
 
@@ -309,13 +107,13 @@ export function TaskBoardPreview({ columns, tasks: initialTasks }: TaskBoardPrev
       return {
         ...t,
         comments: [...(t.comments || []), { id: `c-${Date.now()}`, author: "You", text, time: "just now" }],
-        commentCount: (t.commentCount || 0) + 1,
+        commentCount: (t.commentCount || 0) + 1
       };
     }));
     setSelectedTask((prev) => prev && prev.id === taskId ? {
       ...prev,
       comments: [...(prev.comments || []), { id: `c-${Date.now()}`, author: "You", text, time: "just now" }],
-      commentCount: (prev.commentCount || 0) + 1,
+      commentCount: (prev.commentCount || 0) + 1
     } : prev);
   }, []);
 
@@ -323,22 +121,45 @@ export function TaskBoardPreview({ columns, tasks: initialTasks }: TaskBoardPrev
   const addColumnLabel = columns.find((c) => c.id === addingToColumn)?.label || "";
   const [expanded, setExpanded] = useState(false);
 
+  // TaskBoardView addresses columns by name; the prototype's fixtures key them
+  // by id, so translate on the way in and back on the way out.
+  const columnIdByName = useMemo(
+    () => new Map(columns.map(c => [c.label, c.id])),
+    [columns]
+  );
+
+  const boardColumns = useMemo<TaskBoardColumnModel[]>(
+    () =>
+      columns.map(col => {
+        const colTasks = tasksByColumn[col.id] || [];
+        return {
+          name: col.label,
+          count: colTasks.length,
+          cards: colTasks.map(t => ({
+            id: t.id,
+            title: t.title,
+            description: t.description,
+            tags: t.tags,
+            commentCount: t.commentCount
+          }))
+        };
+      }),
+    [columns, tasksByColumn]
+  );
+
   const boardContent = (fullHeight: boolean) => (
-    <DndProvider backend={HTML5Backend}>
-      <div className={cn("flex items-start gap-3 overflow-x-auto pb-2 -mx-2 px-2", fullHeight && "h-full items-stretch")}>
-        {columns.map((col) => (
-          <TaskColumn
-            key={col.id}
-            column={col}
-            tasks={tasksByColumn[col.id] || []}
-            moveInColumn={moveInColumn}
-            moveBetweenColumns={moveBetweenColumns}
-            onTaskClick={(task) => setSelectedTask(task)}
-            onAddClick={(colId) => setAddingToColumn(colId)}
-          />
-        ))}
-      </div>
-    </DndProvider>
+    <TaskBoardView
+      columns={boardColumns}
+      fill={fullHeight}
+      canAdd
+      canMove
+      onAddTask={name => setAddingToColumn(columnIdByName.get(name) ?? null)}
+      onOpenTask={cardId => setSelectedTask(tasks.find(t => t.id === cardId) ?? null)}
+      onMoveTask={(cardId, toColumn, orderedCardIds) =>
+        applyOrder(orderedCardIds, cardId, columnIdByName.get(toColumn))
+      }
+      onReorder={orderedCardIds => applyOrder(orderedCardIds)}
+    />
   );
 
   return (
@@ -351,7 +172,7 @@ export function TaskBoardPreview({ columns, tasks: initialTasks }: TaskBoardPrev
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+ className="h-7 gap-1.5 text-muted-foreground hover:text-foreground"
           onClick={() => setExpanded(true)}
         >
           <Maximize2 className="w-3.5 h-3.5" />
@@ -367,8 +188,8 @@ export function TaskBoardPreview({ columns, tasks: initialTasks }: TaskBoardPrev
         <DialogContent className="w-[calc(100%-2rem)] sm:max-w-[95vw] h-[95vh] p-0 gap-0 overflow-hidden flex flex-col bg-background border-none shadow-2xl rounded-xl z-50">
           <DialogHeader className="px-6 py-4 border-b shrink-0">
             <div className="flex items-center justify-between">
-              <DialogTitle className="text-base">Task Board</DialogTitle>
-              <span className="text-xs text-muted-foreground">{tasks.length} tasks · Drag to change status</span>
+              <DialogTitle className="text-subheader font-normal">Task Board</DialogTitle>
+              <span className="text-caption text-muted-foreground">{tasks.length} tasks · Drag to change status</span>
             </div>
           </DialogHeader>
           <div className="flex-1 overflow-x-auto p-6">
@@ -406,7 +227,7 @@ export function TaskBoardPreview({ columns, tasks: initialTasks }: TaskBoardPrev
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function TaskDetailDialog({
-  open, onOpenChange, task, columnLabel, columnColor, onAddComment,
+  open, onOpenChange, task, columnLabel, columnColor, onAddComment
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -435,9 +256,9 @@ function TaskDetailDialog({
               <ArrowLeft className="w-4 h-4" />
             </button>
             <div className="flex-1 min-w-0">
-              <DialogTitle className="text-base">{task.title}</DialogTitle>
+              <DialogTitle className="text-subheader font-normal">{task.title}</DialogTitle>
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant="outline" className="text-xs gap-1.5 font-normal">
+                <Badge variant="outline" className="text-caption gap-1.5 font-normal">
                   {columnLabel}
                 </Badge>
               </div>
@@ -449,19 +270,19 @@ function TaskDetailDialog({
           {/* Description + metadata */}
           <div className="px-6 py-5 border-b space-y-4">
             {task.description ? (
-              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{task.description}</p>
+              <p className="text-body text-foreground leading-relaxed whitespace-pre-wrap">{task.description}</p>
             ) : (
-              <p className="text-sm text-muted-foreground italic">No description provided.</p>
+              <p className="text-body text-muted-foreground italic">No description provided.</p>
             )}
             {task.tags && task.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {task.tags.map((tag) => (
-                  <span key={tag} className="text-xs bg-muted text-muted-foreground rounded-md px-2 py-1">{tag}</span>
+                  <span key={tag} className="text-caption bg-muted text-muted-foreground rounded-md px-2 py-1">{tag}</span>
                 ))}
               </div>
             )}
             {/* Author + date — labeled clearly */}
-            <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2">
+            <div className="flex items-center gap-4 text-caption text-muted-foreground pt-2">
               {task.author && (
                 <span>Created by <span className="font-medium text-foreground">{task.author}</span></span>
               )}
@@ -474,10 +295,10 @@ function TaskDetailDialog({
 
           {/* Comments */}
           <div className="px-6 py-4">
-            <h4 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+            <h4 className="text-card-title text-foreground mb-4 flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               Comments
-              {comments.length > 0 && <span className="text-xs text-muted-foreground font-normal">({comments.length})</span>}
+              {comments.length > 0 && <span className="text-caption text-muted-foreground font-normal">({comments.length})</span>}
             </h4>
             {comments.length > 0 ? (
               <div className="space-y-4">
@@ -488,16 +309,16 @@ function TaskDetailDialog({
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-foreground">{c.author}</span>
-                        <span className="text-xs text-muted-foreground">{c.time}</span>
+                        <span className="text-body-emphasis text-foreground">{c.author}</span>
+                        <span className="text-caption text-muted-foreground">{c.time}</span>
                       </div>
-                      <p className="text-sm text-foreground/90 mt-0.5 leading-relaxed">{c.text}</p>
+                      <p className="text-body text-foreground/90 mt-0.5 leading-relaxed">{c.text}</p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground/60 text-center py-6">No comments yet.</p>
+              <p className="text-body text-muted-foreground/60 text-center py-6">No comments yet.</p>
             )}
           </div>
         </div>
@@ -528,7 +349,7 @@ function TaskDetailDialog({
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function AddTaskDialog({
-  open, onOpenChange, columnLabel, onSubmit,
+  open, onOpenChange, columnLabel, onSubmit
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -550,7 +371,7 @@ function AddTaskDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base">
+          <DialogTitle className="flex items-center gap-2 text-subheader font-normal">
             <Plus className="w-4 h-4 text-primary" />
             Add task to "{columnLabel}"
           </DialogTitle>

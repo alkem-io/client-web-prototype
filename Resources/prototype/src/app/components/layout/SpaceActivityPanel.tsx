@@ -6,17 +6,17 @@ import {
   Layers,
   MessageSquarePlus,
   UserPlus,
-  Clock,
+  Clock
 } from "lucide-react";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import {
   SPACE_CHANGES,
   activityAge,
   type ChangeKind,
-  type SpaceRelation,
+  type SpaceRelation
 } from "@/app/data/activity-data";
 
 type ScopeKey = "all" | "mine" | "member" | "lead";
@@ -33,7 +33,7 @@ const KIND_ICON: Record<ChangeKind, React.ReactNode> = {
   contribution: <MessageSquarePlus className="w-3 h-3" />,
   callout: <MessageSquarePlus className="w-3 h-3" />,
   subspace: <Layers className="w-3 h-3" />,
-  member: <UserPlus className="w-3 h-3" />,
+  member: <UserPlus className="w-3 h-3" />
 };
 
 export function SpaceActivityPanel({ onNavigate }: { onNavigate?: () => void }) {
@@ -104,7 +104,7 @@ export function SpaceActivityPanel({ onNavigate }: { onNavigate?: () => void }) 
                     style={{
                       background: "var(--primary)",
                       color: "var(--primary-foreground)",
-                      border: "2px solid var(--background)",
+                      border: "2px solid var(--background)"
                     }}
                   >
                     {KIND_ICON[c.kind]}

@@ -114,9 +114,8 @@ export function MessagingHub({ open, onClose }: MessagingHubProps) {
               height: "100dvh",
               background: "var(--background)",
               borderLeft: "1px solid var(--border)",
-              boxShadow: "var(--elevation-sm)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              boxShadow: "var(--elevation-sm)"
+              }}
             role="dialog"
             aria-label="Messaging Hub"
           >
@@ -126,7 +125,7 @@ export function MessagingHub({ open, onClose }: MessagingHubProps) {
               style={{
                 padding: "14px 16px",
                 borderBottom: "1px solid var(--border)",
-                background: "var(--card)",
+                background: "var(--card)"
               }}
             >
               <div className="flex items-center gap-2">
@@ -134,9 +133,8 @@ export function MessagingHub({ open, onClose }: MessagingHubProps) {
                   className="text-subheader font-semibold"
                   style={{
                     color: "var(--foreground)",
-                    margin: 0,
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    margin: 0
+                    }}
                 >
                   Messages
                 </h2>
@@ -148,9 +146,8 @@ export function MessagingHub({ open, onClose }: MessagingHubProps) {
                       height: 20,
                       padding: "0 5px",
                       background: "var(--primary)",
-                      color: "var(--primary-foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--primary-foreground)"
+                      }}
                   >
                     {totalUnread}
                   </span>

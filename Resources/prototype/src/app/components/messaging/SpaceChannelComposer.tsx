@@ -11,10 +11,10 @@ import {
   List,
   ListOrdered,
   X,
-  AtSign,
+  AtSign
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import type { UserInfo } from "./messagingData";
 import { ALL_USERS } from "./messagingData";
 
@@ -29,7 +29,7 @@ export function SpaceChannelComposer({
   onSend,
   placeholder = "Type a message...",
   replyTo,
-  onCancelReply,
+  onCancelReply
 }: SpaceChannelComposerProps) {
   const [text, setText] = useState("");
   const [showMentions, setShowMentions] = useState(false);
@@ -157,7 +157,7 @@ export function SpaceChannelComposer({
       style={{
         borderTop: "1px solid var(--border)",
         background: "var(--card)",
-        padding: "12px 20px 16px",
+        padding: "12px 20px 16px"
       }}
     >
       {/* Reply preview */}
@@ -169,16 +169,15 @@ export function SpaceChannelComposer({
             marginBottom: 10,
             borderRadius: "var(--radius)",
             background: "var(--secondary)",
-            borderLeft: "3px solid var(--primary)",
+            borderLeft: "3px solid var(--primary)"
           }}
         >
           <div className="flex-1 min-w-0">
             <span
               className="text-caption font-semibold"
               style={{
-                color: "var(--primary)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--primary)"
+                }}
             >
               Replying to {replyTo.senderName}
             </span>
@@ -186,9 +185,8 @@ export function SpaceChannelComposer({
               className="truncate text-body"
               style={{
                 color: "var(--muted-foreground)",
-                margin: 0,
-                fontFamily: "'Inter', sans-serif",
-              }}
+                margin: 0
+                }}
             >
               {replyTo.content}
             </p>
@@ -208,7 +206,7 @@ export function SpaceChannelComposer({
         className="flex items-center gap-0.5"
         style={{
           marginBottom: 8,
-          padding: "2px 0",
+          padding: "2px 0"
         }}
       >
         {toolbarButtons.map(({ icon: Icon, label }) => (
@@ -232,7 +230,7 @@ export function SpaceChannelComposer({
           style={{
             width: 1,
             height: 16,
-            background: "var(--border)",
+            background: "var(--border)"
           }}
         />
         <button
@@ -282,21 +280,20 @@ export function SpaceChannelComposer({
               borderRadius: "var(--radius)",
               boxShadow: "var(--elevation-sm)",
               maxHeight: 220,
-              overflowY: "auto",
+              overflowY: "auto"
             }}
           >
             <div
               style={{
                 padding: "6px 10px",
-                borderBottom: "1px solid var(--border)",
+                borderBottom: "1px solid var(--border)"
               }}
             >
               <span
                 className="text-sidebar-label uppercase"
                 style={{
-                  color: "var(--muted-foreground)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  color: "var(--muted-foreground)"
+                  }}
               >
                 Members
               </span>
@@ -313,7 +310,7 @@ export function SpaceChannelComposer({
                 )}
                 style={{
                   background:
-                    idx === mentionIndex ? "var(--accent)" : "transparent",
+                    idx === mentionIndex ? "var(--accent)" : "transparent"
                 }}
                 onMouseEnter={() => setMentionIndex(idx)}
               >
@@ -321,35 +318,30 @@ export function SpaceChannelComposer({
                   style={{
                     width: 28,
                     height: 28,
-                    border: "1px solid var(--border)",
+                    border: "1px solid var(--border)"
                   }}
                 >
                   <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback
                     className="text-badge"
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                    }}
-                  >
+                    >
                     {user.initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col min-w-0">
                   <span
-                    className="truncate text-control"
+                    className="truncate text-body"
                     style={{
-                      color: "var(--foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--foreground)"
+                      }}
                   >
                     {user.name}
                   </span>
                   <span
                     className="text-caption"
                     style={{
-                      color: "var(--muted-foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--muted-foreground)"
+                      }}
                   >
                     {user.status === "online" ? "Online" : "Offline"}
                   </span>
@@ -375,7 +367,7 @@ export function SpaceChannelComposer({
               background: "var(--input-background)",
               border: "1px solid var(--border)",
               borderRadius: "calc(var(--radius) + 4px)",
-              padding: "0 12px",
+              padding: "0 12px"
             }}
           >
             <textarea
@@ -389,9 +381,8 @@ export function SpaceChannelComposer({
               className="w-full resize-none outline-none bg-transparent text-body"
               style={{
                 color: "var(--foreground)",
-                fontFamily: "'Inter', sans-serif",
                 padding: "10px 0",
-                maxHeight: 140,
+                maxHeight: 140
               }}
               aria-label="Message input"
             />
@@ -417,7 +408,7 @@ export function SpaceChannelComposer({
               background: text.trim() ? "var(--primary)" : "var(--muted)",
               color: text.trim()
                 ? "var(--primary-foreground)"
-                : "var(--muted-foreground)",
+                : "var(--muted-foreground)"
             }}
             title="Send message (Enter)"
           >

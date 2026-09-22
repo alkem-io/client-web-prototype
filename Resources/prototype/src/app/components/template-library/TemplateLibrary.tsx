@@ -4,13 +4,13 @@ import {
  Monitor, Info, Star, Plus, ArrowRight, BookOpen, Layers,
  ChevronLeft, MoreHorizontal, Home, Image as ImageIcon, Shield, Tags, X, ChevronDown, Check
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
+import { cn } from "@/crd/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/crd/primitives/tooltip";
 import { useNavigate } from "react-router";
 import { TEMPLATE_PACKS, INDIVIDUAL_TEMPLATES, CATEGORIES, ALL_TEMPLATES } from "@/app/data/template-data";
 import {
@@ -18,13 +18,13 @@ import {
  DialogContent,
  DialogHeader,
  DialogTitle,
- DialogClose,
-} from "@/app/components/ui/dialog";
+ DialogClose
+} from "@/crd/primitives/dialog";
 import {
  Popover,
  PopoverContent,
- PopoverTrigger,
-} from "@/app/components/ui/popover";
+ PopoverTrigger
+} from "@/crd/primitives/popover";
 
 // --- Filter Dropdown (matching production) ---
 

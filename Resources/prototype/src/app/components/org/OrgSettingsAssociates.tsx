@@ -13,39 +13,39 @@ import {
   Pencil,
   Shield,
   ToggleLeft,
-  Plus,
+  Plus
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import { Switch } from "@/app/components/ui/switch";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
+import { Switch } from "@/crd/primitives/switch";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/app/components/ui/table";
+  TableRow
+} from "@/crd/primitives/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuSeparator
+} from "@/crd/primitives/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 // --- Types ---
 type OrgRole = "Associate" | "Admin" | "Owner";
@@ -185,7 +185,7 @@ export function OrgSettingsAssociates() {
                           {app.avatar ? (
                             <AvatarImage src={app.avatar} alt={app.name} />
                           ) : null}
-                          <AvatarFallback className="text-xs">{app.initials}</AvatarFallback>
+                          <AvatarFallback className="text-caption">{app.initials}</AvatarFallback>
                         </Avatar>
                         <span className="text-body-emphasis">{app.name}</span>
                       </div>
@@ -261,7 +261,7 @@ export function OrgSettingsAssociates() {
                           {member.avatar ? (
                             <AvatarImage src={member.avatar} alt={member.name} />
                           ) : null}
-                          <AvatarFallback className="text-xs">{member.initials}</AvatarFallback>
+                          <AvatarFallback className="text-caption">{member.initials}</AvatarFallback>
                         </Avatar>
                         <div>
                           <p className="text-body-emphasis">{member.name}</p>
@@ -271,7 +271,7 @@ export function OrgSettingsAssociates() {
                     </TableCell>
                     <TableCell className="text-body text-muted-foreground">{member.location}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={cn("text-xs", roleColor(member.role))}>
+                      <Badge variant="outline" className={cn("text-caption", roleColor(member.role))}>
                         {member.role}
                       </Badge>
                     </TableCell>
@@ -310,7 +310,7 @@ export function OrgSettingsAssociates() {
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
         <DialogContent className="sm:max-w-[36rem]">
           <DialogHeader>
-            <DialogTitle className="text-lg">Invite others to join "Sandbox Organization"</DialogTitle>
+            <DialogTitle className="text-subsection-title">Invite others to join "Sandbox Organization"</DialogTitle>
             <DialogDescription>
               Search for people below or directly add their email address
             </DialogDescription>

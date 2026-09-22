@@ -1,7 +1,20 @@
-import { useState, useRef, useCallback, useMemo } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { motion, AnimatePresence } from "motion/react";
+import { useState, useCallback, useMemo } from "react";
+import {
+  DndContext,
+  DragOverlay,
+  useDroppable,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent
+} from "@dnd-kit/core";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
+import {
+  boardCollisionDetection,
+  fromColumnDroppableId,
+  toColumnDroppableId,
+  useBoardSensors
+} from "@/app/components/shared/boardDnd";
 import {
   GripVertical,
   MessageSquare,
@@ -11,21 +24,12 @@ import {
   StickyNote,
   Images,
   Megaphone,
-  BarChart3,
+  BarChart3
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { cn } from "@/crd/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import type { CalloutTab } from "@/app/components/space/ChannelTabs";
 import type { PostCardData } from "@/app/components/space/PostCard";
-
-// ─── DnD Types ────────────────────────────────────────────────────────────────
-const BOARD_POST_CARD = "BOARD_POST_CARD";
-
-interface PostDragItem {
-  id: string;
-  index: number;
-  sourcePhaseId: string;
-}
 
 // ─── Compact Board Card ───────────────────────────────────────────────────────
 
@@ -38,97 +42,60 @@ const TYPE_ICONS: Record<string, React.ElementType> = {
   poll: BarChart3,
   document: FileText,
   "call-for-whiteboards": Presentation,
-  collection: FileText,
+  collection: FileText
 };
 
 interface BoardPostCardProps {
   post: PostCardData & { callout: string };
-  index: number;
-  phaseId: string;
-  movePostInPhase: (phaseId: string, dragIdx: number, hoverIdx: number) => void;
-  movePostBetweenPhases: (
-    sourcePhaseId: string,
-    dragIdx: number,
-    targetPhaseId: string,
-    targetIdx: number
-  ) => void;
   onClick?: (post: PostCardData) => void;
+  /** Rendered inside the DragOverlay — no sortable wiring, no fade. */
+  overlay?: boolean;
 }
 
-function BoardPostCard({
-  post,
-  index,
-  phaseId,
-  movePostInPhase,
-  movePostBetweenPhases,
-  onClick,
-}: BoardPostCardProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [{ handlerId }, drop] = useDrop<PostDragItem, void, { handlerId: string | symbol | null }>({
-    accept: BOARD_POST_CARD,
-    collect: (monitor) => ({ handlerId: monitor.getHandlerId() }),
-    hover(item, monitor) {
-      if (!ref.current) return;
-      const dragIndex = item.index;
-      const hoverIndex = index;
-      if (item.sourcePhaseId === phaseId && dragIndex === hoverIndex) return;
-      const rect = ref.current.getBoundingClientRect();
-      const midY = (rect.bottom - rect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      if (!clientOffset) return;
-      const hoverY = clientOffset.y - rect.top;
-      if (item.sourcePhaseId === phaseId) {
-        if (dragIndex < hoverIndex && hoverY < midY) return;
-        if (dragIndex > hoverIndex && hoverY > midY) return;
-        movePostInPhase(phaseId, dragIndex, hoverIndex);
-        item.index = hoverIndex;
-        return;
-      }
-      movePostBetweenPhases(item.sourcePhaseId, dragIndex, phaseId, hoverIndex);
-      item.sourcePhaseId = phaseId;
-      item.index = hoverIndex;
-    },
+function BoardPostCard({ post, onClick, overlay = false }: BoardPostCardProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: post.id,
+    data: { type: "card", phaseId: post.callout },
+    disabled: overlay
   });
 
-  const [{ isDragging }, drag] = useDrag({
-    type: BOARD_POST_CARD,
-    item: (): PostDragItem => ({ id: post.id, index, sourcePhaseId: phaseId }),
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
-
-  drag(drop(ref));
+  // The overlay carries the floating visual, so the in-list node only slides to
+  // its slot and fades to read as the drop placeholder.
+  const style = overlay
+    ? undefined
+    : {
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        transition
+      };
 
   const TypeIcon = TYPE_ICONS[post.type] || FileText;
   const comments = (post as any).stats?.comments ?? post.commentCount ?? 0;
 
   return (
-    <motion.div
-      ref={ref}
-      data-handler-id={handlerId}
-      layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8, height: 0 }}
-      transition={{ duration: 0.15 }}
+    <div
+      ref={overlay ? undefined : setNodeRef}
+      style={style}
       className={cn(
-        "group/card bg-background border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing",
+        "group/card bg-background border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing touch-none",
         "hover:border-primary/30 hover:shadow-sm transition-all",
-        isDragging && "opacity-30 border-dashed"
+        isDragging && "opacity-30 border-dashed",
+        overlay && "shadow-lg rotate-2"
       )}
       onClick={() => onClick?.(post)}
+      {...(overlay ? {} : attributes)}
+      {...(overlay ? {} : listeners)}
     >
       {/* Type badge + grip */}
       <div className="flex items-start gap-2">
         <GripVertical className="w-3.5 h-3.5 mt-0.5 text-muted-foreground/30 group-hover/card:text-muted-foreground/60 shrink-0" />
         <div className="flex-1 min-w-0 space-y-2">
           {/* Title */}
-          <p className="text-sm font-medium leading-snug line-clamp-2 text-foreground">
+          <p className="text-body-emphasis leading-snug line-clamp-2 text-foreground">
             {post.title}
           </p>
           {/* Snippet */}
           {post.snippet && (
-            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+            <p className="text-caption text-muted-foreground line-clamp-2 leading-relaxed">
               {post.snippet}
             </p>
           )}
@@ -143,7 +110,7 @@ function BoardPostCard({
                       {post.author.name.split(" ").map(n => n[0]).join("")}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-muted-foreground truncate">
+                  <span className="text-caption text-muted-foreground truncate">
                     {post.author.name.split(" ")[0]}
                   </span>
                 </>
@@ -152,7 +119,7 @@ function BoardPostCard({
             <div className="flex items-center gap-2 shrink-0">
               <TypeIcon className="w-3 h-3 text-muted-foreground/60" />
               {comments > 0 && (
-                <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                <span className="flex items-center gap-0.5 text-caption text-muted-foreground">
                   <MessageSquare className="w-3 h-3" />
                   {comments}
                 </span>
@@ -161,7 +128,7 @@ function BoardPostCard({
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -170,44 +137,22 @@ function BoardPostCard({
 interface PhaseColumnProps {
   phase: CalloutTab;
   posts: (PostCardData & { callout: string })[];
-  allPhases: CalloutTab[];
-  movePostInPhase: (phaseId: string, dragIdx: number, hoverIdx: number) => void;
-  movePostBetweenPhases: (
-    sourcePhaseId: string,
-    dragIdx: number,
-    targetPhaseId: string,
-    targetIdx: number
-  ) => void;
   onPostClick?: (post: PostCardData) => void;
   isLast: boolean;
 }
 
-function PhaseColumn({
-  phase,
-  posts,
-  allPhases,
-  movePostInPhase,
-  movePostBetweenPhases,
-  onPostClick,
-  isLast,
-}: PhaseColumnProps) {
-  const [{ isOver }, dropRef] = useDrop<PostDragItem, void, { isOver: boolean }>({
-    accept: BOARD_POST_CARD,
-    collect: (monitor) => ({ isOver: monitor.isOver({ shallow: true }) }),
-    hover(item) {
-      // Allow dropping into empty columns
-      if (item.sourcePhaseId !== phase.id && posts.length === 0) {
-        movePostBetweenPhases(item.sourcePhaseId, item.index, phase.id, 0);
-        item.sourcePhaseId = phase.id;
-        item.index = 0;
-      }
-    },
+function PhaseColumn({ phase, posts, onPostClick, isLast }: PhaseColumnProps) {
+  // The column is a droppable in its own right so a card can be dropped into an
+  // empty column, where there is no sibling card to collide with.
+  const { setNodeRef, isOver } = useDroppable({
+    id: toColumnDroppableId(phase.id),
+    data: { type: "column", phaseId: phase.id }
   });
 
   return (
     <div className="flex items-stretch shrink-0">
       <div
-        ref={dropRef as any}
+        ref={setNodeRef}
         className={cn(
           "flex flex-col w-[280px] min-h-[400px] rounded-xl border border-border/60 bg-muted/30 transition-colors",
           isOver && "border-primary/40 bg-primary/5"
@@ -216,15 +161,15 @@ function PhaseColumn({
         {/* Column Header */}
         <div className="px-3 pt-3 pb-2 border-b border-border/40">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-foreground truncate">
+            <h3 className="text-card-title text-foreground truncate">
               {phase.label}
             </h3>
-            <span className="text-xs text-muted-foreground tabular-nums bg-muted rounded-full px-2 py-0.5">
+            <span className="text-caption text-muted-foreground tabular-nums bg-muted rounded-full px-2 py-0.5">
               {posts.length}
             </span>
           </div>
           {phase.description && (
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+            <p className="text-caption text-muted-foreground mt-1 line-clamp-1">
               {phase.description}
             </p>
           )}
@@ -232,21 +177,13 @@ function PhaseColumn({
 
         {/* Cards */}
         <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[calc(100vh-300px)]">
-          <AnimatePresence initial={false}>
-            {posts.map((post, idx) => (
-              <BoardPostCard
-                key={post.id}
-                post={post}
-                index={idx}
-                phaseId={phase.id}
-                movePostInPhase={movePostInPhase}
-                movePostBetweenPhases={movePostBetweenPhases}
-                onClick={onPostClick}
-              />
+          <SortableContext items={posts.map(p => p.id)} strategy={verticalListSortingStrategy}>
+            {posts.map(post => (
+              <BoardPostCard key={post.id} post={post} onClick={onPostClick} />
             ))}
-          </AnimatePresence>
+          </SortableContext>
           {posts.length === 0 && (
-            <div className="flex items-center justify-center h-24 text-xs text-muted-foreground/60 border border-dashed border-border/50 rounded-lg">
+            <div className="flex items-center justify-center h-24 text-caption text-muted-foreground/60 border border-dashed border-border/50 rounded-lg">
               Drop posts here
             </div>
           )}
@@ -276,6 +213,8 @@ interface SubspaceBoardViewProps {
 
 export function SubspaceBoardView({ phases, posts: initialPosts, onPostClick }: SubspaceBoardViewProps) {
   const [posts, setPosts] = useState(initialPosts);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const sensors = useBoardSensors();
 
   // Group posts by phase
   const postsByPhase = useMemo(() => {
@@ -291,49 +230,99 @@ export function SubspaceBoardView({ phases, posts: initialPosts, onPostClick }: 
     return map;
   }, [posts, phases]);
 
-  const movePostInPhase = useCallback((phaseId: string, dragIdx: number, hoverIdx: number) => {
-    setPosts((prev) => {
-      const phasePosts = prev.filter((p) => p.callout === phaseId);
-      const otherPosts = prev.filter((p) => p.callout !== phaseId);
-      const [moved] = phasePosts.splice(dragIdx, 1);
-      phasePosts.splice(hoverIdx, 0, moved);
-      return [...otherPosts, ...phasePosts];
+  const activePost = activeId ? posts.find(p => p.id === activeId) : undefined;
+
+  /** Which phase is the drop target: a column droppable, or the card being hovered. */
+  const resolvePhaseId = useCallback(
+    (overId: string): string | undefined =>
+      fromColumnDroppableId(overId) ?? posts.find(p => p.id === overId)?.callout,
+    [posts]
+  );
+
+  /**
+   * Move a post next to `overId` (or to the end of `phaseId` when dropped on the
+   * column itself). One reconciliation covers both reorder and cross-phase move,
+   * which is why there are no separate in/between handlers any more.
+   */
+  const movePost = useCallback((activePostId: string, overId: string, phaseId: string) => {
+    setPosts(prev => {
+      const moving = prev.find(p => p.id === activePostId);
+      if (!moving) return prev;
+
+      const without = prev.filter(p => p.id !== activePostId);
+      const updated = { ...moving, callout: phaseId };
+
+      // Dropped on a card → insert at that card's position; dropped on the
+      // column → append.
+      const overIndex = without.findIndex(p => p.id === overId);
+      if (overIndex === -1) {
+        const lastOfPhase = without.map(p => p.callout).lastIndexOf(phaseId);
+        without.splice(lastOfPhase + 1, 0, updated);
+      } else {
+        without.splice(overIndex, 0, updated);
+      }
+      return without;
     });
   }, []);
 
-  const movePostBetweenPhases = useCallback(
-    (sourcePhaseId: string, dragIdx: number, targetPhaseId: string, targetIdx: number) => {
-      setPosts((prev) => {
-        const sourcePosts = prev.filter((p) => p.callout === sourcePhaseId);
-        const [moved] = sourcePosts.splice(dragIdx, 1);
-        const updated = { ...moved, callout: targetPhaseId };
-        const next = prev.filter((p) => p.id !== moved.id);
-        // Insert at target index
-        const targetPosts = next.filter((p) => p.callout === targetPhaseId);
-        const otherPosts = next.filter((p) => p.callout !== targetPhaseId);
-        targetPosts.splice(targetIdx, 0, updated);
-        return [...otherPosts, ...targetPosts];
-      });
-    },
-    []
-  );
+  const handleDragStart = (event: DragStartEvent) => setActiveId(String(event.active.id));
+
+  // Cross-phase only: pull the card into the hovered column mid-drag so its new
+  // siblings shift aside and the gap appears under the cursor. Same-phase
+  // reordering is handled natively by SortableContext.
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+    const activePostId = String(active.id);
+    const overId = String(over.id);
+    if (activePostId === overId) return;
+
+    const sourcePhaseId = posts.find(p => p.id === activePostId)?.callout;
+    const targetPhaseId = resolvePhaseId(overId);
+    if (!sourcePhaseId || !targetPhaseId || sourcePhaseId === targetPhaseId) return;
+
+    movePost(activePostId, overId, targetPhaseId);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const activePostId = String(active.id);
+    const overId = String(over.id);
+    const targetPhaseId = resolvePhaseId(overId);
+    if (!targetPhaseId) return;
+
+    movePost(activePostId, overId, targetPhaseId);
+  };
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={boardCollisionDetection}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={() => setActiveId(null)}
+    >
       <div className="flex items-start gap-0 overflow-x-auto pb-4 -mx-2 px-2">
         {phases.map((phase, idx) => (
           <PhaseColumn
             key={phase.id}
             phase={phase}
             posts={postsByPhase[phase.id] || []}
-            allPhases={phases}
-            movePostInPhase={movePostInPhase}
-            movePostBetweenPhases={movePostBetweenPhases}
             onPostClick={onPostClick}
             isLast={idx === phases.length - 1}
           />
         ))}
       </div>
-    </DndProvider>
+      {createPortal(
+        <DragOverlay dropAnimation={null}>
+          {activePost ? <BoardPostCard post={activePost} overlay /> : null}
+        </DragOverlay>,
+        document.body
+      )}
+    </DndContext>
   );
 }

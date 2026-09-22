@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { cn } from "@/crd/lib/utils";
 
 const BANNER_IMAGE = "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBjaGFsbGVuZ2UlMjBjcmVhdGl2ZSUyMHdvcmtzaG9wJTIwdGVhbSUyMGNvbGxhYm9yYXRpb24lMjBpbm5vdmF0aW9uJTIwc3ByaW50JTIwZGVzaWduJTIwc3ByaW50fGVufDF8fHx8MTc2OTA5NDMxMHww&ixlib=rb-4.1.0&q=80&w=1920";
 
@@ -35,7 +36,10 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick, actionButtons
         <div style={{ marginTop: "-64px", height: "64px" }} />
       ) : (
         <div
-          className="w-full px-4"
+          /* Production: `w-full` + `lg:px-8` — the banner runs flush to the
+             viewport below lg and insets 32px at lg+, matching SpaceShell's
+             body gutter. The prototype's flat px-4 put it 16px off. */
+          className="w-full lg:px-8"
           style={{ marginTop: "-64px" }}
         >
           <div className="grid grid-cols-12 gap-6">
@@ -58,12 +62,11 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick, actionButtons
 
       {/* Compact info bar — title + tagline */}
       <div
-        className="w-full px-4"
-        style={{
-          paddingTop: 12,
-          paddingBottom: 12,
-          ...(!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : {}),
-        }}
+        /* Production: `w-full px-6 md:px-8` (24px → 32px). The flat inline 32px
+           this replaced was 8px wide of production on mobile. The px-4 base is
+           kept for the scaling variants, which are a prototype-only study. */
+        className={cn("w-full", usesScaling ? "px-4" : "px-6 md:px-8")}
+        style={{ paddingTop: 12, paddingBottom: 12 }}
       >
         <div style={usesScaling ? scaledContainer : undefined}>
           {usesScaling ? (
@@ -79,7 +82,7 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick, actionButtons
                 </div>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.4 }}>
+                <p className="text-muted-foreground truncate text-body" style={{ lineHeight: 1.4 }}>
                   The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.
                 </p>
                 {actionButtons && (
@@ -103,7 +106,7 @@ export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick, actionButtons
                   </div>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.4 }}>
+                  <p className="text-muted-foreground truncate text-body" style={{ lineHeight: 1.4 }}>
                     The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.
                   </p>
                   {actionButtons && (

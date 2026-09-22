@@ -7,14 +7,14 @@
  * press the third one, as a bare sentence with no colour and no icon.
  */
 import { useState } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Separator } from "@/app/components/ui/separator";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { Separator } from "@/crd/primitives/separator";
 import type { SignedCopy } from "../signingData";
 
 interface CurrentSignedCopiesDialogProps {
@@ -33,7 +33,7 @@ function machineStamp(iso: string) {
 export function CurrentSignedCopiesDialog({
   open,
   onOpenChange,
-  copies,
+  copies
 }: CurrentSignedCopiesDialogProps) {
   const [verified, setVerified] = useState<Record<string, boolean>>({});
 

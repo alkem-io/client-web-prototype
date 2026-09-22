@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router";
 import { Mail, Send, Settings, UserPlus } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Badge } from "@/app/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Badge } from "@/crd/primitives/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 interface OrgData {
   name: string;
   initials: string;
@@ -38,8 +38,8 @@ const ORG_DATA: Record<string, OrgData> = {
     ],
     memberships: [],
     leadSpaces: [],
-    resourcesHosted: [],
-  },
+    resourcesHosted: []
+  }
 };
 
 function getOrgData(slug: string): OrgData {
@@ -53,7 +53,7 @@ function getOrgData(slug: string): OrgData {
     associates: [],
     memberships: [],
     leadSpaces: [],
-    resourcesHosted: [],
+    resourcesHosted: []
   };
 }
 
@@ -78,7 +78,7 @@ export default function OrgProfilePage() {
       {/* Header */}
       <div className="flex items-start gap-6 mb-8">
         <div
-          className="w-24 h-24 rounded-xl flex items-center justify-center text-white text-3xl font-bold shrink-0"
+          className="w-24 h-24 rounded-xl flex items-center justify-center text-white text-hero shrink-0"
           style={{ backgroundColor: org.avatarColor }}
         >
           {org.initials}
@@ -125,7 +125,7 @@ export default function OrgProfilePage() {
               <h3 className="text-caption font-semibold uppercase tracking-wider text-muted-foreground mb-2">Keywords</h3>
               <div className="flex flex-wrap gap-2">
                 {org.keywords.map((kw) => (
-                  <Badge key={kw} variant="secondary" className="text-xs">{kw}</Badge>
+                  <Badge key={kw} variant="secondary" className="text-caption">{kw}</Badge>
                 ))}
               </div>
             </div>
@@ -139,9 +139,9 @@ export default function OrgProfilePage() {
                 <div key={assoc.id} className="flex flex-col items-center gap-1.5">
                   <Avatar className="w-12 h-12 border">
                     {assoc.avatar ? <AvatarImage src={assoc.avatar} alt={assoc.name} /> : null}
-                    <AvatarFallback className="text-xs">{assoc.initials}</AvatarFallback>
+                    <AvatarFallback className="text-caption">{assoc.initials}</AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-center text-muted-foreground truncate w-full">{assoc.name.split(" ")[0]}</span>
+                  <span className="text-caption text-center text-muted-foreground truncate w-full">{assoc.name.split(" ")[0]}</span>
                 </div>
               ))}
             </div>

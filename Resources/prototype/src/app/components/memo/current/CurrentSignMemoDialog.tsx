@@ -6,13 +6,13 @@
  * instruction printed twice, the ALL-CAPS MUI buttons, and a "Continue to
  * Cleverbase" that names a company without saying what it will do to you.
  */
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
+  DialogTitle
+} from "@/crd/primitives/dialog";
 import { NativePdfViewer } from "../NativePdfViewer";
 
 interface CurrentSignMemoDialogProps {

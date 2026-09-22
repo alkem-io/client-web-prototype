@@ -1,7 +1,20 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { motion, AnimatePresence } from "motion/react";
+import {
+  DndContext,
+  DragOverlay,
+  useDroppable,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+  verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
+import { boardCollisionDetection, useBoardSensors } from "@/app/components/shared/boardDnd";
 import {
   Home,
   Users,
@@ -46,18 +59,18 @@ import {
   EyeOff as PanelLeftOff,
   AlignLeft,
   Layers as LayersIcon,
-  FileEdit,
+  FileEdit
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import { Switch } from "@/app/components/ui/switch";
-import { Label } from "@/app/components/ui/label";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
+import { Switch } from "@/crd/primitives/switch";
+import { Label } from "@/crd/primitives/label";
 import {
   Collapsible,
   CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/app/components/ui/collapsible";
+  CollapsibleContent
+} from "@/crd/primitives/collapsible";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -66,10 +79,10 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
-  DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
+  DropdownMenuSeparator
+} from "@/crd/primitives/dropdown-menu";
+import { cn } from "@/crd/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
@@ -81,7 +94,7 @@ import {
   spaceWidgetsDescription,
   hiddenCount,
   SPACE_WIDGET_DEFS,
-  type SidebarWidgetConfig,
+  type SidebarWidgetConfig
 } from "./SidebarWidgets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -140,7 +153,7 @@ const DEFAULT_TABS: TabItem[] = [
     icon: Home,
     description:
       "The main landing page for your space, showcasing highlights and pinned content.",
-    defaultIndex: 0,
+    defaultIndex: 0
   },
   {
     id: "community",
@@ -148,7 +161,7 @@ const DEFAULT_TABS: TabItem[] = [
     defaultLabel: "Community",
     icon: Users,
     description: "Member directory and profiles associated with this space.",
-    defaultIndex: 1,
+    defaultIndex: 1
   },
   {
     id: "subspaces",
@@ -157,7 +170,7 @@ const DEFAULT_TABS: TabItem[] = [
     icon: Layers,
     description:
       "Child spaces and projects organized under this parent space.",
-    defaultIndex: 2,
+    defaultIndex: 2
   },
   {
     id: "knowledge",
@@ -165,7 +178,7 @@ const DEFAULT_TABS: TabItem[] = [
     defaultLabel: "Knowledge",
     icon: BookOpen,
     description: "Wiki, documentation, and shared resources for members.",
-    defaultIndex: 3,
+    defaultIndex: 3
   },
 ];
 
@@ -183,23 +196,20 @@ const DEFAULT_POSTS: TabPosts = {
   subspaces: [],
   knowledge: [
     { id: "p-k1", title: "Design Research Knowledge", responses: 3 },
-  ],
+  ]
 };
 
 // ─── DnD Item Types ───────────────────────────────────────────────────────────
-const POST_CARD = "POST_CARD";
-const TAB_COLUMN = "TAB_COLUMN";
-
-interface PostDragItem {
-  id: string;
-  index: number;
-  sourceTabId: TabId;
-}
-
-interface ColumnDragItem {
-  id: string;
-  index: number;
-}
+/*
+ * Two-level drag: posts move within and between tab columns, and the columns
+ * themselves reorder. Mirrors production's SpaceSettingsLayoutView — columns
+ * are sortable under a `col:` prefix so their sortable ids can never collide
+ * with the per-column droppable ids (plain `tab.id`) or with post ids.
+ */
+const COLUMN_SORTABLE_PREFIX = "col:";
+const toColumnSortableId = (tabId: TabId) => `${COLUMN_SORTABLE_PREFIX}${tabId}`;
+const stripColumnPrefix = (id: string) =>
+  id.startsWith(COLUMN_SORTABLE_PREFIX) ? id.slice(COLUMN_SORTABLE_PREFIX.length) : id;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SECTION 1 — Post Card (draggable within & between columns)
@@ -229,71 +239,34 @@ const PostCard = ({
   movePostInColumn,
   movePostBetweenColumns,
   onRemove,
-  onMoveToTab,
+  onMoveToTab
 }: PostCardProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [{ handlerId }, drop] = useDrop<
-    PostDragItem,
-    void,
-    { handlerId: string | symbol | null }
-  >({
-    accept: POST_CARD,
-    collect: (monitor) => ({ handlerId: monitor.getHandlerId() }),
-    hover(item, monitor) {
-      if (!ref.current) return;
-      const dragIndex = item.index;
-      const hoverIndex = index;
-
-      if (item.sourceTabId === tabId && dragIndex === hoverIndex) return;
-
-      const rect = ref.current.getBoundingClientRect();
-      const midY = (rect.bottom - rect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      if (!clientOffset) return;
-      const hoverY = clientOffset.y - rect.top;
-
-      // Same column — simple reorder
-      if (item.sourceTabId === tabId) {
-        if (dragIndex < hoverIndex && hoverY < midY) return;
-        if (dragIndex > hoverIndex && hoverY > midY) return;
-        movePostInColumn(tabId, dragIndex, hoverIndex);
-        item.index = hoverIndex;
-        return;
-      }
-
-      // Cross-column — insert at hoverIndex position
-      movePostBetweenColumns(item.sourceTabId, dragIndex, tabId, hoverIndex);
-      item.sourceTabId = tabId;
-      item.index = hoverIndex;
-    },
+  // Reordering is resolved centrally in the DndContext handlers below, so the
+  // card only needs to declare itself sortable and which column it lives in.
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: post.id,
+    data: { type: "card", tabId }
   });
 
-  const [{ isDragging }, drag] = useDrag({
-    type: POST_CARD,
-    item: (): PostDragItem => ({ id: post.id, index, sourceTabId: tabId }),
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
-
-  drag(drop(ref));
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition
+  };
 
   const otherTabs = allTabs.filter((t) => t.id !== tabId);
 
   return (
-    <motion.div
-      ref={ref}
-      data-handler-id={handlerId}
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95, height: 0 }}
-      transition={{ duration: 0.15 }}
+    <div
+      ref={setNodeRef}
+      style={style}
       className={cn(
         "flex items-center gap-2 px-2.5 py-2 bg-background border border-border rounded-lg",
-        "cursor-grab active:cursor-grabbing group/post",
+        "cursor-grab active:cursor-grabbing touch-none group/post",
         "hover:border-primary/30 transition-all",
         isDragging && "opacity-30 border-dashed"
       )}
+      {...attributes}
+      {...listeners}
     >
       <GripVertical className="w-3.5 h-3.5 text-muted-foreground/30 group-hover/post:text-muted-foreground/60 shrink-0" />
 
@@ -338,7 +311,7 @@ const PostCard = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </motion.div>
+    </div>
   );
 };
 
@@ -392,7 +365,7 @@ const KanbanColumn = ({
   setEditingId,
   hiddenWidgets,
   onOpenLayout,
-  sidebarMode,
+  sidebarMode
 }: KanbanColumnProps) => {
   const autoExpandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -407,42 +380,27 @@ const KanbanColumn = ({
     if (e.key === "Enter" || e.key === "Escape") setEditingId(null);
   };
 
-  const [{ isOverColumn, canDropHere }, dropRef] = useDrop<
-    PostDragItem,
-    void,
-    { isOverColumn: boolean; canDropHere: boolean }
-  >({
-    accept: POST_CARD,
-    collect: (monitor) => ({
-      isOverColumn: monitor.isOver({ shallow: true }),
-      canDropHere: monitor.canDrop(),
-    }),
-    hover(item) {
-      if (!isOpen && autoExpandTimer.current === null) {
-        autoExpandTimer.current = setTimeout(() => {
-          onAutoExpand();
-          autoExpandTimer.current = null;
-        }, 500);
-      }
-      if (item.sourceTabId !== tab.id && posts.length === 0) {
-        movePostBetweenColumns(item.sourceTabId, item.index, tab.id, 0);
-        item.sourceTabId = tab.id;
-        item.index = 0;
-      }
-    },
-    drop(item) {
-      if (item.sourceTabId !== tab.id) {
-        movePostBetweenColumns(
-          item.sourceTabId,
-          item.index,
-          tab.id,
-          posts.length
-        );
-        item.sourceTabId = tab.id;
-        item.index = posts.length;
-      }
-    },
+  /*
+   * The column body is a droppable in its own right so a post can be dropped
+   * into an empty column, where there is no sibling card to collide with.
+   * Keeps `tab.id` as the droppable id (unprefixed) so the drag handlers can
+   * resolve a target column straight from `over.id`.
+   */
+  const { setNodeRef: dropRef, isOver: isOverColumn } = useDroppable({
+    id: tab.id,
+    data: { type: "column", tabId: tab.id }
   });
+  const canDropHere = true;
+
+  // Hovering a collapsed column for 500ms springs it open so you can drop in.
+  useEffect(() => {
+    if (isOverColumn && !isOpen && autoExpandTimer.current === null) {
+      autoExpandTimer.current = setTimeout(() => {
+        onAutoExpand();
+        autoExpandTimer.current = null;
+      }, 500);
+    }
+  }, [isOverColumn, isOpen, onAutoExpand]);
 
   useEffect(() => {
     if (!isOverColumn && autoExpandTimer.current) {
@@ -605,9 +563,7 @@ const KanbanColumn = ({
 
         <CollapsibleContent>
           <div
-            ref={(node) => {
-              dropRef(node);
-            }}
+            ref={dropRef}
             className={cn(
               "p-1.5 space-y-1.5 min-h-[60px] transition-colors",
               isOverColumn && canDropHere && "bg-primary/5"
@@ -620,7 +576,7 @@ const KanbanColumn = ({
                 </span>
               </div>
             ) : (
-              <AnimatePresence initial={false}>
+              <SortableContext items={posts.map((p) => p.id)} strategy={verticalListSortingStrategy}>
                 {posts.map((post, idx) => (
                   <PostCard
                     key={post.id}
@@ -634,7 +590,7 @@ const KanbanColumn = ({
                     onMoveToTab={onMoveToTab}
                   />
                 ))}
-              </AnimatePresence>
+              </SortableContext>
             )}
           </div>
         </CollapsibleContent>
@@ -649,66 +605,27 @@ const KanbanColumn = ({
 
 interface DraggableColumnWrapperProps {
   tabId: TabId;
-  index: number;
-  moveTab: (dragIndex: number, hoverIndex: number) => void;
   children: React.ReactNode;
 }
 
-const DraggableColumnWrapper = ({
-  tabId,
-  index,
-  moveTab,
-  children,
-}: DraggableColumnWrapperProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [{ handlerId }, drop] = useDrop<
-    ColumnDragItem,
-    void,
-    { handlerId: string | symbol | null }
-  >({
-    accept: TAB_COLUMN,
-    collect: (monitor) => ({ handlerId: monitor.getHandlerId() }),
-    hover(item, monitor) {
-      if (!ref.current) return;
-      const dragIndex = item.index;
-      const hoverIndex = index;
-      if (dragIndex === hoverIndex) return;
-
-      const rect = ref.current.getBoundingClientRect();
-      // Use horizontal midpoint for grid layout
-      const midX = (rect.right - rect.left) / 2;
-      const clientOffset = monitor.getClientOffset();
-      if (!clientOffset) return;
-      const hoverX = clientOffset.x - rect.left;
-
-      if (dragIndex < hoverIndex && hoverX < midX) return;
-      if (dragIndex > hoverIndex && hoverX > midX) return;
-
-      moveTab(dragIndex, hoverIndex);
-      item.index = hoverIndex;
-    },
+const DraggableColumnWrapper = ({ tabId, children }: DraggableColumnWrapperProps) => {
+  // Column reordering is resolved in the DndContext handlers; `rectSortingStrategy`
+  // shifts the siblings, so the wrapper only carries the transform.
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: toColumnSortableId(tabId),
+    data: { type: "column", tabId }
   });
-
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: TAB_COLUMN,
-    item: (): ColumnDragItem => ({ id: tabId, index }),
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
-
-  // Entire wrapper is drop target + preview; drag initiated from the whole column
-  drop(ref);
-  preview(ref);
-  drag(ref);
 
   return (
     <div
-      ref={ref}
-      data-handler-id={handlerId}
-      className={cn(
-        "transition-opacity",
-        isDragging && "opacity-40"
-      )}
+      ref={setNodeRef}
+      style={{
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        transition
+      }}
+      className={cn("transition-opacity touch-none", isDragging && "opacity-40")}
+      {...attributes}
+      {...listeners}
     >
       {children}
     </div>
@@ -731,7 +648,7 @@ export function SpaceSettingsLayout() {
     home: true,
     community: true,
     subspaces: false, // empty → collapsed by default
-    knowledge: true,
+    knowledge: true
   });
 
   const [postDescCollapsed, setPostDescCollapsed] = useState(() => {
@@ -849,7 +766,7 @@ export function SpaceSettingsLayout() {
         return {
           ...prev,
           [fromTab]: source,
-          [toTab]: [...prev[toTab], moved],
+          [toTab]: [...prev[toTab], moved]
         };
       });
       // Auto-expand target column
@@ -863,7 +780,7 @@ export function SpaceSettingsLayout() {
     (postId: string, tabId: TabId) => {
       setTabPosts((prev) => ({
         ...prev,
-        [tabId]: prev[tabId].filter((p) => p.id !== postId),
+        [tabId]: prev[tabId].filter((p) => p.id !== postId)
       }));
     },
     []
@@ -918,7 +835,7 @@ export function SpaceSettingsLayout() {
       home: true,
       community: true,
       subspaces: false,
-      knowledge: true,
+      knowledge: true
     });
   };
 
@@ -931,10 +848,92 @@ export function SpaceSettingsLayout() {
     setExpandedCols((prev) => ({ ...prev, [tabId]: true }));
   }, []);
 
+  // ─── Drag wiring ────────────────────────────────────────────────────────
+  const sensors = useBoardSensors();
+  const [activePostId, setActivePostId] = useState<string | null>(null);
+  const activePost = activePostId
+    ? (Object.values(tabPosts).flat() as PostEntry[]).find((p) => p.id === activePostId)
+    : undefined;
+
+  const tabOfPost = useCallback(
+    (postId: string): TabId | undefined =>
+      (Object.keys(tabPosts) as TabId[]).find((t) => tabPosts[t]?.some((p) => p.id === postId)),
+    [tabPosts]
+  );
+
+  /** `over.id` is either a column droppable (`tab.id`) or a post card. */
+  const tabOfDropTarget = useCallback(
+    (overId: string): TabId | undefined =>
+      tabs.some((t) => t.id === overId) ? (overId as TabId) : tabOfPost(overId),
+    [tabs, tabOfPost]
+  );
+
+  const indexInTab = useCallback(
+    (tabId: TabId, overId: string) => {
+      const list = tabPosts[tabId] ?? [];
+      const i = list.findIndex((p) => p.id === overId);
+      return i === -1 ? list.length : i;
+    },
+    [tabPosts]
+  );
+
+  const isColumnDrag = (e: DragStartEvent | DragOverEvent | DragEndEvent) =>
+    e.active.data.current?.type === "column";
+
+  const handleDragStart = (event: DragStartEvent) => {
+    if (isColumnDrag(event)) return; // columns use the sortable transform, no overlay
+    setActivePostId(String(event.active.id));
+  };
+
+  // Cross-column only — SortableContext handles same-column reordering live.
+  const handleDragOver = (event: DragOverEvent) => {
+    if (isColumnDrag(event)) return;
+    const { active, over } = event;
+    if (!over) return;
+    const postId = String(active.id);
+    const overId = String(over.id);
+    if (postId === overId) return;
+
+    const from = tabOfPost(postId);
+    const to = tabOfDropTarget(overId);
+    if (!from || !to || from === to) return;
+
+    movePostBetweenColumns(from, indexInTab(from, postId), to, indexInTab(to, overId));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActivePostId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    if (isColumnDrag(event)) {
+      const fromIdx = tabs.findIndex((t) => t.id === stripColumnPrefix(String(active.id)));
+      const toIdx = tabs.findIndex((t) => t.id === stripColumnPrefix(String(over.id)));
+      if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) moveTab(fromIdx, toIdx);
+      return;
+    }
+
+    const postId = String(active.id);
+    const overId = String(over.id);
+    const from = tabOfPost(postId);
+    const to = tabOfDropTarget(overId);
+    if (!from || !to) return;
+
+    if (from === to) movePostInColumn(to, indexInTab(to, postId), indexInTab(to, overId));
+    else movePostBetweenColumns(from, indexInTab(from, postId), to, indexInTab(to, overId));
+  };
+
   return (
     <>
     <UnsavedChangesGuard isDirty={hasChanges} onSave={handleSave} />
-    <DndProvider backend={HTML5Backend}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={boardCollisionDetection}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={() => setActivePostId(null)}
+    >
       <div className="w-full h-full pb-20">
         <div className="flex flex-col h-full">
           <div className="mb-6 flex items-start justify-between gap-4">
@@ -950,14 +949,10 @@ export function SpaceSettingsLayout() {
             </Button>
           </div>
 
+          <SortableContext items={tabs.map((t) => toColumnSortableId(t.id))} strategy={rectSortingStrategy}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-start">
             {tabs.map((tab) => (
-              <DraggableColumnWrapper
-                key={tab.id}
-                tabId={tab.id}
-                index={tabs.findIndex((t) => t.id === tab.id)}
-                moveTab={moveTab}
-              >
+              <DraggableColumnWrapper key={tab.id} tabId={tab.id}>
                 <KanbanColumn
                   tab={tab}
                   posts={tabPosts[tab.id] || []}
@@ -984,6 +979,7 @@ export function SpaceSettingsLayout() {
               </DraggableColumnWrapper>
             ))}
           </div>
+          </SortableContext>
 
           {/* Post Description Display toggle */}
           <SettingsSection
@@ -1082,7 +1078,18 @@ export function SpaceSettingsLayout() {
           </SettingsSection>
         </div>
       </div>
-    </DndProvider>
+      {createPortal(
+        <DragOverlay dropAnimation={null}>
+          {activePost ? (
+            <div className="flex items-center gap-2 px-2.5 py-2 bg-background border border-border rounded-lg shadow-lg rotate-2">
+              <GripVertical className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+              <span className="text-caption font-medium line-clamp-2 text-foreground">{activePost.title}</span>
+            </div>
+          ) : null}
+        </DragOverlay>,
+        document.body
+      )}
+    </DndContext>
     {layoutDialogTab && (
       <SidebarWidgetsDialog
         open={layoutDialogTab !== null}

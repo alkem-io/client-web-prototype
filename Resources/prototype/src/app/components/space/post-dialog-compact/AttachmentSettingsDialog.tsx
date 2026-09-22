@@ -32,26 +32,26 @@ import {
   Trash2,
   UserPlus,
   Users,
-  Zap,
+  Zap
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
-} from "@/app/components/ui/popover";
-import { Switch } from "@/app/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+  PopoverTrigger
+} from "@/crd/primitives/popover";
+import { Switch } from "@/crd/primitives/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/crd/primitives/tooltip";
+import { cn } from "@/crd/lib/utils";
 import { attachmentOption } from "./options";
 import { CHIP_REST, type OptionColor } from "./optionStyles";
 import type { AttachmentConfig, ContributorKind } from "./types";
@@ -73,7 +73,7 @@ function PillToggle({
   active,
   onClick,
   icon: Icon,
-  children,
+  children
 }: {
   active: boolean;
   onClick: () => void;
@@ -104,7 +104,7 @@ function Section({
   color = "primary",
   title,
   help,
-  children,
+  children
 }: {
   icon: React.ElementType;
   color?: OptionColor;
@@ -139,7 +139,7 @@ export function AttachmentSettingsDialog({
   type,
   value,
   onSave,
-  basePath,
+  basePath
 }: AttachmentSettingsDialogProps) {
   const option = attachmentOption(type);
   const [draft, setDraft] = useState<AttachmentConfig>(value);
@@ -155,7 +155,7 @@ export function AttachmentSettingsDialog({
     membershipPolicy: "application" as const,
     memberCreatePosts: false,
     memberCreateSubspaces: true,
-    subspaceEvents: true,
+    subspaceEvents: true
   };
 
   const predefinedActions = [
@@ -171,7 +171,7 @@ export function AttachmentSettingsDialog({
       icon: UserPlus,
       url: `${basePath}/join`,
       disabled: false,
-      disabledReason: undefined as string | undefined,
+      disabledReason: undefined as string | undefined
     },
     {
       id: "create-post",
@@ -181,7 +181,7 @@ export function AttachmentSettingsDialog({
       icon: PenLine,
       url: `${basePath}/new-post`,
       disabled: !spaceSettings.memberCreatePosts,
-      disabledReason: "Members are not allowed to create posts in this space",
+      disabledReason: "Members are not allowed to create posts in this space"
     },
     {
       id: "create-subspace",
@@ -191,7 +191,7 @@ export function AttachmentSettingsDialog({
       icon: CirclePlus,
       url: `${basePath}/new-subspace`,
       disabled: !spaceSettings.memberCreateSubspaces,
-      disabledReason: "Members are not allowed to create subspaces in this space",
+      disabledReason: "Members are not allowed to create subspaces in this space"
     },
     {
       id: "add-event",
@@ -201,7 +201,7 @@ export function AttachmentSettingsDialog({
       icon: Calendar,
       url: `${basePath}/new-event`,
       disabled: !spaceSettings.subspaceEvents,
-      disabledReason: "Events are disabled for this space",
+      disabledReason: "Events are disabled for this space"
     },
     {
       id: "contact-leads",
@@ -211,7 +211,7 @@ export function AttachmentSettingsDialog({
       icon: Mail,
       url: `${basePath}/contact-leads`,
       disabled: false,
-      disabledReason: undefined,
+      disabledReason: undefined
     },
   ];
 
@@ -280,8 +280,8 @@ export function AttachmentSettingsDialog({
                             ...draft,
                             poll: {
                               ...draft.poll,
-                              options: draft.poll.options.filter((_, i) => i !== index),
-                            },
+                              options: draft.poll.options.filter((_, i) => i !== index)
+                            }
                           })
                         }
                       >
@@ -296,7 +296,7 @@ export function AttachmentSettingsDialog({
                     onClick={() =>
                       setDraft({
                         ...draft,
-                        poll: { ...draft.poll, options: [...draft.poll.options, ""] },
+                        poll: { ...draft.poll, options: [...draft.poll.options, ""] }
                       })
                     }
                   >
@@ -388,7 +388,7 @@ export function AttachmentSettingsDialog({
                                         onClick={() => {
                                           setDraft({
                                             ...draft,
-                                            cta: { label: action.displayName, url: action.url },
+                                            cta: { label: action.displayName, url: action.url }
                                           });
                                           setActionPickerOpen(false);
                                         }}
@@ -480,8 +480,8 @@ export function AttachmentSettingsDialog({
                                   kinds,
                                   defaultKind: kinds.includes(draft.contributors.defaultKind)
                                     ? draft.contributors.defaultKind
-                                    : kinds[0],
-                                },
+                                    : kinds[0]
+                                }
                               });
                             }}
                           >
@@ -503,7 +503,7 @@ export function AttachmentSettingsDialog({
                             onClick={() =>
                               setDraft({
                                 ...draft,
-                                contributors: { ...draft.contributors, defaultKind: kind.id },
+                                contributors: { ...draft.contributors, defaultKind: kind.id }
                               })
                             }
                           >
@@ -528,7 +528,7 @@ export function AttachmentSettingsDialog({
                       onClick={() =>
                         setDraft({
                           ...draft,
-                          contributors: { ...draft.contributors, display: display.id },
+                          contributors: { ...draft.contributors, display: display.id }
                         })
                       }
                     >

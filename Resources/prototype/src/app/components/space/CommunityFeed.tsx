@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { Plus } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
@@ -17,14 +17,14 @@ const INITIAL_COMMUNITY_POSTS: PostProps[] = [
       avatarUrl:
         "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGdsYXNzZXMlMjBibGFjayUyMGFuZCUyMHdoaXRlJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzY5NDQyNTM3fDA&ixlib=rb-4.1.0&q=80&w=256",
       location: "Barcelona, ES",
-      skills: ["Urban Planning", "Sustainability", "Community Design", "Policy", "Innovation"],
+      skills: ["Urban Planning", "Sustainability", "Community Design", "Policy", "Innovation"]
     },
     title: "Welcome new members & organizations!",
     snippet:
       "We're thrilled to welcome Green Future Labs and the Sustainable Cities Fund to the space this month. Together with our 29 members, we now have four organizations actively contributing to the transition strategy. If you're new, please introduce yourself below — we'd love to hear about your background and what you hope to contribute!",
     timestamp: "3 hours ago",
     stats: { likes: 18, comments: 7 },
-    commentTexts: ["Welcome Green Future Labs! Excited to collaborate.", "Great to have the Sustainable Cities Fund on board.", "I'm new here — background in urban planning and circular economy.", "Looking forward to contributing to the transition strategy.", "Can we schedule a welcome session for all new members?"],
+    commentTexts: ["Welcome Green Future Labs! Excited to collaborate.", "Great to have the Sustainable Cities Fund on board.", "I'm new here — background in urban planning and circular economy.", "Looking forward to contributing to the transition strategy.", "Can we schedule a welcome session for all new members?"]
   },
   {
     id: "community-2",
@@ -35,7 +35,7 @@ const INITIAL_COMMUNITY_POSTS: PostProps[] = [
       avatarUrl:
         "https://images.unsplash.com/photo-1589332911105-a6b59f2e4c4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHNtaWxpbmclMjBkYXJrJTIwaGFpciUyMHBvcnRyYWl0fGVufDF8fHx8MTc2OTQ0MjUzN3ww&ixlib=rb-4.1.0&q=80&w=256",
       location: "Berlin, DE",
-      skills: ["Community Engagement", "Facilitation", "Stakeholder Management", "Workshop Design"],
+      skills: ["Community Engagement", "Facilitation", "Stakeholder Management", "Workshop Design"]
     },
     title: "Call for Volunteers: Community Engagement Working Group",
     snippet:
@@ -47,18 +47,18 @@ const INITIAL_COMMUNITY_POSTS: PostProps[] = [
           title: "Engagement Framework",
           imageUrl:
             "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080",
-          author: "Maya Ross",
+          author: "Maya Ross"
         },
         {
           title: "Stakeholder Map",
           imageUrl:
             "https://images.unsplash.com/photo-1574359219611-a3031f074b2c?auto=format&fit=crop&q=80&w=1080",
-          author: "David Kim",
+          author: "David Kim"
         },
-      ],
+      ]
     },
     stats: { likes: 31, comments: 14 },
-    commentTexts: ["I'd love to volunteer — I have experience in workshop facilitation.", "The stakeholder map needs input from the transport sector.", "Can we include youth representatives in the working group?", "Public communication strategy should cover social media.", "Introductory call works for me — please share the calendar invite."],
+    commentTexts: ["I'd love to volunteer — I have experience in workshop facilitation.", "The stakeholder map needs input from the transport sector.", "Can we include youth representatives in the working group?", "Public communication strategy should cover social media.", "Introductory call works for me — please share the calendar invite."]
   },
 ];
 
@@ -79,7 +79,7 @@ export function CommunityFeed() {
     posts,
     setPosts,
     currentUser: MOCK_CURRENT_USER,
-    isAdmin: true,
+    isAdmin: true
   });
 
   const filteredPosts = posts.filter((post) => {
@@ -103,9 +103,8 @@ export function CommunityFeed() {
         <h2
           className="text-section-title"
           style={{
-            color: "var(--foreground)",
-            fontFamily: "'Inter', sans-serif",
-          }}
+            color: "var(--foreground)"
+            }}
         >
           Community Posts
         </h2>

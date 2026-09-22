@@ -3,32 +3,32 @@ import {
  Share2, Layers, Check, Home, Image as ImageIcon,
  Settings, Plus, Shield, FileText
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
 import { 
  Accordion, 
  AccordionContent, 
  AccordionItem, 
  AccordionTrigger 
-} from "@/app/components/ui/accordion";
+} from "@/crd/primitives/accordion";
 import {
  Dialog,
  DialogContent,
  DialogDescription,
  DialogFooter,
  DialogHeader,
- DialogTitle,
-} from "@/app/components/ui/dialog";
+ DialogTitle
+} from "@/crd/primitives/dialog";
 import {
  Select,
  SelectContent,
  SelectItem,
  SelectTrigger,
- SelectValue,
-} from "@/app/components/ui/select";
-import { cn } from "@/lib/utils";
+ SelectValue
+} from "@/crd/primitives/select";
+import { cn } from "@/crd/lib/utils";
 import { useNavigate, useParams, Link } from "react-router";
 import { toast } from "sonner";
 import { PACK_SPECIFIC_TEMPLATES } from "@/app/data/template-data";

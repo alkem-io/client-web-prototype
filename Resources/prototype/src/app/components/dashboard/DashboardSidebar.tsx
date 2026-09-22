@@ -5,12 +5,12 @@ import {
   Lightbulb,
   Bot,
   Tag,
-  Eye,
+  Eye
 } from "lucide-react";
 import { Link, useLocation } from "react-router";
-import { cn } from "@/lib/utils";
-import { Switch } from "@/app/components/ui/switch";
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
+import { cn } from "@/crd/lib/utils";
+import { Switch } from "@/crd/primitives/switch";
+import { Avatar, AvatarFallback } from "@/crd/primitives/avatar";
 import { InvitationsDialog } from "@/app/components/dialogs/InvitationsDialog";
 import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV3";
 import { useLanguage } from "@/app/contexts/LanguageContext";
@@ -45,7 +45,7 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
       icon: Mail,
       label: t("nav.invitations"),
       onClick: () => setShowInvitations(true),
-      badge: 2,
+      badge: 2
     },
     { icon: Rocket, label: "Create my own Space", onClick: () => setShowCreateSpace(true) },
     { icon: Lightbulb, label: "Tips & Tricks", href: "#" },
@@ -71,7 +71,7 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
         {navItems.map((item) => {
           const isActive = item.href && location.pathname === item.href;
           const commonClasses = cn(
-            "flex items-center justify-between rounded-md transition-colors h-9 w-full px-2 text-control",
+            "flex items-center justify-between rounded-md transition-colors h-9 w-full px-2 text-body",
             isActive
               ? "bg-accent text-accent-foreground"
               : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
@@ -81,10 +81,10 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
             <>
               <div className="flex items-center gap-2.5 min-w-0">
                 <item.icon className="w-4 h-4 shrink-0" />
-                <span className="truncate text-control">{item.label}</span>
+                <span className="truncate text-body">{item.label}</span>
               </div>
               {item.badge && (
-                <span className="rounded-full bg-primary text-primary-foreground text-badge font-bold px-1.5 py-px">
+                <span className="rounded-full bg-primary text-primary-foreground text-badge px-1.5 py-px">
                   {item.badge}
                 </span>
               )}
@@ -110,7 +110,7 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
       {/* Activity View toggle */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
+          <div className="flex items-center gap-2 text-body text-muted-foreground">
             <Eye className="w-4 h-4" />
             <span>{t("nav.activityView")}</span>
           </div>
@@ -125,7 +125,7 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
             <Eye className="w-4 h-4" />
-            <span className="text-xs">New User View</span>
+            <span className="text-caption">New User View</span>
           </div>
           <Switch
             id="new-user-view"
@@ -139,7 +139,7 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
             <Eye className="w-4 h-4" />
-            <span className="text-xs">Has Pending</span>
+            <span className="text-caption">Has Pending</span>
           </div>
           <Switch
             id="has-pending"
@@ -152,7 +152,7 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
 
       {/* My Spaces */}
       <div>
-        <div className="text-sidebar-label uppercase px-2 mb-2 text-muted-foreground/50">
+        <div className="text-label uppercase px-2 mb-2 text-muted-foreground">
           {t("nav.mySpaces")}
         </div>
         <div className="space-y-1">
@@ -163,18 +163,18 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
             <Link
               key={space.href}
               to={space.href}
-              className="flex items-center gap-2.5 rounded-md transition-colors h-9 px-2 text-control text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+              className="flex items-center gap-2.5 rounded-md transition-colors h-9 px-2 text-body text-muted-foreground hover:bg-accent/50 hover:text-foreground"
             >
               {space.bannerImage ? (
                 <div className="w-6 h-6 rounded-md shrink-0 overflow-hidden">
                   <img src={space.bannerImage} alt={space.name} className="w-full h-full object-cover" />
                 </div>
               ) : (
-                <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 bg-primary/10 text-primary text-badge font-bold">
+                <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 bg-primary/10 text-primary text-badge">
                   {space.initials}
                 </div>
               )}
-              <span className="truncate">{space.name}</span>
+              <span className="truncate text-body">{space.name}</span>
               {hasActivity && (
                 <ActivityDot className="ml-auto mr-1" label={`${space.name} has new activity`} />
               )}
@@ -186,7 +186,7 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
 
       {/* Virtual Contributors */}
       <div>
-        <div className="text-sidebar-label uppercase px-2 mb-2 text-muted-foreground/50">
+        <div className="text-label uppercase px-2 mb-2 text-muted-foreground">
           Virtual Contributors
         </div>
         <div className="space-y-1">
@@ -194,14 +194,14 @@ export function DashboardSidebar({ activityView, onToggleView, newUserView, onTo
             <Link
               key={vc.name}
               to={`/vc/${vc.slug}`}
-              className="flex items-center gap-2.5 rounded-md transition-colors h-9 px-2 w-full text-control text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+              className="flex items-center gap-2.5 rounded-md transition-colors h-9 px-2 w-full text-body text-muted-foreground hover:bg-accent/50 hover:text-foreground"
             >
               <Avatar className="w-6 h-6 shrink-0">
-                <AvatarFallback className="text-badge font-bold bg-chart-2/15 text-chart-2">
+                <AvatarFallback className="text-badge bg-chart-2/15 text-chart-2">
                   <Bot className="w-3.5 h-3.5" />
                 </AvatarFallback>
               </Avatar>
-              <span className="truncate">{vc.name}</span>
+              <span className="truncate text-body">{vc.name}</span>
             </Link>
           ))}
         </div>

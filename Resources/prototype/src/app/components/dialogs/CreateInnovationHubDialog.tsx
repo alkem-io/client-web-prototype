@@ -4,16 +4,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { X, ImageIcon } from "lucide-react";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 
 interface CreateInnovationHubDialogProps {
   open: boolean;
@@ -22,7 +22,7 @@ interface CreateInnovationHubDialogProps {
 
 export function CreateInnovationHubDialog({
   open,
-  onOpenChange,
+  onOpenChange
 }: CreateInnovationHubDialogProps) {
   const navigate = useNavigate();
   const [subdomain, setSubdomain] = useState("");
@@ -142,7 +142,7 @@ export function CreateInnovationHubDialog({
               value={description}
               onChange={setDescription}
               placeholder="Describe what this hub is about..."
-              minHeight="120px"
+              className="min-h-[120px]"
             />
             <p className="text-caption text-muted-foreground">
               Explain the purpose of this Innovation Hub. Markdown supported.

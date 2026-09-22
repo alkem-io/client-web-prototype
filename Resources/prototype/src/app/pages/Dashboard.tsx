@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { RecentSpaces } from "@/app/components/dashboard/RecentSpaces";
 import { ActivityFeed } from "@/app/components/dashboard/ActivityFeed";
 import { DashboardSidebar } from "@/app/components/dashboard/DashboardSidebar";
+import { DashboardLayout } from "@/crd/components/dashboard/DashboardLayout";
 import { UpdateBanner } from "@/app/components/dashboard/UpdateBanner";
 import { EnhancedSpacesGallery } from "@/app/components/dashboard/EnhancedSpacesGallery";
 
@@ -41,27 +42,33 @@ export function Dashboard() {
   }, [hasPending]);
 
   return (
-    <div className="px-6 md:px-8 py-8 w-full">
-      <div className="grid grid-cols-12 gap-6">
-        {/* Sidebar — occupies the 1-col margin area + 1 more col */}
-        <div className="hidden md:block col-span-2">
-          <DashboardSidebar
-            activityView={activityView}
-            onToggleView={setActivityView}
-            newUserView={newUserView}
-            onToggleNewUserView={setNewUserView}
-            hasPending={hasPending}
-            onToggleHasPending={setHasPending}
-          />
-        </div>
-        {/* Main content — 9 columns, leaving 1-col margin on right */}
-        <div className="col-span-12 md:col-span-9 grid grid-cols-9 gap-6">
+    /*
+     * Production's DashboardLayout owns the page margins: the px-6/md:px-8
+     * gutter, the 12-col grid, the inset content band, the fixed 240px sidebar
+     * and the mobile drawer. The prototype previously hand-rolled this with the
+     * sidebar at `col-span-2` starting in the gutter column, which put every
+     * dashboard surface ~117px left of where production draws it.
+     */
+    <DashboardLayout
+      sidebar={
+        <DashboardSidebar
+          activityView={activityView}
+          onToggleView={setActivityView}
+          newUserView={newUserView}
+          onToggleNewUserView={setNewUserView}
+          hasPending={hasPending}
+          onToggleHasPending={setHasPending}
+        />
+      }
+    >
+      {/* Inner 9-col grid keeps the existing content proportions. */}
+      <div className="grid grid-cols-9 gap-6">
           {/* Explore all Spaces — consistent position across all views (hidden for new user view) */}
           {!(newUserView && !activityView) && (
           <div className="col-span-9 flex justify-end">
             <button
               onClick={() => navigate("/spaces")}
-              className="flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none text-control"
+              className="flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none text-body-emphasis"
               style={{ color: "var(--primary)" }}
               type="button"
             >
@@ -89,8 +96,7 @@ export function Dashboard() {
               <EnhancedSpacesGallery newUserView={newUserView} hasPending={hasPending} />
             </div>
           )}
-        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

@@ -6,9 +6,9 @@
  * and drops into the same ContributionGrid.
  */
 import { ClipboardList } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
-import { Badge } from '@/app/components/ui/badge';
+import { cn } from '@/crd/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
+import { Badge } from '@/crd/primitives/badge';
 import { ReactionBar } from '@/app/components/space/PostReactions';
 
 type ContributionFormResponseCardProps = {
@@ -36,7 +36,7 @@ export function ContributionFormResponseCard({
   reactionId,
   reactionsEnabled = true,
   onClick,
-  className,
+  className
 }: ContributionFormResponseCardProps) {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!onClick) return;

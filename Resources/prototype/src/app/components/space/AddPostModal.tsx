@@ -12,48 +12,48 @@ import {
   Building2, Bot, List, Map as MapIcon,
   ClipboardList, ChevronUp, ChevronDown, CheckSquare
 } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Switch } from "@/app/components/ui/switch";
-import { Separator } from "@/app/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Switch } from "@/crd/primitives/switch";
+import { Separator } from "@/crd/primitives/separator";
+import { cn } from "@/crd/lib/utils";
 import { ConfigureTaskColumnsDialog, type TaskColumnDef } from "@/app/components/contribution/TaskBoard";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/app/components/ui/collapsible";
+  CollapsibleTrigger
+} from "@/crd/primitives/collapsible";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
-} from "@/app/components/ui/tooltip";
+  TooltipTrigger
+} from "@/crd/primitives/tooltip";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
-} from "@/app/components/ui/popover";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
-import { Textarea } from "@/app/components/ui/textarea";
+  PopoverTrigger
+} from "@/crd/primitives/popover";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
+import { Textarea } from "@/crd/primitives/textarea";
 import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog";
 import {
   ANSWER_TYPE_DESCRIPTORS,
   ANSWER_TYPE_ORDER,
   type CalloutFormAnswerType,
   type CalloutFormChoiceOption,
-  type CalloutFormResponseVisibility,
+  type CalloutFormResponseVisibility
 } from "@/app/components/callout/calloutFormTypes";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 /** A question row while it's being authored — `sortOrder` is the array index. */
 interface DraftFormQuestion {
@@ -80,7 +80,7 @@ function createDraftQuestion(): DraftFormQuestion {
     // Short answer is the cheapest thing to answer, so it's the default —
     // the author opts into more effort rather than out of it.
     answerType: "short",
-    options: [],
+    options: []
   };
 }
 
@@ -159,7 +159,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
     membershipPolicy: "application" as "open" | "application" | "invitation",
     memberCreatePosts: false,
     memberCreateSubspaces: true,
-    subspaceEvents: true,
+    subspaceEvents: true
   };
 
   // Resolve base path for actions (works for both space and subspace context)
@@ -186,7 +186,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
       defaultDisplayName: spaceSettings.membershipPolicy === "application" ? "Apply to join" : "Join this space",
       icon: UserPlus,
       url: `${basePath}/join`,
-      disabled: false,
+      disabled: false
     },
     // Create / Contribute
     {
@@ -197,7 +197,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
       icon: PenLine,
       url: `${basePath}/new-post`,
       disabled: !spaceSettings.memberCreatePosts,
-      disabledReason: "Members are not allowed to create posts in this space",
+      disabledReason: "Members are not allowed to create posts in this space"
     },
     {
       id: "create-subspace",
@@ -207,7 +207,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
       icon: CirclePlus,
       url: `${basePath}/new-subspace`,
       disabled: !spaceSettings.memberCreateSubspaces,
-      disabledReason: "Members are not allowed to create subspaces in this space",
+      disabledReason: "Members are not allowed to create subspaces in this space"
     },
     {
       id: "add-event",
@@ -217,7 +217,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
       icon: Calendar,
       url: `${basePath}/new-event`,
       disabled: !spaceSettings.subspaceEvents,
-      disabledReason: "Events are disabled for this space",
+      disabledReason: "Events are disabled for this space"
     },
     // Connect
     {
@@ -227,7 +227,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
       defaultDisplayName: "Get in touch",
       icon: Mail,
       url: `${basePath}/contact-leads`,
-      disabled: false,
+      disabled: false
     },
   ];
 
@@ -314,9 +314,8 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
             <MarkdownEditor
               value={content}
               onChange={setContent}
-              className="border-none shadow-none [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:bg-transparent [&_.ql-container]:border-0"
+              className="min-h-[200px] border-none shadow-none"
               placeholder="Description..."
-              minHeight="200px"
             />
           </div>
 
@@ -468,8 +467,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                     value=""
                     onChange={() => {}}
                     placeholder="Write your memo…"
-                    minHeight="80px"
-                    className="bg-background rounded-md border [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:border-b [&_.ql-container]:border-0"
+                    className="min-h-[80px] bg-background rounded-md border"
                   />
                 </div>
              )}
@@ -518,7 +516,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                           key={doc.label}
                           className="flex-1 flex flex-col items-center gap-1.5 p-3 rounded-lg border bg-background hover:bg-muted transition-colors"
                         >
-                          <span className="text-xl">{doc.icon}</span>
+                          <span className="text-section-title">{doc.icon}</span>
                           <span className="text-caption text-muted-foreground">{doc.label}</span>
                         </button>
                       ))}
@@ -797,7 +795,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                                    options:
                                      value === 'choice' && question.options.length === 0
                                        ? [createDraftOption(), createDraftOption()]
-                                       : question.options,
+                                       : question.options
                                  })
                                }
                              >
@@ -1320,8 +1318,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                   value={collectionDefaultDescription}
                   onChange={setCollectionDefaultDescription}
                   placeholder="Description"
-                  minHeight="120px"
-                  className="bg-background rounded-md border [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:border-b [&_.ql-container]:border-0"
+                  className="min-h-[120px] bg-background rounded-md border"
                 />
               </div>
             )}
@@ -1348,7 +1345,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                 placeholder="Comma-separated tags, e.g. urgent, backend"
                 className="h-9 bg-background"
               />
-              <p className="text-xs text-muted-foreground">Tags that will be pre-filled on new responses.</p>
+              <p className="text-caption text-muted-foreground">Tags that will be pre-filled on new responses.</p>
             </div>
           </div>
 
@@ -1368,7 +1365,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
           questions: [],
           responses: [],
           responseVisibility: formVisibility,
-          allowMultipleResponses: formAllowMultiple,
+          allowMultipleResponses: formAllowMultiple
         }}
         onChange={(settings) => {
           setFormVisibility(settings.responseVisibility);

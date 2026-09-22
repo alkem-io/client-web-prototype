@@ -7,7 +7,7 @@
  * what stops a viewer reading the mockup as a promise about specific copy.
  */
 import type { CSSProperties, ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/crd/lib/utils';
 
 /** Body copy, reduced to a stack of rules. Widths taper like real text. */
 export function TextLines({
@@ -15,7 +15,7 @@ export function TextLines({
   widths,
   height = 8,
   gap = 8,
-  className,
+  className
 }: {
   lines?: number;
   widths?: number[];
@@ -52,7 +52,7 @@ export function TruncatedTable({
   columns,
   rows,
   moreCount,
-  className,
+  className
 }: {
   columns: string[];
   rows: (string | number)[][];
@@ -107,7 +107,7 @@ export function MediaPlaceholder({
   className,
   style,
   tone = 'brand',
-  children,
+  children
 }: {
   className?: string;
   style?: CSSProperties;
@@ -129,7 +129,7 @@ export function MediaPlaceholder({
 export function AvatarStack({
   people,
   size = 22,
-  max = 4,
+  max = 4
 }: {
   people: { initials: string; accent: string; name?: string }[];
   size?: number;
@@ -148,7 +148,7 @@ export function AvatarStack({
             height: size,
             marginRight: -size * 0.3,
             background: p.accent,
-            fontSize: Math.max(9, Math.round(size * 0.42)),
+            fontSize: Math.max(9, Math.round(size * 0.42))
           }}
         >
           {p.initials}

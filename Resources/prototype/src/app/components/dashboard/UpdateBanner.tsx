@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { Megaphone, X } from "lucide-react";
 
 interface UpdateBannerProps {
@@ -16,7 +16,7 @@ const CURRENT_UPDATE: UpdateBannerProps = {
   title: "Platform Update v2.4 Released",
   description: "New collaboration features, improved navigation, and performance enhancements are now live.",
   ctaLabel: "Read more",
-  ctaUrl: "/space/green-energy/forum",
+  ctaUrl: "/space/green-energy/forum"
 };
 
 export function UpdateBanner() {

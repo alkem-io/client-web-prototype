@@ -7,25 +7,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { Separator } from "@/app/components/ui/separator";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
+import { Checkbox } from "@/crd/primitives/checkbox";
+import { Separator } from "@/crd/primitives/separator";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import { X, ImageIcon, GripVertical, Package, Layers, Settings2, ChevronLeft } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 interface CreateTemplatePackDialogV2Props {
   open: boolean;
@@ -52,7 +52,7 @@ const AVAILABLE_TEMPLATES: TemplateItem[] = [
 
 export function CreateTemplatePackDialogV2({
   open,
-  onOpenChange,
+  onOpenChange
 }: CreateTemplatePackDialogV2Props) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
@@ -298,7 +298,7 @@ function StepPackIdentity({
   tags, setTags,
   currentTag, setCurrentTag,
   handleTagKeyDown,
-  coverImage, setCoverImage,
+  coverImage, setCoverImage
 }: {
   name: string; setName: (v: string) => void;
   description: string; setDescription: (v: string) => void;
@@ -330,7 +330,7 @@ function StepPackIdentity({
           value={description}
           onChange={setDescription}
           placeholder="Describe what templates are included and when to use them..."
-          minHeight="100px"
+          className="min-h-[100px]"
         />
         <p className="text-caption text-muted-foreground">Helps others understand the purpose of this pack</p>
       </div>
@@ -394,7 +394,7 @@ function StepAddTemplates({
   moveTemplate,
   templateSearch, setTemplateSearch,
   typeFilter, setTypeFilter,
-  filteredTemplates,
+  filteredTemplates
 }: {
   selectedTemplates: TemplateItem[];
   toggleTemplate: (t: TemplateItem) => void;
@@ -527,7 +527,7 @@ function StepPublishSettings({
   providerName, setProviderName,
   references, setReferences,
   currentRef, setCurrentRef,
-  handleRefKeyDown,
+  handleRefKeyDown
 }: {
   visibility: string; setVisibility: (v: string) => void;
   providerName: string; setProviderName: (v: string) => void;

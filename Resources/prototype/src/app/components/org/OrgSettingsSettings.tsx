@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Users, Eye } from "lucide-react";
-import { Switch } from "@/app/components/ui/switch";
+import { Switch } from "@/crd/primitives/switch";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 
 export function OrgSettingsSettings() {

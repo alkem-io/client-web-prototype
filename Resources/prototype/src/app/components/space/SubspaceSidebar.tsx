@@ -1,16 +1,16 @@
 import { Fragment, useState } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { SpaceCard, type SpaceCardData } from "@/app/components/space/SpaceCard";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
-import { Separator } from "@/app/components/ui/separator";
+  DialogDescription
+} from "@/crd/primitives/dialog";
+import { Separator } from "@/crd/primitives/separator";
 import {
   Info,
   ChevronLeft,
@@ -28,16 +28,16 @@ import {
   UserPlus,
   ArrowUpLeft,
   PanelLeftOpen,
-  PanelLeftClose,
+  PanelLeftClose
 } from "lucide-react";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { TagCloud, SubspaceQuickLinks } from "@/app/components/space/SpaceSidebar";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 import { VCHoverCard } from "@/app/components/user/VCHoverCard";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import {
   loadSubspaceSidebarWidgets,
-  visibleWidgets,
+  visibleWidgets
 } from "@/app/components/space/SidebarWidgets";
 
 interface SubspaceSidebarProps {
@@ -61,14 +61,14 @@ const SUBSPACE_LEAD = {
   location: "Berlin, DE",
   avatar:
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  initials: "DK",
+  initials: "DK"
 };
 
 const VIRTUAL_CONTRIBUTOR = {
   name: "Design Advisor",
   description: "AI assistant trained on design thinking and collaboration frameworks.",
   avatar:
-    "https://images.unsplash.com/photo-1641312874336-6279a832a3dc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
+    "https://images.unsplash.com/photo-1641312874336-6279a832a3dc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256"
 };
 
 const SUB_SUBSPACES: (SpaceCardData & { status: string })[] = [
@@ -87,7 +87,7 @@ const SUB_SUBSPACES: (SpaceCardData & { status: string })[] = [
     leads: [
       { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
     ],
-    parent: { name: "Renewable Energy Transition", slug: "renewable-energy-transition", initials: "RE", avatarColor: "#22c55e" },
+    parent: { name: "Renewable Energy Transition", slug: "renewable-energy-transition", initials: "RE", avatarColor: "#22c55e" }
   },
   {
     id: "ss-2",
@@ -104,7 +104,7 @@ const SUB_SUBSPACES: (SpaceCardData & { status: string })[] = [
     leads: [
       { name: "David Kim", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
     ],
-    parent: { name: "Renewable Energy Transition", slug: "renewable-energy-transition", initials: "RE", avatarColor: "#22c55e" },
+    parent: { name: "Renewable Energy Transition", slug: "renewable-energy-transition", initials: "RE", avatarColor: "#22c55e" }
   },
   {
     id: "ss-3",
@@ -122,7 +122,7 @@ const SUB_SUBSPACES: (SpaceCardData & { status: string })[] = [
       { name: "Emily Davis", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
       { name: "Tech Innovations", avatar: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
     ],
-    parent: { name: "Renewable Energy Transition", slug: "renewable-energy-transition", initials: "RE", avatarColor: "#22c55e" },
+    parent: { name: "Renewable Energy Transition", slug: "renewable-energy-transition", initials: "RE", avatarColor: "#22c55e" }
   },
 ];
 
@@ -138,7 +138,7 @@ export function SubspaceSidebar({
   grandparentSpaceName,
   grandparentSpaceInitials,
   grandparentSpaceBanner,
-  grandparentSpaceHref,
+  grandparentSpaceHref
 }: SubspaceSidebarProps) {
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const [railHovered, setRailHovered] = useState(false);
@@ -161,9 +161,9 @@ export function SubspaceSidebar({
       <Icon className="w-4 h-4 shrink-0" style={{ color: "var(--primary)" }} />
       <span
         style={{
-          fontSize: "var(--text-sm)",
+          fontSize: "var(--text-body)",
           fontWeight: "var(--font-weight-medium)" as any,
-          color: "var(--foreground)",
+          color: "var(--foreground)"
         }}
       >
         {label}
@@ -180,15 +180,15 @@ export function SubspaceSidebar({
               className="p-4"
               style={{
                 background: "var(--primary)",
-                color: "var(--primary-foreground)",
+                color: "var(--primary-foreground)"
               }}
             >
               <ReadMoreText
                 maxLines={3}
                 style={{
-                  fontSize: "var(--text-sm)",
+                  fontSize: "var(--text-body)",
                   lineHeight: 1.6,
-                  opacity: 0.92,
+                  opacity: 0.92
                 }}
                 toggleColor="var(--primary-foreground)"
                 toggleOpacity={0.8}
@@ -209,7 +209,7 @@ export function SubspaceSidebar({
                     fontSize: "10px",
                     fontWeight: 700,
                     opacity: 0.6,
-                    letterSpacing: "0.04em",
+                    letterSpacing: "0.04em"
                   }}
                 >
                   Lead
@@ -220,7 +220,7 @@ export function SubspaceSidebar({
                       name: SUBSPACE_LEAD.name,
                       avatarUrl: SUBSPACE_LEAD.avatar,
                       initials: SUBSPACE_LEAD.initials,
-                      location: SUBSPACE_LEAD.location,
+                      location: SUBSPACE_LEAD.location
                     }}
                   >
                     <button type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full">
@@ -234,7 +234,7 @@ export function SubspaceSidebar({
                             background: "rgba(255,255,255,0.15)",
                             color: "white",
                             fontSize: "9px",
-                            fontWeight: 700,
+                            fontWeight: 700
                           }}
                         >
                           {SUBSPACE_LEAD.initials}
@@ -243,7 +243,7 @@ export function SubspaceSidebar({
                     </button>
                   </ProfileHoverCard>
                   <div>
-                    <p style={{ fontSize: "var(--text-sm)", fontWeight: 600 }}>
+                    <p style={{ fontSize: "var(--text-body)", fontWeight: 600 }}>
                       {SUBSPACE_LEAD.name}
                     </p>
                     <p
@@ -290,7 +290,7 @@ export function SubspaceSidebar({
         <input
           type="text"
           placeholder="Search posts..."
-          className="w-full h-9 pl-8 pr-3 transition-all text-sm rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
+          className="w-full h-9 pl-8 pr-3 transition-all text-body rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
         />
       </div>
     ),
@@ -304,7 +304,7 @@ export function SubspaceSidebar({
     subspaceLinks: <SubspaceQuickLinks />,
     community: quickActionButton(Users, "Community", "community"),
     events: quickActionButton(CalendarDays, "Events", "events"),
-    index: quickActionButton(List, "Index", "index"),
+    index: quickActionButton(List, "Index", "index")
   };
 
   // Keep buttons and quick-action rows visually grouped while they sit together,
@@ -315,7 +315,7 @@ export function SubspaceSidebar({
     createSubspace: "action",
     community: "quick",
     events: "quick",
-    index: "quick",
+    index: "quick"
   };
   const widgetGroups = visibleKeys.reduce<
     Array<{ family: "action" | "quick" | "solo"; keys: string[] }>
@@ -348,8 +348,7 @@ export function SubspaceSidebar({
         isCollapsed ? "w-12" : "w-full",
         className
       )}
-      style={{ fontFamily: "var(--font-family, 'Inter', sans-serif)" }}
-    >
+      >
       {/* ── Collapsed Rail View ── */}
       {isCollapsed && (
         <div className="flex flex-col items-center gap-0 pt-1">
@@ -376,7 +375,7 @@ export function SubspaceSidebar({
                 height: 22,
                 borderRadius: 4,
                 background: "var(--primary)",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.1)"
               }}
             >
               <span style={{ color: "white", fontSize: "8px", fontWeight: 700, letterSpacing: "-0.02em" }}>
@@ -418,7 +417,7 @@ export function SubspaceSidebar({
             paddingLeft: stackedChallenge ? (depth === 2 ? 20 : 10) : 0,
             marginTop: 4,
             paddingBottom: 0,
-            overflow: "visible",
+            overflow: "visible"
           }}
           className={cn("relative", !stackedChallenge && "flex flex-col gap-2")}
         >
@@ -434,7 +433,7 @@ export function SubspaceSidebar({
                       top: 0,
                       left: 0,
                       width: "calc(100% - 20px)",
-                      height: "calc(100% - 28px)",
+                      height: "calc(100% - 28px)"
                     }
                   : { width: "100%" }),
                 borderRadius: 12,
@@ -443,7 +442,7 @@ export function SubspaceSidebar({
                 background: "var(--card)",
                 boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
                 transform: "translateY(0)",
-                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
+                transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s"
               }}
             >
               <div style={{ aspectRatio: "16 / 9", overflow: "hidden" }}>
@@ -453,7 +452,7 @@ export function SubspaceSidebar({
                 <div className="flex items-center justify-center shrink-0" style={{ width: 18, height: 18, borderRadius: 4, background: "var(--primary)" }}>
                   <span style={{ color: "white", fontSize: "7px", fontWeight: 700 }}>{grandparentSpaceInitials}</span>
                 </div>
-                <span className="text-xs font-medium truncate" style={{ color: "var(--muted-foreground)" }}>{grandparentSpaceName}</span>
+                <span className="text-caption truncate" style={{ color: "var(--muted-foreground)" }}>{grandparentSpaceName}</span>
                 <ArrowUpLeft className="w-3 h-3 shrink-0" style={{ color: "var(--muted-foreground)", opacity: 0, transition: "opacity 0.2s" }} />
               </div>
             </a>
@@ -470,7 +469,7 @@ export function SubspaceSidebar({
                     top: depth === 2 ? 14 : 0,
                     left: depth === 2 ? 10 : 0,
                     width: "calc(100% - 20px)",
-                    height: "calc(100% - 28px)",
+                    height: "calc(100% - 28px)"
                   }
                 : { width: "100%" }),
               borderRadius: 12,
@@ -479,7 +478,7 @@ export function SubspaceSidebar({
               background: "var(--card)",
               boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
               transform: railHovered ? "translateY(-3px)" : "translateY(0)",
-              transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s",
+              transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s"
             }}
             onMouseEnter={() => setRailHovered(true)}
             onMouseLeave={() => setRailHovered(false)}
@@ -492,7 +491,7 @@ export function SubspaceSidebar({
                 style={{
                   display: "block",
                   filter: railHovered ? "brightness(1.05)" : "brightness(1)",
-                  transition: "filter 0.3s",
+                  transition: "filter 0.3s"
                 }}
               />
             </div>
@@ -501,10 +500,10 @@ export function SubspaceSidebar({
                 <div className="flex items-center justify-center shrink-0" style={{ width: 20, height: 20, borderRadius: 4, background: "var(--primary)" }}>
                   <span style={{ color: "white", fontSize: "8px", fontWeight: 700 }}>{parentSpaceInitials}</span>
                 </div>
-                <span className="text-xs font-medium truncate" style={{ color: "var(--foreground)" }}>{parentSpaceName}</span>
+                <span className="text-caption truncate" style={{ color: "var(--foreground)" }}>{parentSpaceName}</span>
                 <ArrowUpLeft className="w-3 h-3 shrink-0" style={{ color: "var(--muted-foreground)", opacity: railHovered ? 0.7 : 0, transition: "opacity 0.2s" }} />
               </div>
-              <p className="text-xs text-muted-foreground line-clamp-2" style={{ lineHeight: 1.4 }}>{parentSpaceDescription}</p>
+              <p className="text-caption text-muted-foreground line-clamp-2" style={{ lineHeight: 1.4 }}>{parentSpaceDescription}</p>
             </div>
           </a>
 
@@ -533,7 +532,7 @@ export function SubspaceSidebar({
         {/* Collapse button */}
         <button
           onClick={onToggleCollapse}
-          className="hidden lg:flex items-center gap-1.5 w-full mt-2 px-2 py-1.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="hidden lg:flex items-center gap-1.5 w-full mt-2 px-2 py-1.5 rounded-md text-caption text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           title="Collapse sidebar"
         >
           <PanelLeftClose className="w-3.5 h-3.5" />
@@ -577,12 +576,12 @@ export function SubspaceSidebar({
                 className="p-3 rounded-lg"
                 style={{
                   border: "1px solid var(--border)",
-                  background: event.status === "upcoming" ? "var(--card)" : "var(--muted)",
+                  background: event.status === "upcoming" ? "var(--card)" : "var(--muted)"
                 }}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--foreground)" }}>{event.title}</p>
+                    <p style={{ fontSize: "var(--text-body)", fontWeight: 600, color: "var(--foreground)" }}>{event.title}</p>
                     <p className="mt-1 flex items-center gap-1.5" style={{ fontSize: "12px", color: "var(--muted-foreground)" }}>
                       <CalendarDays className="w-3 h-3" />
                       {event.date} · {event.time}
@@ -594,7 +593,7 @@ export function SubspaceSidebar({
                       background: event.status === "upcoming"
                         ? "color-mix(in srgb, var(--primary) 12%, transparent)"
                         : "color-mix(in srgb, var(--muted-foreground) 12%, transparent)",
-                      color: event.status === "upcoming" ? "var(--primary)" : "var(--muted-foreground)",
+                      color: event.status === "upcoming" ? "var(--primary)" : "var(--muted-foreground)"
                     }}
                   >
                     {event.status === "upcoming" ? "Upcoming" : "Past"}
@@ -638,7 +637,7 @@ export function SubspaceSidebar({
               >
                 <FileText className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
                 <div className="flex-1 min-w-0">
-                  <p className="truncate" style={{ fontSize: "var(--text-sm)", fontWeight: 500, color: "var(--foreground)" }}>
+                  <p className="truncate" style={{ fontSize: "var(--text-body)", fontWeight: 500, color: "var(--foreground)" }}>
                     {item.title}
                   </p>
                   <p style={{ fontSize: "12px", color: "var(--muted-foreground)" }}>
@@ -678,9 +677,9 @@ export function SubspaceSidebar({
                       : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                   style={{
-                    fontSize: "var(--text-sm)",
+                    fontSize: "var(--text-body)",
                     fontWeight: 500,
-                    border: `1px solid ${status === "All" ? "var(--primary)" : "var(--border)"}`,
+                    border: `1px solid ${status === "All" ? "var(--primary)" : "var(--border)"}`
                   }}
                 >
                   {status}

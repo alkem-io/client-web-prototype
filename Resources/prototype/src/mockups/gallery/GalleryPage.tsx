@@ -41,7 +41,7 @@ export default function GalleryPage() {
                   className="ml-auto rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
                   style={{
                     background: errors ? 'rgba(220,38,38,.10)' : 'rgba(22,163,74,.10)',
-                    color: errors ? '#B91C1C' : '#15803D',
+                    color: errors ? '#B91C1C' : '#15803D'
                   }}
                 >
                   {errors ? `${errors} error${errors > 1 ? 's' : ''}` : 'passes'}

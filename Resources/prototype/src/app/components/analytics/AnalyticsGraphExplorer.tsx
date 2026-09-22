@@ -4,18 +4,18 @@ import {
  ChevronRight, Share2, ExternalLink, User, Building,
  X, Plus, Globe, Layers, Network, ArrowUpRight, Link2, ArrowLeft
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import { Switch } from "@/app/components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Separator } from "@/app/components/ui/separator";
-import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
+import { Switch } from "@/crd/primitives/switch";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Separator } from "@/crd/primitives/separator";
+import { ScrollArea } from "@/crd/primitives/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/crd/primitives/select";
 import { ForceGraph, Node, Link as GraphLink } from "./ForceGraph";
 import { ORG_LOCATIONS } from "./netherlandsMap";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { useNavigate } from "react-router";
 
 // --- Images ---
@@ -37,7 +37,7 @@ const IMG = {
  erikDijk: "https://images.unsplash.com/photo-1627776880991-808c5996527b?auto=format&fit=crop&w=80&h=80",
  petraH: "https://images.unsplash.com/photo-1758518727888-ffa196002e59?auto=format&fit=crop&w=80&h=80",
  marcoGroot: "https://images.unsplash.com/photo-1662045678969-0702d5bbcf23?auto=format&fit=crop&w=80&h=80",
- userAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=64&h=64",
+ userAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=64&h=64"
 };
 
 // --- Realistic, Correlated Ecosystem Data ---
@@ -72,7 +72,7 @@ const SPACE_DEFS: Record<string, SpaceDef[]> = {
  { id: 'solar-innovation', name: 'Solar Innovation', level: 'L1', parent: 'green-energy', location: { lat: 51.52, lng: 5.38 } },
  { id: 'wind-energy', name: 'Wind Farm Tech', level: 'L1', parent: 'green-energy', location: { lat: 51.38, lng: 5.57 } },
  { id: 'grid-storage', name: 'Grid Storage', level: 'L1', parent: 'green-energy', location: { lat: 51.48, lng: 5.65 } },
- ],
+ ]
 };
 
 const ORG_DEFS: OrgDef[] = [
@@ -168,7 +168,7 @@ const generateGraphData = (selectedSpaceIds: string[]): { nodes: Node[]; links: 
  label: s.name,
  group: s.parent || s.id,
  imageUrl: s.image,
- location: s.location,
+ location: s.location
  });
  // Parent-child links
  if (s.parent && spaceIdSet.has(s.parent)) {
@@ -196,7 +196,7 @@ const generateGraphData = (selectedSpaceIds: string[]): { nodes: Node[]; links: 
  label: o.name,
  group,
  orgId: o.id,
- location: orgLoc,
+ location: orgLoc
  });
 
  o.leads.filter(s => spaceIdSet.has(s)).forEach((s, index) => {
@@ -240,7 +240,7 @@ const generateGraphData = (selectedSpaceIds: string[]): { nodes: Node[]; links: 
  group,
  orgId: p.orgId,
  imageUrl: p.image,
- location: personLoc,
+ location: personLoc
  });
 
  // Person ↔ Org link
@@ -344,7 +344,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  type: 'space',
  level: 'L1',
  label: suggested.name,
- group: selectedNode.group,
+ group: selectedNode.group
  };
  const newLink: GraphLink = { source: selectedNode.id, target: suggestedId, type: 'parent-child' };
  setData(prev => ({
@@ -385,7 +385,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  style={{ 
  borderBottom: '1px solid var(--border)', 
  background: 'var(--background)',
- boxShadow: 'var(--elevation-sm)',
+ boxShadow: 'var(--elevation-sm)'
  }}
  >
  <div className="flex items-center gap-3">
@@ -398,7 +398,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  padding: '0 10px', 
  fontSize: '12px', 
  gap: 6, 
- color: 'var(--muted-foreground)',
+ color: 'var(--muted-foreground)'
  }}
  title="Return to Alkemio Platform"
  >
@@ -412,7 +412,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  >
  <Network style={{ width: 16, height: 16 }} />
  </div>
- <div className="flex items-center" style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+ <div className="flex items-center" style={{ fontSize: 'var(--text-body)', color: 'var(--muted-foreground)' }}>
  <span className="cursor-pointer" style={{ transition: 'color 0.15s' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--foreground)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}>
  Ecosystem Analytics
  </span>
@@ -435,7 +435,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  borderRadius: '999px',
  background: 'var(--muted)',
  border: '1px solid transparent',
- color: 'var(--foreground)',
+ color: 'var(--foreground)'
  }}
  />
  </div>
@@ -465,7 +465,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  borderRight: '1px solid var(--border)', 
  background: 'var(--card)', 
  padding: 16,
- gap: 20,
+ gap: 20
  }}
  >
  {/* Scope */}
@@ -511,7 +511,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  <h3 style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted-foreground)' }}>Filters</h3>
  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
  <div className="flex items-center justify-between">
- <div className="flex items-center gap-2" style={{ fontSize: 'var(--text-sm)', color: 'var(--foreground)' }}>
+ <div className="flex items-center gap-2" style={{ fontSize: 'var(--text-body)', color: 'var(--foreground)' }}>
  <Users style={{ width: 14, height: 14, color: 'var(--muted-foreground)' }} />
  <span>People</span>
  <span style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginLeft: 2 }}>({typeCounts.person})</span>
@@ -519,7 +519,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  <Switch checked={showPeople} onCheckedChange={setShowPeople} className="scale-75 origin-right" />
  </div>
  <div className="flex items-center justify-between">
- <div className="flex items-center gap-2" style={{ fontSize: 'var(--text-sm)', color: 'var(--foreground)' }}>
+ <div className="flex items-center gap-2" style={{ fontSize: 'var(--text-body)', color: 'var(--foreground)' }}>
  <Building style={{ width: 14, height: 14, color: 'var(--muted-foreground)' }} />
  <span>Organizations</span>
  <span style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginLeft: 2 }}>({typeCounts.org})</span>
@@ -572,7 +572,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  </div>
  {mapMode && (
  <Select defaultValue="europe">
- <SelectTrigger className="text-sm">
+ <SelectTrigger>
  <SelectValue placeholder="Region" />
  </SelectTrigger>
  <SelectContent>
@@ -617,17 +617,17 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  boxShadow: 'var(--elevation-sm)',
  borderRadius: 'calc(var(--radius) + 4px)',
  padding: '32px 40px',
- minWidth: 300,
+ minWidth: 300
  }}
  >
  <div className="relative mx-auto" style={{ width: 48, height: 48, marginBottom: 16 }}>
  <div className="absolute inset-0 rounded-full" style={{ border: '3px solid var(--muted)' }} />
  <div className="absolute inset-0 rounded-full animate-spin" style={{ border: '3px solid transparent', borderTopColor: 'var(--primary)' }} />
  </div>
- <h3 style={{ fontWeight: 600, fontSize: 'var(--text-base)', marginBottom: 4, color: 'var(--foreground)' }}>
+ <h3 style={{ fontWeight: 600, fontSize: 'var(--text-subheader font-normal)', marginBottom: 4, color: 'var(--foreground)' }}>
  {loadingStep === 1 ? "Acquiring Data" : loadingStep === 2 ? "Clustering Entities" : "Rendering Graph"}
  </h3>
- <p style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+ <p style={{ fontSize: 'var(--text-body)', color: 'var(--muted-foreground)' }}>
  Processing {data.nodes.length || '…'} entities
  </p>
  <div className="flex gap-1.5 justify-center" style={{ marginTop: 16 }}>
@@ -637,7 +637,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  borderRadius: 2,
  background: loadingStep >= step ? 'var(--primary)' : 'var(--muted)',
  width: loadingStep >= step ? 28 : 8,
- transition: 'all 0.4s ease',
+ transition: 'all 0.4s ease'
  }} />
  ))}
  </div>
@@ -655,7 +655,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  borderLeft: '1px solid var(--border)',
  boxShadow: selectedNode ? 'var(--elevation-sm)' : 'none',
  transform: selectedNode ? 'translateX(0)' : 'translateX(100%)',
- transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)',
+ transition: 'transform 0.4s cubic-bezier(0.32, 0.72, 0, 1)'
  }}
  >
  {selectedNode && (
@@ -680,17 +680,17 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  height: 48,
  background: selectedNode.type === 'space' ? 'var(--primary)' : (selectedNode.type === 'org' ? 'var(--chart-2)' : 'var(--chart-3)'),
  color: 'var(--primary-foreground)',
- boxShadow: 'var(--elevation-sm)',
+ boxShadow: 'var(--elevation-sm)'
  }}
  >
  {selectedNode.imageUrl ? (
  <img src={selectedNode.imageUrl} className="w-full h-full object-cover" />
  ) : (
- <span style={{ fontWeight: 700, fontSize: 'var(--text-xl)' }}>{selectedNode.label.charAt(0)}</span>
+ <span style={{ fontWeight: 700, fontSize: 'var(--text-section-title)' }}>{selectedNode.label.charAt(0)}</span>
  )}
  </div>
  <div className="flex-1 min-w-0" style={{ paddingTop: 2 }}>
- <h2 className="truncate" style={{ fontWeight: 700, fontSize: 'var(--text-base)', lineHeight: 1.3, color: 'var(--foreground)' }}>{selectedNode.label}</h2>
+ <h2 className="truncate" style={{ fontWeight: 700, fontSize: 'var(--text-subheader font-normal)', lineHeight: 1.3, color: 'var(--foreground)' }}>{selectedNode.label}</h2>
  <div className="flex items-center gap-1.5" style={{ marginTop: 6 }}>
  </div>
  </div>
@@ -714,7 +714,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  <React.Fragment key={stat.label}>
  {i > 0 && <div style={{ width: 1, background: 'var(--border)' }} />}
  <div className="text-center flex-1">
- <div style={{ fontWeight: 700, fontSize: 'var(--text-xl)', color: 'var(--foreground)' }}>{stat.count}</div>
+ <div style={{ fontWeight: 700, fontSize: 'var(--text-section-title)', color: 'var(--foreground)' }}>{stat.count}</div>
  <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>{stat.label}</div>
  </div>
  </React.Fragment>
@@ -725,7 +725,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
 
  {/* Connected Entities */}
  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
- <h3 style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--foreground)' }}>Direct Connections</h3>
+ <h3 style={{ fontWeight: 600, fontSize: 'var(--text-body)', color: 'var(--foreground)' }}>Direct Connections</h3>
  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
  {data.links
  .filter(l => l.source === selectedNode.id || l.target === selectedNode.id)
@@ -744,7 +744,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  border: '1px solid var(--border)',
  background: 'var(--card)',
  transition: 'background 0.15s',
- fontSize: 'var(--text-sm)',
+ fontSize: 'var(--text-body)'
  }}
  onClick={() => setSelectedNode(otherNode)}
  onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent)')}
@@ -755,7 +755,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  style={{ 
  width: 24, height: 24,
  background: otherNode.type === 'space' ? 'var(--primary)' : (otherNode.type === 'org' ? 'var(--chart-2)' : 'var(--chart-3)'),
- color: 'var(--primary-foreground)',
+ color: 'var(--primary-foreground)'
  }}
  >
  {otherNode.imageUrl ? (
@@ -767,7 +767,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  <div className="flex-1 min-w-0">
  <div className="truncate" style={{ fontWeight: 500, color: 'var(--foreground)', fontSize: '12px' }}>{otherNode.label}</div>
  </div>
- <Badge variant="outline" className="text-xs shrink-0">
+ <Badge variant="outline" className="text-caption shrink-0">
  {link.type === 'parent-child' ? 'child' : link.type}
  </Badge>
  </div>
@@ -778,7 +778,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
 
  {/* Suggested Related Spaces */}
  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
- <h3 style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--foreground)' }}>Suggested to Add</h3>
+ <h3 style={{ fontWeight: 600, fontSize: 'var(--text-body)', color: 'var(--foreground)' }}>Suggested to Add</h3>
  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
  {SUGGESTED_SPACES.map(space => (
  <div 
@@ -789,7 +789,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  borderRadius: 'var(--radius)', 
  border: space.access ? '1px solid var(--border)' : '1px dashed var(--border)',
  background: space.access ? 'var(--card)' : 'var(--muted)',
- opacity: space.access ? 1 : 0.6,
+ opacity: space.access ? 1 : 0.6
  }}
  >
  <div className="flex items-center gap-2">
@@ -813,7 +813,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  <Plus style={{ width: 10, height: 10 }} /> Add
  </Button>
  ) : (
- <Button size="sm" variant="outline" disabled className="text-xs">
+ <Button size="sm" variant="outline" disabled>
  Locked
  </Button>
  )}
@@ -824,8 +824,8 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
 
  {/* Metadata */}
  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
- <h3 style={{ fontWeight: 600, fontSize: 'var(--text-sm)', color: 'var(--foreground)' }}>Metadata</h3>
- <div style={{ background: 'var(--muted)', borderRadius: 'var(--radius)', padding: 10, fontSize: 'var(--text-sm)' }}>
+ <h3 style={{ fontWeight: 600, fontSize: 'var(--text-body)', color: 'var(--foreground)' }}>Metadata</h3>
+ <div style={{ background: 'var(--muted)', borderRadius: 'var(--radius)', padding: 10, fontSize: 'var(--text-body)' }}>
  {[
  { label: 'ID', value: selectedNode.id },
  { label: 'Status', value: 'Active', isActive: true },
@@ -836,7 +836,7 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  className="flex justify-between items-center"
  style={{ 
  padding: '6px 0', 
- borderBottom: i < 2 ? '1px solid var(--border)' : 'none',
+ borderBottom: i < 2 ? '1px solid var(--border)' : 'none'
  }}
  >
  <span style={{ color: 'var(--muted-foreground)', fontSize: '12px' }}>{row.label}</span>
@@ -858,11 +858,11 @@ export function AnalyticsGraphExplorer({ selectedSpaceIds }: AnalyticsGraphExplo
  {/* Footer Actions */}
  <div style={{ padding: 12, borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 6 }}>
  {selectedNode.type === 'space' && (
- <Button variant="outline" size="sm" className="w-full gap-2 text-sm">
+ <Button variant="outline" size="sm" className="w-full gap-2">
  <ExternalLink style={{ width: 14, height: 14 }} /> Open in Alkemio
  </Button>
  )}
- <Button variant="ghost" size="sm" className="w-full gap-2 text-sm">
+ <Button variant="ghost" size="sm" className="w-full gap-2">
  <Share2 style={{ width: 14, height: 14 }} /> Share Report
  </Button>
  </div>

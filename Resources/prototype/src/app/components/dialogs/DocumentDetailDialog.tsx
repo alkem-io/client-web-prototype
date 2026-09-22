@@ -1,15 +1,15 @@
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { Textarea } from "@/app/components/ui/textarea";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { Textarea } from "@/crd/primitives/textarea";
 import { 
  X, Share2, MoreHorizontal, FileText, FileSpreadsheet, FileImage, 
  ChevronRight, Send, Smile, AtSign, Download, ExternalLink, Presentation
 } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { toast } from "sonner";
 
 interface DocumentDetailDialogProps {
@@ -284,7 +284,7 @@ export function DocumentDetailDialog({ open, onOpenChange, document, author }: D
  <div className="flex border-b border-[#d4d4d4] dark:border-zinc-700 shrink-0">
  <div className="w-12 shrink-0 bg-[#f0f0f0] dark:bg-zinc-800 border-r border-[#d4d4d4] dark:border-zinc-700" />
  {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((col) => (
- <div key={col} className="flex-1 text-center text-[10px] font-medium text-muted-foreground py-1 bg-[#f0f0f0] dark:bg-zinc-800 border-r border-[#d4d4d4] dark:border-zinc-700">
+ <div key={col} className="flex-1 text-center text-badge text-muted-foreground py-1 bg-[#f0f0f0] dark:bg-zinc-800 border-r border-[#d4d4d4] dark:border-zinc-700">
  {col}
  </div>
  ))}

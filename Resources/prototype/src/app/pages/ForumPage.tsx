@@ -14,27 +14,27 @@ import {
   HelpCircle,
   MoreHorizontal,
   Send,
-  Smile,
+  Smile
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
-import { Separator } from "@/app/components/ui/separator";
+import { cn } from "@/crd/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Card, CardContent, CardHeader } from "@/crd/primitives/card";
+import { Separator } from "@/crd/primitives/separator";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 import {
   Dialog,
   DialogContent,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/crd/primitives/tooltip";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -89,7 +89,7 @@ const AVATARS = {
   mirko: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
   galin: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
   piet: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
-  erick: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+  erick: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
 };
 
 const DISCUSSIONS: ForumDiscussion[] = [
@@ -127,7 +127,7 @@ You can now easily add events to your personal calendar!
 Space admins now have more control over how subspaces are organized:
 - **Choose Ordering:** Go to Space Settings > Subspaces to select between alphabetical or custom ordering.
 - **Drag & Drop:** If you choose custom ordering, simply drag and drop subspaces to your preferred arrangement.
-- **Pin to Top:** Admins can also pin important subspaces to the top of the list for quick access.`,
+- **Pin to Top:** Admins can also pin important subspaces to the top of the list for quick access.`
   },
   {
     id: "2",
@@ -154,7 +154,7 @@ We've redesigned the notification settings page to give you more granular contro
 
 **Looking for more details?** Check out our full release notes on the two main repositories for deeper insights:
 - **Client Updates:** GitHub - Client Releases
-- **Server Updates:** GitHub - Server Releases`,
+- **Server Updates:** GitHub - Server Releases`
   },
   {
     id: "3",
@@ -182,7 +182,7 @@ You can now start video calls directly within a Space! Look for the video icon i
 **🧠 Memori: AI-Powered Space Summaries**
 Memori is our new AI assistant that helps you stay up to date. It generates concise summaries of recent activity in your Spaces, so you never miss important updates even when you've been away.
 - **Weekly digests** delivered to your inbox
-- **On-demand summaries** accessible from the Space header`,
+- **On-demand summaries** accessible from the Space header`
   },
   {
     id: "4",
@@ -198,7 +198,7 @@ I'm trying to insert a table into a post in my Space but I can't seem to figure 
 
 Has anyone managed to create a table in a post? Am I missing something?
 
-Thanks in advance for any help!`,
+Thanks in advance for any help!`
   },
   {
     id: "5",
@@ -227,7 +227,7 @@ Templates are pre-configured Space setups that give you a head start. Each templ
 **How to use them:**
 When creating a new Space, you'll now see a "Start from Template" option. Choose a template, customize it to your needs, and you're ready to go!
 
-We'd love to hear your feedback — and if you have ideas for new templates, let us know!`,
+We'd love to hear your feedback — and if you have ideas for new templates, let us know!`
   },
   {
     id: "6",
@@ -254,7 +254,7 @@ Previously, Spaces had separate areas for discussions, whiteboards, and document
 All your existing discussions, whiteboards, and documents have been migrated into Posts automatically. Nothing was lost — they just live in a more organized home now.
 
 **What's Next?**
-We're working on Post templates, advanced search within Posts, and better notification controls for specific Post types.`,
+We're working on Post templates, advanced search within Posts, and better notification controls for specific Post types.`
   },
   {
     id: "7",
@@ -284,7 +284,7 @@ We're working on Post templates, advanced search within Posts, and better notifi
 - Improved accessibility for screen readers on card components
 - "Copy link" button now available on all posts
 
-Have a great summer everyone! ☀️`,
+Have a great summer everyone! ☀️`
   },
   {
     id: "8",
@@ -309,7 +309,7 @@ Member profile pages now show:
 - Their recent contributions across the platform
 
 **📱 Mobile Improvements**
-The mobile experience continues to improve — the navigation menu is now more responsive, and posts render better on smaller screens.`,
+The mobile experience continues to improve — the navigation menu is now more responsive, and posts render better on smaller screens.`
   },
   {
     id: "9",
@@ -341,7 +341,7 @@ Search has been significantly improved:
 - Drag-and-drop file upload in posts
 - Improved loading performance for large Spaces
 - Better error messages when something goes wrong
-- Updated email templates for invitations`,
+- Updated email templates for invitations`
   },
   {
     id: "10",
@@ -368,7 +368,7 @@ We've updated the platform's visual design with:
 - Softer color palette and improved contrast
 - New icons throughout the interface
 - Better spacing and typography for readability
-- Dark mode improvements`,
+- Dark mode improvements`
   },
   {
     id: "11",
@@ -394,7 +394,7 @@ Space admins can now access basic analytics:
 - Growth trends
 
 **🔗 Improved Link Previews**
-When you paste a URL into a post, Alkemio now generates a rich preview card showing the page title, description, and thumbnail image.`,
+When you paste a URL into a post, Alkemio now generates a rich preview card showing the page title, description, and thumbnail image.`
   },
   {
     id: "12",
@@ -419,7 +419,7 @@ Inviting new members is now much simpler:
 **🔐 Improved Security**
 - Two-factor authentication (2FA) is now available for all accounts
 - Session management: see and terminate active sessions
-- Audit log for Space admin actions`,
+- Audit log for Space admin actions`
   },
   {
     id: "13",
@@ -447,7 +447,7 @@ New step-by-step tutorials are now available for:
 - Inviting and managing members
 - Configuring a Virtual Contributor
 
-Access them anytime from the "Help" menu in the top navigation.`,
+Access them anytime from the "Help" menu in the top navigation.`
   },
   {
     id: "14",
@@ -477,7 +477,7 @@ A VirtualContributor (VC) is an AI-powered member of your Space that can partici
 - The VC will start participating in discussions automatically
 
 **Feedback welcome!**
-This is our first release of VCs and we'd love to hear how you use them and what improvements you'd like to see.`,
+This is our first release of VCs and we'd love to hear how you use them and what improvements you'd like to see.`
   },
   {
     id: "15",
@@ -503,7 +503,7 @@ This is our first release of VCs and we'd love to hear how you use them and what
 - Member names and bios
 - Space names and descriptions
 
-Hope this helps! Let me know if you have questions about finding things on the platform.`,
+Hope this helps! Let me know if you have questions about finding things on the platform.`
   },
   {
     id: "16",
@@ -533,7 +533,7 @@ We've made several enhancements to make it more useful:
 - See which methods are most popular in your community
 - Read tips and experiences from other facilitators
 
-Check it out at Templates → Innovation Library!`,
+Check it out at Templates → Innovation Library!`
   },
   {
     id: "17",
@@ -560,7 +560,7 @@ Check it out at Templates → Innovation Library!`,
 - If they're already a Space member, they'll just be added to the Subspace
 - Admins can set whether Subspace invitations require Space-level approval
 
-This should make it much easier to bring the right people into the right conversations!`,
+This should make it much easier to bring the right people into the right conversations!`
   },
   {
     id: "18",
@@ -588,7 +588,7 @@ As communities grow, a single flat discussion feed becomes hard to navigate. Sub
 - A research Space with Subspaces for Literature Review, Data Collection, and Findings
 
 **Getting started:**
-Space admins can create Subspaces from the "Subspaces" tab. Each Subspace has its own feed, Knowledge Base, and member list.`,
+Space admins can create Subspaces from the "Subspaces" tab. Each Subspace has its own feed, Knowledge Base, and member list.`
   },
   {
     id: "19",
@@ -616,7 +616,7 @@ After searching, use filters to narrow results:
 - Space
 - Author
 
-We hope this makes finding things on the platform much easier. Let us know how it works for you!`,
+We hope this makes finding things on the platform much easier. Let us know how it works for you!`
   },
   {
     id: "20",
@@ -645,7 +645,7 @@ New dashboard showing:
 - Most active contributors per stage
 
 **🎨 Visual Customization**
-You can now customize flow stage colors and icons to match your process branding.`,
+You can now customize flow stage colors and icons to match your process branding.`
   },
   {
     id: "21",
@@ -682,7 +682,7 @@ You can now customize flow stage colors and icons to match your process branding
 - Added event scheduling within Spaces
 - Performance improvements (40% faster page loads)
 
-Thank you all for your feedback during this period — many of these features were directly inspired by your suggestions!`,
+Thank you all for your feedback during this period — many of these features were directly inspired by your suggestions!`
   },
   {
     id: "22",
@@ -710,7 +710,7 @@ You can personalize your dashboard by:
 **Why a dashboard?**
 As you join more Spaces, it becomes harder to keep track of everything. The dashboard brings it all together so you never miss important updates.
 
-We'll continue improving the dashboard based on your feedback!`,
+We'll continue improving the dashboard based on your feedback!`
   },
   {
     id: "23",
@@ -729,7 +729,7 @@ I have a feature request: it would be really helpful to be able to assign a post
 **Proposed solution:**
 Allow posts to be tagged with multiple stages, perhaps with a primary stage (for Kanban placement) and secondary stages (for tracking).
 
-Anyone else running into this? Would love to hear how others handle multi-track innovation processes.`,
+Anyone else running into this? Would love to hear how others handle multi-track innovation processes.`
   },
   {
     id: "24",
@@ -746,7 +746,7 @@ Is there a way to:
 - Turn off email notifications for specific Spaces while keeping them for others?
 - Only get emails for @mentions and direct messages?
 
-I've looked in my account settings but couldn't find granular email controls. Any help appreciated!`,
+I've looked in my account settings but couldn't find granular email controls. Any help appreciated!`
   },
   {
     id: "25",
@@ -764,7 +764,7 @@ I'm experiencing two problems:
 
 I'm using Chrome on macOS. The issue seems to happen specifically with longer URLs or URLs with special characters.
 
-Is this a known bug? Any workarounds?`,
+Is this a known bug? Any workarounds?`
   },
   {
     id: "26",
@@ -784,7 +784,7 @@ Could someone walk me through the steps? Specifically:
 - Can I set a deadline or timeline?
 - How do I invite people to participate?
 
-Thanks for any help — I'm excited to get started!`,
+Thanks for any help — I'm excited to get started!`
   },
   {
     id: "27",
@@ -807,7 +807,7 @@ Thanks for any help — I'm excited to get started!`,
 - How does Alkemio complement existing tools?
 - What's the learning curve?
 
-Would love to hear from people who've been using Alkemio — what's the main value you get from it?`,
+Would love to hear from people who've been using Alkemio — what's the main value you get from it?`
   },
   {
     id: "28",
@@ -828,7 +828,7 @@ I want to build a community around sustainable urban development in my city. I h
 - How do you maintain momentum when progress is slow?
 - Any tips for getting institutional buy-in early on?
 
-I'd love to learn from others who've been through this journey!`,
+I'd love to learn from others who've been through this journey!`
   },
   {
     id: "29",
@@ -850,7 +850,7 @@ This is a space for the Alkemio community to connect, share ideas, and support e
 
 I'll start: I'm Piet, and I'm passionate about using technology to bring people together for meaningful collaboration. I've been using Alkemio to connect sustainability practitioners across the Netherlands.
 
-Looking forward to meeting you all! 🙌`,
+Looking forward to meeting you all! 🙌`
   },
   {
     id: "30",
@@ -875,7 +875,7 @@ I'm a facilitator for a new Space and I'm looking for ideas on how to build enga
 - Ways to create a sense of belonging and shared purpose
 - Tips for going from lurkers to active participants
 
-What has worked for you? Any creative approaches welcome!`,
+What has worked for you? Any creative approaches welcome!`
   },
   {
     id: "31",
@@ -893,7 +893,7 @@ What has worked for you? Any creative approaches welcome!`,
 - What's the difference between a challenge owner and a facilitator?
 - Can a challenge have multiple owners or is it always one person/organization?
 
-In our organization we want to set up challenges that are owned by different departments. Would appreciate clarity on how this works.`,
+In our organization we want to set up challenges that are owned by different departments. Would appreciate clarity on how this works.`
   },
   {
     id: "32",
@@ -910,7 +910,7 @@ In our organization we want to set up challenges that are owned by different dep
 - Are there different entities involved?
 - Is the platform open source?
 
-Just trying to understand the relationship between the two. Thanks!`,
+Just trying to understand the relationship between the two. Thanks!`
   },
   {
     id: "33",
@@ -927,7 +927,7 @@ Just trying to understand the relationship between the two. Thanks!`,
 - Does it mean the platform will always be free/affordable?
 - How is the foundation funded?
 
-I think it's great that it's a foundation — just curious about the strategic thinking behind it.`,
+I think it's great that it's a foundation — just curious about the strategic thinking behind it.`
   },
   {
     id: "34",
@@ -948,7 +948,7 @@ It seems like the idea is that collaboration should be organized around specific
 - Are there examples of organizations that work this way successfully?
 - How do you define a good challenge? Is there a template or framework?
 
-Would love to hear concrete examples from people who've adopted this approach!`,
+Would love to hear concrete examples from people who've adopted this approach!`
   },
   {
     id: "35",
@@ -962,7 +962,7 @@ Would love to hear concrete examples from people who've adopted this approach!`,
 
 Does Alkemio have a built-in tool for this, or do I need to use an external tool like Miro or FigJam?
 
-If there is a built-in option, how do I access it? And can multiple people work on the same canvas at the same time?`,
+If there is a built-in option, how do I access it? And can multiple people work on the same canvas at the same time?`
   },
   {
     id: "36",
@@ -980,7 +980,7 @@ Specifically, I'd like to know:
 - Are there integrations with external tools?
 - What's on the roadmap?
 
-I'm preparing a presentation for my organization about why we should use Alkemio, and having a clear feature overview would really help!`,
+I'm preparing a presentation for my organization about why we should use Alkemio, and having a clear feature overview would really help!`
   },
   {
     id: "37",
@@ -1005,7 +1005,7 @@ I'm preparing a presentation for my organization about why we should use Alkemio
 - When do you open up a Space to a wider audience?
 - How do you handle silence / low engagement in the early days?
 
-Would love your additions to this list!`,
+Would love your additions to this list!`
   },
   {
     id: "38",
@@ -1036,7 +1036,7 @@ Would love your additions to this list!`,
 - Check **Notifications** regularly for replies and mentions
 - Visit your **Profile Settings** to configure notification preferences
 
-If you have questions, this Forum is the place to ask. Welcome aboard!`,
+If you have questions, this Forum is the place to ask. Welcome aboard!`
   },
 ];
 
@@ -1051,16 +1051,16 @@ const SAMPLE_REPLIES: ForumReply[] = [
         id: "r1-1",
         author: { name: "Simone Rietmeijer", avatarUrl: AVATARS.simone },
         date: "Wed, 25/06/2025",
-        content: "Hi Mirko! Not yet, but that's on the roadmap. For now you can manually close a poll by editing the post.",
+        content: "Hi Mirko! Not yet, but that's on the roadmap. For now you can manually close a poll by editing the post."
       },
-    ],
+    ]
   },
   {
     id: "r2",
     author: { name: "Denise Larssen", avatarUrl: AVATARS.denise },
     date: "Thu, 26/06/2025",
     content: "The calendar integration is a game changer for our team. Works great with Google Calendar!",
-    replies: [],
+    replies: []
   },
   {
     id: "r3",
@@ -1072,15 +1072,15 @@ const SAMPLE_REPLIES: ForumReply[] = [
         id: "r3-1",
         author: { name: "Simone Rietmeijer", avatarUrl: AVATARS.simone },
         date: "Fri, 27/06/2025",
-        content: "Not yet on mobile — for now it's desktop only. We're looking into touch-friendly reordering for a future release.",
+        content: "Not yet on mobile — for now it's desktop only. We're looking into touch-friendly reordering for a future release."
       },
       {
         id: "r3-2",
         author: { name: "Galin Berytin", avatarUrl: AVATARS.galin },
         date: "Fri, 27/06/2025",
-        content: "Makes sense, thanks for the quick reply!",
+        content: "Makes sense, thanks for the quick reply!"
       },
-    ],
+    ]
   },
 ];
 
@@ -1092,7 +1092,7 @@ function ForumBanner() {
       className="relative w-full overflow-hidden"
       style={{
         background: "linear-gradient(135deg, var(--primary) 0%, hsl(200, 50%, 35%) 100%)",
-        borderRadius: "var(--radius)",
+        borderRadius: "var(--radius)"
       }}
     >
       {/* Decorative dots pattern */}
@@ -1113,7 +1113,7 @@ function ForumBanner() {
             style={{
               width: 36,
               height: 36,
-              background: "rgba(255, 255, 255, 0.15)",
+              background: "rgba(255, 255, 255, 0.15)"
             }}
           >
             <MessageSquare className="h-5 w-5 text-white" />
@@ -1131,7 +1131,7 @@ function ForumBanner() {
             color: "rgba(255, 255, 255, 0.75)",
             marginTop: 4,
             marginLeft: 49,
-            maxWidth: 420,
+            maxWidth: 420
           }}
         >
           Connect with others, ask questions, and stay updated with Alkemio's release notes
@@ -1143,7 +1143,7 @@ function ForumBanner() {
 
 function ForumCategoryNav({
   activeCategory,
-  onCategoryChange,
+  onCategoryChange
 }: {
   activeCategory: string;
   onCategoryChange: (id: string) => void;
@@ -1154,7 +1154,7 @@ function ForumCategoryNav({
         className="text-sidebar-label uppercase px-2 mb-2"
         style={{
           color: "var(--muted-foreground)",
-          opacity: 0.6,
+          opacity: 0.6
         }}
       >
         Categories
@@ -1184,7 +1184,7 @@ function ForumCategoryNav({
 
 function ForumDiscussionItem({
   discussion,
-  onClick,
+  onClick
 }: {
   discussion: ForumDiscussion;
   onClick: () => void;
@@ -1273,7 +1273,7 @@ function ForumReplyItem({ reply, depth = 0 }: { reply: ForumReply; depth?: numbe
 
 function ForumDiscussionDetail({
   discussion,
-  onBack,
+  onBack
 }: {
   discussion: ForumDiscussion;
   onBack: () => void;
@@ -1427,7 +1427,7 @@ function ForumDiscussionDetail({
 
 function InitiateDiscussionDialog({
   open,
-  onOpenChange,
+  onOpenChange
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -1570,7 +1570,7 @@ export default function ForumPage() {
   return (
     <div
       className="flex flex-col w-full px-6 md:px-8"
-      style={{ paddingBottom: 48, fontFamily: "'Inter', sans-serif" }}
+      style={{ paddingBottom: 48 }}
     >
       {/* Banner — full width within grid */}
       <div className="grid grid-cols-12 gap-6">
@@ -1650,7 +1650,7 @@ export default function ForumPage() {
                     border: "1px solid var(--border)",
                     borderRadius: "var(--radius)",
                     boxShadow: "var(--elevation-sm)",
-                    overflow: "hidden",
+                    overflow: "hidden"
                   }}
                 >
                   {sortedDiscussions.length > 0 ? (

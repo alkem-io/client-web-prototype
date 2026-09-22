@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/crd/primitives/card";
 import { Check, Minus } from "lucide-react";
 
 interface FunctionalityItem {

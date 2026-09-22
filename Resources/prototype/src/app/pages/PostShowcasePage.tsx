@@ -3,7 +3,7 @@ import { ContributionGrid } from '@/app/components/contribution/ContributionGrid
 import { ContributionWhiteboardCard } from '@/app/components/contribution/ContributionWhiteboardCard';
 import { ContributionPostCard } from '@/app/components/contribution/ContributionPostCard';
 import { ContributionMemoCard } from '@/app/components/contribution/ContributionMemoCard';
-import { ContributionAddCard } from '@/app/components/contribution/ContributionAddCard';
+import { ContributionAddCard } from '@/crd/components/contribution/ContributionAddCard';
 
 import wb1 from '@/app/assets/wb1.png';
 import wb2 from '@/app/assets/wb2.png';
@@ -43,7 +43,7 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
       author: {
         name: 'Sarah Chen',
         role: 'Product Lead',
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&h=64',
+        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&h=64'
       },
       tags: ['product', 'roadmap', 'q3-2026', 'strategy'],
       references: [
@@ -51,7 +51,7 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
         { id: '2', name: 'design-system.example.com', uri: 'https://example.com' },
       ],
       commentCount: 24,
-      descriptionExpanded: false,
+      descriptionExpanded: false
     },
 
     // 2. WHITEBOARD POST
@@ -64,11 +64,11 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
       author: {
         name: 'Alex Rodriguez',
         role: 'Architecture Lead',
-        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&h=64',
+        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&h=64'
       },
       framingImageUrl: wb1,
       tags: ['architecture', 'infrastructure', 'microservices'],
-      commentCount: 18,
+      commentCount: 18
     },
 
     // 3. MEMO POST
@@ -81,7 +81,7 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
       author: {
         name: 'Jordan Smith',
         role: 'Engineering Manager',
-        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&h=64',
+        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&h=64'
       },
       framingMemoMarkdown: `# Weekly Standup - June 23, 2026
 
@@ -105,7 +105,7 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
 - Alex: Review GraphQL schema
 - Jordan: Schedule security review meeting`,
       tags: ['standup', 'weekly', 'team'],
-      commentCount: 7,
+      commentCount: 7
     },
 
     // 4. DRAFT POST
@@ -118,10 +118,10 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
       author: {
         name: 'Emma Wilson',
         role: 'Head of People',
-        avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=64&h=64',
+        avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=64&h=64'
       },
       isDraft: true,
-      commentCount: 12,
+      commentCount: 12
     },
 
     // 5. CALL FOR WHITEBOARDS
@@ -134,13 +134,13 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
       author: {
         name: 'Michael Park',
         role: 'Product Manager',
-        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&h=64',
+        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&h=64'
       },
       tags: ['features', 'brainstorm', 'open-call', 'design'],
       references: [
         { id: '1', name: 'Solar Integration Proposal', uri: 'https://example.com', isFile: true },
       ],
-      commentCount: 42,
+      commentCount: 42
     },
 
     // 6. CALL FOR POSTS (STORIES/EXPERIENCES)
@@ -153,10 +153,10 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
       author: {
         name: 'Lisa Chen',
         role: 'Culture & Community',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64'
       },
       tags: ['culture', 'stories', 'community', 'experience'],
-      commentCount: 28,
+      commentCount: 28
     },
 
     // 7. CALL FOR MEMOS
@@ -169,10 +169,10 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
       author: {
         name: 'David Kumar',
         role: 'Knowledge Manager',
-        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&h=64',
+        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&h=64'
       },
       tags: ['documentation', 'knowledge', 'contribute'],
-      commentCount: 15,
+      commentCount: 15
     },
   ];
 
@@ -219,10 +219,10 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
             author: {
               name: 'Alex Contributor',
               role: 'Energy Lead',
-              avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&h=64',
+              avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&h=64'
             },
             tags: ['solar', 'infrastructure', 'community'],
-            commentCount: 8,
+            commentCount: 8
           }}
           contributionsPreview={
             <div className="mt-6 space-y-3 pt-6 border-t">
@@ -290,9 +290,9 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
             author: {
               name: 'Lisa Chen',
               role: 'Culture Lead',
-              avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64',
+              avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64'
             },
-            commentCount: 18,
+            commentCount: 18
           }}
           contributionsPreview={
             <div className="mt-6 space-y-3 pt-6 border-t">

@@ -6,35 +6,35 @@ import {
   X,
   FolderOpen,
   ArrowUpDown,
-  Tags,
+  Tags
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
-} from "@/app/components/ui/popover";
+  PopoverTrigger
+} from "@/crd/primitives/popover";
 import {
   SpaceCard,
   SpaceCardSkeleton,
-  type SpaceCardData,
+  type SpaceCardData
 } from "@/app/components/space/SpaceCard";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 
@@ -50,7 +50,7 @@ const LEAD_AVATARS = {
   maria: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
   tom: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
   nina: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
-  lucas: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+  lucas: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
 };
 
 const ALL_SPACES: SpaceCardData[] = [
@@ -72,7 +72,7 @@ const ALL_SPACES: SpaceCardData[] = [
       { name: "Sarah Chen", avatar: LEAD_AVATARS.sarah, type: "person" },
       { name: "TechBridge Foundation", avatar: "", type: "org" },
       { name: "David Kim", avatar: LEAD_AVATARS.david, type: "person" },
-    ],
+    ]
   },
   {
     id: "s2",
@@ -90,7 +90,7 @@ const ALL_SPACES: SpaceCardData[] = [
     leads: [
       { name: "Emily Davis", avatar: LEAD_AVATARS.emily, type: "person" },
       { name: "Green Future Org", avatar: "", type: "org" },
-    ],
+    ]
   },
   {
     id: "s3",
@@ -109,7 +109,7 @@ const ALL_SPACES: SpaceCardData[] = [
       { name: "Anna Martinez", avatar: LEAD_AVATARS.anna, type: "person" },
       { name: "Local Council", avatar: "", type: "org" },
       { name: "James Wilson", avatar: LEAD_AVATARS.james, type: "person" },
-    ],
+    ]
   },
   {
     id: "s4",
@@ -127,7 +127,7 @@ const ALL_SPACES: SpaceCardData[] = [
     leads: [
       { name: "Robert Fox", avatar: LEAD_AVATARS.robert, type: "person" },
       { name: "City Planning Dept", avatar: "", type: "org" },
-    ],
+    ]
   },
   {
     id: "s5",
@@ -144,7 +144,7 @@ const ALL_SPACES: SpaceCardData[] = [
     memberCount: 41,
     leads: [
       { name: "Maria Jansen", avatar: LEAD_AVATARS.maria, type: "person" },
-    ],
+    ]
   },
   {
     id: "s6",
@@ -163,7 +163,7 @@ const ALL_SPACES: SpaceCardData[] = [
       { name: "Tom Bakker", avatar: LEAD_AVATARS.tom, type: "person" },
       { name: "Philips Health", avatar: "", type: "org" },
       { name: "Nina van Dijk", avatar: LEAD_AVATARS.nina, type: "person" },
-    ],
+    ]
   },
   {
     id: "s7",
@@ -180,7 +180,7 @@ const ALL_SPACES: SpaceCardData[] = [
     memberCount: 35,
     leads: [
       { name: "Lucas de Boer", avatar: LEAD_AVATARS.lucas, type: "person" },
-    ],
+    ]
   },
   {
     id: "s8",
@@ -201,7 +201,7 @@ const ALL_SPACES: SpaceCardData[] = [
       { name: "David Kim", avatar: LEAD_AVATARS.david, type: "person" },
       { name: "Anna Martinez", avatar: LEAD_AVATARS.anna, type: "person" },
       { name: "Robert Fox", avatar: LEAD_AVATARS.robert, type: "person" },
-    ],
+    ]
   },
   {
     id: "s9",
@@ -219,7 +219,7 @@ const ALL_SPACES: SpaceCardData[] = [
     leads: [
       { name: "Sarah Chen", avatar: LEAD_AVATARS.sarah, type: "person" },
       { name: "Green Future Org", avatar: "", type: "org" },
-    ],
+    ]
   },
   {
     id: "s10",
@@ -237,7 +237,7 @@ const ALL_SPACES: SpaceCardData[] = [
     leads: [
       { name: "Tom Bakker", avatar: LEAD_AVATARS.tom, type: "person" },
       { name: "NS Railways", avatar: "", type: "org" },
-    ],
+    ]
   },
 
   // ── Subspaces (children of top-level) ──
@@ -262,8 +262,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Sustainable Futures",
       slug: "sustainable-futures",
       initials: "SF",
-      avatarColor: "#16a34a",
-    },
+      avatarColor: "#16a34a"
+    }
   },
   {
     id: "s12",
@@ -286,8 +286,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Urban Development Network",
       slug: "urban-development",
       initials: "UD",
-      avatarColor: "#0891b2",
-    },
+      avatarColor: "#0891b2"
+    }
   },
   {
     id: "s13",
@@ -309,8 +309,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Health Innovation Alliance",
       slug: "health-innovation",
       initials: "HI",
-      avatarColor: "#dc2626",
-    },
+      avatarColor: "#dc2626"
+    }
   },
   {
     id: "s14",
@@ -333,8 +333,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Sustainable Futures",
       slug: "sustainable-futures",
       initials: "SF",
-      avatarColor: "#16a34a",
-    },
+      avatarColor: "#16a34a"
+    }
   },
   {
     id: "s15",
@@ -357,8 +357,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Green Energy Space",
       slug: "green-energy",
       initials: "GE",
-      avatarColor: "#2563eb",
-    },
+      avatarColor: "#2563eb"
+    }
   },
   {
     id: "s16",
@@ -375,7 +375,7 @@ const ALL_SPACES: SpaceCardData[] = [
     memberCount: 22,
     leads: [
       { name: "Lucas de Boer", avatar: LEAD_AVATARS.lucas, type: "person" },
-    ],
+    ]
   },
   {
     id: "s17",
@@ -399,8 +399,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Green Energy Space",
       slug: "green-energy",
       initials: "GE",
-      avatarColor: "#2563eb",
-    },
+      avatarColor: "#2563eb"
+    }
   },
   {
     id: "s18",
@@ -419,7 +419,7 @@ const ALL_SPACES: SpaceCardData[] = [
       { name: "Emily Davis", avatar: LEAD_AVATARS.emily, type: "person" },
       { name: "Green Future Org", avatar: "", type: "org" },
       { name: "Tom Bakker", avatar: LEAD_AVATARS.tom, type: "person" },
-    ],
+    ]
   },
   {
     id: "s19",
@@ -442,8 +442,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Social Entrepreneurship Hub",
       slug: "social-entrepreneurship",
       initials: "SE",
-      avatarColor: "#c026d3",
-    },
+      avatarColor: "#c026d3"
+    }
   },
   {
     id: "s20",
@@ -461,7 +461,7 @@ const ALL_SPACES: SpaceCardData[] = [
     leads: [
       { name: "Lucas de Boer", avatar: LEAD_AVATARS.lucas, type: "person" },
       { name: "Anna Martinez", avatar: LEAD_AVATARS.anna, type: "person" },
-    ],
+    ]
   },
   {
     id: "s21",
@@ -478,7 +478,7 @@ const ALL_SPACES: SpaceCardData[] = [
     memberCount: 39,
     leads: [
       { name: "Maria Jansen", avatar: LEAD_AVATARS.maria, type: "person" },
-    ],
+    ]
   },
   {
     id: "s22",
@@ -501,8 +501,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Urban Development Network",
       slug: "urban-development",
       initials: "UD",
-      avatarColor: "#0891b2",
-    },
+      avatarColor: "#0891b2"
+    }
   },
   {
     id: "s23",
@@ -519,7 +519,7 @@ const ALL_SPACES: SpaceCardData[] = [
     memberCount: 18,
     leads: [
       { name: "Nina van Dijk", avatar: LEAD_AVATARS.nina, type: "person" },
-    ],
+    ]
   },
   {
     id: "s24",
@@ -542,8 +542,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Data-Driven Impact",
       slug: "data-driven-impact",
       initials: "DD",
-      avatarColor: "#4f46e5",
-    },
+      avatarColor: "#4f46e5"
+    }
   },
   {
     id: "s25",
@@ -567,8 +567,8 @@ const ALL_SPACES: SpaceCardData[] = [
       name: "Future Mobility",
       slug: "future-mobility",
       initials: "FM",
-      avatarColor: "#0d9488",
-    },
+      avatarColor: "#0d9488"
+    }
   },
 ];
 
@@ -606,7 +606,7 @@ const SPACE_CLASSIFICATIONS: Record<string, { name: string; values: string[] }[]
   "s8": [
     { name: "UN SDGs", values: ["SDG 8 – Decent Work and Economic Growth", "SDG 10 – Reduced Inequalities"] },
     { name: "Sector", values: ["Finance", "Social Services"] },
-  ],
+  ]
 };
 
 // Enrich spaces with classifications
@@ -642,7 +642,7 @@ function FacetSection({
   values,
   selected,
   onToggle,
-  formatLabel,
+  formatLabel
 }: {
   title: string;
   values: string[];
@@ -688,7 +688,7 @@ function FacetSection({
                     className="w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0"
                     style={{
                       borderColor: isSelected ? "var(--primary)" : "var(--border)",
-                      background: isSelected ? "var(--primary)" : "transparent",
+                      background: isSelected ? "var(--primary)" : "transparent"
                     }}
                   >
                     {isSelected && <span style={{ color: "white", fontSize: 8, lineHeight: 1 }}>✓</span>}
@@ -822,7 +822,7 @@ export default function BrowseSpacesPage() {
   return (
     <div
       className="flex flex-col w-full px-6 md:px-8"
-      style={{ paddingBottom: 48, fontFamily: "'Inter', sans-serif" }}
+      style={{ paddingBottom: 48 }}
     >
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-start-2 lg:col-span-10">
@@ -839,7 +839,7 @@ export default function BrowseSpacesPage() {
           style={{
             color: "var(--muted-foreground)",
             marginTop: 6,
-            maxWidth: 560,
+            maxWidth: 560
           }}
         >
           {t("spaces.subtitle")}
@@ -859,7 +859,7 @@ export default function BrowseSpacesPage() {
               left: 14,
               width: 16,
               height: 16,
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           />
           <Input
@@ -876,7 +876,7 @@ export default function BrowseSpacesPage() {
               background: "var(--input-background)",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius)",
-              color: "var(--foreground)",
+              color: "var(--foreground)"
             }}
           />
           {searchQuery && (
@@ -906,7 +906,7 @@ export default function BrowseSpacesPage() {
               height: 40,
               background: "var(--input-background)",
               border: "1px solid var(--border)",
-              borderRadius: "var(--radius)",
+              borderRadius: "var(--radius)"
             }}
           >
             <ArrowUpDown style={{ width: 14, height: 14, color: "var(--muted-foreground)" }} />
@@ -930,7 +930,7 @@ export default function BrowseSpacesPage() {
                 height: 40,
                 borderRadius: "var(--radius)",
                 color: activeFilterCount > 0 ? "var(--primary)" : "var(--foreground)",
-                borderColor: activeFilterCount > 0 ? "var(--primary)" : "var(--border)",
+                borderColor: activeFilterCount > 0 ? "var(--primary)" : "var(--border)"
               }}
             >
               <SlidersHorizontal style={{ width: 14, height: 14 }} />
@@ -944,7 +944,7 @@ export default function BrowseSpacesPage() {
                     background: "var(--primary)",
                     color: "var(--primary-foreground)",
                     borderRadius: "999px",
-                    marginLeft: 2,
+                    marginLeft: 2
                   }}
                 >
                   {activeFilterCount}
@@ -957,7 +957,7 @@ export default function BrowseSpacesPage() {
               className="text-badge font-bold uppercase"
               style={{
                 letterSpacing: "0.08em",
-                color: "var(--muted-foreground)",
+                color: "var(--muted-foreground)"
               }}
             >
               Privacy
@@ -985,7 +985,7 @@ export default function BrowseSpacesPage() {
               className="text-badge font-bold uppercase"
               style={{
                 letterSpacing: "0.08em",
-                color: "var(--muted-foreground)",
+                color: "var(--muted-foreground)"
               }}
             >
               Type
@@ -1019,7 +1019,7 @@ export default function BrowseSpacesPage() {
                     className="w-full justify-start gap-2 text-control"
                     style={{
                       color: "var(--destructive)",
-                      height: 32,
+                      height: 32
                     }}
                   >
                     <X style={{ width: 12, height: 12 }} />
@@ -1093,7 +1093,7 @@ export default function BrowseSpacesPage() {
                 padding: "4px 10px",
                 borderRadius: "999px",
                 background: "var(--secondary)",
-                color: "var(--secondary-foreground)",
+                color: "var(--secondary-foreground)"
               }}
               onClick={() => setSearchQuery("")}
             >
@@ -1109,7 +1109,7 @@ export default function BrowseSpacesPage() {
                 padding: "4px 10px",
                 borderRadius: "999px",
                 background: "var(--secondary)",
-                color: "var(--secondary-foreground)",
+                color: "var(--secondary-foreground)"
               }}
               onClick={() => setPrivacyFilter("all")}
             >
@@ -1125,7 +1125,7 @@ export default function BrowseSpacesPage() {
                 padding: "4px 10px",
                 borderRadius: "999px",
                 background: "var(--secondary)",
-                color: "var(--secondary-foreground)",
+                color: "var(--secondary-foreground)"
               }}
               onClick={() => setTypeFilter("all")}
             >
@@ -1178,7 +1178,7 @@ export default function BrowseSpacesPage() {
             className="grid gap-5"
             style={{
               gridTemplateColumns:
-                "repeat(auto-fill, minmax(280px, 1fr))",
+                "repeat(auto-fill, minmax(280px, 1fr))"
             }}
           >
             {displayedSpaces.map((space) => (
@@ -1206,7 +1206,7 @@ export default function BrowseSpacesPage() {
                   height: 40,
                   paddingLeft: 24,
                   paddingRight: 24,
-                  borderRadius: "var(--radius)",
+                  borderRadius: "var(--radius)"
                 }}
               >
                 <ChevronDown style={{ width: 16, height: 16 }} />
@@ -1223,7 +1223,7 @@ export default function BrowseSpacesPage() {
             padding: "64px 24px",
             border: "1px dashed var(--border)",
             borderRadius: "calc(var(--radius) + 4px)",
-            background: "var(--muted)",
+            background: "var(--muted)"
           }}
         >
           <FolderOpen
@@ -1232,14 +1232,14 @@ export default function BrowseSpacesPage() {
               height: 40,
               color: "var(--muted-foreground)",
               opacity: 0.5,
-              marginBottom: 12,
+              marginBottom: 12
             }}
           />
           <h3
             className="text-subheader font-semibold"
             style={{
               color: "var(--foreground)",
-              marginBottom: 4,
+              marginBottom: 4
             }}
           >
             {t("spaces.noResults")}
@@ -1249,7 +1249,7 @@ export default function BrowseSpacesPage() {
             style={{
               color: "var(--muted-foreground)",
               maxWidth: 360,
-              marginBottom: 16,
+              marginBottom: 16
             }}
           >
             {t("spaces.noResultsDesc")}

@@ -5,9 +5,9 @@ import { OrganizationCard } from "@/app/components/user/OrganizationCard";
 import { OrgHoverCard } from "@/app/components/user/OrgHoverCard";
 import { VCHoverCard } from "@/app/components/user/VCHoverCard";
 import { SpaceGridCard } from "@/app/components/user/SpaceGridCard";
-import { Badge } from "@/app/components/ui/badge";
+import { Badge } from "@/crd/primitives/badge";
 import { Bot, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 export default function UserProfilePage() {
   const { userSlug } = useParams<{ userSlug: string }>();
@@ -78,7 +78,7 @@ Always looking for collaborators on open source climate data projects. Feel free
                     org={{
                       name: org.name,
                       avatarUrl: org.imageUrl,
-                      tags: org.tags,
+                      tags: org.tags
                     }}
                   >
                     <Link to={`/organization/${org.name.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -166,7 +166,7 @@ Always looking for collaborators on open source climate data projects. Feel free
                           vc={{
                             name: vc.name,
                             description: vc.description,
-                            profileUrl: `/vc/${vc.slug}`,
+                            profileUrl: `/vc/${vc.slug}`
                           }}
                         >
                           <Link to={`/vc/${vc.slug}`} className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:shadow-sm hover:border-primary/30 transition-all">

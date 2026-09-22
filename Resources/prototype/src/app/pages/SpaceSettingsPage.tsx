@@ -9,7 +9,7 @@ import { SpaceSettingsStorage } from "@/app/components/space/SpaceSettingsStorag
 import { SpaceSettingsSettings } from "@/app/components/space/SpaceSettingsSettings";
 import { SpaceSettingsAccount } from "@/app/components/space/SpaceSettingsAccount";
 import { Info, Layout, Users, Megaphone, Layers, FileText, HardDrive, Settings, UserCircle, Bookmark } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface SpaceData {
   name: string;
@@ -24,7 +24,7 @@ const SPACE_DATA: Record<string, SpaceData> = {
   "sustainability-lab": { name: "Sustainability Lab", initials: "SL", avatarColor: "#16a34a", bannerImage: "https://images.unsplash.com/photo-1623652554515-91c833e3080e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsYWJvcmF0aW9uJTIwdGVhbXdvcmslMjBpbm5vdmF0aW9uJTIwZGVzaWduJTIwdGhpbmtpbmclMjB3b3Jrc2hvcHxlbnwxfHx8fDE3NjkwODc1ODd8MA&ixlib=rb-4.1.0&q=80&w=400", description: "Experimenting with innovative approaches to environmental sustainability." },
   "urban-mobility": { name: "Urban Mobility Lab", initials: "UM", avatarColor: "#0891b2", bannerImage: "https://images.unsplash.com/photo-1735639013995-086e648eaa38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxicmFpbnN0b3JtaW5nJTIwY3JlYXRpdmUlMjB3b3Jrc2hvcCUyMHRlYW18ZW58MXx8fHwxNzY5MDg3NTg3fDA&ixlib=rb-4.1.0&q=80&w=400", description: "Reimagining city transportation for better accessibility and lower emissions." },
   "community-garden": { name: "Community Garden", initials: "CG", avatarColor: "#65a30d", bannerImage: "https://images.unsplash.com/photo-1768659347532-74d3b1efb0ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBtZWV0aW5nJTIwY29sbGFib3JhdGlvbiUyMHRlYW18ZW58MXx8fHwxNzY5MDg3NTg3fDA&ixlib=rb-4.1.0&q=80&w=400", description: "Growing food and community connections in urban neighborhoods." },
-  "innovation-lab": { name: "Innovation Lab", initials: "IL", avatarColor: "#7c3aed", bannerImage: "https://images.unsplash.com/photo-1676276376052-dc9c9c0b6917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbm5vdmF0aW9uJTIwbGFiJTIwdGVhbXdvcmslMjBtb2Rlcm4lMjBvZmZpY2V8ZW58MXx8fHwxNzY5MDg3NTg2fDA&ixlib=rb-4.1.0&q=80&w=400", description: "A collaborative space for breakthrough ideas and rapid experimentation." },
+  "innovation-lab": { name: "Innovation Lab", initials: "IL", avatarColor: "#7c3aed", bannerImage: "https://images.unsplash.com/photo-1676276376052-dc9c9c0b6917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbm5vdmF0aW9uJTIwbGFiJTIwdGVhbXdvcmslMjBtb2Rlcm4lMjBvZmZpY2V8ZW58MXx8fHwxNzY5MDg3NTg2fDA&ixlib=rb-4.1.0&q=80&w=400", description: "A collaborative space for breakthrough ideas and rapid experimentation." }
 };
 
 function getSpaceData(slug: string): SpaceData {
@@ -33,7 +33,7 @@ function getSpaceData(slug: string): SpaceData {
     initials: slug.substring(0, 2).toUpperCase(),
     avatarColor: "#64748b",
     bannerImage: "",
-    description: "A collaborative space for innovation.",
+    description: "A collaborative space for innovation."
   };
 }
 
@@ -149,9 +149,8 @@ export function SpaceSettingsPage() {
                   <h2
                     className="capitalize text-section-title"
                     style={{
-                      color: "var(--foreground)",
-                      fontFamily: "var(--font-family, 'Inter', sans-serif)",
-                    }}
+                      color: "var(--foreground)"
+                      }}
                   >
                     {tab} Settings
                   </h2>
@@ -159,7 +158,7 @@ export function SpaceSettingsPage() {
                     className="max-w-sm text-body"
                     style={{
                       color: "var(--muted-foreground)",
-                      marginTop: "var(--spacing-2, 8px)",
+                      marginTop: "var(--spacing-2, 8px)"
                     }}
                   >
                     This section is under development. Please check back later for {tab} configuration options.
