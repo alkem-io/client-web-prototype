@@ -61,6 +61,20 @@ prototype code needs updating. Fix the prototype, not the vendored layer.
 > from `main` and rebased. A future sync agent must apply rule 2, not rule 1,
 > to any surface where the prototype leads.
 
+> **Second trap, same shape: the space search box.**
+> `SpaceSubspacesList` ships with its own search field, which looks like proof
+> that production searches each section separately. It is not. Production uses
+> that component in exactly two places — embedded as a callout body, and inside
+> a dialog with `disableFilters` — never as a standalone tab.
+>
+> The real model is in client-web's `CrdSpaceTabPage`: the **tab page** owns
+> `searchText` + `tagsFilter`, passes them to the sidebar's `SearchSection`
+> widget, and uses them to filter that tab's callouts. One box, in the sidebar,
+> filtering the page — which is exactly what the prototype's `FilterContext`
+> already does. Do not "fix" it into per-section search boxes; that was tried on
+> 2026-09-24 and reverted, and the tell is tabs rendering two or three search
+> fields.
+
 `src/app/components/ui/` holds the 19 primitives the prototype has and
 production does not (sidebar, command, drawer, form, chart, hover-card,
 placeholder-card, …). They are fair game to edit — and they are also the

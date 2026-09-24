@@ -1,4 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
+import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
 import { Button } from "@/crd/primitives/button";
 import { Plus, Pin, ChevronsDownUp, ChevronsUpDown, Lock, Users } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
@@ -124,7 +125,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Community", "Updates"],
       author: {
         name: "David Kim",
-        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Three subspaces open for new contributors 👇",
@@ -142,7 +142,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Community", "Research"],
       author: {
         name: "Sarah Chen",
-        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Q4 Planning — Tell Us Where to Focus",
@@ -214,7 +213,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Updates", "Announcements"],
       author: {
         name: "Sarah Chen",
-        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Kickoff: Municipal Transition Strategy",
@@ -233,7 +231,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "David Miller",
-        role: "Energy Analyst",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Share Resources: Grid Modernisation References",
@@ -249,7 +246,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "posts",
       author: {
         name: "Elena Rodriguez",
-        role: "Lead",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Share Your Success Stories: Community Solar Wins",
@@ -265,7 +261,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "Alex Contributor",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Document Best Practices: Energy Auditing Procedures",
@@ -281,7 +276,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "Michael Chang",
-        role: "Researcher",
         avatarUrl: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Call for Ideas: Community Solar Projects",
@@ -297,7 +291,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "tasks",
       author: {
         name: "Sarah Chen",
-        role: "Scrum Master",
         avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Sprint 4 — Grid Modernisation Workstream",
@@ -312,7 +305,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Documentation", "Progress"],
       author: {
         name: "Alex Contributor",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Workshop Photos: Community Engagement Session",
@@ -341,7 +333,7 @@ export function SpaceFeed() {
     const stored = localStorage.getItem('alkemio-collapse-posts');
     return stored !== null ? stored === 'true' : false;
   });
-  const { searchValue, activeTags, viewMode } = useSpaceFilters();
+  const { searchValue, activeTags } = useSpaceFilters();
 
   const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
     posts,
@@ -731,10 +723,17 @@ export function SpaceFeed() {
 
   return (
     <div className="w-full">
-      {/* Lead Update — pinned announcement */}
+      {/* Lead Update — pinned announcement. Prototype-only, so it sits above
+          production's feed section rather than inside it. */}
       <LeadUpdate />
 
-      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
+      {/*
+       * Production's feed section — it owns the empty state, the loading
+       * skeletons and the Show More button. Cards go in as `children` because
+       * each one carries per-post wiring (contribution previews, media-gallery
+       * handlers, form settings) that CRD's own `posts` prop cannot express.
+       */}
+      <CrdSpaceFeed hasMore={true} onShowMore={() => {}}>
         {filteredPosts.map((post) => (
           <PostCard
             key={post.id}
@@ -750,13 +749,7 @@ export function SpaceFeed() {
             contributionsPreview={getContributionPreview(post)}
           />
         ))}
-      </div>
-
-      <div className="mt-8 text-center">
-        <Button variant="outline" className="w-full sm:w-auto">
-          Show More
-        </Button>
-      </div>
+      </CrdSpaceFeed>
 
       <input
         ref={fileInputRef}

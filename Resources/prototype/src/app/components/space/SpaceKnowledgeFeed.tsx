@@ -2,6 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Button } from "@/crd/primitives/button";
 import { Plus, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
+import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { MemoDialog } from "@/app/components/memo/MemoDialog";
@@ -44,7 +45,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Research", "Community"],
       author: {
         name: "James Wilson",
-        role: "Community Lead",
         avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Community Workshop Guidelines",
@@ -60,7 +60,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Ideas", "Technical"],
       author: {
         name: "David Miller",
-        role: "Energy Analyst",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "System Architecture: Grid Modernisation Plan",
@@ -77,7 +76,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Documentation", "Governance"],
       author: {
         name: "Elena Rodriguez",
-        role: "Policy Expert",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Policy Decision Record: Community Solar",
@@ -94,7 +92,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Policy", "Reports"],
       author: {
         name: "Robert Hayes",
-        role: "Legal Advisor",
         avatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "2030 Renewable Transition Policy Proposal",
@@ -111,7 +108,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Funding", "Community"],
       author: {
         name: "Nina Petrova",
-        role: "Finance Director",
         avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Apply Now: DOE Community Power Accelerator",
@@ -128,7 +124,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Community", "Events"],
       author: {
         name: "Lisa Park",
-        role: "Program Manager",
         avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Solar Installation Progress Photos — Phase 1",
@@ -153,7 +148,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Governance", "Community"],
       author: {
         name: "Michael Chang",
-        role: "Researcher",
         avatarUrl: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Priority Vote: Next Infrastructure Investment",
@@ -174,7 +168,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "Priya Sharma",
-        role: "Data Scientist",
         avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Collect: Energy Consumption Datasets & Tools",
@@ -191,7 +184,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "tasks",
       author: {
         name: "James Wilson",
-        role: "Community Lead",
         avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Community Outreach Programme — Task Tracker",
@@ -208,7 +200,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "Tom Bradley",
-        role: "Infrastructure Engineer",
         avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Document: EV Charging Station Installation Guides",
@@ -225,7 +216,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "Sarah Chen",
-        role: "Facilitator",
         avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Sketch: Future Building Energy Retrofit Concepts",
@@ -246,7 +236,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "David Miller",
-        role: "Energy Analyst",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Grid Topology Map — Share Supporting Docs",
@@ -264,7 +253,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "posts",
       author: {
         name: "Alex Contributor",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Neighbourhood Energy Map — Share Your Observations",
@@ -282,7 +270,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "Tom Bradley",
-        role: "Infrastructure Engineer",
         avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Substation Upgrade Diagram — Document Procedures",
@@ -300,7 +287,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "Sarah Chen",
-        role: "Facilitator",
         avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Solar Farm Layout Concept — Add Your Designs",
@@ -322,7 +308,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "Robert Hayes",
-        role: "Legal Advisor",
         avatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Regulatory Compliance Summary — Add References",
@@ -340,7 +325,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "posts",
       author: {
         name: "Elena Rodriguez",
-        role: "Policy Expert",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Stakeholder Engagement Plan — Share Feedback",
@@ -358,7 +342,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "Lisa Park",
-        role: "Program Manager",
         avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Project Retrospective Template — Submit Your Retros",
@@ -376,7 +359,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "Michael Chang",
-        role: "Researcher",
         avatarUrl: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Research Brief: Battery Storage — Visualise Solutions",
@@ -398,7 +380,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "Robert Hayes",
-        role: "Legal Advisor",
         avatarUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Procurement Guidelines Draft — Share Reference Material",
@@ -416,7 +397,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "posts",
       author: {
         name: "Nina Petrova",
-        role: "Finance Director",
         avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Q2 Budget Report — Share Your Department Updates",
@@ -434,7 +414,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "Tom Bradley",
-        role: "Infrastructure Engineer",
         avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Technical Specification v2.1 — Contribute Procedures",
@@ -452,7 +431,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "David Miller",
-        role: "Energy Analyst",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Site Assessment Report — Sketch Layout Proposals",
@@ -474,7 +452,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "Nina Petrova",
-        role: "Finance Director",
         avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Grant Portal: Share Supporting Evidence",
@@ -492,7 +469,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "posts",
       author: {
         name: "James Wilson",
-        role: "Community Lead",
         avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Register for the Summit — Then Share Your Topics",
@@ -510,7 +486,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "Elena Rodriguez",
-        role: "Policy Expert",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Public Comment Portal — Submit Position Memos",
@@ -528,7 +503,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "Lisa Park",
-        role: "Program Manager",
         avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Design Competition Brief — Submit Visual Concepts",
@@ -550,7 +524,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "Priya Sharma",
-        role: "Data Scientist",
         avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Thermal Imaging Results — Share Analysis Tools",
@@ -575,7 +548,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "posts",
       author: {
         name: "James Wilson",
-        role: "Community Lead",
         avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Community Event Photos — Share Your Highlights",
@@ -601,7 +573,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "Tom Bradley",
-        role: "Infrastructure Engineer",
         avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Installation Photos — Document the Process",
@@ -626,7 +597,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "Alex Contributor",
-        role: "Member",
         avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Site Photos: Proposed Solar Locations — Sketch Layouts",
@@ -656,7 +626,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "Michael Chang",
-        role: "Researcher",
         avatarUrl: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Vote: Preferred Energy Monitoring Platform — Share Reviews",
@@ -673,7 +642,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "posts",
       author: {
         name: "Elena Rodriguez",
-        role: "Policy Expert",
         avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Vote: Top Priority for Q4 — Explain Your Reasoning",
@@ -690,7 +658,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "David Miller",
-        role: "Energy Analyst",
         avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Vote: Best Battery Technology — Submit Technical Memos",
@@ -707,7 +674,6 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "Sarah Chen",
-        role: "Facilitator",
         avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Vote: Preferred Microgrid Topology — Sketch Your Design",
@@ -729,7 +695,7 @@ export function SpaceKnowledgeFeed() {
     const stored = localStorage.getItem('alkemio-collapse-posts');
     return stored !== null ? stored === 'true' : false;
   });
-  const { searchValue, activeTags, viewMode } = useSpaceFilters();
+  const { searchValue, activeTags } = useSpaceFilters();
 
   const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
     posts,
@@ -1034,7 +1000,10 @@ export function SpaceKnowledgeFeed() {
 
   return (
     <div className="w-full">
-      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
+      {/* Production's feed section — owns the empty state, loading skeletons and
+          Show More. Cards go in as `children`; each carries per-post wiring that
+          CRD's own `posts` prop cannot express. */}
+      <CrdSpaceFeed hasMore={true} onShowMore={() => {}}>
         {filteredPosts.map((post) => (
           <div key={post.id} id={post.id}>
             <PostCard
@@ -1051,13 +1020,7 @@ export function SpaceKnowledgeFeed() {
             />
           </div>
         ))}
-      </div>
-
-      <div className="mt-8 text-center">
-        <Button variant="outline" className="w-full sm:w-auto">
-          Show More
-        </Button>
-      </div>
+      </CrdSpaceFeed>
 
       <input
         ref={fileInputRef}

@@ -14,6 +14,13 @@ import { Plus, Mail, UserPlus, Search, List, FileText, X, Calendar, ChevronDown,
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { cn } from "@/crd/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
+import { SpaceSidebar as CrdSpaceSidebar } from "@/crd/components/space/SpaceSidebar";
+import { CollapsibleTagList } from "@/crd/components/common/CollapsibleTagList";
+import { CreatePostButton } from "@/crd/components/space/sidebar/CreatePostButton";
+import { CreateSubspaceButton } from "@/crd/components/space/sidebar/CreateSubspaceButton";
+import { InviteButton } from "@/crd/components/space/sidebar/InviteButton";
+import { PostIndexButton } from "@/crd/components/space/sidebar/PostIndexButton";
+import { SearchField } from "@/crd/forms/SearchField";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { ActivityDot } from "@/app/components/shared/ActivityDot";
 import { spaceOrSubspaceIds } from "@/app/data/activity-data";
@@ -322,61 +329,29 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           <IntentLeadsBox />
         </div>
       ) : null,
-    post: (
-      <Button
-        size="sm"
-        className="w-full gap-2 justify-start"
-        onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}
-      >
-        <Plus className="w-4 h-4" />
-        Post
-      </Button>
-    ),
-    addUser:
-      variant === "community" ? (
-        <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
-          <UserPlus className="w-4 h-4" />
-          Add User
-        </Button>
-      ) : null,
+    post: <CreatePostButton onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))} />,
+    addUser: variant === "community" ? <InviteButton onClick={() => {}} /> : null,
     createSubspace:
       variant === "home" || variant === "workspaces" ? (
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full gap-2 justify-start"
-          onClick={() => setApplicationDialogOpen(true)}
-        >
-          <Plus className="w-4 h-4" />
-          Apply for a Subspace
-        </Button>
+        <CreateSubspaceButton onClick={() => setApplicationDialogOpen(true)} />
       ) : null,
     search: (
       <div className="pb-2">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="w-full h-9 pl-8 pr-3 transition-all text-body rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "var(--primary)";
-              e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = "var(--border)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          />
-        </div>
+        <SearchField
+          value={searchValue}
+          onValueChange={setSearchValue}
+          placeholder={searchPlaceholder}
+          ariaLabel={searchPlaceholder}
+        />
         {!config.enabled.tags && filterFeedback}
       </div>
     ),
     tags: (
       <>
-        <TagCloud tags={tags} activeTags={activeTags} toggleTag={toggleTag} />
+        {/* CRD bundles search + tags into one `SearchSection`; the prototype keeps
+            them as two independently-togglable widgets (Settings → Layout), so the
+            tag half is composed from `CollapsibleTagList` directly. */}
+        <CollapsibleTagList tags={tags} selectedTags={activeTags} onTagClick={toggleTag} />
         {filterFeedback}
         <div className="mb-2" />
       </>
@@ -401,15 +376,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       ) : null,
     index: (
       <div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full gap-2 justify-start"
-          onClick={() => setIndexOpen(true)}
-        >
-          <List className="w-3.5 h-3.5" />
-          Index
-        </Button>
+        <PostIndexButton onClick={() => setIndexOpen(true)} />
       </div>
     )
   };
@@ -427,7 +394,10 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
     }, []);
 
   return (
-    <div className="flex flex-col w-full">
+    /* Production's sidebar frame. It is purely the <nav> shell — every widget is
+       an ordered child, which is the same config-driven composition the
+       prototype already used and production does in SpaceTabSidebarConnector. */
+    <CrdSpaceSidebar className="flex flex-col space-y-0">
       {/* Widgets — visibility and order come from Settings → Layout */}
       {widgetGroups.map((group, i) =>
         group.family === "action" ? (
@@ -511,7 +481,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         spaceName={spaceSlug}
         currentUser={currentUser}
       />
-    </div>
+    </CrdSpaceSidebar>
   );
 }
 

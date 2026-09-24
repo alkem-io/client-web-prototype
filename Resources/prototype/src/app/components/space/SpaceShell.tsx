@@ -5,6 +5,7 @@ import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { HeaderActionIcons, type HeaderActionIconsData } from "@/crd/components/space/HeaderActionIcons";
 import { SpaceSidebar } from "./SpaceSidebar";
 import { FilterProvider, useSpaceFilters } from "./FilterContext";
+import { SpaceShell as CrdSpaceShell } from "@/crd/layouts/SpaceShell";
 import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, LayoutGrid, List, CheckCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
@@ -179,10 +180,66 @@ export function SpaceShell() {
   const usesScaling = variant !== 1;
   const scaledContainer = { maxWidth: 1536, margin: "0 auto", width: "100%" };
 
+  const header = (
+    <SpaceHeader spaceSlug={slug} variant={variant} onInfoClick={() => setAboutOpen(true)} actionButtons={actionIcons} />
+  );
+  const tabs = (
+    <SpaceNavigationTabs
+      spaceSlug={slug}
+      onActiveTabChange={handleActiveTabChange}
+      /* CRD's headers render action icons on mobile only (`sm:hidden`); on
+         desktop production puts them in the tab row, which is what its
+         `action` prop is for. */
+      actionButton={<HeaderActionIcons actions={headerActions} />}
+    />
+  );
+  const sidebar = (
+    <aside>
+      <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} widgetConfig={getCurrentTabConfig()} />
+      {/* User collapse toggle */}
+      <button
+        onClick={() => setSidebarCollapsed(true)}
+        className="hidden lg:flex items-center gap-1.5 w-full mt-2 px-2 py-1.5 rounded-md text-caption text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        title="Collapse sidebar"
+      >
+        <PanelLeftClose className="w-3.5 h-3.5" />
+        <span>Collapse</span>
+      </button>
+    </aside>
+  );
+
+  /*
+   * The standard layout is production's `@/crd/layouts/SpaceShell` — header,
+   * sticky tab row, sidebar column and content column on a 12-column grid.
+   * The prototype's own grid was already the same shape; adopting CRD's brings
+   * its responsive padding (`px-6 md:px-8` rather than a hard 32px), the
+   * reserved min-height that stops the footer jumping during loading, and the
+   * sm: breakpoint handling for the mobile tab bar.
+   *
+   * `fullWidth` maps to the prototype's `usesScaling`: both mean "content spans
+   * the full 12 columns instead of the inset 2–11 band".
+   *
+   * The branches below it are prototype-only layout studies with no production
+   * equivalent — the five mobile strategies (`?m=1…5`) and the collapsed icon
+   * rail from Settings → Layout. They keep their own markup.
+   */
+  const useCrdShell = mobileStrategy === 0 && effectivePanelMode !== "rail";
+
   return (
     <FilterProvider>
+      {useCrdShell ? (
+        <CrdSpaceShell
+          header={header}
+          tabs={tabs}
+          sidebar={sidebar}
+          sidebarCollapsed={effectivePanelMode === "hidden"}
+          fullWidth={usesScaling}
+        >
+          <Outlet />
+        </CrdSpaceShell>
+      ) : (
       <div className="flex flex-col bg-background">
-        <SpaceHeader spaceSlug={slug} variant={variant} onInfoClick={() => setAboutOpen(true)} actionButtons={actionIcons} />
+        {header}
 
         {/* Content area */}
         <div className="w-full px-4 pt-0 pb-8" style={!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : undefined}>
@@ -198,14 +255,7 @@ export function SpaceShell() {
                   WebkitBackdropFilter: "blur(8px)"
                 }}
               >
-                <SpaceNavigationTabs
-                  spaceSlug={slug}
-                  onActiveTabChange={handleActiveTabChange}
-                  /* CRD's headers render action icons on mobile only
-                     (`sm:hidden`); on desktop production puts them in the
-                     tab row, which is what its `action` prop is for. */
-                  actionButton={<HeaderActionIcons actions={headerActions} />}
-                />
+                {tabs}
               </div>
 
               {/* ═══ MOBILE STRATEGY 1: Sheet / Drawer ═══ */}
@@ -233,36 +283,6 @@ export function SpaceShell() {
                 <MobileTabBarFilter slug={slug} sidebarVariant={getSidebarVariant()} activeTabDescription={activeTabDescription} usesScaling={usesScaling} />
               )}
 
-              {/* ═══ DEFAULT (m=0): Original behavior — sidebar hidden on mobile ═══ */}
-              {mobileStrategy === 0 && effectivePanelMode === "full" && (
-                <>
-                  <div className={`hidden lg:block col-span-2 sticky top-[8.5rem] self-start max-h-[calc(100vh-8.5rem)] scrollbar-hide overflow-y-auto ${!usesScaling ? "lg:col-start-2" : ""}`}>
-                    <aside>
-                      <SpaceSidebar spaceSlug={slug} variant={getSidebarVariant()} activeTabDescription={activeTabDescription} widgetConfig={getCurrentTabConfig()} />
-                      {/* User collapse toggle */}
-                      <button
-                        onClick={() => setSidebarCollapsed(true)}
-                        className="hidden lg:flex items-center gap-1.5 w-full mt-2 px-2 py-1.5 rounded-md text-caption text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                        title="Collapse sidebar"
-                      >
-                        <PanelLeftClose className="w-3.5 h-3.5" />
-                        <span>Collapse</span>
-                      </button>
-                    </aside>
-                  </div>
-                  <div className={`col-span-12 ${usesScaling ? "lg:col-span-10" : "lg:col-span-8"} min-w-0`}>
-                    <Outlet />
-                  </div>
-                </>
-              )}
-
-              {/* ═══ PANEL HIDDEN: Full-width one-pager layout ═══ */}
-              {mobileStrategy === 0 && effectivePanelMode === "hidden" && (
-                <div className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} min-w-0`}>
-                  <Outlet />
-                </div>
-              )}
-
               {/* ═══ PANEL RAIL: Slim icon rail + expanded content ═══ */}
               {mobileStrategy === 0 && effectivePanelMode === "rail" && (
                 <div className={`col-span-12 ${!usesScaling ? "lg:col-start-2 lg:col-span-10" : ""} min-w-0`}>
@@ -273,6 +293,7 @@ export function SpaceShell() {
           </div>
         </div>
       </div>
+      )}
       <AboutThisSpaceDialog open={aboutOpen} onOpenChange={setAboutOpen} spaceSlug={slug} />
       <WelcomeSpaceDialog open={welcomeOpen} onOpenChange={setWelcomeOpen} spaceName={slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} />
 

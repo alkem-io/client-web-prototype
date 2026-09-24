@@ -19,7 +19,6 @@ import { KanbanPostDialog } from "@/app/components/space/KanbanBoardPost";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { AboutThisSpaceDialog } from "@/app/components/space/AboutThisSpaceDialog";
-import { SubspaceBoardView } from "@/app/components/space/SubspaceBoardView";
 
 /* ─── Mock subspace metadata ─── */
 
@@ -125,7 +124,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "strategy",
     author: {
       name: "Sarah Chen",
-      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Amsterdam, NL",
@@ -143,7 +141,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "strategy",
     author: {
       name: "David Kim",
-      role: "Member",
       avatarUrl:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Seoul, KR",
@@ -162,7 +159,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "policy",
     author: {
       name: "Emily Davis",
-      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "London, UK",
@@ -180,7 +176,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "municipal",
     author: {
       name: "Alex Torres",
-      role: "Member",
       avatarUrl:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Lisbon, PT",
@@ -212,7 +207,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "stakeholders",
     author: {
       name: "Anna Martinez",
-      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Madrid, ES",
@@ -237,7 +231,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "policy",
     author: {
       name: "Robert Fox",
-      role: "Member",
       avatarUrl:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Brussels, BE",
@@ -255,7 +248,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "strategy",
     author: {
       name: "Sarah Chen",
-      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     },
@@ -331,7 +323,6 @@ export default function SubspacePage() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCommunityDialogOpen, setIsCommunityDialogOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"feed" | "board">("feed");
   const [kanbanDialogPost, setKanbanDialogPost] = useState<(typeof SUBSPACE_POSTS)[number] | null>(null);
 
   // Listen for sidebar "New Post" button event
@@ -471,8 +462,8 @@ export default function SubspacePage() {
               marginRight: -10
             }}
           >
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-4">
+              <div className="flex flex-1 items-center gap-2 min-w-0">
                 <TooltipProvider delayDuration={300}>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -493,8 +484,7 @@ export default function SubspacePage() {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                {viewMode === "feed" && (
-                  <CalloutTabs
+                <CalloutTabs
                     action={
                       <HeaderActionIcons
                         actions={{
@@ -511,61 +501,14 @@ export default function SubspacePage() {
                     tabs={info.callouts}
                     activeTab={activeCallout}
                     onTabChange={setActiveCallout}
-                    activityOwner={activeSlug}
-                  />
-                )}
-                {viewMode === "board" && (
-                  <span className="text-body-emphasis text-foreground">Board View</span>
-                )}
-              </div>
-              {/* View mode toggle */}
-              <div className="flex items-center gap-0.5 shrink-0 bg-muted rounded-lg p-0.5">
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setViewMode("feed")}
-                        className={cn(
-                          "p-1.5 rounded-md transition-colors",
-                          viewMode === "feed"
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                        aria-label="Feed view"
-                      >
-                        <List className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Feed view</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setViewMode("board")}
-                        className={cn(
-                          "p-1.5 rounded-md transition-colors",
-                          viewMode === "board"
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                        aria-label="Board view"
-                      >
-                        <Columns3 className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Board view</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                  activityOwner={activeSlug}
+                />
               </div>
             </div>
           </div>
 
           {/* Tab description (feed mode only) */}
-          {viewMode === "feed" && info.callouts.find((c) => c.id === activeCallout)?.description && (
+          {info.callouts.find((c) => c.id === activeCallout)?.description && (
             <div className="mb-4">
               <ReadMoreText
                 maxLines={2}
@@ -581,16 +524,6 @@ export default function SubspacePage() {
             </div>
           )}
 
-          {/* Board View */}
-          {viewMode === "board" && (
-            <SubspaceBoardView
-              phases={info.callouts}
-              posts={SUBSPACE_POSTS}
-            />
-          )}
-
-          {/* Feed View */}
-          {viewMode === "feed" && (
           <div className="space-y-6">
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => (
@@ -630,7 +563,6 @@ export default function SubspacePage() {
               </div>
             )}
           </div>
-          )}
           </div>
         </div>
       </main>

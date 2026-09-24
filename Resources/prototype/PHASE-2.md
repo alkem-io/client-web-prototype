@@ -220,6 +220,28 @@ client a `<CalloutReactionsConnector>` is passed here.
 
 ---
 
+## 10. Template library — apply-to-space flow
+
+**Dropped from:** `template-library/TemplatePackDetail.tsx` (now wraps CRD's
+`innovationPack/InnovationPackProfileView`)
+
+| Removed | Note |
+|---|---|
+| "Apply pack to a space" dialog | Production has no apply-from-profile flow |
+| Per-template apply action | Same — the kebab on a public pack profile is Preview-only |
+
+**Why production works this way:** templates are pulled in from the *target*
+Space's own template manager (`TemplatesManagerView` with `canImport`), not
+pushed from the library. A viewer on a public pack profile has no template set
+of their own to write into, which is why CRD reduces the card menu to Preview
+there via `readOnly`.
+
+**Decide in phase 2:** whether push-from-library is a wanted addition, in which
+case it needs an `applySlot` (or an `onApply` action) on
+`InnovationPackProfileView` upstream.
+
+---
+
 ## 4. Other prototype-only features
 
 Not blocked — no CRD equivalent exists at all, so they simply stay:

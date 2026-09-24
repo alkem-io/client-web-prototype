@@ -1,7 +1,7 @@
 import { useLocation, useParams } from "react-router";
 import React from "react";
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
-import { INDIVIDUAL_TEMPLATES, TEMPLATE_PACKS, PACK_SPECIFIC_TEMPLATES } from "@/app/data/template-data";
+import { ALL_TEMPLATES, TEMPLATE_PACKS } from "@/app/data/template-data";
 
 // ─── BreadcrumbSegment interface (per contracts/README.md) ───
 
@@ -91,13 +91,12 @@ function lookupPackName(packSlug: string): string {
   return pack?.name ?? packSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function lookupTemplateName(templateId: string, packSlug?: string): string {
-  // Check pack-specific templates first
-  if (packSlug) {
-    const packTemplate = PACK_SPECIFIC_TEMPLATES.find((t) => t.id === templateId);
-    if (packTemplate) return packTemplate.name;
-  }
-  const tmpl = INDIVIDUAL_TEMPLATES.find((t) => t.id === templateId);
+function lookupTemplateName(templateId: string, _packSlug?: string): string {
+  // Resolve against ALL_TEMPLATES — the same list, in the same order, that
+  // TemplateDetail renders from. Pack-specific and individual fixtures share
+  // ids (both define `temp-1`), so looking them up separately made the
+  // breadcrumb name a different template from the one on the page.
+  const tmpl = ALL_TEMPLATES.find((t) => t.id === templateId);
   return tmpl?.name ?? templateId.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
@@ -341,6 +340,22 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
     return [
       { ...spaceSegment, isCurrentPage: true },
     ];
+  }
+
+  // ── Innovation hub ──
+  // Pre-existing gap: this route had no case, so every hub page fell through to
+  // the "Page Not Found" crumb below.
+  if (path.startsWith("/innovation-hub/")) {
+    const hubSlug = path.split("/")[2];
+    const hubName = hubSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    const hubHref = `/innovation-hub/${hubSlug}`;
+    if (path.endsWith("/settings")) {
+      return [
+        { label: hubName, href: hubHref, isCurrentPage: false },
+        { label: "Settings", href: `${hubHref}/settings`, isCurrentPage: true },
+      ];
+    }
+    return [{ label: hubName, href: hubHref, isCurrentPage: true }];
   }
 
   // ── Fallback: Page Not Found ──
