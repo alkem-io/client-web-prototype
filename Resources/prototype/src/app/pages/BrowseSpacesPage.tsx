@@ -31,11 +31,8 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/crd/primitives/popover";
-import {
-  SpaceCard,
-  SpaceCardSkeleton,
-  type SpaceCardData
-} from "@/app/components/space/SpaceCard";
+import { SpaceCard, SpaceCardSkeleton } from '@/crd/components/space/SpaceCard';
+import { toSpaceCard, type MockSpaceCard } from '@/app/mappers/spaceCard';
 import { useLanguage } from "@/app/contexts/LanguageContext";
 
 // ─── Mock Data ───────────────────────────────────────────────────────────────
@@ -53,7 +50,7 @@ const LEAD_AVATARS = {
   lucas: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
 };
 
-const ALL_SPACES: SpaceCardData[] = [
+const ALL_SPACES: MockSpaceCard[] = [
   // ── Top-level Spaces ──
   {
     id: "s1",
@@ -1182,7 +1179,7 @@ export default function BrowseSpacesPage() {
             }}
           >
             {displayedSpaces.map((space) => (
-              <SpaceCard key={space.id} space={space} />
+              <SpaceCard key={space.id} space={toSpaceCard(space)} />
             ))}
 
             {/* Skeleton cards while loading more */}

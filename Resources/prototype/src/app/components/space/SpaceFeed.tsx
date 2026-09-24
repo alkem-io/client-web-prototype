@@ -10,9 +10,9 @@ import { Card, CardContent } from "@/crd/primitives/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
-import { ContributionWhiteboardCard } from "@/app/components/contribution/ContributionWhiteboardCard";
-import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
-import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
+import { ContributionWhiteboardCard } from "@/crd/components/contribution/ContributionWhiteboardCard";
+import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
+import { ContributionMemoCard } from "@/crd/components/contribution/ContributionMemoCard";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
@@ -485,17 +485,17 @@ export function SpaceFeed() {
             <ContributionMemoCard key="c1"
               title="Commercial Building Audit Checklist"
               author="David Miller"
-              markdownContent="## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"
+              markdownContent={"## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"}
             />,
             <ContributionMemoCard key="c2"
               title="Residential Audit Quick Guide"
               author="Sarah Chen"
-              markdownContent="## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"
+              markdownContent={"## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"}
             />,
             <ContributionMemoCard key="c3"
               title="Post-Audit Reporting Template"
               author="Alex Contributor"
-              markdownContent="## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"
+              markdownContent={"## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"}
             />
           ]
         };

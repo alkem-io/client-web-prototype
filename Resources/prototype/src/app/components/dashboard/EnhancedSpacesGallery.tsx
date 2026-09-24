@@ -116,25 +116,6 @@ function PendingInvitationCard({ invitation, onClick }: { invitation: typeof MOC
   );
 }
 
-function toSpaceCardData(item: MembershipItem): SpaceCardData {
-  return {
-    id: item.id,
-    slug: item.slug,
-    name: item.name,
-    description: item.tagline || "",
-    bannerImage: item.image,
-    initials: item.initials,
-    avatarColor: item.color,
-    isPrivate: item.isPrivate,
-    tags: [],
-    memberCount: Math.floor(Math.random() * 20) + 3,
-    leads: [
-      { name: "User 1", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=64", type: "person" },
-      { name: "User 2", avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=64", type: "person" },
-    ]
-  };
-}
-
 // Responsive placeholder card (matches SpaceCardCompact format)
 function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
   return (

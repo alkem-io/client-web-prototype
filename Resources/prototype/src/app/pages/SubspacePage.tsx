@@ -13,6 +13,7 @@ import { SubspaceHeader } from "@/app/components/space/SubspaceHeader";
 import { SubspaceSidebar } from "@/app/components/space/SubspaceSidebar";
 import { cn } from "@/crd/lib/utils";
 import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs";
+import { HeaderActionIcons } from "@/crd/components/space/HeaderActionIcons";
 import { PostCard, type PostProps } from "@/app/components/space/PostCard";
 import { KanbanPostDialog } from "@/app/components/space/KanbanBoardPost";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
@@ -494,6 +495,19 @@ export default function SubspacePage() {
                 </TooltipProvider>
                 {viewMode === "feed" && (
                   <CalloutTabs
+                    action={
+                      <HeaderActionIcons
+                        actions={{
+                          showInfo: true,
+                          onInfoClick: () => setIsAboutOpen(true),
+                          showActivity: true,
+                          showVideoCall: true,
+                          showShare: true,
+                          showSettings: true,
+                          settingsHref: `/space/${spaceSlug}/subspaces/${subspaceSlug}/settings/about`,
+                        }}
+                      />
+                    }
                     tabs={info.callouts}
                     activeTab={activeCallout}
                     onTabChange={setActiveCallout}

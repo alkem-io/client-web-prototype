@@ -25,7 +25,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/crd/primitives/dropdown-menu";
-import { SpaceCard, SpaceCardSkeleton } from "@/app/components/space/SpaceCard";
+import { SpaceCard, SpaceCardSkeleton } from '@/crd/components/space/SpaceCard';
+import { toSpaceCard } from '@/app/mappers/spaceCard';
 import { useSearch } from "@/app/contexts/SearchContext";
 import {
   performSearch,
@@ -752,7 +753,7 @@ export function SearchOverlay() {
                           {cat === "spaces" && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                               {shownItems.map((space: any) => (
-                                <SpaceCard key={space.id} space={space} />
+                                <SpaceCard key={space.id} space={toSpaceCard(space)} />
                               ))}
                             </div>
                           )}

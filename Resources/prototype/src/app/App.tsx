@@ -4,9 +4,13 @@ import { TooltipProvider } from '@/crd/primitives/tooltip';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { MessagingHubProvider } from './contexts/MessagingHubContext';
 import { SearchProvider } from './contexts/SearchContext';
+import { useAnchorRouting } from './hooks/useAnchorRouting';
 import { router } from './routes';
 
 export default function App() {
+  // CRD renders bare `<a href>`; route them client-side. See the hook.
+  useAnchorRouting(router);
+
   return (
     /*
      * `crd-root` is required, not cosmetic: crd.css scopes the Inter font

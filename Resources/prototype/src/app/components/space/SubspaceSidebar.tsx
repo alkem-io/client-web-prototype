@@ -1,8 +1,10 @@
 import { Fragment, useState } from "react";
+import { useParams } from "react-router";
 import { Button } from "@/crd/primitives/button";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
-import { SpaceCard, type SpaceCardData } from "@/app/components/space/SpaceCard";
+import { SpaceCard } from '@/crd/components/space/SpaceCard';
+import { toSpaceCard, type MockSpaceCard } from '@/app/mappers/spaceCard';
 import {
   Dialog,
   DialogContent,
@@ -71,7 +73,7 @@ const VIRTUAL_CONTRIBUTOR = {
     "https://images.unsplash.com/photo-1641312874336-6279a832a3dc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256"
 };
 
-const SUB_SUBSPACES: (SpaceCardData & { status: string })[] = [
+const SUB_SUBSPACES: (MockSpaceCard & { status: string })[] = [
   {
     id: "ss-1",
     slug: "solar-panel-deployment",
@@ -140,6 +142,8 @@ export function SubspaceSidebar({
   grandparentSpaceBanner,
   grandparentSpaceHref
 }: SubspaceSidebarProps) {
+  const { spaceSlug: routeSpaceSlug = "demo", subspaceSlug: routeSubspaceSlug = "" } =
+    useParams<{ spaceSlug: string; subspaceSlug: string }>();
   const [openDialog, setOpenDialog] = useState<string | null>(null);
   const [railHovered, setRailHovered] = useState(false);
   const depth = grandparentSpaceName ? 2 : 1;
@@ -694,10 +698,14 @@ export function SubspaceSidebar({
 
           {/* Card Grid — mirrors SpaceSubspacesList layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-            {(SUB_SUBSPACES as (SpaceCardData & { status: string })[]).map((subspace) => (
+            {(SUB_SUBSPACES as (MockSpaceCard & { status: string })[]).map((subspace) => (
               <SpaceCard
                 key={subspace.id}
-                space={subspace}
+                space={{
+                  ...toSpaceCard(subspace),
+                  // sub-subspaces sit one level deeper again
+                  href: `/space/${routeSpaceSlug}/subspaces/${routeSubspaceSlug}/subspaces/${subspace.slug}`,
+                }}
               />
             ))}
           </div>

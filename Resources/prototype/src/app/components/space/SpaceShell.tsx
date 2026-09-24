@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { useParams, useLocation, useSearchParams, Outlet, Link } from "react-router";
 import { SpaceHeader } from "./SpaceHeader";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
+import { HeaderActionIcons, type HeaderActionIconsData } from "@/crd/components/space/HeaderActionIcons";
 import { SpaceSidebar } from "./SpaceSidebar";
 import { FilterProvider, useSpaceFilters } from "./FilterContext";
 import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, LayoutGrid, List, CheckCheck } from "lucide-react";
@@ -88,6 +89,17 @@ export function SpaceShell() {
   };
 
   // Compact action icons shown in the tab bar
+  // CRD's action-icon vocabulary; replaces the hand-rolled icon row below.
+  const headerActions: HeaderActionIconsData = {
+    showInfo: true,
+    onInfoClick: () => setAboutOpen(true),
+    showActivity: true,
+    showVideoCall: true,
+    showShare: true,
+    showSettings: true,
+    settingsHref: `/space/${slug}/settings`,
+  };
+
   const actionIcons = (
     <div className="flex items-center gap-0.5">
       <IconButton
@@ -186,7 +198,14 @@ export function SpaceShell() {
                   WebkitBackdropFilter: "blur(8px)"
                 }}
               >
-                <SpaceNavigationTabs spaceSlug={slug} onActiveTabChange={handleActiveTabChange} />
+                <SpaceNavigationTabs
+                  spaceSlug={slug}
+                  onActiveTabChange={handleActiveTabChange}
+                  /* CRD's headers render action icons on mobile only
+                     (`sm:hidden`); on desktop production puts them in the
+                     tab row, which is what its `action` prop is for. */
+                  actionButton={<HeaderActionIcons actions={headerActions} />}
+                />
               </div>
 
               {/* ═══ MOBILE STRATEGY 1: Sheet / Drawer ═══ */}

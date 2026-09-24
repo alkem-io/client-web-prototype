@@ -12,17 +12,23 @@
  * in the OS system font (SF Pro on macOS, Segoe UI on Windows). Measured
  * 2026-09-21 — see UPSTREAM-BUGS.md #1.
  *
- * ENABLED: the prototype loads Inter, so it shows the design as the tokens
- * intend. This is deliberately AHEAD of production — alkem.io will match once
- * client-web ships the Inter webfont (two lines, see UPSTREAM-BUGS.md #1).
+ * DISABLED: the prototype falls through to the same system font production
+ * actually renders, so the two can be compared side by side without the
+ * typeface itself being a difference. This is the deliberate setting while
+ * phase 1 is in progress.
  *
- * To see what production looks like today instead, comment the import out.
- * Nothing else needs changing: the font is declared once, on `.crd-root` in
- * the vendored crd.css, and every component inherits it.
+ * To see the design as the tokens intend — Inter, which the typography was
+ * metric-tuned for — uncomment the import. Nothing else needs changing: the
+ * font is declared once, on `.crd-root` in the vendored crd.css, and every
+ * component inherits it.
  *
- * Must come first: `@import url()` has to precede every other rule.
+ * Restore it once client-web ships the Inter webfont (two lines, see
+ * UPSTREAM-BUGS.md #1) — at which point production and prototype agree again
+ * with the import ON.
+ *
+ * Must come first if re-enabled: `@import url()` has to precede every other rule.
  * ───────────────────────────────────────────────────────────────────────── */
-@import './fonts.css';
+/* @import './fonts.css'; */
 
 /* Production design system — pulls in Tailwind, tw-animate-css, theme.css,
    typography.css, the markdown-editor styles, and the .crd-root resets. */

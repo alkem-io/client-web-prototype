@@ -4,7 +4,8 @@ import { UserProfileHeader } from "@/app/components/user/UserProfileHeader";
 import { OrganizationCard } from "@/app/components/user/OrganizationCard";
 import { OrgHoverCard } from "@/app/components/user/OrgHoverCard";
 import { VCHoverCard } from "@/app/components/user/VCHoverCard";
-import { SpaceGridCard } from "@/app/components/user/SpaceGridCard";
+import { SpaceGridCard } from '@/crd/components/user/SpaceGridCard';
+import { SPACE_GRID_CARD_LABELS, toSpaceGridCard } from '@/app/mappers/spaceGridCard';
 import { Badge } from "@/crd/primitives/badge";
 import { Bot, Sparkles } from "lucide-react";
 import { cn } from "@/crd/lib/utils";
@@ -138,15 +139,10 @@ Always looking for collaborators on open source climate data projects. Feel free
                     <h3 className="text-card-title text-muted-foreground uppercase tracking-wider mb-4">Spaces</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {hostedSpaces.map(space => (
-                        // @ts-ignore
-                        <SpaceGridCard 
+                        <SpaceGridCard
                           key={space.id}
-                          title={space.title}
-                          description={space.description}
-                          memberCount={space.memberCount}
-                          isPrivate={space.isPrivate}
-                          role={space.role as any}
-                          imageUrl={space.imageUrl}
+                          space={toSpaceGridCard(space)}
+                          labels={SPACE_GRID_CARD_LABELS}
                         />
                       ))}
                     </div>
@@ -195,15 +191,10 @@ Always looking for collaborators on open source climate data projects. Feel free
                 <h2 className="text-section-title font-bold mb-4">Spaces Leading</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {leadingSpaces.map(space => (
-                    // @ts-ignore
-                    <SpaceGridCard 
+                    <SpaceGridCard
                       key={space.id}
-                      title={space.title}
-                      description={space.description}
-                      memberCount={space.memberCount}
-                      isPrivate={space.isPrivate}
-                      role={space.role as any}
-                      imageUrl={space.imageUrl}
+                      space={toSpaceGridCard(space)}
+                      labels={SPACE_GRID_CARD_LABELS}
                     />
                   ))}
                 </div>
@@ -218,15 +209,10 @@ Always looking for collaborators on open source climate data projects. Feel free
                 <h2 className="text-section-title font-bold mb-4">Member of</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {memberSpaces.map(space => (
-                    // @ts-ignore
-                    <SpaceGridCard 
+                    <SpaceGridCard
                       key={space.id}
-                      title={space.title}
-                      description={space.description}
-                      memberCount={space.memberCount}
-                      isPrivate={space.isPrivate}
-                      role={space.role as any}
-                      imageUrl={space.imageUrl}
+                      space={toSpaceGridCard(space)}
+                      labels={SPACE_GRID_CARD_LABELS}
                     />
                   ))}
                 </div>

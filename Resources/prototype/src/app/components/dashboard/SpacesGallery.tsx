@@ -2,30 +2,11 @@ import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
 import { MOCK_MEMBERSHIPS, MembershipItem } from "@/app/components/memberships/membershipData";
-import { SpaceCard, SpaceCardData } from "@/app/components/space/SpaceCard";
+import { SpaceCard } from '@/crd/components/space/SpaceCard';
+import { membershipToSpaceCard } from '@/app/mappers/spaceCard';
 import { SeeAllSubspacesDialog } from "@/app/components/dashboard/SeeAllSubspacesDialog";
 
 const BATCH_SIZE = 8;
-
-/** Convert a MembershipItem (subspace) to SpaceCardData for the SpaceCard component */
-function toSpaceCardData(sub: MembershipItem, _parentSlug: string): SpaceCardData {
-  return {
-    id: sub.id,
-    slug: sub.slug,
-    name: sub.name,
-    description: sub.tagline || "",
-    bannerImage: sub.image,
-    initials: sub.initials,
-    avatarColor: sub.color,
-    isPrivate: sub.isPrivate,
-    tags: [],
-    memberCount: Math.floor(Math.random() * 20) + 3,
-    leads: [
-      { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&h=64", type: "person" },
-      { name: "Mike Ross", avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=64&h=64", type: "person" },
-    ]
-  };
-}
 
 export function SpacesGallery() {
   const navigate = useNavigate();
@@ -108,7 +89,7 @@ export function SpacesGallery() {
                   {previewSubspaces.map((sub) => (
                     <SpaceCard
                       key={sub.id}
-                      space={toSpaceCardData(sub, space.slug)}
+                      space={membershipToSpaceCard(sub, space.slug)}
                     />
                   ))}
                 </div>

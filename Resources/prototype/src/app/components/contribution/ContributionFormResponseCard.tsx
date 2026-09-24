@@ -9,7 +9,7 @@ import { ClipboardList } from 'lucide-react';
 import { cn } from '@/crd/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
 import { Badge } from '@/crd/primitives/badge';
-import { ReactionBar } from '@/app/components/space/PostReactions';
+import { ReactionBar } from '@/app/components/space/ReactionBar';
 
 type ContributionFormResponseCardProps = {
   author: { name: string; avatarUrl?: string };

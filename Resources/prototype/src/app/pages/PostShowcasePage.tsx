@@ -1,8 +1,8 @@
 import { PostCard, type PostCardData } from '@/app/components/space/PostCard';
 import { ContributionGrid } from '@/app/components/contribution/ContributionGrid';
-import { ContributionWhiteboardCard } from '@/app/components/contribution/ContributionWhiteboardCard';
-import { ContributionPostCard } from '@/app/components/contribution/ContributionPostCard';
-import { ContributionMemoCard } from '@/app/components/contribution/ContributionMemoCard';
+import { ContributionWhiteboardCard } from '@/crd/components/contribution/ContributionWhiteboardCard';
+import { ContributionPostCard } from '@/crd/components/contribution/ContributionPostCard';
+import { ContributionMemoCard } from '@/crd/components/contribution/ContributionMemoCard';
 import { ContributionAddCard } from '@/crd/components/contribution/ContributionAddCard';
 
 import wb1 from '@/app/assets/wb1.png';

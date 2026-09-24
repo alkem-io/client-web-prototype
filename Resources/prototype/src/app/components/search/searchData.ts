@@ -1,4 +1,4 @@
-import type { SpaceCardData } from "@/app/components/space/SpaceCard";
+import type { MockSpaceCard } from '@/app/mappers/spaceCard';
 
 // ── Result types ──
 
@@ -57,7 +57,7 @@ export const CATEGORY_LABELS: Record<SearchCategory, string> = {
 };
 
 // ── Mock spaces ──
-export const MOCK_SPACES: SpaceCardData[] = [
+export const MOCK_SPACES: MockSpaceCard[] = [
   {
     id: "s1",
     slug: "green-energy",
@@ -292,7 +292,7 @@ function matchesTags(text: string, tags: string[]): boolean {
 }
 
 export interface SearchResults {
-  spaces: SpaceCardData[];
+  spaces: MockSpaceCard[];
   posts: SearchPostResult[];
   responses: SearchResponseResult[];
   users: SearchUserResult[];

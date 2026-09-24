@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useParams } from "react-router";
 import { Plus, Folder } from "lucide-react";
 import { Button } from "@/crd/primitives/button";
-import { SpaceCard, type SpaceCardData } from "@/app/components/space/SpaceCard";
+import { SpaceCard } from '@/crd/components/space/SpaceCard';
+import { CompactSpaceCard } from '@/crd/components/dashboard/CompactSpaceCard';
+import { toSpaceCard, type MockSpaceCard } from '@/app/mappers/spaceCard';
 import { cn } from "@/crd/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 
@@ -19,8 +21,8 @@ const SUBSPACE_COLORS = [
 // Parent space banner for avatar derivation
 const PARENT_BANNER = "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400";
 
-// Mock Data — mapped to SpaceCardData format
-const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = [
+// Mock Data — mapped to MockSpaceCard format
+const SUBSPACES: (MockSpaceCard & { status: string; filterTags: string[] })[] = [
   {
     id: "sub-1",
     slug: "renewable-energy-transition",
@@ -180,11 +182,23 @@ export function SpaceSubspacesList() {
       {filteredSubspaces.length > 0 ? (
         <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" : "flex flex-col gap-3"}>
           {filteredSubspaces.map((subspace) => (
-            <SpaceCard
-              key={subspace.id}
-              space={subspace}
-              compact={viewMode === "list"}
-            />
+            viewMode === "list" ? (
+              // CRD splits the compact variant into its own component rather
+              // than a `compact` prop on SpaceCard.
+              <CompactSpaceCard
+                key={subspace.id}
+                id={subspace.id}
+                name={subspace.name}
+                href={`/space/${slug}/subspaces/${subspace.slug}`}
+                bannerUrl={subspace.bannerImage}
+                isPrivate={subspace.isPrivate}
+                initials={subspace.initials}
+                color={subspace.avatarColor}
+                isHomeSpace={false}
+              />
+            ) : (
+              <SpaceCard key={subspace.id} space={toSpaceCard(subspace, slug)} />
+            )
           ))}
         </div>
       ) : (

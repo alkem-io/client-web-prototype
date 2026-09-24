@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router";
 import { RecentSpaces } from "@/app/components/dashboard/RecentSpaces";
 import { ActivityFeed } from "@/app/components/dashboard/ActivityFeed";
 import { DashboardSidebar } from "@/app/components/dashboard/DashboardSidebar";
@@ -13,7 +11,6 @@ const NEW_USER_VIEW_KEY = "alkemio-new-user-view";
 const HAS_PENDING_KEY = "alkemio-has-pending";
 
 export function Dashboard() {
-  const navigate = useNavigate();
   const [activityView, setActivityView] = useState(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored === null ? true : stored === "true";
@@ -61,42 +58,29 @@ export function Dashboard() {
         />
       }
     >
-      {/* Inner 9-col grid keeps the existing content proportions. */}
-      <div className="grid grid-cols-9 gap-6">
-          {/* Explore all Spaces — consistent position across all views (hidden for new user view) */}
-          {!(newUserView && !activityView) && (
-          <div className="col-span-9 flex justify-end">
-            <button
-              onClick={() => navigate("/spaces")}
-              className="flex items-center gap-1 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none text-body-emphasis"
-              style={{ color: "var(--primary)" }}
-              type="button"
-            >
-              Explore all Spaces <ArrowRight className="w-4 h-4" />
-            </button>
+      {/*
+       * No wrapper grid, matching production's `DashboardWithMemberships`:
+       * `DashboardLayout` already renders its children into a
+       * `space-y-6` column, so each section is a direct child.
+       *
+       * The prototype previously nested everything in `grid grid-cols-9` and
+       * split the two activity feeds 5/4 — that asymmetry is why the columns
+       * did not match client-web.
+       */}
+      {activityView ? (
+        <>
+          <RecentSpaces />
+          <UpdateBanner />
+          {/* Production's exact markup for the activity pair: two equal
+              columns, stacked below `lg`. */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ActivityFeed title="Latest Activity in my Spaces" type="spaces" />
+            <ActivityFeed title="My Latest Activity" type="personal" />
           </div>
-          )}
-          {activityView ? (
-            <>
-              <div className="col-span-9">
-                <RecentSpaces />
-              </div>
-              <div className="col-span-9">
-                <UpdateBanner />
-              </div>
-              <div className="col-span-9 lg:col-span-5">
-                <ActivityFeed title="Latest Activity in my Spaces" type="spaces" />
-              </div>
-              <div className="col-span-9 lg:col-span-4">
-                <ActivityFeed title="My Latest Activity" type="personal" />
-              </div>
-            </>
-          ) : (
-            <div className="col-span-9">
-              <EnhancedSpacesGallery newUserView={newUserView} hasPending={hasPending} />
-            </div>
-          )}
-      </div>
+        </>
+      ) : (
+        <EnhancedSpacesGallery newUserView={newUserView} hasPending={hasPending} />
+      )}
     </DashboardLayout>
   );
 }

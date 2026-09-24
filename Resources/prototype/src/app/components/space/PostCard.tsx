@@ -19,7 +19,7 @@ import { postItem } from '@/app/data/activity-data';
 import {
   CalloutCollaboraPreview,
   type CollaboraDocumentPreviewType
-} from '@/app/components/callout/CalloutCollaboraPreview';
+} from '@/crd/components/callout/CalloutCollaboraPreview';
 import type { CalloutFormData } from '@/app/components/callout/calloutFormTypes';
 import { CalloutLinkAction } from '@/crd/components/callout/CalloutLinkAction';
 import {
@@ -29,7 +29,7 @@ import {
 import {
   MediaGalleryFeedGrid,
   type MediaGalleryFeedThumbnail
-} from '@/app/components/mediaGallery/MediaGalleryFeedGrid';
+} from '@/crd/components/mediaGallery/MediaGalleryFeedGrid';
 
 export type { MediaGalleryFeedThumbnail };
 import { cn } from '@/crd/lib/utils';
@@ -636,7 +636,6 @@ export function PostCard({
                 thumbnails={post.framingMediaGallery.thumbnails}
                 totalCount={post.framingMediaGallery.totalCount}
                 onOpenAt={onClick}
-                onDeleteThumbnail={onDeleteMediaGalleryImage}
               />
             ) : (
               <div className="rounded-lg overflow-hidden border border-border bg-muted/30 relative aspect-video flex items-center justify-center">

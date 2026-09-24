@@ -1,6 +1,6 @@
 import { ExternalLink, FileText, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/crd/lib/utils';
-import { ReactionBar } from '@/app/components/space/PostReactions';
+import { ReactionBar } from '@/app/components/space/ReactionBar';
 
 type ContributionLinkCardProps = {
   title: string;

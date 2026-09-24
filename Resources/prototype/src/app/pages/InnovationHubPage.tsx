@@ -14,7 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/crd/primitives/dropdown-menu";
-import { SpaceCard, SpaceCardSkeleton, type SpaceCardData } from "@/app/components/space/SpaceCard";
+import { SpaceCard, SpaceCardSkeleton } from '@/crd/components/space/SpaceCard';
+import { toSpaceCard, type MockSpaceCard } from '@/app/mappers/spaceCard';
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
 
 /* ─── Sample Data (VNG Innovation Hub) ─── */
@@ -26,7 +27,7 @@ const hubData = {
   description: `De <strong>open innovatiehub</strong> voor <strong>samenwerking tussen en voor de gemeentes</strong> in Nederland.<br/>Hier vind je communities die werken aan nieuwe vormen van publieke dienstverlening die aansluiten bij de leefwereld van mensen.<br/>Een plek waar de <strong>overheid, markt, wetenschap</strong> en <strong>samenleving</strong> samen kunnen werken aan <em>maatschappelijke missies</em>.`
 };
 
-const hubSpaces: SpaceCardData[] = [
+const hubSpaces: MockSpaceCard[] = [
   {
     id: "1",
     slug: "digitale-leefomgeving",
@@ -847,7 +848,7 @@ export default function InnovationHubPage() {
               }}
             >
               {displayedSpaces.map((space) => (
-                <SpaceCard key={space.id} space={space} />
+                <SpaceCard key={space.id} space={toSpaceCard(space)} />
               ))}
 
               {isLoadingMore &&
