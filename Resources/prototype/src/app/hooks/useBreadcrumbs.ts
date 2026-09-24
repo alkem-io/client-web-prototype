@@ -342,6 +342,11 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
     ];
   }
 
+  // ── Forum ──
+  if (path === "/forum" || path.startsWith("/forum/")) {
+    return [{ label: "Forum", href: "/forum", isCurrentPage: true }];
+  }
+
   // ── Innovation hub ──
   // Pre-existing gap: this route had no case, so every hub page fell through to
   // the "Page Not Found" crumb below.

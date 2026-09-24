@@ -1,57 +1,54 @@
-import { useState } from "react";
+/**
+ * Forum — production's `@/crd/components/forum/*`.
+ *
+ * CRD ships the whole surface: `ForumLayout` (banner row + category rail +
+ * main column), `ForumBanner`, `ForumCategoryNav`, `ForumDiscussionListHeader`
+ * (count, initiate, search, sort), `ForumDiscussionList` / `…ListItem`,
+ * `ForumEmptyState`, `ForumDiscussionDetail` and
+ * `ForumInitiateDiscussionDialog`. Its layout grid is the same one the
+ * prototype had hand-written.
+ *
+ * What stays here: the mock discussions, the nested reply thread (CRD's detail
+ * takes a `commentsSlot`, so the thread is the consumer's), and the create form
+ * body (the dialog is a shell around `children`).
+ *
+ * Labels come from CRD's own `crd-forum` namespace rather than being retyped.
+ */
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Search,
-  ArrowLeft,
-  Plus,
-  Share2,
-  Pencil,
-  Trash2,
-  MessageSquare,
-  Rocket,
-  Settings,
-  Users,
   Building2,
   HelpCircle,
+  MessageSquare,
   MoreHorizontal,
+  Plus,
+  Rocket,
   Send,
-  Smile
-} from "lucide-react";
-import { cn } from "@/crd/lib/utils";
-import { Button } from "@/crd/primitives/button";
-import { Input } from "@/crd/primitives/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
-import { Card, CardContent, CardHeader } from "@/crd/primitives/card";
-import { Separator } from "@/crd/primitives/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/crd/primitives/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle
-} from "@/crd/primitives/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/crd/primitives/tooltip";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface ForumCategory {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-}
+  Settings,
+  Users,
+} from 'lucide-react';
+import { ForumBanner } from '@/crd/components/forum/ForumBanner';
+import { ForumCategoryNav } from '@/crd/components/forum/ForumCategoryNav';
+import { ForumDiscussionDetail } from '@/crd/components/forum/ForumDiscussionDetail';
+import { ForumDiscussionList } from '@/crd/components/forum/ForumDiscussionList';
+import { ForumDiscussionListHeader } from '@/crd/components/forum/ForumDiscussionListHeader';
+import { ForumEmptyState } from '@/crd/components/forum/ForumEmptyState';
+import { ForumInitiateDiscussionDialog } from '@/crd/components/forum/ForumInitiateDiscussionDialog';
+import { ForumLayout } from '@/crd/components/forum/ForumLayout';
+import type { ForumSortOrder } from '@/crd/components/forum/forumTypes';
+import { MarkdownContent } from '@/crd/components/common/MarkdownContent';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
+import { Button } from '@/crd/primitives/button';
+import { Input } from '@/crd/primitives/input';
+import { Textarea } from '@/crd/primitives/textarea';
+import { cn } from '@/crd/lib/utils';
+import { toDiscussionDetail, toDiscussionListItem } from '@/app/mappers/forum';
 
 interface ForumDiscussion {
   id: string;
   title: string;
   emoji: string;
-  author: {
-    name: string;
-    avatarUrl: string;
-  };
+  author: { name: string; avatarUrl: string };
   date: string;
   commentCount: number;
   category: string;
@@ -60,26 +57,31 @@ interface ForumDiscussion {
 
 interface ForumReply {
   id: string;
-  author: {
-    name: string;
-    avatarUrl: string;
-  };
+  author: { name: string; avatarUrl: string };
   date: string;
   content: string;
   replies?: ForumReply[];
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+const CATEGORY_ICONS = {
+  all: MessageSquare,
+  releases: Rocket,
+  platform: Settings,
+  community: Users,
+  challenges: Building2,
+  help: HelpCircle,
+  other: MoreHorizontal,
+} as const;
 
-const CATEGORIES: ForumCategory[] = [
-  { id: "all", label: "Show All", icon: MessageSquare },
-  { id: "releases", label: "Releases", icon: Rocket },
-  { id: "platform", label: "Platform Functionalities", icon: Settings },
-  { id: "community", label: "Community Building", icon: Users },
-  { id: "challenges", label: "Working Challenge Centric", icon: Building2 },
-  { id: "help", label: "Need Help?", icon: HelpCircle },
-  { id: "other", label: "Other", icon: MoreHorizontal },
-];
+const CATEGORY_LABELS: Record<keyof typeof CATEGORY_ICONS, string> = {
+  all: 'Show All',
+  releases: 'Releases',
+  platform: 'Platform Functionalities',
+  community: 'Community Building',
+  challenges: 'Working Challenge Centric',
+  help: 'Need Help?',
+  other: 'Other',
+};
 
 const AVATARS = {
   simone: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
@@ -1086,134 +1088,6 @@ const SAMPLE_REPLIES: ForumReply[] = [
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
-function ForumBanner() {
-  return (
-    <div
-      className="relative w-full overflow-hidden"
-      style={{
-        background: "linear-gradient(135deg, var(--primary) 0%, hsl(200, 50%, 35%) 100%)",
-        borderRadius: "var(--radius)"
-      }}
-    >
-      {/* Decorative dots pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="forum-dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1.5" fill="white" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#forum-dots)" />
-        </svg>
-      </div>
-      <div className="relative z-10" style={{ padding: "32px 32px" }}>
-        <div className="flex items-center gap-3 mb-1">
-          <div
-            className="flex items-center justify-center rounded-md"
-            style={{
-              width: 36,
-              height: 36,
-              background: "rgba(255, 255, 255, 0.15)"
-            }}
-          >
-            <MessageSquare className="h-5 w-5 text-white" />
-          </div>
-          <h1
-            className="text-section-title font-bold"
-            style={{ color: "white" }}
-          >
-            Welcome to the Alkemio Forum
-          </h1>
-        </div>
-        <p
-          className="text-body"
-          style={{
-            color: "rgba(255, 255, 255, 0.75)",
-            marginTop: 4,
-            marginLeft: 49,
-            maxWidth: 420
-          }}
-        >
-          Connect with others, ask questions, and stay updated with Alkemio's release notes
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function ForumCategoryNav({
-  activeCategory,
-  onCategoryChange
-}: {
-  activeCategory: string;
-  onCategoryChange: (id: string) => void;
-}) {
-  return (
-    <nav className="sticky top-20 space-y-0.5">
-      <div
-        className="text-sidebar-label uppercase px-2 mb-2"
-        style={{
-          color: "var(--muted-foreground)",
-          opacity: 0.6
-        }}
-      >
-        Categories
-      </div>
-      {CATEGORIES.map((cat) => {
-        const Icon = cat.icon;
-        const isActive = activeCategory === cat.id;
-        return (
-          <button
-            key={cat.id}
-            onClick={() => onCategoryChange(cat.id)}
-            className={cn(
-              "flex items-center gap-2.5 rounded-md transition-colors h-9 w-full px-2 text-control font-normal",
-              isActive
-                ? "bg-accent text-accent-foreground font-medium"
-                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-            )}
-          >
-            <Icon className="w-4 h-4 shrink-0" />
-            <span className="truncate">{cat.label}</span>
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
-
-function ForumDiscussionItem({
-  discussion,
-  onClick
-}: {
-  discussion: ForumDiscussion;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-start gap-3 w-full px-5 py-3.5 text-left hover:bg-accent/50 transition-colors"
-      style={{ borderBottom: "1px solid var(--border)" }}
-    >
-      <span className="text-subheader font-normal mt-0.5 shrink-0">{discussion.emoji}</span>
-      <div className="flex-1 min-w-0">
-        <span
-          className="block line-clamp-1 text-card-title"
-          style={{ color: "var(--foreground)" }}
-        >
-          {discussion.title}
-        </span>
-        <span
-          className="block mt-0.5 text-caption"
-          style={{ color: "var(--muted-foreground)" }}
-        >
-          {discussion.author.name} on {discussion.date} · {discussion.commentCount} comment{discussion.commentCount !== 1 ? "s" : ""}
-        </span>
-      </div>
-    </button>
-  );
-}
-
 function ForumReplyItem({ reply, depth = 0 }: { reply: ForumReply; depth?: number }) {
   const [showReplyInput, setShowReplyInput] = useState(false);
 
@@ -1271,416 +1145,164 @@ function ForumReplyItem({ reply, depth = 0 }: { reply: ForumReply; depth?: numbe
   );
 }
 
-function ForumDiscussionDetail({
-  discussion,
-  onBack
-}: {
-  discussion: ForumDiscussion;
-  onBack: () => void;
-}) {
-  return (
-    <div className="col-span-12 md:col-span-9 lg:col-span-8">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 mb-4 text-muted-foreground hover:text-foreground transition-colors text-control"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        SEE ALL DISCUSSIONS
-      </button>
-
-      <Card className="border-border/60" style={{ boxShadow: "var(--elevation-sm)" }}>
-        <CardHeader className="px-6 pt-6 pb-0">
-          <div className="flex items-start justify-between gap-4">
-            <h2 className="text-section-title font-bold" style={{ color: "var(--foreground)" }}>
-              {discussion.emoji} {discussion.title}
-            </h2>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground shrink-0">
-                  <Share2 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Share</TooltipContent>
-            </Tooltip>
-          </div>
-        </CardHeader>
-
-        <CardContent className="px-6 pt-4 pb-6">
-          {/* Author */}
-          <div className="flex items-center gap-3 mb-5">
-            <Avatar className="h-10 w-10 border border-border">
-              <AvatarImage src={discussion.author.avatarUrl} alt={discussion.author.name} />
-              <AvatarFallback>{discussion.author.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <span className="text-card-title" style={{ color: "var(--foreground)" }}>
-                {discussion.author.name}
-              </span>
-              <span className="block text-caption" style={{ color: "var(--muted-foreground)" }}>
-                {discussion.date}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Edit</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Delete</TooltipContent>
-              </Tooltip>
-            </div>
-          </div>
-
-          {/* Content */}
-          {discussion.content ? (
-            <div className="mb-6">
-              {discussion.content.split("\n\n").map((paragraph, i) => (
-                <div key={i} className="mb-3">
-                  {paragraph.startsWith("- ") ? (
-                    <ul className="list-disc list-inside space-y-0.5 text-body" style={{ color: "var(--foreground)" }}>
-                      {paragraph.split("\n").map((item, j) => (
-                        <li key={j}>
-                          {item.replace(/^- /, "").split("**").map((part, k) =>
-                            k % 2 === 1 ? <strong key={k}>{part}</strong> : <span key={k}>{part}</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-body" style={{ color: "var(--foreground)" }}>
-                      {paragraph.split("**").map((part, j) =>
-                        j % 2 === 1 ? <strong key={j}>{part}</strong> : <span key={j}>{part}</span>
-                      )}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-body italic mb-6" style={{ color: "var(--muted-foreground)" }}>
-              Discussion content preview not available.
-            </p>
-          )}
-
-          <Separator />
-
-          {/* Comments Section — matches Space post comments UI */}
-          <div className="mt-5">
-            {/* Comment count header */}
-            <div className="flex items-center gap-2 mb-4">
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
-              <span className="text-body" style={{ color: "var(--muted-foreground)" }}>
-                {SAMPLE_REPLIES.length + SAMPLE_REPLIES.reduce((acc, r) => acc + (r.replies?.length || 0), 0)} comments
-              </span>
-            </div>
-
-            {/* Comment input (top, like Space posts) */}
-            <div className="flex gap-3 mb-6">
-              <Avatar className="w-10 h-10 shrink-0">
-                <AvatarImage src={AVATARS.francisco} alt="You" />
-                <AvatarFallback>JN</AvatarFallback>
-              </Avatar>
-              <div
-                className="flex-1 flex items-center rounded-md px-4 h-11"
-                style={{ border: "1px solid var(--border)", background: "var(--card)" }}
-              >
-                <input
-                  type="text"
-                  placeholder="Add a comment..."
-                  className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground text-body"
-                />
-                <div className="flex items-center gap-1 ml-2">
-                  <button className="text-muted-foreground hover:text-foreground transition-colors p-1">
-                    <span style={{ fontSize: "16px" }}>@</span>
-                  </button>
-                  <button className="text-muted-foreground hover:text-foreground transition-colors p-1">
-                    <Smile className="h-4 w-4" />
-                  </button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-primary">
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Comment list */}
-            <div className="space-y-0">
-              {SAMPLE_REPLIES.map((reply) => (
-                <ForumReplyItem key={reply.id} reply={reply} />
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function InitiateDiscussionDialog({
-  open,
-  onOpenChange
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState("");
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full sm:max-w-4xl p-0 gap-0 overflow-hidden rounded-xl border-0 shadow-2xl bg-background flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-background/50 backdrop-blur-sm z-10">
-          <DialogTitle className="text-subsection-title">Create Discussion</DialogTitle>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="rounded-full p-2 hover:bg-muted transition-colors"
-          >
-            <Plus className="w-5 h-5 text-muted-foreground rotate-45" />
-          </button>
-        </div>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-
-          {/* Title */}
-          <Input
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="text-section-title md:text-page-title font-semibold border-none px-0 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/60 h-auto"
-          />
-
-          {/* Category */}
-          <div className="w-56">
-            <Select>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="Category *" />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.filter((c) => c.id !== "all").map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Rich text editor area */}
-          <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius)" }}>
-            <div
-              className="flex items-center gap-0.5 px-3 py-2 flex-wrap"
-              style={{ borderBottom: "1px solid var(--border)" }}
-            >
-              {["↩", "↪"].map((btn, i) => (
-                <button
-                  key={`undo-${i}`}
-                  className="px-2 py-1 rounded hover:bg-accent transition-colors text-control font-normal"
-                >
-                  {btn}
-                </button>
-              ))}
-              <Separator orientation="vertical" className="h-5 mx-1" />
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors text-control font-bold">B</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors text-control font-normal italic">I</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors font-bold" style={{ fontSize: "18px" }}>T</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors font-bold" style={{ fontSize: "16px" }}>T</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors font-bold" style={{ fontSize: "14px" }}>T</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors font-bold" style={{ fontSize: "12px" }}>T</button>
-              <Separator orientation="vertical" className="h-5 mx-1" />
-              {["⋮⋮", "≡", "❝", "</>", "─", "⊞", "🔗", "🖼", "📹", "😊"].map((btn, i) => (
-                <button
-                  key={`tool-${i}`}
-                  className="px-2 py-1 rounded hover:bg-accent transition-colors text-control font-normal"
-                >
-                  {btn}
-                </button>
-              ))}
-            </div>
-            <div style={{ minHeight: 240, padding: "16px 20px" }}>
-              <p className="text-body" style={{ color: "var(--muted-foreground)" }}>
-                Share your thoughts...
-              </p>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Tags */}
-          <div className="space-y-1.5">
-            <label className="text-label uppercase text-muted-foreground">Tags</label>
-            <Input
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="Add tags separated by commas..."
-              className="h-9 bg-background"
-            />
-          </div>
-
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t bg-muted/10">
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={() => onOpenChange(false)} className="px-8">
-            Create Discussion
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ForumPage() {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("newest");
-  const [selectedDiscussion, setSelectedDiscussion] = useState<ForumDiscussion | null>(null);
+  const { t } = useTranslation('crd-forum');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<ForumSortOrder>('newest');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [draftTitle, setDraftTitle] = useState('');
+  const [draftContent, setDraftContent] = useState('');
 
-  const filteredDiscussions = DISCUSSIONS.filter((d) => {
-    const matchesCategory = activeCategory === "all" || d.category === activeCategory;
+  const selected = DISCUSSIONS.find(d => d.id === selectedId) ?? null;
+
+  const visible = DISCUSSIONS.filter(d => {
+    const matchesCategory = activeCategory === 'all' || d.category === activeCategory;
+    const q = searchQuery.toLowerCase();
     const matchesSearch =
-      searchQuery === "" ||
-      d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.author.name.toLowerCase().includes(searchQuery.toLowerCase());
+      !q || d.title.toLowerCase().includes(q) || d.author.name.toLowerCase().includes(q);
     return matchesCategory && matchesSearch;
   });
 
-  const sortedDiscussions = [...filteredDiscussions].sort((a, b) => {
-    if (sortOrder === "oldest") return a.id.localeCompare(b.id);
-    return b.id.localeCompare(a.id);
-  });
+  const items = visible.map(d =>
+    toDiscussionListItem(d, t('list.itemAriaLabel', { count: d.commentCount, title: d.title, author: d.author.name, date: d.date }))
+  );
 
   return (
-    <div
-      className="flex flex-col w-full px-6 md:px-8"
-      style={{ paddingBottom: 48 }}
-    >
-      {/* Banner — full width within grid */}
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 lg:col-start-2 lg:col-span-10">
-          <div style={{ paddingTop: 32, paddingBottom: 24 }}>
-            <ForumBanner />
-          </div>
-        </div>
-      </div>
-
-      {/* Main layout: sidebar + content on same 12-col grid */}
-      <div className="grid grid-cols-12 gap-6">
-        {/* Sidebar */}
-        <div className="hidden md:block col-span-3 lg:col-span-2 lg:col-start-2">
+    <>
+      <ForumLayout
+        bannerNode={
+          <ForumBanner
+            titleNode={t('banner.title')}
+            subtitleNode={t('banner.subtitle')}
+            iconNode={<MessageSquare aria-hidden="true" className="size-8" />}
+          />
+        }
+        sidebarNode={
           <ForumCategoryNav
-            activeCategory={activeCategory}
-            onCategoryChange={(id) => {
-              setActiveCategory(id);
-              setSelectedDiscussion(null);
+            entries={(Object.keys(CATEGORY_ICONS) as (keyof typeof CATEGORY_ICONS)[]).map(slug => {
+              const Icon = CATEGORY_ICONS[slug];
+              return {
+                slug,
+                label: CATEGORY_LABELS[slug],
+                iconNode: <Icon aria-hidden="true" className="size-4" />,
+              };
+            })}
+            activeSlug={activeCategory}
+            onCategoryChange={slug => {
+              setActiveCategory(slug);
+              setSelectedId(null);
             }}
+            sectionLabel={t('categories.sectionLabel')}
+            selectAriaLabel={t('categories.selectAriaLabel')}
+          />
+        }
+        mainNode={
+          selected ? (
+            <ForumDiscussionDetail
+              data={toDiscussionDetail(
+                selected,
+                selected.content ? <MarkdownContent content={selected.content} /> : null
+              )}
+              backHref="/forum"
+              backLabel={t('detail.back', { defaultValue: 'See all discussions' })}
+              onBack={() => setSelectedId(null)}
+              shareLabel={t('detail.share', { defaultValue: 'Share' })}
+              editLabel={t('detail.edit', { defaultValue: 'Edit' })}
+              deleteLabel={t('detail.delete', { defaultValue: 'Delete' })}
+              commentsSlot={
+                <div className="divide-y divide-border">
+                  {SAMPLE_REPLIES.map(reply => (
+                    <ForumReplyItem key={reply.id} reply={reply} />
+                  ))}
+                </div>
+              }
+            />
+          ) : (
+            <>
+              <ForumDiscussionListHeader
+                countLabel={t('list.headerCount', { count: items.length })}
+                initiateSlot={
+                  <Button size="sm" className="gap-1.5" onClick={() => setShowCreateDialog(true)}>
+                    <Plus className="size-4" aria-hidden="true" />
+                    {t('list.initiate')}
+                  </Button>
+                }
+                searchValue={searchQuery}
+                searchPlaceholder={t('list.searchPlaceholder')}
+                searchAriaLabel={t('list.searchAriaLabel')}
+                onSearchChange={setSearchQuery}
+                sortValue={sortOrder}
+                sortAriaLabel={t('list.sortAriaLabel', { defaultValue: 'Sort discussions' })}
+                sortOptions={[
+                  { value: 'newest', label: t('list.sortNewest', { defaultValue: 'Newest' }) },
+                  { value: 'oldest', label: t('list.sortOldest', { defaultValue: 'Oldest' }) },
+                ]}
+                onSortChange={setSortOrder}
+              />
+
+              <ForumDiscussionList
+                items={
+                  sortOrder === 'oldest'
+                    ? [...items].sort((a, b) => a.timestamp - b.timestamp)
+                    : [...items].sort((a, b) => b.timestamp - a.timestamp)
+                }
+                metaLineFor={item =>
+                  t('list.metaLine', {
+                    count: item.commentCount,
+                    author: item.author.displayName,
+                    date: item.formattedDate,
+                    defaultValue: `${item.author.displayName} · ${item.formattedDate}`,
+                  })
+                }
+                emptySlot={
+                  <ForumEmptyState
+                    title={t('list.emptyTitle', { defaultValue: 'No discussions found' })}
+                    subtitle={t('list.emptySubtitle', {
+                      defaultValue: 'Try adjusting your search or category filter',
+                    })}
+                    iconNode={<MessageSquare aria-hidden="true" className="size-10" />}
+                  />
+                }
+                onActivate={setSelectedId}
+                className="mt-4"
+              />
+            </>
+          )
+        }
+      />
+
+      <ForumInitiateDiscussionDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        mode="initiate"
+        title={t('initiate.title', { defaultValue: 'Create Discussion' })}
+        submitLabel={t('initiate.submit', { defaultValue: 'Create' })}
+        cancelLabel={t('initiate.cancel', { defaultValue: 'Cancel' })}
+        submitDisabled={!draftTitle.trim()}
+        busy={false}
+        onSubmit={() => {
+          setShowCreateDialog(false);
+          setDraftTitle('');
+          setDraftContent('');
+        }}
+      >
+        <div className="space-y-4">
+          <Input
+            placeholder="Title"
+            value={draftTitle}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDraftTitle(e.target.value)}
+          />
+          <Textarea
+            placeholder="What would you like to discuss?"
+            className="min-h-40"
+            value={draftContent}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDraftContent(e.target.value)}
           />
         </div>
-
-        {/* Content area */}
-        {selectedDiscussion ? (
-          <ForumDiscussionDetail
-            discussion={selectedDiscussion}
-            onBack={() => setSelectedDiscussion(null)}
-          />
-        ) : (
-          <div className="col-span-12 md:col-span-9 lg:col-span-8">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-subheader font-bold" style={{ color: "var(--foreground)" }}>
-                Discussions ({sortedDiscussions.length})
-              </h2>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => setShowCreateDialog(true)}
-                className="gap-1.5 text-control"
-              >
-                <Plus className="h-4 w-4" />
-                Initiate Discussion
-              </Button>
-            </div>
-
-                {/* Search + Sort */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="relative flex-1">
-                    <Search
-                      className="absolute top-1/2 -translate-y-1/2"
-                      style={{ left: 12, width: 16, height: 16, color: "var(--muted-foreground)" }}
-                    />
-                    <Input
-                      placeholder="Search"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 text-body"
-                    />
-                  </div>
-                  <Select value={sortOrder} onValueChange={setSortOrder}>
-                    <SelectTrigger className="w-28 h-9 text-control">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="oldest">Oldest</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Discussion list */}
-                <div
-                  style={{
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius)",
-                    boxShadow: "var(--elevation-sm)",
-                    overflow: "hidden"
-                  }}
-                >
-                  {sortedDiscussions.length > 0 ? (
-                    sortedDiscussions.map((discussion) => (
-                      <ForumDiscussionItem
-                        key={discussion.id}
-                        discussion={discussion}
-                        onClick={() => setSelectedDiscussion(discussion)}
-                      />
-                    ))
-                  ) : (
-                    <div style={{ padding: "48px 24px", textAlign: "center" }}>
-                      <MessageSquare
-                        className="mx-auto mb-3"
-                        style={{ width: 40, height: 40, color: "var(--muted-foreground)", opacity: 0.4 }}
-                      />
-                      <p className="text-body" style={{ color: "var(--muted-foreground)" }}>
-                        No discussions found
-                      </p>
-                      <p className="text-caption" style={{ color: "var(--muted-foreground)", marginTop: 4 }}>
-                        Try adjusting your search or category filter
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-      <InitiateDiscussionDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />
-    </div>
+      </ForumInitiateDiscussionDialog>
+    </>
   );
 }

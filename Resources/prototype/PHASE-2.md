@@ -242,6 +242,37 @@ case it needs an `applySlot` (or an `onApply` action) on
 
 ---
 
+## 11. Chat — message extras and space channels
+
+**Converted:** `layout/MessagesOverlay.tsx` → CRD's `chat/ChatPanel` +
+`ChatConversationList` + `ChatThreadView`.
+
+**Dropped, because CRD's chat types have no field for them:**
+
+| Fixture field | Note |
+|---|---|
+| `muted` on a conversation | No mute state on `ChatListItem` |
+| `isEdited` on a message | No edited marker on `ChatMessage` |
+| `replyTo` (quoted reply) | No reply-to field; production threads are flat |
+| `attachment` (image / document / audio) | No attachment field on `ChatMessage` |
+
+**Needs upstream if wanted:** those four fields on `ChatListItem` /
+`ChatMessage`, plus the rendering in `ChatMessageBubble`.
+
+**NOT converted, prototype-ahead:** the space channels —
+`messaging/SpaceChannelView`, `messaging/SpaceChatTab`,
+`messaging/SpaceChannelComposer`, `messaging/ChatRail`. Production has no
+channel concept at all: its chat is direct messages, groups and the pinned
+Guidance conversation. A Slack-style channel inside a Space is the prototype
+exploring ahead, so those files keep their own implementation (rule 2).
+
+Also still the prototype's: `pages/MessagesPage`, `messaging/ChatView`,
+`messaging/ConversationList` and `messaging/NewConversationFlow` — the
+full-page messaging surface. CRD models chat only as a panel, so a full page
+is another place the prototype leads.
+
+---
+
 ## 4. Other prototype-only features
 
 Not blocked — no CRD equivalent exists at all, so they simply stay:
