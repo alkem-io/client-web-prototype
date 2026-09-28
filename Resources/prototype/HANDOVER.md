@@ -10,7 +10,7 @@ components, so what we design is what gets built.
 
 ## What changed
 
-The prototype now uses **70 of production's components**, up from 13.
+The prototype now uses **79 of production's components**, up from 13.
 
 These screens are now built from production's components rather than our own
 copies:
@@ -25,6 +25,8 @@ copies:
 | Template library | Browse page and pack pages |
 | Forum | All of it |
 | Chat | The panel and the bubble in the bottom-right corner |
+| Comments | Threads, replies and reactions, everywhere comments appear |
+| Profiles | User and organisation public profile pages |
 
 ## What we kept as ours, on purpose
 
@@ -81,7 +83,6 @@ has a helper for this that isn't being used everywhere. Worth a look.
 
 ## Not done yet
 
-- Comments are still ours everywhere — production has a full comment system we
-  haven't adopted.
-- User profile and organisation pages.
-- Three dialogs that have a production equivalent.
+- Two dialogs that have a production equivalent (classification picker, and the
+  space members grid on the community tab).
+- Virtual contributor profile pages — production has no equivalent view yet.

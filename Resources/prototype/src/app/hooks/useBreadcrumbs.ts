@@ -342,6 +342,16 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
     ];
   }
 
+  // ── Organisation profile ──
+  // Pre-existing gap: `/organization/:slug` had no case, so every organisation
+  // profile fell through to the "Page Not Found" crumb below. Settings pages
+  // under it are handled by the settings block above.
+  if (path.startsWith("/organization/") && !path.includes("/settings")) {
+    const slug = path.split("/")[2];
+    const name = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    return [{ label: name, href: `/organization/${slug}`, isCurrentPage: true }];
+  }
+
   // ── Forum ──
   if (path === "/forum" || path.startsWith("/forum/")) {
     return [{ label: "Forum", href: "/forum", isCurrentPage: true }];
