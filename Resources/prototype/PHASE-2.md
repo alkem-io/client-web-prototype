@@ -305,6 +305,29 @@ also makes the badges agree with the role filter's counts.
 
 ---
 
+## 13. Subspace application wizard
+
+**NOT converted, prototype-ahead:** `dialogs/SubspaceApplicationDialog` (802
+lines) and its form builder `dialogs/SubspaceFormBuilderDialog`.
+
+CRD's `community/ApplicationFormDialog` is a single-step form over a fixed
+question list. The prototype derives a **multi-step wizard** from an
+admin-configurable form (`deriveStepsFromConfig`), with its own field types and
+constraints. Five other files import its types (`ApplicationFormConfig`,
+`FormField`, `FormFieldType`, `SubspaceApplication`, `FormFieldConstraints`),
+including the applications panel and Space settings.
+
+Converting would lose the wizard and the form builder, so rule 2 applies.
+
+**Also not adopted, and worth deciding:** CRD ships three small dialogs the
+prototype has no equivalent for at all —
+`community/PreApplicationDialog` (you must join the parent space first),
+`community/PreJoinParentDialog`, and `community/ApplicationSubmittedDialog`
+(the confirmation after applying). They would slot around the prototype's own
+wizard rather than replace it.
+
+---
+
 ## 4. Other prototype-only features
 
 Not blocked — no CRD equivalent exists at all, so they simply stay:

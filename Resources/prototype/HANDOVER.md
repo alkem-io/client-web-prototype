@@ -10,7 +10,7 @@ components, so what we design is what gets built.
 
 ## What changed
 
-The prototype now uses **80 of production's components**, up from 13.
+The prototype now uses **82 of production's components**, up from 13.
 
 These screens are now built from production's components rather than our own
 copies:
@@ -38,6 +38,8 @@ These are places the prototype is **ahead** of production. They stay.
 - Richer subspace cards and contributor cards
 - Memo signing
 - The template detail page — production shows a pop-up, we show a full page
+- The subspace application wizard — ours is multi-step with an admin-editable
+  form builder; production's is a single fixed form
 - The mobile layout studies
 
 Everything we removed to make room is written down in `PHASE-2.md`, with what
@@ -83,5 +85,8 @@ has a helper for this that isn't being used everywhere. Worth a look.
 
 ## Not done yet
 
-- One dialog: the classification picker. It is only reachable from Space
-  settings, which we are leaving alone for now, so it waits for that work.
+- The classification picker dialog. Only reachable from Space settings, which
+  we are leaving alone for now, so it waits for that work.
+- Three small join-flow dialogs production has that we do not: "join the parent
+  space first", and the confirmation after applying. They would sit around our
+  application wizard rather than replace it.

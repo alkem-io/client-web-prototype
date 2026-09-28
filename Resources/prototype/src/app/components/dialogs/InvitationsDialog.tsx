@@ -1,113 +1,159 @@
-import { Button } from "@/crd/primitives/button";
+/**
+ * Pending space invitations — production's
+ * `@/crd/components/dashboard/PendingInvitationCard` +
+ * `InvitationDetailDialog`.
+ *
+ * These are invitations the viewer has RECEIVED (accept / decline), which is a
+ * different thing from `community/InviteMembersDialog` (sending them). CRD
+ * models the received side as a card list that opens a detail dialog, rather
+ * than accept/decline buttons inline on each row — so you see the space's
+ * tagline, tags and the sender's welcome message before deciding.
+ *
+ * The prototype's version was a flat list with two icon buttons per row and no
+ * way to see what you were joining.
+ */
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
-} from "@/crd/primitives/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
-import { Check, X, Calendar } from "lucide-react";
-import { useState } from "react";
+  DialogTitle,
+} from '@/crd/primitives/dialog';
+import { Button } from '@/crd/primitives/button';
+import {
+  PendingInvitationCard,
+  type PendingInvitationCardData,
+} from '@/crd/components/dashboard/PendingInvitationCard';
+import {
+  InvitationDetailDialog,
+  type InvitationDetailData,
+} from '@/crd/components/dashboard/InvitationDetailDialog';
 
 interface InvitationsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const initialInvitations = [
+type Invitation = PendingInvitationCardData & {
+  detail: InvitationDetailData;
+};
+
+const INITIAL_INVITATIONS: Invitation[] = [
   {
-    id: 1,
-    sender: {
-      name: "Sarah Chen",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
-      initials: "SC"
+    id: 'inv-1',
+    spaceName: 'Sustainability Goals 2024',
+    spaceAvatarUrl:
+      'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=200&q=60',
+    senderName: 'Sarah Chen',
+    welcomeMessageExcerpt:
+      'We would love your input on the 2024 targets — your work on municipal energy is exactly what this group needs.',
+    timeElapsed: '2 hours ago',
+    color: '#2563eb',
+    detail: {
+      spaceName: 'Sustainability Goals 2024',
+      spaceAvatarUrl:
+        'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=200&q=60',
+      spaceTagline: 'Setting and tracking shared sustainability targets',
+      spaceTags: ['Sustainability', 'Targets', 'Reporting'],
+      spaceHref: '/space/sustainability-goals-2024',
+      senderName: 'Sarah Chen',
+      timeElapsed: '2 hours ago',
+      color: '#2563eb',
     },
-    space: "Sustainability Goals 2024",
-    role: "Editor",
-    date: "2 hours ago"
   },
   {
-    id: 2,
-    sender: {
-      name: "Marc Johnson",
-      avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=150",
-      initials: "MJ"
+    id: 'inv-2',
+    spaceName: 'Urban Mobility Lab',
+    spaceAvatarUrl:
+      'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=200&q=60',
+    senderName: 'Marc Johnson',
+    welcomeMessageExcerpt:
+      'Joining as a viewer to start — shout if you want edit rights once you have had a look around.',
+    timeElapsed: '1 day ago',
+    color: '#7c3aed',
+    detail: {
+      spaceName: 'Urban Mobility Lab',
+      spaceAvatarUrl:
+        'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=200&q=60',
+      spaceTagline: 'Reimagining city transportation networks',
+      spaceTags: ['Transport', 'Accessibility', 'Pilots'],
+      spaceHref: '/space/urban-mobility-lab',
+      senderName: 'Marc Johnson',
+      timeElapsed: '1 day ago',
+      color: '#7c3aed',
     },
-    space: "Urban Mobility Lab",
-    role: "Viewer",
-    date: "1 day ago"
   },
-  {
-    id: 3,
-    sender: {
-      name: "David Smith",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
-      initials: "DS"
-    },
-    space: "Q1 Financial Planning",
-    role: "Admin",
-    date: "2 days ago"
-  }
 ];
 
 export function InvitationsDialog({ open, onOpenChange }: InvitationsDialogProps) {
-  const [invitations, setInvitations] = useState(initialInvitations);
+  const [invitations, setInvitations] = useState(INITIAL_INVITATIONS);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const handleAction = (id: number) => {
-    setInvitations(invitations.filter(i => i.id !== id));
+  const selected = invitations.find(invitation => invitation.id === selectedId);
+
+  const resolve = (id: string) => {
+    setInvitations(current => current.filter(invitation => invitation.id !== id));
+    setSelectedId(null);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Space Invitations</DialogTitle>
-          <DialogDescription>
-            You have {invitations.length} pending invitations to join spaces.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-2 flex flex-col gap-3">
-          {invitations.length > 0 ? (
-            invitations.map((invite) => (
-              <div key={invite.id} className="flex items-center justify-between p-4 border rounded-lg bg-card hover:bg-muted/20 transition-colors">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={invite.sender.avatar} />
-                    <AvatarFallback>{invite.sender.initials}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-body-emphasis">
-                      <span className="font-bold">{invite.sender.name}</span> invited you to <span className="font-bold text-primary">{invite.space}</span>
-                    </span>
-                    <div className="flex items-center gap-2 text-caption text-muted-foreground">
-                      <span>Role: {invite.role}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {invite.date}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline" className="text-destructive hover:text-destructive hover:bg-destructive/10" title="Decline" onClick={() => handleAction(invite.id)}>
-                    <X className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" title="Accept" onClick={() => handleAction(invite.id)}>
-                    <Check className="w-4 h-4 mr-1" /> Accept
-                  </Button>
-                </div>
-              </div>
-            ))
-          ) : (
-             <div className="text-center py-8 text-muted-foreground">
-               <p>No pending invitations.</p>
-             </div>
-          )}
-        </div>
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>Close</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={open && !selected} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Space Invitations</DialogTitle>
+            <DialogDescription>
+              {invitations.length > 0
+                ? `You have ${invitations.length} pending invitation${invitations.length === 1 ? '' : 's'} to join spaces.`
+                : 'You have no pending invitations.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-3 py-2">
+            {invitations.length > 0 ? (
+              invitations.map(invitation => (
+                <PendingInvitationCard
+                  key={invitation.id}
+                  invitation={invitation}
+                  onClick={() => setSelectedId(invitation.id)}
+                />
+              ))
+            ) : (
+              <p className="py-8 text-center text-body text-muted-foreground">
+                No pending invitations.
+              </p>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Detail view — the space's tagline, tags and the sender's message, so
+          you can see what you are joining before accepting. */}
+      <InvitationDetailDialog
+        open={Boolean(selected)}
+        invitation={selected?.detail}
+        title="Invitation"
+        acceptLabel="Accept"
+        rejectLabel="Decline"
+        onBack={() => setSelectedId(null)}
+        onClose={() => {
+          setSelectedId(null);
+          onOpenChange(false);
+        }}
+        onAccept={() => selected && resolve(selected.id)}
+        onReject={() => selected && resolve(selected.id)}
+        accepting={false}
+        rejecting={false}
+        updating={false}
+      />
+    </>
   );
 }
