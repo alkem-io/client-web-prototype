@@ -57,7 +57,7 @@ export function ContributionsPreviewSkeleton({
   }
 
   return (
-    <div className={cn('grid grid-cols-1 sm:grid-cols-2 gap-3', className)} aria-hidden="true">
+    <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3', className)} aria-hidden="true">
       {cells.map(index => (
         <Skeleton key={index} className={cn('w-full rounded-lg', CELL_HEIGHT[kind])} />
       ))}
