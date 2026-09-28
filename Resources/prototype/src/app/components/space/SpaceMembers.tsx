@@ -1,17 +1,45 @@
-import React, { useState } from "react";
-import { Search, MoreHorizontal, UserPlus, User, MapPin, ExternalLink, Users, ChevronLeft, ChevronRight } from "lucide-react";
+/**
+ * Community contributors — a **contributors callout** with the prototype's rich
+ * contributor cards.
+ *
+ * Structure is production's: contributors are a callout framing type (CRD's
+ * `PostType` has `contributors`, and `CalloutDetailDialog` a
+ * `contributorsFramingSlot`), so this is a post whose body is the collection —
+ * not a bare grid on a tab. The People / Organisations type switch and the
+ * All / Lead / Member role filter both mirror CRD's `ContributorCollection`,
+ * including when each appears: the type switch at ≥2 types, the role filter
+ * only when the set mixes leads and members.
+ *
+ * WHY NOT `ContributorCollection` ITSELF (rule 2): its cards are production's
+ * compact `ContributorCard` — avatar, name, role, location. The prototype's are
+ * richer: skills/tags, and a hover card (`ProfileHoverCard` / `OrgHoverCard`)
+ * with bio, tags and location. `ContributorCollection` renders `ContributorCard`
+ * internally and exposes no card slot, so the two cannot be combined today.
+ *
+ * NEEDS UPSTREAM: a `renderCard` / `cardSlot` prop on `ContributorCollection`.
+ * With it this file collapses back to CRD's collection and keeps the rich
+ * cards. Same class of blocker as `reactionsSlot` on the contribution cards —
+ * see PHASE-2.md §12.
+ *
+ * Everything structural here is built from CRD primitives (`Tabs`,
+ * `SearchField`, `Button`, `Card`, `Avatar`), never hand-rolled.
+ */
+import { useState } from "react";
+import { ChevronLeft, ChevronRight, ExternalLink, MapPin, MoreHorizontal, User, Users } from "lucide-react";
+import { Link } from "react-router";
+import { SearchField } from "@/crd/forms/SearchField";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { Button } from "@/crd/primitives/button";
 import { Card, CardContent } from "@/crd/primitives/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from "@/crd/primitives/dropdown-menu";
-import { Link } from "react-router";
-import { useSpaceFilters } from "@/app/components/space/FilterContext";
+import { Tabs, TabsList, TabsTrigger } from "@/crd/primitives/tabs";
+import { PostCard } from "@/app/components/space/PostCard";
 import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
 import { OrgHoverCard } from "@/app/components/user/OrgHoverCard";
 
@@ -204,138 +232,168 @@ const ALL_ENTRIES: CommunityEntry[] = [
   ...RAW_MEMBERS.map((m): MemberEntry => ({ ...m, kind: "user" })),
 ];
 
-const FILTERS = ["All", "Host", "Admin", "Lead", "Member", "Organization"];
+/** Mirrors ContributorCollection's page size. */
+const PAGE_SIZE = 9;
 
-// ── Component ──
+type ContributorType = "user" | "organization";
+type RoleFilter = "all" | "lead" | "member";
+
+/** Production never surfaces administrative status on a contributor card. */
+const isLead = (role: string) => ["Host", "Admin", "Lead"].includes(role);
+
 export function SpaceMembers() {
-  const { searchValue, activeTags } = useSpaceFilters();
-  const [selectedFilter, setSelectedFilter] = useState("All");
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 9;
+  const [activeType, setActiveType] = useState<ContributorType>("user");
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
 
-  const totalUsers = RAW_MEMBERS.length;
-  const totalOrgs = RAW_ORGS.length;
+  const reset = () => setPage(0);
 
-  const filteredEntries = ALL_ENTRIES.filter((entry) => {
-    // Search match
-    const nameMatch = entry.name.toLowerCase().includes(searchValue.toLowerCase());
-    const extraMatch =
-      entry.kind === "user"
-        ? entry.role.toLowerCase().includes(searchValue.toLowerCase())
-        : entry.type.toLowerCase().includes(searchValue.toLowerCase());
-    if (!nameMatch && !extraMatch) return false;
+  const people = RAW_MEMBERS.map((m): MemberEntry => ({ ...m, kind: "user" }));
+  const orgs = RAW_ORGS.map((o): OrgEntry => ({ ...o, kind: "org" }));
 
-    // Tag match - check if entry has all active tags
-    const tagMatch = activeTags.length === 0 || activeTags.every((tag) => entry.tags.includes(tag));
-    if (!tagMatch) return false;
+  // Role filter only filters people; organisations carry no lead/member split.
+  const leadCount = people.filter(m => isLead(m.role)).length;
+  const memberCount = people.length - leadCount;
+  const showRoleFilter = activeType === "user" && leadCount > 0 && memberCount > 0;
 
-    // Filter match
-    if (selectedFilter === "All") return true;
-    if (selectedFilter === "Organization") return entry.kind === "org";
-    return entry.kind === "user" && entry.role === selectedFilter;
+  const activeSet: (MemberEntry | OrgEntry)[] = activeType === "user" ? people : orgs;
+
+  const filtered = activeSet.filter(entry => {
+    if (search && !entry.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (activeType === "user" && roleFilter !== "all") {
+      const lead = isLead((entry as MemberEntry).role);
+      return roleFilter === "lead" ? lead : !lead;
+    }
+    return true;
   });
 
-  const totalPages = Math.max(1, Math.ceil(filteredEntries.length / ITEMS_PER_PAGE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const paginatedEntries = filteredEntries.slice(
-    (safeCurrentPage - 1) * ITEMS_PER_PAGE,
-    safeCurrentPage * ITEMS_PER_PAGE
-  );
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount - 1);
+  const visible = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
 
-  // Reset to page 1 when filters/search change
-  const handleFilterChange = (filter: string) => {
-    setSelectedFilter(filter);
-    setCurrentPage(1);
-  };
+  const roleCount = (rf: RoleFilter) =>
+    rf === "all" ? people.length : rf === "lead" ? leadCount : memberCount;
 
   return (
-    <div className="space-y-6">
-      {/* Unified Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {paginatedEntries.map((entry) =>
-          entry.kind === "user" ? (
-            <UserCard
-              key={entry.id}
-              member={entry}
-            />
-          ) : (
-            <OrgCard key={entry.id} org={entry} />
-          )
+    <PostCard
+      post={{
+        id: "callout-contributors",
+        type: "contributors",
+        title: "This is us!",
+        snippet: "The people and organisations contributing to this space.",
+        author: { name: "Elena Martinez" },
+        timestamp: "2 days ago",
+        commentCount: 0
+      }}
+      reactionsEnabled={false}
+    >
+      <div className="space-y-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Type switch — shown at >=2 types, matching ContributorCollection. */}
+          <Tabs
+            className="w-full sm:w-auto"
+            value={activeType}
+            onValueChange={v => {
+              setActiveType(v as ContributorType);
+              setRoleFilter("all");
+              reset();
+            }}
+          >
+            <TabsList className="w-full max-w-full justify-start overflow-x-auto sm:w-fit sm:justify-center">
+              <TabsTrigger value="user" className="flex-none sm:flex-1">
+                <span>People</span>
+                <span className="ml-1.5 rounded-full bg-background/60 px-1.5 text-caption text-muted-foreground">
+                  {people.length}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="organization" className="flex-none sm:flex-1">
+                <span>Organisations</span>
+                <span className="ml-1.5 rounded-full bg-background/60 px-1.5 text-caption text-muted-foreground">
+                  {orgs.length}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {/* Role filter — only when the active set mixes leads and members. */}
+          {showRoleFilter && (
+            <Tabs
+              className="w-full sm:w-auto"
+              value={roleFilter}
+              onValueChange={v => {
+                setRoleFilter(v as RoleFilter);
+                reset();
+              }}
+            >
+              <TabsList className="w-full max-w-full justify-start overflow-x-auto sm:w-fit sm:justify-center">
+                {(["all", "lead", "member"] as RoleFilter[]).map(rf => (
+                  <TabsTrigger key={rf} value={rf} className="flex-none sm:flex-1">
+                    <span className="capitalize">{rf}</span>
+                    <span className="ml-1.5 rounded-full bg-background/60 px-1.5 text-caption text-muted-foreground">
+                      {roleCount(rf)}
+                    </span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          )}
+        </div>
+
+        <SearchField
+          value={search}
+          onValueChange={value => {
+            setSearch(value);
+            reset();
+          }}
+          placeholder="Search by name..."
+          ariaLabel="Search by name"
+        />
+
+        <p className="text-body text-muted-foreground">
+          {filtered.length} {activeType === "user" ? "people" : "organisations"}
+        </p>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {visible.map(entry =>
+            entry.kind === "user" ? (
+              <UserCard key={entry.id} member={entry} />
+            ) : (
+              <OrgCard key={entry.id} org={entry} />
+            )
+          )}
+        </div>
+
+        {pageCount > 1 && (
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setPage(p => Math.max(0, p - 1))}
+              disabled={safePage === 0}
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
+            <span className="text-body text-muted-foreground">
+              Page {safePage + 1} of {pageCount}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
+              disabled={safePage >= pageCount - 1}
+              aria-label="Next page"
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
         )}
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center mt-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground"
-            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <span className="mx-2 text-body text-muted-foreground">
-            Page {safeCurrentPage} of {totalPages}
-          </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground"
-            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
-      )}
-
-      {/* Empty state */}
-      {filteredEntries.length === 0 && (
-        <div className="text-center py-12">
-          <div
-            className="inline-flex items-center justify-center w-12 h-12 mb-4"
-            style={{
-              borderRadius: "999px",
-              background: "var(--muted)"
-            }}
-          >
-            <User className="w-6 h-6" style={{ color: "var(--muted-foreground)" }} />
-          </div>
-          <h3
-            className="text-subheader"
-            style={{
-              color: "var(--foreground)"
-              }}
-          >
-            No results found
-          </h3>
-          <p
-            className="mt-1 text-body"
-            style={{
-              color: "var(--muted-foreground)"
-              }}
-          >
-            Try adjusting your search or filters.
-          </p>
-          <Button
-            variant="link"
-            onClick={() => {
-              setSelectedFilter("All");
-              setCurrentPage(1);
-            }}
-            className="mt-2 text-primary"
-          >
-            Clear filters
-          </Button>
-        </div>
-      )}
-    </div>
+    </PostCard>
   );
 }
 
-// ── User Card ──
 function UserCard({
   member
 }: {
@@ -383,11 +441,14 @@ function UserCard({
               >
                 {member.name}
               </Link>
+              {/* The badge used to be hard-coded "Member" for everyone. It now
+                  reflects the actual role, matching production's Lead / Member
+                  split — and the role filter beside it. */}
               <div
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-medium border mt-1 bg-muted text-muted-foreground border-border"
                 >
                 <User className="w-3 h-3" />
-                Member
+                {isLead(member.role) ? "Lead" : "Member"}
               </div>
             </div>
           </div>

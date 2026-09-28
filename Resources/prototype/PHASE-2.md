@@ -273,6 +273,36 @@ is another place the prototype leads.
 
 ---
 
+## 12. Contributor collection — rich cards
+
+**Where:** `space/SpaceMembers.tsx` (the contributors callout on the community tab)
+
+The community tab is now a **contributors callout**, matching production:
+contributors are a callout framing type (CRD's `PostType` has `contributors`
+and `spaces`; `CalloutDetailDialog` has the matching framing slots), so the
+collection is a post's body rather than a bare grid on a tab.
+
+**Why it does not use `ContributorCollection` itself:** CRD's collection renders
+its own `ContributorCard` — avatar, name, role, location — and exposes **no card
+slot**. The prototype's cards are richer: skills/tags, join date, a kebab menu,
+and a hover card (`ProfileHoverCard` / `OrgHoverCard`) carrying bio, tags and
+location. The two cannot be combined today.
+
+So the collection's chrome is reproduced from CRD primitives (`Tabs`,
+`SearchField`, `Button`, `Card`, `Avatar`), matching `ContributorCollection`'s
+behaviour exactly — including when each control appears: the type switch at ≥2
+types, the role filter only when the active set mixes leads and members.
+
+**Needs upstream:** a `renderCard` / `cardSlot` prop on `ContributorCollection`.
+With it this file collapses back to CRD's collection and keeps the rich cards.
+Same class of blocker as `reactionsSlot` on the contribution cards (§2).
+
+Fixed in passing: the rich card hard-coded "Member" for every person regardless
+of role, so a Host or Admin read as Member. It now shows Lead / Member, which
+also makes the badges agree with the role filter's counts.
+
+---
+
 ## 4. Other prototype-only features
 
 Not blocked — no CRD equivalent exists at all, so they simply stay:
