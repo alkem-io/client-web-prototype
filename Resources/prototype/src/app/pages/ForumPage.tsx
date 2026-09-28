@@ -42,6 +42,7 @@ import { Button } from '@/crd/primitives/button';
 import { Input } from '@/crd/primitives/input';
 import { Textarea } from '@/crd/primitives/textarea';
 import { cn } from '@/crd/lib/utils';
+import { CommentsPanel } from '@/app/components/comment/CommentsPanel';
 import { toDiscussionDetail, toDiscussionListItem } from '@/app/mappers/forum';
 
 interface ForumDiscussion {
@@ -1212,13 +1213,9 @@ export default function ForumPage() {
               shareLabel={t('detail.share', { defaultValue: 'Share' })}
               editLabel={t('detail.edit', { defaultValue: 'Edit' })}
               deleteLabel={t('detail.delete', { defaultValue: 'Delete' })}
-              commentsSlot={
-                <div className="divide-y divide-border">
-                  {SAMPLE_REPLIES.map(reply => (
-                    <ForumReplyItem key={reply.id} reply={reply} />
-                  ))}
-                </div>
-              }
+              // Production's comment system, same as every other comment
+              // surface. See `comment/CommentsPanel`.
+              commentsSlot={<CommentsPanel threadId={`forum-${selected.id}`} />}
             />
           ) : (
             <>

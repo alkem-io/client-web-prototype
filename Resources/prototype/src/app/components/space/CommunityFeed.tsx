@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/crd/primitives/button";
 import { Plus } from "lucide-react";
 import { PostCard, PostProps } from "./PostCard";
+import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { useSpaceFilters } from "./FilterContext";
@@ -112,6 +113,8 @@ export function CommunityFeed() {
       <div className="space-y-6">
         {filteredPosts.map((post) => (
           <PostCard
+            // Comments open inline in the card footer — production's thread.
+            commentsSlot={<CommentsPanel threadId={post.id} />}
             key={post.id}
             post={post as any}
             onClick={() => setSelectedPost(post)}

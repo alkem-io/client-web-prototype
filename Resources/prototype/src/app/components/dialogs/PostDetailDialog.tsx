@@ -33,11 +33,7 @@ import { toast } from 'sonner';
 import { CalloutCollaboraPreview } from '@/crd/components/callout/CalloutCollaboraPreview';
 import { CalloutDetailDialog } from '@/crd/components/callout/CalloutDetailDialog';
 import { CalloutLinkAction } from '@/crd/components/callout/CalloutLinkAction';
-import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
 import { Button } from '@/crd/primitives/button';
-import { IconButton } from '@/crd/primitives/icon-button';
-import { Textarea } from '@/crd/primitives/textarea';
-import { Send, Smile } from 'lucide-react';
 import { toCalloutDetail } from '@/app/mappers/calloutDetail';
 import { ReactionBar } from '@/app/components/space/ReactionBar';
 import type { MediaGalleryFeedThumbnail, PostCardData } from '@/app/components/space/PostCard';
@@ -47,6 +43,7 @@ import { SignedCopiesTrigger } from '@/app/components/memo/SignedCopiesTrigger';
 import { useSignedCopies } from '@/app/components/memo/memoSigningStore';
 import { uniqueSigners } from '@/app/components/memo/signingData';
 import { CalloutFormFraming } from '@/app/components/callout/CalloutFormFraming';
+import { CommentsPanel } from '@/app/components/comment/CommentsPanel';
 
 interface PostDetailDialogProps {
   open: boolean;
@@ -208,57 +205,9 @@ export function PostDetailDialog({
         }
         hasContributions={Boolean(contributions)}
         contributionsSlot={contributions}
-        commentsSlot={
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <Avatar className="mt-1 h-8 w-8">
-                <AvatarImage src="https://images.unsplash.com/photo-1689600944138-da3b150d9cb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=128" />
-                <AvatarFallback>SJ</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-card-title">Sarah Jenkins</span>
-                  <span className="text-caption text-muted-foreground">2 days ago</span>
-                </div>
-                <p className="text-body text-foreground/90">
-                  Great initiative! I think we should also consider the implications on local traffic
-                  patterns.
-                </p>
-                <div className="flex items-center gap-4 text-control text-muted-foreground">
-                  <button type="button" className="transition-colors hover:text-primary">
-                    Reply
-                  </button>
-                  <button type="button" className="transition-colors hover:text-primary">
-                    Like (2)
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-        commentInputSlot={
-          <div className="flex gap-3">
-            <Avatar>
-              <AvatarFallback className="bg-primary/10 text-primary">ME</AvatarFallback>
-            </Avatar>
-            <div className="relative flex-1">
-              <Textarea
-                placeholder="Type your comment here..."
-                className="max-h-[120px] min-h-[44px] resize-none py-3 pr-20"
-                value={commentText}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCommentText(e.target.value)}
-              />
-              <div className="absolute right-2 bottom-2 flex items-center gap-1">
-                <IconButton variant="ghost" tooltipLabel="Emoji" className="text-muted-foreground hover:text-primary">
-                  <Smile className="h-4 w-4" />
-                </IconButton>
-                <IconButton tooltipLabel="Send" className="rounded-md" disabled={!commentText.trim()}>
-                  <Send className="h-3 w-3" />
-                </IconButton>
-              </div>
-            </div>
-          </div>
-        }
+        // Production's comment system — thread, replies, reactions and the
+        // composer all come from CRD. See `comment/CommentsPanel`.
+        commentsSlot={<CommentsPanel threadId={post.id} canComment={post.commentsEnabled !== false} />}
       />
 
       {post.type === 'memo' && memoOpen && (

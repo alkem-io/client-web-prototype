@@ -2,6 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Button } from "@/crd/primitives/button";
 import { Plus, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
+import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
@@ -1007,6 +1008,8 @@ export function SpaceKnowledgeFeed() {
         {filteredPosts.map((post) => (
           <div key={post.id} id={post.id}>
             <PostCard
+              // Comments open inline in the card footer — production's thread.
+              commentsSlot={<CommentsPanel threadId={post.id} />}
               post={{
                 ...post,
                 descriptionExpanded: !collapseEnabled

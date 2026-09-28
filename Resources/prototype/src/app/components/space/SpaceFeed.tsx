@@ -3,6 +3,7 @@ import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
 import { Button } from "@/crd/primitives/button";
 import { Plus, Pin, ChevronsDownUp, ChevronsUpDown, Lock, Users } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
+import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
@@ -736,6 +737,8 @@ export function SpaceFeed() {
       <CrdSpaceFeed hasMore={true} onShowMore={() => {}}>
         {filteredPosts.map((post) => (
           <PostCard
+            // Comments open inline in the card footer — production's thread.
+            commentsSlot={<CommentsPanel threadId={post.id} />}
             key={post.id}
             post={{
               ...post,

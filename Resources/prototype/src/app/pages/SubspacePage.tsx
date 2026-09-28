@@ -15,6 +15,7 @@ import { cn } from "@/crd/lib/utils";
 import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs";
 import { HeaderActionIcons } from "@/crd/components/space/HeaderActionIcons";
 import { PostCard, type PostProps } from "@/app/components/space/PostCard";
+import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { KanbanPostDialog } from "@/app/components/space/KanbanBoardPost";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
@@ -528,6 +529,8 @@ export default function SubspacePage() {
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => (
                 <PostCard
+                  // Comments open inline in the card footer — production's thread.
+                  commentsSlot={<CommentsPanel threadId={post.id} />}
                   key={post.id}
                   post={post}
                   onOpenFraming={
