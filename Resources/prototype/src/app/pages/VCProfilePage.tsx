@@ -1,326 +1,204 @@
-import { useParams, Link } from "react-router";
-import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
-import { Badge } from "@/crd/primitives/badge";
-import { Button } from "@/crd/primitives/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/crd/primitives/card";
-import { Separator } from "@/crd/primitives/separator";
-import {
-  Bot,
-  Settings,
-  Check,
-  Minus,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  MapPin,
-  Globe,
-  Shield,
-  Brain,
-  FileText,
-  Upload,
-  Lock,
-  ExternalLink,
-  BookOpen,
-  Users,
-  CircuitBoard,
-  Eye,
-  Database,
-  ShieldCheck
-} from "lucide-react";
-import { TransparencyCard } from "@/app/components/vc/TransparencyCard";
-import { FunctionalityCard } from "@/app/components/vc/FunctionalityCard";
+/**
+ * Virtual contributor public profile — production's
+ * `@/crd/components/virtualContributor/VCPublicProfileView`.
+ *
+ * CRD composes the page: `VCPageHero` (bot avatar fallback, type badge,
+ * keyword chips), `VCProfileSidebar` (description, host card, links, body of
+ * knowledge) and `VCContentView` (Functionality / AI Engine / Monitoring).
+ * Follows CRD's own `crd/app/pages/VCProfileDemoPage` composition.
+ *
+ * The prototype's fixture already lined up closely — capabilities, data access
+ * and the AI-engine questions are the same set. Two shape differences:
+ *
+ *  - Role requirements were a markdown string; CRD takes a ReactNode, so the
+ *    emphasis is real markup rather than `**` that never rendered.
+ *  - The AI engine was a flat object of booleans; CRD models each question as
+ *    a card with its own icon and answer type, which is what lets "Unknown"
+ *    and the web-access clock glyph render distinctly from a plain No.
+ *
+ * NO MESSAGE BUTTON: production deliberately omits one on a VC profile
+ * (FR-030). The prototype had none either.
+ */
+import { useParams } from 'react-router';
+import { VCPublicProfileView } from '@/crd/components/virtualContributor/VCPublicProfileView';
+
+const SIDEBAR_LABELS = {
+  descriptionTitle: 'Description',
+  descriptionEmpty: 'No description provided.',
+  hostTitle: 'Host',
+  hostEmpty: 'No host.',
+  referencesTitle: 'Links',
+  referencesEmpty: 'No links yet.',
+  bodyOfKnowledgeTitle: 'Body of Knowledge',
+  bodyOfKnowledgeLoading: 'Loading body of knowledge',
+  bodyOfKnowledgePrivateTooltip: 'Body of knowledge is private.',
+  bodyOfKnowledgeVisitButton: 'Visit',
+};
+
+const CONTENT_LABELS = {
+  functionalityHeading: 'Functionality',
+  capabilitiesTitle: 'Functional Capabilities',
+  dataAccessTitle: 'Data access from the Space where it is a member',
+  roleRequirementsTitle: 'Role Requirements',
+  aiEngineHeading: 'AI Engine: Alkemio AI',
+  yesAnswer: 'Yes',
+  noAnswer: 'No',
+  unknownAnswer: 'Unknown',
+  technicalReferencesNotAvailable: 'Not available',
+};
 
 export default function VCProfilePage() {
   const { vcSlug } = useParams<{ vcSlug: string }>();
+  const slug = vcSlug || 'softmann';
 
-  // Mock Data
   const vc = {
-    name: "Softmann",
-    slug: vcSlug || "softmann",
-    avatarUrl: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256&q=80",
-    description: "A secret UX helper tool",
-    tags: ["UX", "UI", "Design Research", "HCI"],
-    isOwner: true, // Demo: viewing as owner
+    name: 'Softmann',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&auto=format&fit=crop&w=256&h=256&q=80',
+    description: 'A secret UX helper tool',
+    keywords: ['UX', 'UI', 'Design Research', 'HCI'],
     host: {
-      name: "Jeroen Nijkamp",
-      avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-      slug: "jnijkamp"
+      id: 'host-jnijkamp',
+      displayName: 'Jeroen Nijkamp',
+      avatarImageUrl:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      caption: 'Provider',
+      secondaryCaption: null,
+      href: '/user/jnijkamp',
     },
     references: [
-      { name: "UX Design Guidelines", url: "#" },
-      { name: "Research Methodology", url: "#" },
+      { id: 'vc-ref-1', name: 'UX Design Guidelines', uri: 'https://example.com/ux-guidelines', description: null },
+      { id: 'vc-ref-2', name: 'Research Methodology', uri: 'https://example.com/research-methodology', description: null },
     ],
-    bodyOfKnowledge: {
-      type: "space" as const,
-      sourceName: "Lux-Lab",
-      sourceAvatarUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80",
-      sourceSlug: "lux-lab"
-    },
-    functionality: {
-      capabilities: [
-        { label: "Answer questions in comments", enabled: true },
-        { label: "Create new posts", enabled: false },
-        { label: "Invite other contributors", enabled: false },
-      ],
-      dataAccess: [
-        { label: "About page", enabled: true },
-        { label: "Posts & Contributions", enabled: false },
-        { label: "Subspaces", enabled: false },
-      ],
-      roleRequirements: "This VC needs to be granted **member rights** to function correctly"
-    },
-    aiEngine: {
-      name: "Alkemio AI",
-      openModel: true,
-      dataUsedForTraining: false,
-      knowledgeRestriction: true,
-      webAccess: false,
-      physicalLocation: "Sweden, EU",
-      technicalReferencesUrl: "#"
-    }
   };
 
+  const roleRequirementsContent = (
+    <p className="text-body text-foreground">
+      This VC needs to be granted <strong>member rights</strong> to function correctly.
+    </p>
+  );
+
+  const monitoringBody = (
+    <p>
+      Usage is monitored by Alkemio per the{' '}
+      <a
+        href="https://welcome.alkem.io/legal/#tc"
+        target="_blank"
+        rel="noreferrer"
+        className="text-primary underline-offset-4 hover:underline"
+      >
+        Terms &amp; Conditions
+      </a>
+      .
+    </p>
+  );
+
   return (
-    <div className="min-h-screen bg-background pb-12">
-      {/* Profile Header — No Banner */}
-      <div className="px-6 md:px-8 pt-8 pb-6">
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-start-2 lg:col-span-10">
-            <div className="flex flex-col md:flex-row items-start gap-6">
-              {/* Avatar */}
-              <div className="relative shrink-0">
-                <Avatar className="w-28 h-28 md:w-32 md:h-32 border-4 border-background shadow-lg text-3xl">
-                  <AvatarImage src={vc.avatarUrl} alt={vc.name} />
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    <Bot className="w-12 h-12" />
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-
-              {/* Info & Actions */}
-              <div className="flex-1 flex flex-col md:flex-row md:items-start justify-between gap-4 w-full">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h1 className="text-hero text-foreground">{vc.name}</h1>
-                    <Badge variant="secondary" className="gap-1.5 font-medium">
-                      <Bot className="w-3.5 h-3.5" />
-                      Virtual Contributor
-                    </Badge>
-                  </div>
-                  {/* Skill Tags */}
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {vc.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-caption font-medium bg-primary/5 border-primary/20 text-primary">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Settings Button (owner only) */}
-                {vc.isOwner && (
-                  <Link to={`/vc/${vc.slug}/settings`}>
-                    <Button variant="outline" size="icon" className="shadow-sm">
-                      <Settings className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content — 12-col grid */}
-      <div className="px-6 md:px-8">
-        <div className="grid grid-cols-12 gap-6">
-          {/* Left Sidebar */}
-          <div className="col-span-12 lg:col-start-2 lg:col-span-3 space-y-6 lg:sticky lg:top-24 self-start">
-            {/* Description */}
-            <section>
-              <h2 className="text-subsection-title font-bold mb-2">Description</h2>
-              <p className="text-body text-muted-foreground">{vc.description}</p>
-            </section>
-
-            {/* Host */}
-            <section>
-              <h2 className="text-subsection-title font-bold mb-3">Host</h2>
-              <Link to={`/user/${vc.host.slug}`} className="flex items-center gap-3 group">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={vc.host.avatarUrl} alt={vc.host.name} />
-                  <AvatarFallback>{vc.host.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <span className="text-body-emphasis group-hover:text-primary transition-colors">{vc.host.name}</span>
-              </Link>
-            </section>
-
-            {/* References */}
-            <section>
-              <h2 className="text-subsection-title font-bold mb-3">References</h2>
-              {vc.references.length > 0 ? (
-                <ul className="space-y-2">
-                  {vc.references.map((ref) => (
-                    <li key={ref.name}>
-                      <a
-                        href={ref.url}
-                        className="text-body text-primary hover:underline flex items-center gap-1.5"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        {ref.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-body text-muted-foreground italic">No references added</p>
-              )}
-            </section>
-
-            {/* Body of Knowledge */}
-            <section>
-              <h2 className="text-subsection-title font-bold mb-3">Body of Knowledge</h2>
-              <p className="text-caption text-muted-foreground mb-3">
-                Answers Softmann gives are based on the body of knowledge coming from:
-              </p>
-              <Link
-                to={`/space/${vc.bodyOfKnowledge.sourceSlug}`}
-                className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:border-primary/30 transition-colors group"
-              >
-                <Avatar className="w-9 h-9 rounded-lg">
-                  <AvatarImage src={vc.bodyOfKnowledge.sourceAvatarUrl} alt={vc.bodyOfKnowledge.sourceName} />
-                  <AvatarFallback className="rounded-lg bg-primary/10 text-primary text-caption">
-                    <BookOpen className="w-4 h-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex items-center gap-2">
-                  <Settings className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-body-emphasis group-hover:text-primary transition-colors">
-                    {vc.bodyOfKnowledge.sourceName}
-                  </span>
-                </div>
-              </Link>
-            </section>
-          </div>
-
-          {/* Right Main Content */}
-          <div className="col-span-12 lg:col-span-7 space-y-8">
-            {/* Functionality Section */}
-            <section>
-              <h2 className="text-section-title mb-4">Functionality</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FunctionalityCard
-                  icon={<CircuitBoard className="w-5 h-5 text-muted-foreground" />}
-                  title="Functional Capabilities"
-                  items={vc.functionality.capabilities}
-                />
-
-                <FunctionalityCard
-                  icon={<Upload className="w-5 h-5 text-muted-foreground" />}
-                  title="Data access from the Space where it is a member"
-                  items={vc.functionality.dataAccess}
-                />
-
-                <FunctionalityCard
-                  icon={<Users className="w-5 h-5 text-muted-foreground" />}
-                  title="Role Requirements"
-                  bodyText={
-                    <>
-                      This VC needs to be granted <strong className="text-foreground">member rights</strong> to function correctly
-                    </>
-                  }
-                />
-              </div>
-            </section>
-
-            {/* AI Engine Section */}
-            <section>
-              <h2 className="text-section-title mb-4">AI Engine: {vc.aiEngine.name}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Open Model Transparency */}
-                <TransparencyCard
-                  icon={<Eye className="w-5 h-5" />}
-                  title="Open Model Transparency"
-                  description="Does the VC use an open-weight model?"
-                  value={vc.aiEngine.openModel}
-                />
-
-                {/* Data Usage Disclosure */}
-                <TransparencyCard
-                  icon={<Database className="w-5 h-5" />}
-                  title="Data Usage Disclosure"
-                  description="Is interaction data used in any way for model training?"
-                  value={vc.aiEngine.dataUsedForTraining}
-                />
-
-                {/* Knowledge Restriction */}
-                <TransparencyCard
-                  icon={<ShieldCheck className="w-5 h-5" />}
-                  title="Knowledge Restriction"
-                  description="Is the VC prompted to limit the responses to a specific body of knowledge?"
-                  value={vc.aiEngine.knowledgeRestriction}
-                />
-
-                {/* Web Access */}
-                <TransparencyCard
-                  icon={<Globe className="w-5 h-5" />}
-                  title="Web Access"
-                  description="Can the VC access or search the web?"
-                  value={vc.aiEngine.webAccess}
-                  noIcon={<Clock className="w-4 h-4" />}
-                />
-
-                {/* Physical Location */}
-                <TransparencyCard
-                  icon={<MapPin className="w-5 h-5" />}
-                  title="Physical Location"
-                  description="Where is the AI service hosted?"
-                  textValue={vc.aiEngine.physicalLocation}
-                />
-
-                {/* Technical References */}
-                <Card className="text-center flex flex-col">
-                  <CardHeader className="pb-2 pt-5 px-4 flex flex-col items-center flex-grow">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-2">
-                      <FileText className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <CardTitle className="text-card-title">Technical References</CardTitle>
-                    <p className="text-caption text-muted-foreground mt-1">
-                      Access to detailed information on the underlying models specifications
-                    </p>
-                  </CardHeader>
-                  <CardContent className="px-4 pb-5 pt-2">
-                    {vc.aiEngine.technicalReferencesUrl ? (
-                      <a
-                        href={vc.aiEngine.technicalReferencesUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button variant="outline" size="sm" className="gap-1.5 text-caption">
-                          <FileText className="w-3.5 h-3.5" />
-                          SEE DOCUMENTATION
-                        </Button>
-                      </a>
-                    ) : (
-                      <p className="text-caption text-muted-foreground italic">Not available</p>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </section>
-
-            {/* Monitoring Section */}
-            <section>
-              <Separator className="mb-6" />
-              <h2 className="text-section-title mb-3">Monitoring by Alkemio</h2>
-              <p className="text-body text-muted-foreground">
-                Since Alkemio facilitates the interaction with the external provider, it holds an operational responsibility to monitor the service. As with all data and interactions on the platform, these are governed by our Terms & Conditions.
-              </p>
-            </section>
-          </div>
-        </div>
-      </div>
-    </div>
+    <VCPublicProfileView
+      hero={{
+        avatarImageUrl: vc.avatarUrl,
+        displayName: vc.name,
+        settingsUrl: `/vc/${slug}/settings`,
+        typeBadgeLabel: 'Virtual Contributor',
+        keywords: vc.keywords,
+      }}
+      sidebar={{
+        description: vc.description,
+        host: vc.host,
+        references: vc.references,
+        bodyOfKnowledge: {
+          kind: 'space',
+          spaceProfile: {
+            id: 'space-lux-lab',
+            url: '/space/lux-lab',
+            displayName: 'Lux-Lab',
+            level: 'L0',
+            avatarImageUrl:
+              'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80',
+            color: '#7c3aed',
+            initials: 'LL',
+          },
+          hasReadAccess: true,
+          description: 'Trained on the open knowledge base of the Lux-Lab space.',
+          vcDisplayName: vc.name,
+          spaceContextDescription: `${vc.name}'s knowledge is sourced from the Lux-Lab space.`,
+        },
+        labels: SIDEBAR_LABELS,
+      }}
+      contentView={{
+        functionality: {
+          capabilities: [
+            { label: 'Answer questions in comments', enabled: true },
+            { label: 'Create new posts', enabled: false },
+            { label: 'Invite other contributors', enabled: false },
+          ],
+          dataAccess: [
+            { label: 'About page', enabled: true },
+            { label: 'Posts & Contributions', enabled: false },
+            { label: 'Subspaces', enabled: false },
+          ],
+          roleRequirements: { kind: 'memberRequired' },
+        },
+        roleRequirementsContent,
+        aiEngine: {
+          engineName: 'Alkemio AI',
+          cards: [
+            {
+              id: 'openModelTransparency',
+              iconName: 'eye',
+              title: 'Open Model Transparency',
+              description: 'Does the VC use an open-weight model?',
+              booleanAnswer: { value: true },
+            },
+            {
+              id: 'dataUsageDisclosure',
+              iconName: 'database',
+              title: 'Data Usage Disclosure',
+              description: 'Is interaction data used in any way for model training?',
+              booleanAnswer: { value: false },
+            },
+            {
+              id: 'knowledgeRestriction',
+              iconName: 'shieldCheck',
+              title: 'Knowledge Restriction',
+              description:
+                'Is the VC prompted to limit the responses to a specific body of knowledge?',
+              textValue: 'Yes',
+            },
+            {
+              id: 'webAccess',
+              iconName: 'globe',
+              title: 'Web Access',
+              description: 'Can the VC access or search the web?',
+              booleanAnswer: { value: false, noIcon: 'clock' },
+            },
+            {
+              id: 'physicalLocation',
+              iconName: 'mapPin',
+              title: 'Physical Location',
+              description: 'Where is the AI service hosted?',
+              textValue: 'Sweden, EU',
+            },
+            {
+              id: 'technicalReferences',
+              iconName: 'fileText',
+              title: 'Technical References',
+              description:
+                'Access to detailed information on the underlying models specifications',
+              action: { href: 'https://example.com/tech-details.pdf', label: 'SEE DOCUMENTATION' },
+            },
+          ],
+        },
+        monitoring: { heading: 'Monitoring by Alkemio', body: monitoringBody },
+        labels: CONTENT_LABELS,
+      }}
+      loading={{ hero: false, sidebar: false, bodyOfKnowledge: false, contentView: false }}
+      loadingLabels={{
+        hero: 'Loading profile header',
+        sidebar: 'Loading profile details',
+        bodyOfKnowledge: 'Loading body of knowledge',
+        contentView: 'Loading content',
+      }}
+    />
   );
 }

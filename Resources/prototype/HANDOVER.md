@@ -10,7 +10,7 @@ components, so what we design is what gets built.
 
 ## What changed
 
-The prototype now uses **79 of production's components**, up from 13.
+The prototype now uses **80 of production's components**, up from 13.
 
 These screens are now built from production's components rather than our own
 copies:
@@ -26,7 +26,7 @@ copies:
 | Forum | All of it |
 | Chat | The panel and the bubble in the bottom-right corner |
 | Comments | Threads, replies and reactions, everywhere comments appear |
-| Profiles | User and organisation public profile pages |
+| Profiles | User, organisation and virtual-contributor profile pages |
 
 ## What we kept as ours, on purpose
 
@@ -83,6 +83,5 @@ has a helper for this that isn't being used everywhere. Worth a look.
 
 ## Not done yet
 
-- Two dialogs that have a production equivalent (classification picker, and the
-  space members grid on the community tab).
-- Virtual contributor profile pages — production has no equivalent view yet.
+- One dialog: the classification picker. It is only reachable from Space
+  settings, which we are leaving alone for now, so it waits for that work.
