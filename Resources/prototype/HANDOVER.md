@@ -36,7 +36,6 @@ These are places the prototype is **ahead** of production. They stay.
 - Richer subspace cards and contributor cards
 - Memo signing
 - The template detail page — production shows a pop-up, we show a full page
-- Space channels — production has no channels at all
 - The mobile layout studies
 
 Everything we removed to make room is written down in `PHASE-2.md`, with what

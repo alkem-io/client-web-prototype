@@ -259,12 +259,14 @@ case it needs an `applySlot` (or an `onApply` action) on
 **Needs upstream if wanted:** those four fields on `ChatListItem` /
 `ChatMessage`, plus the rendering in `ChatMessageBubble`.
 
-**NOT converted, prototype-ahead:** the space channels —
+**NOT converted — legacy, not active work:** the space channels —
 `messaging/SpaceChannelView`, `messaging/SpaceChatTab`,
-`messaging/SpaceChannelComposer`, `messaging/ChatRail`. Production has no
-channel concept at all: its chat is direct messages, groups and the pinned
-Guidance conversation. A Slack-style channel inside a Space is the prototype
-exploring ahead, so those files keep their own implementation (rule 2).
+`messaging/SpaceChannelComposer`, `messaging/ChatRail`, `pages/SpaceChatPage`
+(~2,100 lines). A Slack-style chat channel belonging to a Space. Production has
+no channel concept at all, and this is **not reachable in the prototype either**
+— `SpaceChatPage` has no route. It is carried over from an earlier project and
+left in place in case the idea returns. Deliberately left out of `HANDOVER.md`:
+it is not part of this work and would only raise questions in the dev session.
 
 Also still the prototype's: `pages/MessagesPage`, `messaging/ChatView`,
 `messaging/ConversationList` and `messaging/NewConversationFlow` — the
