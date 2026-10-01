@@ -11,7 +11,8 @@ import {
   Target,
   Info,
   GripVertical,
-  LayoutGrid
+  LayoutGrid,
+  MousePointer2
 } from "lucide-react";
 import {
   Dialog,
@@ -20,6 +21,12 @@ import {
   DialogTitle,
   DialogDescription
 } from "@/crd/primitives/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/crd/primitives/tooltip";
 import { Button } from "@/crd/primitives/button";
 import { Checkbox } from "@/crd/primitives/checkbox";
 import { cn } from "@/crd/lib/utils";
@@ -31,6 +38,8 @@ export interface SidebarWidgetDef {
   key: string;
   icon: React.ElementType;
   label: string;
+  /** One-line explanation shown in the Layout dialog tooltip. */
+  hint: string;
 }
 
 export interface SidebarWidgetConfig {
@@ -83,16 +92,66 @@ export function visibleWidgets(config: SidebarWidgetConfig): string[] {
 // Space — one config per navigation tab
 // ═══════════════════════════════════════════════════════════════════════════════
 export const SPACE_WIDGET_DEFS: SidebarWidgetDef[] = [
-  { key: "about", icon: Info, label: "About this Space" },
-  { key: "intent", icon: Target, label: "Intention & Leads" },
-  { key: "post", icon: Plus, label: "Add Post" },
-  { key: "addUser", icon: UserPlus, label: "Add User" },
-  { key: "createSubspace", icon: Layers, label: "Apply / Join" },
-  { key: "search", icon: Search, label: "Search" },
-  { key: "tags", icon: Tag, label: "Tags & Filters" },
-  { key: "subspaceLinks", icon: Layers, label: "Subspaces" },
-  { key: "events", icon: CalendarDays, label: "Upcoming Events" },
-  { key: "index", icon: List, label: "Index" },
+  {
+    key: "about",
+    icon: Info,
+    label: "About this Space",
+    hint: "Summary card with the space description and a link to the full About page.",
+  },
+  {
+    key: "intent",
+    icon: Target,
+    label: "Intention & Leads",
+    hint: "States why the space exists and who is leading it. Useful on tabs where newcomers land.",
+  },
+  {
+    key: "post",
+    icon: Plus,
+    label: "Add Post",
+    hint: "Shortcut to create a post. Only members with contribute rights see it.",
+  },
+  {
+    key: "addUser",
+    icon: UserPlus,
+    label: "Add User",
+    hint: "Invite people straight from the sidebar. Only admins see it.",
+  },
+  {
+    key: "createSubspace",
+    icon: Layers,
+    label: "Apply / Join",
+    hint: "Opens the subspace application form so members can request their own subspace.",
+  },
+  {
+    key: "search",
+    icon: Search,
+    label: "Search",
+    hint: "Filters the content in the main column as you type. Pair it with Tags & Filters.",
+  },
+  {
+    key: "tags",
+    icon: Tag,
+    label: "Tags & Filters",
+    hint: "Tag chips that narrow down the main column. Works alongside Search.",
+  },
+  {
+    key: "subspaceLinks",
+    icon: Layers,
+    label: "Subspaces",
+    hint: "Quick links to the subspaces of this space, for jumping between them.",
+  },
+  {
+    key: "events",
+    icon: CalendarDays,
+    label: "Upcoming Events",
+    hint: "The next few calendar entries. Hidden automatically when there is nothing scheduled.",
+  },
+  {
+    key: "index",
+    icon: List,
+    label: "Index",
+    hint: "Opens a dialog listing every post, whiteboard and document in this space.",
+  },
 ];
 
 export const SPACE_WIDGETS_STORAGE_KEY = "alkemio-sidebar-features";
@@ -148,16 +207,66 @@ export function saveSpaceSidebarWidgets(
 // Subspace — one config for the whole subspace, shared by every phase
 // ═══════════════════════════════════════════════════════════════════════════════
 export const SUBSPACE_WIDGET_DEFS: SidebarWidgetDef[] = [
-  { key: "intent", icon: Target, label: "Challenge & Lead" },
-  { key: "post", icon: Plus, label: "Add Post" },
-  { key: "inviteUser", icon: UserPlus, label: "Invite User" },
-  { key: "createSubspace", icon: Layers, label: "Create Subspace" },
-  { key: "search", icon: Search, label: "Search" },
-  { key: "tags", icon: Tag, label: "Tags & Filters" },
-  { key: "subspaceLinks", icon: Layers, label: "Subspaces" },
-  { key: "community", icon: Users, label: "Community" },
-  { key: "events", icon: CalendarDays, label: "Events" },
-  { key: "index", icon: List, label: "Index" },
+  {
+    key: "intent",
+    icon: Target,
+    label: "Challenge & Lead",
+    hint: "The challenge this subspace is working on and who is leading it.",
+  },
+  {
+    key: "post",
+    icon: Plus,
+    label: "Add Post",
+    hint: "Shortcut to create a post in the phase that is currently open.",
+  },
+  {
+    key: "inviteUser",
+    icon: UserPlus,
+    label: "Invite User",
+    hint: "Invite people to this subspace. Only admins see it.",
+  },
+  {
+    key: "createSubspace",
+    icon: Layers,
+    label: "Create Subspace",
+    hint: "Start a nested subspace. Hidden when sub-subspaces are switched off in Settings.",
+  },
+  {
+    key: "search",
+    icon: Search,
+    label: "Search",
+    hint: "Filters the posts in the main column as you type. Pair it with Tags & Filters.",
+  },
+  {
+    key: "tags",
+    icon: Tag,
+    label: "Tags & Filters",
+    hint: "Tag chips that narrow down the posts shown. Works alongside Search.",
+  },
+  {
+    key: "subspaceLinks",
+    icon: Layers,
+    label: "Subspaces",
+    hint: "Quick links to nested subspaces, for jumping between them.",
+  },
+  {
+    key: "community",
+    icon: Users,
+    label: "Community",
+    hint: "Member avatars and the total count, linking through to the full member list.",
+  },
+  {
+    key: "events",
+    icon: CalendarDays,
+    label: "Events",
+    hint: "The next few calendar entries. Hidden automatically when there is nothing scheduled.",
+  },
+  {
+    key: "index",
+    icon: List,
+    label: "Index",
+    hint: "Opens a dialog listing every post, whiteboard and document across all phases.",
+  },
 ];
 
 export const SUBSPACE_WIDGETS_STORAGE_KEY = "alkemio-subspace-sidebar-widgets";
@@ -188,6 +297,8 @@ interface SidebarWidgetsDialogProps {
   /** Shown after "Layout: " in the title — a tab name, or "Sidebar". */
   title: string;
   description: string;
+  /** Spells out how far these settings reach — one tab, or the whole subspace. */
+  scopeNote?: string;
   defs: SidebarWidgetDef[];
   config: SidebarWidgetConfig;
   /** Applied to the page's working state; the page's Save bar persists it. */
@@ -199,6 +310,7 @@ export function SidebarWidgetsDialog({
   onOpenChange,
   title,
   description,
+  scopeNote,
   defs,
   config,
   onSave
@@ -227,6 +339,8 @@ export function SidebarWidgetsDialog({
       return { ...prev, order: next };
     });
 
+  const shownCount = rows.filter((d) => draft.enabled[d.key]).length;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
@@ -238,61 +352,99 @@ export function SidebarWidgetsDialog({
           <DialogDescription className="sr-only">{description}</DialogDescription>
         </DialogHeader>
 
-        <div className="mt-2">
-          <h4 className="text-body-emphasis text-foreground">Sidebar widgets</h4>
-          <p className="text-caption text-muted-foreground mt-0.5">{description}</p>
+        <TooltipProvider delayDuration={200}>
+          <div className="mt-2">
+            <div className="flex items-baseline justify-between gap-2">
+              <h4 className="text-body-emphasis text-foreground">Sidebar widgets</h4>
+              <span className="text-caption text-muted-foreground tabular-nums shrink-0">
+                {shownCount} of {rows.length} shown
+              </span>
+            </div>
+            <p className="text-caption text-muted-foreground mt-0.5">{description}</p>
 
-          <div className="mt-3 space-y-0.5">
-            {rows.map((def, index) => {
-              const { key, icon: Icon, label } = def;
-              return (
-                <div
-                  key={key}
-                  draggable
-                  onDragStart={(e) => {
-                    setDragKey(key);
-                    e.dataTransfer.effectAllowed = "move";
-                    // Firefox refuses to start a drag without payload.
-                    e.dataTransfer.setData("text/plain", key);
-                  }}
-                  onDragEnter={() => {
-                    if (dragKey && dragKey !== key) moveTo(dragKey, index);
-                  }}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDragEnd={() => setDragKey(null)}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    setDragKey(null);
-                  }}
-                  className={cn(
-                    "flex items-center gap-3 px-2 py-2 rounded-md transition-colors",
-                    "hover:bg-muted/50 cursor-grab active:cursor-grabbing",
-                    dragKey === key && "opacity-40 bg-muted"
-                  )}
-                >
-                  <GripVertical className="w-4 h-4 shrink-0 text-muted-foreground/40" />
-                  <Checkbox
-                    id={`widget-${title}-${key}`}
-                    checked={draft.enabled[key]}
-                    onCheckedChange={(checked) => toggle(key, !!checked)}
-                    aria-label={label}
-                    className="shrink-0"
-                  />
-                  <label
-                    htmlFor={`widget-${title}-${key}`}
+            {scopeNote && (
+              <div className="mt-3 flex items-start gap-2 rounded-md border border-border bg-muted/40 px-3 py-2">
+                <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-muted-foreground" />
+                <p className="text-caption text-muted-foreground">{scopeNote}</p>
+              </div>
+            )}
+
+            <div className="mt-3 flex items-center gap-1.5 text-caption text-muted-foreground">
+              <MousePointer2 className="w-3.5 h-3.5 shrink-0" />
+              <span>Drag a row to reorder. Unchecked widgets stay hidden for members.</span>
+            </div>
+
+            <div className="mt-2 space-y-0.5">
+              {rows.map((def, index) => {
+                const { key, icon: Icon, label, hint } = def;
+                return (
+                  <div
+                    key={key}
+                    draggable
+                    onDragStart={(e) => {
+                      setDragKey(key);
+                      e.dataTransfer.effectAllowed = "move";
+                      // Firefox refuses to start a drag without payload.
+                      e.dataTransfer.setData("text/plain", key);
+                    }}
+                    onDragEnter={() => {
+                      if (dragKey && dragKey !== key) moveTo(dragKey, index);
+                    }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDragEnd={() => setDragKey(null)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragKey(null);
+                    }}
                     className={cn(
-                      "flex items-center gap-2 min-w-0 flex-1 cursor-pointer select-none",
-                      !draft.enabled[key] && "text-muted-foreground"
+                      "flex items-center gap-3 px-2 py-2 rounded-md transition-colors",
+                      "hover:bg-muted/50 cursor-grab active:cursor-grabbing",
+                      dragKey === key && "opacity-40 bg-muted"
                     )}
                   >
-                    <Icon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-                    <span className="text-body truncate">{label}</span>
-                  </label>
-                </div>
-              );
-            })}
+                    <GripVertical className="w-4 h-4 shrink-0 text-muted-foreground/40" />
+                    <Checkbox
+                      id={`widget-${title}-${key}`}
+                      checked={draft.enabled[key]}
+                      onCheckedChange={(checked) => toggle(key, !!checked)}
+                      aria-label={label}
+                      aria-describedby={`widget-${title}-${key}-hint`}
+                      className="shrink-0"
+                    />
+                    <label
+                      htmlFor={`widget-${title}-${key}`}
+                      className={cn(
+                        "flex items-center gap-2 min-w-0 flex-1 cursor-pointer select-none",
+                        !draft.enabled[key] && "text-muted-foreground"
+                      )}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+                      <span className="text-body truncate">{label}</span>
+                    </label>
+                    <span id={`widget-${title}-${key}-hint`} className="sr-only">
+                      {hint}
+                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          tabIndex={-1}
+                          aria-hidden="true"
+                          className="shrink-0 rounded-sm p-0.5 text-muted-foreground/50 hover:text-foreground transition-colors"
+                        >
+                          <Info className="w-3.5 h-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="left" className="max-w-56">
+                        {hint}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </TooltipProvider>
 
         <div className="mt-4 flex items-center justify-end gap-2">
           <Button
@@ -323,8 +475,14 @@ export function SidebarWidgetsDialog({
 export const SUBSPACE_WIDGETS_DESCRIPTION =
   "Choose which widgets appear in this subspace's sidebar, and in what order. This applies to the whole subspace — every phase shows the same set.";
 
+export const SUBSPACE_WIDGETS_SCOPE_NOTE =
+  "Applies to this subspace only — every phase shows the same widgets. Nested subspaces keep their own layout, and members can still collapse the sidebar to a rail.";
+
 export const spaceWidgetsDescription = (tabLabel: string) =>
   `Choose which widgets appear in the ${tabLabel} tab's sidebar, and in what order.`;
+
+export const spaceWidgetsScopeNote = (tabLabel: string) =>
+  `Applies to the ${tabLabel} tab only — each tab keeps its own sidebar layout. Subspaces are configured separately, in their own Layout settings.`;
 
 /** Kept so callers can show "N hidden" without re-deriving it. */
 export function hiddenCount(config: SidebarWidgetConfig, defs: SidebarWidgetDef[]) {
