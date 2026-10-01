@@ -32,7 +32,7 @@ export function PhoneFrame({
   id,
   at,
   statusBar = true,
-  children,
+  children
 }: {
   id: string;
   at: Rect;
@@ -51,7 +51,7 @@ export function PhoneFrame({
         background: '#2A3B47',
         borderRadius: 34,
         padding: bezel,
-        boxShadow: DEVICE_SHADOW.phone,
+        boxShadow: DEVICE_SHADOW.phone
       }}
     >
       <div
@@ -62,7 +62,7 @@ export function PhoneFrame({
           height: at.height - bezel * 2,
           background: 'var(--background)',
           borderRadius: 25,
-          overflow: 'hidden',
+          overflow: 'hidden'
         }}
       >
         {statusBar ? <StatusBar /> : null}

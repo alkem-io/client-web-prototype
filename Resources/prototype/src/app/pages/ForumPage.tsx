@@ -1,57 +1,55 @@
-import { useState } from "react";
+/**
+ * Forum — production's `@/crd/components/forum/*`.
+ *
+ * CRD ships the whole surface: `ForumLayout` (banner row + category rail +
+ * main column), `ForumBanner`, `ForumCategoryNav`, `ForumDiscussionListHeader`
+ * (count, initiate, search, sort), `ForumDiscussionList` / `…ListItem`,
+ * `ForumEmptyState`, `ForumDiscussionDetail` and
+ * `ForumInitiateDiscussionDialog`. Its layout grid is the same one the
+ * prototype had hand-written.
+ *
+ * What stays here: the mock discussions, the nested reply thread (CRD's detail
+ * takes a `commentsSlot`, so the thread is the consumer's), and the create form
+ * body (the dialog is a shell around `children`).
+ *
+ * Labels come from CRD's own `crd-forum` namespace rather than being retyped.
+ */
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Search,
-  ArrowLeft,
-  Plus,
-  Share2,
-  Pencil,
-  Trash2,
-  MessageSquare,
-  Rocket,
-  Settings,
-  Users,
   Building2,
   HelpCircle,
+  MessageSquare,
   MoreHorizontal,
+  Plus,
+  Rocket,
   Send,
-  Smile,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
-import { Separator } from "@/app/components/ui/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface ForumCategory {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-}
+  Settings,
+  Users,
+} from 'lucide-react';
+import { ForumBanner } from '@/crd/components/forum/ForumBanner';
+import { ForumCategoryNav } from '@/crd/components/forum/ForumCategoryNav';
+import { ForumDiscussionDetail } from '@/crd/components/forum/ForumDiscussionDetail';
+import { ForumDiscussionList } from '@/crd/components/forum/ForumDiscussionList';
+import { ForumDiscussionListHeader } from '@/crd/components/forum/ForumDiscussionListHeader';
+import { ForumEmptyState } from '@/crd/components/forum/ForumEmptyState';
+import { ForumInitiateDiscussionDialog } from '@/crd/components/forum/ForumInitiateDiscussionDialog';
+import { ForumLayout } from '@/crd/components/forum/ForumLayout';
+import type { ForumSortOrder } from '@/crd/components/forum/forumTypes';
+import { MarkdownContent } from '@/crd/components/common/MarkdownContent';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
+import { Button } from '@/crd/primitives/button';
+import { Input } from '@/crd/primitives/input';
+import { Textarea } from '@/crd/primitives/textarea';
+import { cn } from '@/crd/lib/utils';
+import { CommentsPanel } from '@/app/components/comment/CommentsPanel';
+import { toDiscussionDetail, toDiscussionListItem } from '@/app/mappers/forum';
 
 interface ForumDiscussion {
   id: string;
   title: string;
   emoji: string;
-  author: {
-    name: string;
-    avatarUrl: string;
-  };
+  author: { name: string; avatarUrl: string };
   date: string;
   commentCount: number;
   category: string;
@@ -60,26 +58,31 @@ interface ForumDiscussion {
 
 interface ForumReply {
   id: string;
-  author: {
-    name: string;
-    avatarUrl: string;
-  };
+  author: { name: string; avatarUrl: string };
   date: string;
   content: string;
   replies?: ForumReply[];
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+const CATEGORY_ICONS = {
+  all: MessageSquare,
+  releases: Rocket,
+  platform: Settings,
+  community: Users,
+  challenges: Building2,
+  help: HelpCircle,
+  other: MoreHorizontal,
+} as const;
 
-const CATEGORIES: ForumCategory[] = [
-  { id: "all", label: "Show All", icon: MessageSquare },
-  { id: "releases", label: "Releases", icon: Rocket },
-  { id: "platform", label: "Platform Functionalities", icon: Settings },
-  { id: "community", label: "Community Building", icon: Users },
-  { id: "challenges", label: "Working Challenge Centric", icon: Building2 },
-  { id: "help", label: "Need Help?", icon: HelpCircle },
-  { id: "other", label: "Other", icon: MoreHorizontal },
-];
+const CATEGORY_LABELS: Record<keyof typeof CATEGORY_ICONS, string> = {
+  all: 'Show All',
+  releases: 'Releases',
+  platform: 'Platform Functionalities',
+  community: 'Community Building',
+  challenges: 'Working Challenge Centric',
+  help: 'Need Help?',
+  other: 'Other',
+};
 
 const AVATARS = {
   simone: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
@@ -89,7 +92,7 @@ const AVATARS = {
   mirko: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
   galin: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
   piet: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
-  erick: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
+  erick: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80"
 };
 
 const DISCUSSIONS: ForumDiscussion[] = [
@@ -127,7 +130,7 @@ You can now easily add events to your personal calendar!
 Space admins now have more control over how subspaces are organized:
 - **Choose Ordering:** Go to Space Settings > Subspaces to select between alphabetical or custom ordering.
 - **Drag & Drop:** If you choose custom ordering, simply drag and drop subspaces to your preferred arrangement.
-- **Pin to Top:** Admins can also pin important subspaces to the top of the list for quick access.`,
+- **Pin to Top:** Admins can also pin important subspaces to the top of the list for quick access.`
   },
   {
     id: "2",
@@ -154,7 +157,7 @@ We've redesigned the notification settings page to give you more granular contro
 
 **Looking for more details?** Check out our full release notes on the two main repositories for deeper insights:
 - **Client Updates:** GitHub - Client Releases
-- **Server Updates:** GitHub - Server Releases`,
+- **Server Updates:** GitHub - Server Releases`
   },
   {
     id: "3",
@@ -182,7 +185,7 @@ You can now start video calls directly within a Space! Look for the video icon i
 **🧠 Memori: AI-Powered Space Summaries**
 Memori is our new AI assistant that helps you stay up to date. It generates concise summaries of recent activity in your Spaces, so you never miss important updates even when you've been away.
 - **Weekly digests** delivered to your inbox
-- **On-demand summaries** accessible from the Space header`,
+- **On-demand summaries** accessible from the Space header`
   },
   {
     id: "4",
@@ -198,7 +201,7 @@ I'm trying to insert a table into a post in my Space but I can't seem to figure 
 
 Has anyone managed to create a table in a post? Am I missing something?
 
-Thanks in advance for any help!`,
+Thanks in advance for any help!`
   },
   {
     id: "5",
@@ -227,7 +230,7 @@ Templates are pre-configured Space setups that give you a head start. Each templ
 **How to use them:**
 When creating a new Space, you'll now see a "Start from Template" option. Choose a template, customize it to your needs, and you're ready to go!
 
-We'd love to hear your feedback — and if you have ideas for new templates, let us know!`,
+We'd love to hear your feedback — and if you have ideas for new templates, let us know!`
   },
   {
     id: "6",
@@ -254,7 +257,7 @@ Previously, Spaces had separate areas for discussions, whiteboards, and document
 All your existing discussions, whiteboards, and documents have been migrated into Posts automatically. Nothing was lost — they just live in a more organized home now.
 
 **What's Next?**
-We're working on Post templates, advanced search within Posts, and better notification controls for specific Post types.`,
+We're working on Post templates, advanced search within Posts, and better notification controls for specific Post types.`
   },
   {
     id: "7",
@@ -284,7 +287,7 @@ We're working on Post templates, advanced search within Posts, and better notifi
 - Improved accessibility for screen readers on card components
 - "Copy link" button now available on all posts
 
-Have a great summer everyone! ☀️`,
+Have a great summer everyone! ☀️`
   },
   {
     id: "8",
@@ -309,7 +312,7 @@ Member profile pages now show:
 - Their recent contributions across the platform
 
 **📱 Mobile Improvements**
-The mobile experience continues to improve — the navigation menu is now more responsive, and posts render better on smaller screens.`,
+The mobile experience continues to improve — the navigation menu is now more responsive, and posts render better on smaller screens.`
   },
   {
     id: "9",
@@ -341,7 +344,7 @@ Search has been significantly improved:
 - Drag-and-drop file upload in posts
 - Improved loading performance for large Spaces
 - Better error messages when something goes wrong
-- Updated email templates for invitations`,
+- Updated email templates for invitations`
   },
   {
     id: "10",
@@ -368,7 +371,7 @@ We've updated the platform's visual design with:
 - Softer color palette and improved contrast
 - New icons throughout the interface
 - Better spacing and typography for readability
-- Dark mode improvements`,
+- Dark mode improvements`
   },
   {
     id: "11",
@@ -394,7 +397,7 @@ Space admins can now access basic analytics:
 - Growth trends
 
 **🔗 Improved Link Previews**
-When you paste a URL into a post, Alkemio now generates a rich preview card showing the page title, description, and thumbnail image.`,
+When you paste a URL into a post, Alkemio now generates a rich preview card showing the page title, description, and thumbnail image.`
   },
   {
     id: "12",
@@ -419,7 +422,7 @@ Inviting new members is now much simpler:
 **🔐 Improved Security**
 - Two-factor authentication (2FA) is now available for all accounts
 - Session management: see and terminate active sessions
-- Audit log for Space admin actions`,
+- Audit log for Space admin actions`
   },
   {
     id: "13",
@@ -447,7 +450,7 @@ New step-by-step tutorials are now available for:
 - Inviting and managing members
 - Configuring a Virtual Contributor
 
-Access them anytime from the "Help" menu in the top navigation.`,
+Access them anytime from the "Help" menu in the top navigation.`
   },
   {
     id: "14",
@@ -477,7 +480,7 @@ A VirtualContributor (VC) is an AI-powered member of your Space that can partici
 - The VC will start participating in discussions automatically
 
 **Feedback welcome!**
-This is our first release of VCs and we'd love to hear how you use them and what improvements you'd like to see.`,
+This is our first release of VCs and we'd love to hear how you use them and what improvements you'd like to see.`
   },
   {
     id: "15",
@@ -503,7 +506,7 @@ This is our first release of VCs and we'd love to hear how you use them and what
 - Member names and bios
 - Space names and descriptions
 
-Hope this helps! Let me know if you have questions about finding things on the platform.`,
+Hope this helps! Let me know if you have questions about finding things on the platform.`
   },
   {
     id: "16",
@@ -533,7 +536,7 @@ We've made several enhancements to make it more useful:
 - See which methods are most popular in your community
 - Read tips and experiences from other facilitators
 
-Check it out at Templates → Innovation Library!`,
+Check it out at Templates → Innovation Library!`
   },
   {
     id: "17",
@@ -560,7 +563,7 @@ Check it out at Templates → Innovation Library!`,
 - If they're already a Space member, they'll just be added to the Subspace
 - Admins can set whether Subspace invitations require Space-level approval
 
-This should make it much easier to bring the right people into the right conversations!`,
+This should make it much easier to bring the right people into the right conversations!`
   },
   {
     id: "18",
@@ -588,7 +591,7 @@ As communities grow, a single flat discussion feed becomes hard to navigate. Sub
 - A research Space with Subspaces for Literature Review, Data Collection, and Findings
 
 **Getting started:**
-Space admins can create Subspaces from the "Subspaces" tab. Each Subspace has its own feed, Knowledge Base, and member list.`,
+Space admins can create Subspaces from the "Subspaces" tab. Each Subspace has its own feed, Knowledge Base, and member list.`
   },
   {
     id: "19",
@@ -616,7 +619,7 @@ After searching, use filters to narrow results:
 - Space
 - Author
 
-We hope this makes finding things on the platform much easier. Let us know how it works for you!`,
+We hope this makes finding things on the platform much easier. Let us know how it works for you!`
   },
   {
     id: "20",
@@ -645,7 +648,7 @@ New dashboard showing:
 - Most active contributors per stage
 
 **🎨 Visual Customization**
-You can now customize flow stage colors and icons to match your process branding.`,
+You can now customize flow stage colors and icons to match your process branding.`
   },
   {
     id: "21",
@@ -682,7 +685,7 @@ You can now customize flow stage colors and icons to match your process branding
 - Added event scheduling within Spaces
 - Performance improvements (40% faster page loads)
 
-Thank you all for your feedback during this period — many of these features were directly inspired by your suggestions!`,
+Thank you all for your feedback during this period — many of these features were directly inspired by your suggestions!`
   },
   {
     id: "22",
@@ -710,7 +713,7 @@ You can personalize your dashboard by:
 **Why a dashboard?**
 As you join more Spaces, it becomes harder to keep track of everything. The dashboard brings it all together so you never miss important updates.
 
-We'll continue improving the dashboard based on your feedback!`,
+We'll continue improving the dashboard based on your feedback!`
   },
   {
     id: "23",
@@ -729,7 +732,7 @@ I have a feature request: it would be really helpful to be able to assign a post
 **Proposed solution:**
 Allow posts to be tagged with multiple stages, perhaps with a primary stage (for Kanban placement) and secondary stages (for tracking).
 
-Anyone else running into this? Would love to hear how others handle multi-track innovation processes.`,
+Anyone else running into this? Would love to hear how others handle multi-track innovation processes.`
   },
   {
     id: "24",
@@ -746,7 +749,7 @@ Is there a way to:
 - Turn off email notifications for specific Spaces while keeping them for others?
 - Only get emails for @mentions and direct messages?
 
-I've looked in my account settings but couldn't find granular email controls. Any help appreciated!`,
+I've looked in my account settings but couldn't find granular email controls. Any help appreciated!`
   },
   {
     id: "25",
@@ -764,7 +767,7 @@ I'm experiencing two problems:
 
 I'm using Chrome on macOS. The issue seems to happen specifically with longer URLs or URLs with special characters.
 
-Is this a known bug? Any workarounds?`,
+Is this a known bug? Any workarounds?`
   },
   {
     id: "26",
@@ -784,7 +787,7 @@ Could someone walk me through the steps? Specifically:
 - Can I set a deadline or timeline?
 - How do I invite people to participate?
 
-Thanks for any help — I'm excited to get started!`,
+Thanks for any help — I'm excited to get started!`
   },
   {
     id: "27",
@@ -807,7 +810,7 @@ Thanks for any help — I'm excited to get started!`,
 - How does Alkemio complement existing tools?
 - What's the learning curve?
 
-Would love to hear from people who've been using Alkemio — what's the main value you get from it?`,
+Would love to hear from people who've been using Alkemio — what's the main value you get from it?`
   },
   {
     id: "28",
@@ -828,7 +831,7 @@ I want to build a community around sustainable urban development in my city. I h
 - How do you maintain momentum when progress is slow?
 - Any tips for getting institutional buy-in early on?
 
-I'd love to learn from others who've been through this journey!`,
+I'd love to learn from others who've been through this journey!`
   },
   {
     id: "29",
@@ -850,7 +853,7 @@ This is a space for the Alkemio community to connect, share ideas, and support e
 
 I'll start: I'm Piet, and I'm passionate about using technology to bring people together for meaningful collaboration. I've been using Alkemio to connect sustainability practitioners across the Netherlands.
 
-Looking forward to meeting you all! 🙌`,
+Looking forward to meeting you all! 🙌`
   },
   {
     id: "30",
@@ -875,7 +878,7 @@ I'm a facilitator for a new Space and I'm looking for ideas on how to build enga
 - Ways to create a sense of belonging and shared purpose
 - Tips for going from lurkers to active participants
 
-What has worked for you? Any creative approaches welcome!`,
+What has worked for you? Any creative approaches welcome!`
   },
   {
     id: "31",
@@ -893,7 +896,7 @@ What has worked for you? Any creative approaches welcome!`,
 - What's the difference between a challenge owner and a facilitator?
 - Can a challenge have multiple owners or is it always one person/organization?
 
-In our organization we want to set up challenges that are owned by different departments. Would appreciate clarity on how this works.`,
+In our organization we want to set up challenges that are owned by different departments. Would appreciate clarity on how this works.`
   },
   {
     id: "32",
@@ -910,7 +913,7 @@ In our organization we want to set up challenges that are owned by different dep
 - Are there different entities involved?
 - Is the platform open source?
 
-Just trying to understand the relationship between the two. Thanks!`,
+Just trying to understand the relationship between the two. Thanks!`
   },
   {
     id: "33",
@@ -927,7 +930,7 @@ Just trying to understand the relationship between the two. Thanks!`,
 - Does it mean the platform will always be free/affordable?
 - How is the foundation funded?
 
-I think it's great that it's a foundation — just curious about the strategic thinking behind it.`,
+I think it's great that it's a foundation — just curious about the strategic thinking behind it.`
   },
   {
     id: "34",
@@ -948,7 +951,7 @@ It seems like the idea is that collaboration should be organized around specific
 - Are there examples of organizations that work this way successfully?
 - How do you define a good challenge? Is there a template or framework?
 
-Would love to hear concrete examples from people who've adopted this approach!`,
+Would love to hear concrete examples from people who've adopted this approach!`
   },
   {
     id: "35",
@@ -962,7 +965,7 @@ Would love to hear concrete examples from people who've adopted this approach!`,
 
 Does Alkemio have a built-in tool for this, or do I need to use an external tool like Miro or FigJam?
 
-If there is a built-in option, how do I access it? And can multiple people work on the same canvas at the same time?`,
+If there is a built-in option, how do I access it? And can multiple people work on the same canvas at the same time?`
   },
   {
     id: "36",
@@ -980,7 +983,7 @@ Specifically, I'd like to know:
 - Are there integrations with external tools?
 - What's on the roadmap?
 
-I'm preparing a presentation for my organization about why we should use Alkemio, and having a clear feature overview would really help!`,
+I'm preparing a presentation for my organization about why we should use Alkemio, and having a clear feature overview would really help!`
   },
   {
     id: "37",
@@ -1005,7 +1008,7 @@ I'm preparing a presentation for my organization about why we should use Alkemio
 - When do you open up a Space to a wider audience?
 - How do you handle silence / low engagement in the early days?
 
-Would love your additions to this list!`,
+Would love your additions to this list!`
   },
   {
     id: "38",
@@ -1036,7 +1039,7 @@ Would love your additions to this list!`,
 - Check **Notifications** regularly for replies and mentions
 - Visit your **Profile Settings** to configure notification preferences
 
-If you have questions, this Forum is the place to ask. Welcome aboard!`,
+If you have questions, this Forum is the place to ask. Welcome aboard!`
   },
 ];
 
@@ -1051,16 +1054,16 @@ const SAMPLE_REPLIES: ForumReply[] = [
         id: "r1-1",
         author: { name: "Simone Rietmeijer", avatarUrl: AVATARS.simone },
         date: "Wed, 25/06/2025",
-        content: "Hi Mirko! Not yet, but that's on the roadmap. For now you can manually close a poll by editing the post.",
+        content: "Hi Mirko! Not yet, but that's on the roadmap. For now you can manually close a poll by editing the post."
       },
-    ],
+    ]
   },
   {
     id: "r2",
     author: { name: "Denise Larssen", avatarUrl: AVATARS.denise },
     date: "Thu, 26/06/2025",
     content: "The calendar integration is a game changer for our team. Works great with Google Calendar!",
-    replies: [],
+    replies: []
   },
   {
     id: "r3",
@@ -1072,147 +1075,19 @@ const SAMPLE_REPLIES: ForumReply[] = [
         id: "r3-1",
         author: { name: "Simone Rietmeijer", avatarUrl: AVATARS.simone },
         date: "Fri, 27/06/2025",
-        content: "Not yet on mobile — for now it's desktop only. We're looking into touch-friendly reordering for a future release.",
+        content: "Not yet on mobile — for now it's desktop only. We're looking into touch-friendly reordering for a future release."
       },
       {
         id: "r3-2",
         author: { name: "Galin Berytin", avatarUrl: AVATARS.galin },
         date: "Fri, 27/06/2025",
-        content: "Makes sense, thanks for the quick reply!",
+        content: "Makes sense, thanks for the quick reply!"
       },
-    ],
+    ]
   },
 ];
 
 // ─── Components ───────────────────────────────────────────────────────────────
-
-function ForumBanner() {
-  return (
-    <div
-      className="relative w-full overflow-hidden"
-      style={{
-        background: "linear-gradient(135deg, var(--primary) 0%, hsl(200, 50%, 35%) 100%)",
-        borderRadius: "var(--radius)",
-      }}
-    >
-      {/* Decorative dots pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="forum-dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1.5" fill="white" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#forum-dots)" />
-        </svg>
-      </div>
-      <div className="relative z-10" style={{ padding: "32px 32px" }}>
-        <div className="flex items-center gap-3 mb-1">
-          <div
-            className="flex items-center justify-center rounded-md"
-            style={{
-              width: 36,
-              height: 36,
-              background: "rgba(255, 255, 255, 0.15)",
-            }}
-          >
-            <MessageSquare className="h-5 w-5 text-white" />
-          </div>
-          <h1
-            className="text-section-title font-bold"
-            style={{ color: "white" }}
-          >
-            Welcome to the Alkemio Forum
-          </h1>
-        </div>
-        <p
-          className="text-body"
-          style={{
-            color: "rgba(255, 255, 255, 0.75)",
-            marginTop: 4,
-            marginLeft: 49,
-            maxWidth: 420,
-          }}
-        >
-          Connect with others, ask questions, and stay updated with Alkemio's release notes
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function ForumCategoryNav({
-  activeCategory,
-  onCategoryChange,
-}: {
-  activeCategory: string;
-  onCategoryChange: (id: string) => void;
-}) {
-  return (
-    <nav className="sticky top-20 space-y-0.5">
-      <div
-        className="text-sidebar-label uppercase px-2 mb-2"
-        style={{
-          color: "var(--muted-foreground)",
-          opacity: 0.6,
-        }}
-      >
-        Categories
-      </div>
-      {CATEGORIES.map((cat) => {
-        const Icon = cat.icon;
-        const isActive = activeCategory === cat.id;
-        return (
-          <button
-            key={cat.id}
-            onClick={() => onCategoryChange(cat.id)}
-            className={cn(
-              "flex items-center gap-2.5 rounded-md transition-colors h-9 w-full px-2 text-control font-normal",
-              isActive
-                ? "bg-accent text-accent-foreground font-medium"
-                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-            )}
-          >
-            <Icon className="w-4 h-4 shrink-0" />
-            <span className="truncate">{cat.label}</span>
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
-
-function ForumDiscussionItem({
-  discussion,
-  onClick,
-}: {
-  discussion: ForumDiscussion;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-start gap-3 w-full px-5 py-3.5 text-left hover:bg-accent/50 transition-colors"
-      style={{ borderBottom: "1px solid var(--border)" }}
-    >
-      <span className="text-subheader font-normal mt-0.5 shrink-0">{discussion.emoji}</span>
-      <div className="flex-1 min-w-0">
-        <span
-          className="block line-clamp-1 text-card-title"
-          style={{ color: "var(--foreground)" }}
-        >
-          {discussion.title}
-        </span>
-        <span
-          className="block mt-0.5 text-caption"
-          style={{ color: "var(--muted-foreground)" }}
-        >
-          {discussion.author.name} on {discussion.date} · {discussion.commentCount} comment{discussion.commentCount !== 1 ? "s" : ""}
-        </span>
-      </div>
-    </button>
-  );
-}
 
 function ForumReplyItem({ reply, depth = 0 }: { reply: ForumReply; depth?: number }) {
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -1271,416 +1146,160 @@ function ForumReplyItem({ reply, depth = 0 }: { reply: ForumReply; depth?: numbe
   );
 }
 
-function ForumDiscussionDetail({
-  discussion,
-  onBack,
-}: {
-  discussion: ForumDiscussion;
-  onBack: () => void;
-}) {
-  return (
-    <div className="col-span-12 md:col-span-9 lg:col-span-8">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 mb-4 text-muted-foreground hover:text-foreground transition-colors text-control"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        SEE ALL DISCUSSIONS
-      </button>
-
-      <Card className="border-border/60" style={{ boxShadow: "var(--elevation-sm)" }}>
-        <CardHeader className="px-6 pt-6 pb-0">
-          <div className="flex items-start justify-between gap-4">
-            <h2 className="text-section-title font-bold" style={{ color: "var(--foreground)" }}>
-              {discussion.emoji} {discussion.title}
-            </h2>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground shrink-0">
-                  <Share2 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Share</TooltipContent>
-            </Tooltip>
-          </div>
-        </CardHeader>
-
-        <CardContent className="px-6 pt-4 pb-6">
-          {/* Author */}
-          <div className="flex items-center gap-3 mb-5">
-            <Avatar className="h-10 w-10 border border-border">
-              <AvatarImage src={discussion.author.avatarUrl} alt={discussion.author.name} />
-              <AvatarFallback>{discussion.author.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <span className="text-card-title" style={{ color: "var(--foreground)" }}>
-                {discussion.author.name}
-              </span>
-              <span className="block text-caption" style={{ color: "var(--muted-foreground)" }}>
-                {discussion.date}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Edit</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Delete</TooltipContent>
-              </Tooltip>
-            </div>
-          </div>
-
-          {/* Content */}
-          {discussion.content ? (
-            <div className="mb-6">
-              {discussion.content.split("\n\n").map((paragraph, i) => (
-                <div key={i} className="mb-3">
-                  {paragraph.startsWith("- ") ? (
-                    <ul className="list-disc list-inside space-y-0.5 text-body" style={{ color: "var(--foreground)" }}>
-                      {paragraph.split("\n").map((item, j) => (
-                        <li key={j}>
-                          {item.replace(/^- /, "").split("**").map((part, k) =>
-                            k % 2 === 1 ? <strong key={k}>{part}</strong> : <span key={k}>{part}</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-body" style={{ color: "var(--foreground)" }}>
-                      {paragraph.split("**").map((part, j) =>
-                        j % 2 === 1 ? <strong key={j}>{part}</strong> : <span key={j}>{part}</span>
-                      )}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-body italic mb-6" style={{ color: "var(--muted-foreground)" }}>
-              Discussion content preview not available.
-            </p>
-          )}
-
-          <Separator />
-
-          {/* Comments Section — matches Space post comments UI */}
-          <div className="mt-5">
-            {/* Comment count header */}
-            <div className="flex items-center gap-2 mb-4">
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
-              <span className="text-body" style={{ color: "var(--muted-foreground)" }}>
-                {SAMPLE_REPLIES.length + SAMPLE_REPLIES.reduce((acc, r) => acc + (r.replies?.length || 0), 0)} comments
-              </span>
-            </div>
-
-            {/* Comment input (top, like Space posts) */}
-            <div className="flex gap-3 mb-6">
-              <Avatar className="w-10 h-10 shrink-0">
-                <AvatarImage src={AVATARS.francisco} alt="You" />
-                <AvatarFallback>JN</AvatarFallback>
-              </Avatar>
-              <div
-                className="flex-1 flex items-center rounded-md px-4 h-11"
-                style={{ border: "1px solid var(--border)", background: "var(--card)" }}
-              >
-                <input
-                  type="text"
-                  placeholder="Add a comment..."
-                  className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground text-body"
-                />
-                <div className="flex items-center gap-1 ml-2">
-                  <button className="text-muted-foreground hover:text-foreground transition-colors p-1">
-                    <span style={{ fontSize: "16px" }}>@</span>
-                  </button>
-                  <button className="text-muted-foreground hover:text-foreground transition-colors p-1">
-                    <Smile className="h-4 w-4" />
-                  </button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-primary">
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Comment list */}
-            <div className="space-y-0">
-              {SAMPLE_REPLIES.map((reply) => (
-                <ForumReplyItem key={reply.id} reply={reply} />
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function InitiateDiscussionDialog({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState("");
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full sm:max-w-4xl p-0 gap-0 overflow-hidden rounded-xl border-0 shadow-2xl bg-background flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-background/50 backdrop-blur-sm z-10">
-          <DialogTitle className="text-subsection-title">Create Discussion</DialogTitle>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="rounded-full p-2 hover:bg-muted transition-colors"
-          >
-            <Plus className="w-5 h-5 text-muted-foreground rotate-45" />
-          </button>
-        </div>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-
-          {/* Title */}
-          <Input
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="text-section-title md:text-page-title font-semibold border-none px-0 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/60 h-auto"
-          />
-
-          {/* Category */}
-          <div className="w-56">
-            <Select>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="Category *" />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.filter((c) => c.id !== "all").map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Rich text editor area */}
-          <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius)" }}>
-            <div
-              className="flex items-center gap-0.5 px-3 py-2 flex-wrap"
-              style={{ borderBottom: "1px solid var(--border)" }}
-            >
-              {["↩", "↪"].map((btn, i) => (
-                <button
-                  key={`undo-${i}`}
-                  className="px-2 py-1 rounded hover:bg-accent transition-colors text-control font-normal"
-                >
-                  {btn}
-                </button>
-              ))}
-              <Separator orientation="vertical" className="h-5 mx-1" />
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors text-control font-bold">B</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors text-control font-normal italic">I</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors font-bold" style={{ fontSize: "18px" }}>T</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors font-bold" style={{ fontSize: "16px" }}>T</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors font-bold" style={{ fontSize: "14px" }}>T</button>
-              <button className="px-2 py-1 rounded hover:bg-accent transition-colors font-bold" style={{ fontSize: "12px" }}>T</button>
-              <Separator orientation="vertical" className="h-5 mx-1" />
-              {["⋮⋮", "≡", "❝", "</>", "─", "⊞", "🔗", "🖼", "📹", "😊"].map((btn, i) => (
-                <button
-                  key={`tool-${i}`}
-                  className="px-2 py-1 rounded hover:bg-accent transition-colors text-control font-normal"
-                >
-                  {btn}
-                </button>
-              ))}
-            </div>
-            <div style={{ minHeight: 240, padding: "16px 20px" }}>
-              <p className="text-body" style={{ color: "var(--muted-foreground)" }}>
-                Share your thoughts...
-              </p>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Tags */}
-          <div className="space-y-1.5">
-            <label className="text-label uppercase text-muted-foreground">Tags</label>
-            <Input
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="Add tags separated by commas..."
-              className="h-9 bg-background"
-            />
-          </div>
-
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t bg-muted/10">
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={() => onOpenChange(false)} className="px-8">
-            Create Discussion
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ForumPage() {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("newest");
-  const [selectedDiscussion, setSelectedDiscussion] = useState<ForumDiscussion | null>(null);
+  const { t } = useTranslation('crd-forum');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<ForumSortOrder>('newest');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [draftTitle, setDraftTitle] = useState('');
+  const [draftContent, setDraftContent] = useState('');
 
-  const filteredDiscussions = DISCUSSIONS.filter((d) => {
-    const matchesCategory = activeCategory === "all" || d.category === activeCategory;
+  const selected = DISCUSSIONS.find(d => d.id === selectedId) ?? null;
+
+  const visible = DISCUSSIONS.filter(d => {
+    const matchesCategory = activeCategory === 'all' || d.category === activeCategory;
+    const q = searchQuery.toLowerCase();
     const matchesSearch =
-      searchQuery === "" ||
-      d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.author.name.toLowerCase().includes(searchQuery.toLowerCase());
+      !q || d.title.toLowerCase().includes(q) || d.author.name.toLowerCase().includes(q);
     return matchesCategory && matchesSearch;
   });
 
-  const sortedDiscussions = [...filteredDiscussions].sort((a, b) => {
-    if (sortOrder === "oldest") return a.id.localeCompare(b.id);
-    return b.id.localeCompare(a.id);
-  });
+  const items = visible.map(d =>
+    toDiscussionListItem(d, t('list.itemAriaLabel', { count: d.commentCount, title: d.title, author: d.author.name, date: d.date }))
+  );
 
   return (
-    <div
-      className="flex flex-col w-full px-6 md:px-8"
-      style={{ paddingBottom: 48, fontFamily: "'Inter', sans-serif" }}
-    >
-      {/* Banner — full width within grid */}
-      <div className="grid grid-cols-12 gap-6">
-        <div className="col-span-12 lg:col-start-2 lg:col-span-10">
-          <div style={{ paddingTop: 32, paddingBottom: 24 }}>
-            <ForumBanner />
-          </div>
-        </div>
-      </div>
-
-      {/* Main layout: sidebar + content on same 12-col grid */}
-      <div className="grid grid-cols-12 gap-6">
-        {/* Sidebar */}
-        <div className="hidden md:block col-span-3 lg:col-span-2 lg:col-start-2">
+    <>
+      <ForumLayout
+        bannerNode={
+          <ForumBanner
+            titleNode={t('banner.title')}
+            subtitleNode={t('banner.subtitle')}
+            iconNode={<MessageSquare aria-hidden="true" className="size-8" />}
+          />
+        }
+        sidebarNode={
           <ForumCategoryNav
-            activeCategory={activeCategory}
-            onCategoryChange={(id) => {
-              setActiveCategory(id);
-              setSelectedDiscussion(null);
+            entries={(Object.keys(CATEGORY_ICONS) as (keyof typeof CATEGORY_ICONS)[]).map(slug => {
+              const Icon = CATEGORY_ICONS[slug];
+              return {
+                slug,
+                label: CATEGORY_LABELS[slug],
+                iconNode: <Icon aria-hidden="true" className="size-4" />,
+              };
+            })}
+            activeSlug={activeCategory}
+            onCategoryChange={slug => {
+              setActiveCategory(slug);
+              setSelectedId(null);
             }}
+            sectionLabel={t('categories.sectionLabel')}
+            selectAriaLabel={t('categories.selectAriaLabel')}
+          />
+        }
+        mainNode={
+          selected ? (
+            <ForumDiscussionDetail
+              data={toDiscussionDetail(
+                selected,
+                selected.content ? <MarkdownContent content={selected.content} /> : null
+              )}
+              backHref="/forum"
+              backLabel={t('detail.back', { defaultValue: 'See all discussions' })}
+              onBack={() => setSelectedId(null)}
+              shareLabel={t('detail.share', { defaultValue: 'Share' })}
+              editLabel={t('detail.edit', { defaultValue: 'Edit' })}
+              deleteLabel={t('detail.delete', { defaultValue: 'Delete' })}
+              // Production's comment system, same as every other comment
+              // surface. See `comment/CommentsPanel`.
+              commentsSlot={<CommentsPanel threadId={`forum-${selected.id}`} />}
+            />
+          ) : (
+            <>
+              <ForumDiscussionListHeader
+                countLabel={t('list.headerCount', { count: items.length })}
+                initiateSlot={
+                  <Button size="sm" className="gap-1.5" onClick={() => setShowCreateDialog(true)}>
+                    <Plus className="size-4" aria-hidden="true" />
+                    {t('list.initiate')}
+                  </Button>
+                }
+                searchValue={searchQuery}
+                searchPlaceholder={t('list.searchPlaceholder')}
+                searchAriaLabel={t('list.searchAriaLabel')}
+                onSearchChange={setSearchQuery}
+                sortValue={sortOrder}
+                sortAriaLabel={t('list.sortAriaLabel', { defaultValue: 'Sort discussions' })}
+                sortOptions={[
+                  { value: 'newest', label: t('list.sortNewest', { defaultValue: 'Newest' }) },
+                  { value: 'oldest', label: t('list.sortOldest', { defaultValue: 'Oldest' }) },
+                ]}
+                onSortChange={setSortOrder}
+              />
+
+              <ForumDiscussionList
+                items={
+                  sortOrder === 'oldest'
+                    ? [...items].sort((a, b) => a.timestamp - b.timestamp)
+                    : [...items].sort((a, b) => b.timestamp - a.timestamp)
+                }
+                metaLineFor={item =>
+                  t('list.metaLine', {
+                    count: item.commentCount,
+                    author: item.author.displayName,
+                    date: item.formattedDate,
+                    defaultValue: `${item.author.displayName} · ${item.formattedDate}`,
+                  })
+                }
+                emptySlot={
+                  <ForumEmptyState
+                    title={t('list.emptyTitle', { defaultValue: 'No discussions found' })}
+                    subtitle={t('list.emptySubtitle', {
+                      defaultValue: 'Try adjusting your search or category filter',
+                    })}
+                    iconNode={<MessageSquare aria-hidden="true" className="size-10" />}
+                  />
+                }
+                onActivate={setSelectedId}
+                className="mt-4"
+              />
+            </>
+          )
+        }
+      />
+
+      <ForumInitiateDiscussionDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        mode="initiate"
+        title={t('initiate.title', { defaultValue: 'Create Discussion' })}
+        submitLabel={t('initiate.submit', { defaultValue: 'Create' })}
+        cancelLabel={t('initiate.cancel', { defaultValue: 'Cancel' })}
+        submitDisabled={!draftTitle.trim()}
+        busy={false}
+        onSubmit={() => {
+          setShowCreateDialog(false);
+          setDraftTitle('');
+          setDraftContent('');
+        }}
+      >
+        <div className="space-y-4">
+          <Input
+            placeholder="Title"
+            value={draftTitle}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDraftTitle(e.target.value)}
+          />
+          <Textarea
+            placeholder="What would you like to discuss?"
+            className="min-h-40"
+            value={draftContent}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDraftContent(e.target.value)}
           />
         </div>
-
-        {/* Content area */}
-        {selectedDiscussion ? (
-          <ForumDiscussionDetail
-            discussion={selectedDiscussion}
-            onBack={() => setSelectedDiscussion(null)}
-          />
-        ) : (
-          <div className="col-span-12 md:col-span-9 lg:col-span-8">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-subheader font-bold" style={{ color: "var(--foreground)" }}>
-                Discussions ({sortedDiscussions.length})
-              </h2>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => setShowCreateDialog(true)}
-                className="gap-1.5 text-control"
-              >
-                <Plus className="h-4 w-4" />
-                Initiate Discussion
-              </Button>
-            </div>
-
-                {/* Search + Sort */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="relative flex-1">
-                    <Search
-                      className="absolute top-1/2 -translate-y-1/2"
-                      style={{ left: 12, width: 16, height: 16, color: "var(--muted-foreground)" }}
-                    />
-                    <Input
-                      placeholder="Search"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 text-body"
-                    />
-                  </div>
-                  <Select value={sortOrder} onValueChange={setSortOrder}>
-                    <SelectTrigger className="w-28 h-9 text-control">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="oldest">Oldest</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Discussion list */}
-                <div
-                  style={{
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "var(--radius)",
-                    boxShadow: "var(--elevation-sm)",
-                    overflow: "hidden",
-                  }}
-                >
-                  {sortedDiscussions.length > 0 ? (
-                    sortedDiscussions.map((discussion) => (
-                      <ForumDiscussionItem
-                        key={discussion.id}
-                        discussion={discussion}
-                        onClick={() => setSelectedDiscussion(discussion)}
-                      />
-                    ))
-                  ) : (
-                    <div style={{ padding: "48px 24px", textAlign: "center" }}>
-                      <MessageSquare
-                        className="mx-auto mb-3"
-                        style={{ width: 40, height: 40, color: "var(--muted-foreground)", opacity: 0.4 }}
-                      />
-                      <p className="text-body" style={{ color: "var(--muted-foreground)" }}>
-                        No discussions found
-                      </p>
-                      <p className="text-caption" style={{ color: "var(--muted-foreground)", marginTop: 4 }}>
-                        Try adjusting your search or category filter
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-      <InitiateDiscussionDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />
-    </div>
+      </ForumInitiateDiscussionDialog>
+    </>
   );
 }

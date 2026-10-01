@@ -10,37 +10,37 @@ import {
 } from "lucide-react";
 
 // UI Components
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { Switch } from "@/app/components/ui/switch";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Checkbox } from "@/crd/primitives/checkbox";
+import { Switch } from "@/crd/primitives/switch";
 import { Slider } from "@/app/components/ui/slider";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/app/components/ui/tabs";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/app/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/crd/primitives/tabs";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/crd/primitives/card";
 import { 
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, 
   DropdownMenuSeparator, DropdownMenuTrigger 
-} from "@/app/components/ui/dropdown-menu";
+} from "@/crd/primitives/dropdown-menu";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger
-} from "@/app/components/ui/accordion";
+} from "@/crd/primitives/accordion";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, 
   DialogHeader, DialogTitle, DialogTrigger
-} from "@/app/components/ui/dialog";
+} from "@/crd/primitives/dialog";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from "@/app/components/ui/select";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/app/components/ui/tooltip";
-import { Progress } from "@/app/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Skeleton } from "@/app/components/ui/skeleton";
+} from "@/crd/primitives/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/crd/primitives/tooltip";
+import { Progress } from "@/crd/primitives/progress";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
+import { Skeleton } from "@/crd/primitives/skeleton";
 import { Alert, AlertTitle, AlertDescription } from "@/app/components/ui/alert";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { Link } from "react-router";
 
 // Imported Organisms
@@ -51,17 +51,17 @@ import { Sidebar } from "@/app/components/layout/Sidebar";
 
 const SectionHeader = ({ title, description }: { title: string, description?: string }) => (
   <div className="mb-10 border-b border-border pb-6">
-    <h2 className="text-4xl font-bold text-foreground mb-3 tracking-tight">{title}</h2>
-    {description && <p className="text-xl text-muted-foreground max-w-4xl">{description}</p>}
+    <h2 className="text-display text-foreground mb-3 tracking-tight">{title}</h2>
+    {description && <p className="text-section-title text-muted-foreground max-w-4xl">{description}</p>}
   </div>
 );
 
 const ComponentBlock = ({ title, description, children, className }: { title: string, description?: string, children: React.ReactNode, className?: string }) => (
   <div className={cn("mb-16", className)}>
     <div className="mb-6">
-      <h3 className="text-2xl font-semibold text-foreground flex items-center gap-2">
+      <h3 className="text-page-title font-semibold text-foreground flex items-center gap-2">
         {title}
-        <Badge variant="outline" className="text-xs font-normal text-muted-foreground ml-2">Component</Badge>
+        <Badge variant="outline" className="text-caption font-normal text-muted-foreground ml-2">Component</Badge>
       </h3>
       {description && <p className="text-muted-foreground mt-2">{description}</p>}
     </div>
@@ -79,11 +79,11 @@ const ColorSwatch = ({ name, colorClass, hex, usage }: { name: string, colorClas
   <div className="flex flex-col gap-3 group">
     <div className={cn("w-full aspect-square rounded-2xl shadow-sm border border-border/50 transition-transform group-hover:scale-105", colorClass)}></div>
     <div>
-      <h4 className="font-semibold text-sm text-foreground">{name}</h4>
+      <h4 className="text-card-title text-foreground">{name}</h4>
       <div className="flex items-center justify-between mt-1">
-         <code className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{hex}</code>
+         <code className="text-caption font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{hex}</code>
       </div>
-      <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{usage}</p>
+      <p className="text-caption text-muted-foreground mt-2 leading-relaxed">{usage}</p>
     </div>
   </div>
 );
@@ -94,17 +94,17 @@ const DesignTokens = () => (
     
     <div className="space-y-12">
       <div>
-        <h3 className="text-xl font-semibold mb-6 flex items-center gap-2"><Palette className="w-5 h-5" /> Color Palette</h3>
+        <h3 className="text-section-title mb-6 flex items-center gap-2"><Palette className="w-5 h-5" /> Color Palette</h3>
         <div className="space-y-10">
           <div>
-            <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Primary Colors</h4>
+            <h4 className="text-body-emphasis text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Primary Colors</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
               <ColorSwatch name="Primary" colorClass="bg-primary" hex="--primary" usage="Main brand color, call-to-actions." />
               <ColorSwatch name="Primary Foreground" colorClass="bg-primary-foreground" hex="--primary-foreground" usage="Text on primary." />
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Neutral Colors</h4>
+            <h4 className="text-body-emphasis text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Neutral Colors</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
               <ColorSwatch name="Background" colorClass="bg-background" hex="--background" usage="Page background." />
               <ColorSwatch name="Foreground" colorClass="bg-foreground" hex="--foreground" usage="Primary text." />
@@ -115,7 +115,7 @@ const DesignTokens = () => (
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Semantic Colors</h4>
+            <h4 className="text-body-emphasis text-muted-foreground uppercase tracking-wider mb-4 border-b border-border pb-2">Semantic Colors</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
               <ColorSwatch name="Destructive" colorClass="bg-destructive" hex="--destructive" usage="Error states." />
               <ColorSwatch name="Destructive FG" colorClass="bg-destructive-foreground" hex="--destructive-foreground" usage="Text on destructive." />
@@ -128,52 +128,52 @@ const DesignTokens = () => (
       </div>
 
       <div>
-        <h3 className="text-xl font-semibold mb-6 flex items-center gap-2"><Type className="w-5 h-5" /> Typography</h3>
+        <h3 className="text-section-title mb-6 flex items-center gap-2"><Type className="w-5 h-5" /> Typography</h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8">
            <div className="space-y-6">
               <div className="border-b border-border pb-4">
-                 <h1 className="text-4xl font-bold mb-2">Heading 1</h1>
-                 <p className="text-sm text-muted-foreground">text-4xl / font-bold</p>
+                 <h1 className="text-display mb-2">Heading 1</h1>
+                 <p className="text-body text-muted-foreground">text-4xl / font-bold</p>
               </div>
               <div className="border-b border-border pb-4">
-                 <h2 className="text-3xl font-bold mb-2">Heading 2</h2>
-                 <p className="text-sm text-muted-foreground">text-3xl / font-bold</p>
+                 <h2 className="text-hero mb-2">Heading 2</h2>
+                 <p className="text-body text-muted-foreground">text-3xl / font-bold</p>
               </div>
               <div className="border-b border-border pb-4">
-                 <h3 className="text-2xl font-semibold mb-2">Heading 3</h3>
-                 <p className="text-sm text-muted-foreground">text-2xl / font-semibold</p>
+                 <h3 className="text-page-title font-semibold mb-2">Heading 3</h3>
+                 <p className="text-body text-muted-foreground">text-2xl / font-semibold</p>
               </div>
               <div className="border-b border-border pb-4">
-                 <h4 className="text-xl font-semibold mb-2">Heading 4</h4>
-                 <p className="text-sm text-muted-foreground">text-xl / font-semibold</p>
+                 <h4 className="text-section-title mb-2">Heading 4</h4>
+                 <p className="text-body text-muted-foreground">text-section-title / font-semibold</p>
               </div>
            </div>
            <div className="space-y-6">
               <div className="border-b border-border pb-4">
-                 <p className="text-base mb-2">Body Regular - The quick brown fox jumps over the lazy dog.</p>
-                 <p className="text-sm text-muted-foreground">text-base / font-normal</p>
+                 <p className="text-subheader font-normal mb-2">Body Regular - The quick brown fox jumps over the lazy dog.</p>
+                 <p className="text-body text-muted-foreground">text-subheader font-normal / font-normal</p>
               </div>
               <div className="border-b border-border pb-4">
-                 <p className="text-sm font-medium mb-2">Body Medium / Label - The quick brown fox jumps.</p>
-                 <p className="text-sm text-muted-foreground">text-sm / font-medium</p>
+                 <p className="text-body-emphasis mb-2">Body Medium / Label - The quick brown fox jumps.</p>
+                 <p className="text-body text-muted-foreground">text-body / font-medium</p>
               </div>
               <div className="border-b border-border pb-4">
-                 <p className="text-sm text-muted-foreground mb-2">Body Small / Muted - The quick brown fox jumps.</p>
-                 <p className="text-sm text-muted-foreground">text-sm / text-muted-foreground</p>
+                 <p className="text-body text-muted-foreground mb-2">Body Small / Muted - The quick brown fox jumps.</p>
+                 <p className="text-body text-muted-foreground">text-body / text-muted-foreground</p>
               </div>
               <div className="border-b border-border pb-4">
-                 <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">Caption / Micro</p>
-                 <p className="text-sm text-muted-foreground">text-xs / uppercase</p>
+                 <p className="text-caption text-muted-foreground mb-2 uppercase tracking-wider">Caption / Micro</p>
+                 <p className="text-body text-muted-foreground">text-caption / uppercase</p>
               </div>
            </div>
         </div>
       </div>
       
       <div>
-        <h3 className="text-xl font-semibold mb-6 flex items-center gap-2"><Box className="w-5 h-5" /> Spacing, Radius & Animation</h3>
+        <h3 className="text-section-title mb-6 flex items-center gap-2"><Box className="w-5 h-5" /> Spacing, Radius & Animation</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
            <div className="bg-card border border-border rounded-xl p-6">
-              <h4 className="text-sm font-medium text-muted-foreground mb-4">Border Radius</h4>
+              <h4 className="text-body-emphasis text-muted-foreground mb-4">Border Radius</h4>
               <div className="flex flex-wrap gap-4 items-end">
                  <div className="text-center space-y-2">
                     <div className="w-12 h-12 bg-primary/10 border border-primary/20 rounded-sm mx-auto"></div>
@@ -199,7 +199,7 @@ const DesignTokens = () => (
            </div>
            
            <div className="bg-card border border-border rounded-xl p-6">
-              <h4 className="text-sm font-medium text-muted-foreground mb-4">Shadows</h4>
+              <h4 className="text-body-emphasis text-muted-foreground mb-4">Shadows</h4>
               <div className="flex flex-wrap gap-4">
                  <div className="w-16 h-16 bg-background rounded-lg shadow-sm flex items-center justify-center text-[10px] text-muted-foreground border border-border/50">sm</div>
                  <div className="w-16 h-16 bg-background rounded-lg shadow flex items-center justify-center text-[10px] text-muted-foreground border border-border/50">default</div>
@@ -209,19 +209,19 @@ const DesignTokens = () => (
            </div>
 
            <div className="bg-card border border-border rounded-xl p-6">
-              <h4 className="text-sm font-medium text-muted-foreground mb-4">Animations</h4>
+              <h4 className="text-body-emphasis text-muted-foreground mb-4">Animations</h4>
               <div className="space-y-4">
                  <div className="flex items-center gap-4">
                     <div className="w-8 h-8 bg-info/10 rounded animate-pulse"></div>
-                    <span className="text-xs">Pulse</span>
+                    <span className="text-caption">Pulse</span>
                  </div>
                  <div className="flex items-center gap-4">
                     <div className="w-8 h-8 bg-success/10 rounded animate-bounce"></div>
-                    <span className="text-xs">Bounce</span>
+                    <span className="text-caption">Bounce</span>
                  </div>
                  <div className="flex items-center gap-4">
                     <div className="w-8 h-8 bg-primary/10 rounded animate-spin"></div>
-                    <span className="text-xs">Spin</span>
+                    <span className="text-caption">Spin</span>
                  </div>
               </div>
            </div>
@@ -267,59 +267,59 @@ const Atoms = () => (
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-12">
           <div className="space-y-6">
              <div className="space-y-3">
-                <label className="text-sm font-medium">Text Input</label>
+                <label className="text-body-emphasis">Text Input</label>
                 <Input placeholder="Enter text..." />
              </div>
              <div className="space-y-3">
-                <label className="text-sm font-medium">With Icon</label>
+                <label className="text-body-emphasis">With Icon</label>
                 <div className="relative">
                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                    <Input className="pl-9" placeholder="Search..." />
                 </div>
              </div>
              <div className="space-y-3">
-                <label className="text-sm font-medium">File Input</label>
+                <label className="text-body-emphasis">File Input</label>
                 <Input type="file" />
              </div>
              <div className="space-y-3">
-                <label className="text-sm font-medium">Radio Group</label>
+                <label className="text-body-emphasis">Radio Group</label>
                 <RadioGroup defaultValue="option-one">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="option-one" id="option-one" />
-                    <label htmlFor="option-one" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Option One</label>
+                    <label htmlFor="option-one" className="text-body-emphasis leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Option One</label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="option-two" id="option-two" />
-                    <label htmlFor="option-two" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Option Two</label>
+                    <label htmlFor="option-two" className="text-body-emphasis leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Option Two</label>
                   </div>
                 </RadioGroup>
              </div>
           </div>
           <div className="space-y-8">
              <div className="space-y-4">
-                <label className="text-sm font-medium block">Checkboxes</label>
+                <label className="text-body-emphasis block">Checkboxes</label>
                 <div className="flex items-center space-x-2">
                    <Checkbox id="terms" />
-                   <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Accept terms</label>
+                   <label htmlFor="terms" className="text-body-emphasis leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Accept terms</label>
                 </div>
                 <div className="flex items-center space-x-2">
                    <Checkbox id="checked" defaultChecked />
-                   <label htmlFor="checked" className="text-sm font-medium leading-none">Checked state</label>
+                   <label htmlFor="checked" className="text-body-emphasis leading-none">Checked state</label>
                 </div>
              </div>
              <div className="space-y-4">
-                <label className="text-sm font-medium block">Switch</label>
+                <label className="text-body-emphasis block">Switch</label>
                 <div className="flex items-center space-x-2">
                    <Switch id="airplane-mode" />
-                   <label htmlFor="airplane-mode" className="text-sm font-medium leading-none">Airplane Mode</label>
+                   <label htmlFor="airplane-mode" className="text-body-emphasis leading-none">Airplane Mode</label>
                 </div>
              </div>
              <div className="space-y-4">
-                <label className="text-sm font-medium block">Slider</label>
+                <label className="text-body-emphasis block">Slider</label>
                 <Slider defaultValue={[50]} max={100} step={1} className="w-[80%]" />
              </div>
              <div className="space-y-4">
-                <label className="text-sm font-medium block">Progress</label>
+                <label className="text-body-emphasis block">Progress</label>
                 <Progress value={66} className="w-[80%]" />
              </div>
           </div>
@@ -394,8 +394,8 @@ const Molecules = () => (
     <ComponentBlock title="Navigation Elements" description="Breadcrumbs and Pagination.">
        <div className="space-y-8">
           <div>
-             <h4 className="text-sm font-medium mb-2 text-muted-foreground">Breadcrumbs</h4>
-             <div className="flex items-center text-sm text-muted-foreground">
+             <h4 className="text-body-emphasis mb-2 text-muted-foreground">Breadcrumbs</h4>
+             <div className="flex items-center text-body text-muted-foreground">
                 <span className="hover:text-foreground cursor-pointer">Home</span>
                 <ChevronRight className="w-4 h-4 mx-2" />
                 <span className="hover:text-foreground cursor-pointer">Settings</span>
@@ -404,7 +404,7 @@ const Molecules = () => (
              </div>
           </div>
           <div>
-             <h4 className="text-sm font-medium mb-2 text-muted-foreground">Pagination</h4>
+             <h4 className="text-body-emphasis mb-2 text-muted-foreground">Pagination</h4>
              <div className="flex items-center gap-2">
                 <Button variant="outline" size="icon" className="h-8 w-8"><ChevronLeft className="w-4 h-4" /></Button>
                 <Button variant="outline" size="sm" className="h-8 w-8 p-0">1</Button>
@@ -422,7 +422,7 @@ const Molecules = () => (
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-8">
              <div>
-                <h4 className="text-sm font-medium mb-4">Tabs</h4>
+                <h4 className="text-body-emphasis mb-4">Tabs</h4>
                 <Tabs defaultValue="account" className="w-full">
                    <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="account">Account</TabsTrigger>
@@ -438,7 +438,7 @@ const Molecules = () => (
              </div>
              
              <div>
-                <h4 className="text-sm font-medium mb-4">Accordion</h4>
+                <h4 className="text-body-emphasis mb-4">Accordion</h4>
                 <Accordion type="single" collapsible className="w-full">
                    <AccordionItem value="item-1">
                       <AccordionTrigger>Is it accessible?</AccordionTrigger>
@@ -454,7 +454,7 @@ const Molecules = () => (
 
           <div className="space-y-8">
              <div>
-                <h4 className="text-sm font-medium mb-4">Dialog & Dropdown</h4>
+                <h4 className="text-body-emphasis mb-4">Dialog & Dropdown</h4>
                 <div className="flex flex-col gap-4">
                    <div className="flex gap-4">
                       <Dialog>
@@ -468,7 +468,7 @@ const Molecules = () => (
                             </DialogHeader>
                             <div className="py-4">
                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">Username</label>
+                                  <label className="text-body-emphasis">Username</label>
                                   <Input defaultValue="@alkemio" />
                                </div>
                             </div>
@@ -494,7 +494,7 @@ const Molecules = () => (
                    </div>
                    
                    <div className="space-y-2 w-full max-w-xs">
-                       <label className="text-sm font-medium">Select</label>
+                       <label className="text-body-emphasis">Select</label>
                        <Select>
                           <SelectTrigger>
                              <SelectValue placeholder="Select a timezone" />
@@ -510,7 +510,7 @@ const Molecules = () => (
              </div>
 
              <div>
-                <h4 className="text-sm font-medium mb-4">Tooltip</h4>
+                <h4 className="text-body-emphasis mb-4">Tooltip</h4>
                 <TooltipProvider>
                    <Tooltip>
                       <TooltipTrigger asChild>
@@ -536,7 +536,7 @@ const Molecules = () => (
                 <CardDescription>Basic layout with header.</CardDescription>
              </CardHeader>
              <CardContent>
-                <p className="text-sm text-muted-foreground">Cards are used to group related information.</p>
+                <p className="text-body text-muted-foreground">Cards are used to group related information.</p>
              </CardContent>
              <CardFooter>
                 <Button variant="outline" className="w-full">Action</Button>
@@ -554,7 +554,7 @@ const Molecules = () => (
                 <CardDescription>With media area.</CardDescription>
              </CardHeader>
              <CardContent>
-                <p className="text-sm text-muted-foreground">Great for blog posts or items with visuals.</p>
+                <p className="text-body text-muted-foreground">Great for blog posts or items with visuals.</p>
              </CardContent>
           </Card>
 
@@ -564,16 +564,16 @@ const Molecules = () => (
                    <AvatarFallback>AB</AvatarFallback>
                 </Avatar>
                 <div>
-                   <CardTitle className="text-base">Profile Card</CardTitle>
+                   <CardTitle className="text-subheader font-normal">Profile Card</CardTitle>
                    <CardDescription>User summary</CardDescription>
                 </div>
              </CardHeader>
              <CardContent>
-                <div className="flex justify-between text-sm py-2 border-b border-border">
+                <div className="flex justify-between text-body py-2 border-b border-border">
                    <span className="text-muted-foreground">Status</span>
                    <Badge variant="secondary" className="h-5">Active</Badge>
                 </div>
-                <div className="flex justify-between text-sm py-2">
+                <div className="flex justify-between text-body py-2">
                    <span className="text-muted-foreground">Role</span>
                    <span>Admin</span>
                 </div>
@@ -593,14 +593,14 @@ const DemoPackCard = () => (
         <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
            <ImageIcon className="w-10 h-10" />
         </div>
-        <div className="absolute bottom-3 left-3 bg-background/90 backdrop-blur px-2 py-1 rounded text-xs font-semibold shadow-sm">
+        <div className="absolute bottom-3 left-3 bg-background/90 backdrop-blur px-2 py-1 rounded text-caption font-semibold shadow-sm">
           14 Templates
         </div>
       </div>
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold bg-primary/10 text-primary">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-caption font-bold bg-primary/10 text-primary">
               GV
             </div>
             <div>
@@ -609,7 +609,7 @@ const DemoPackCard = () => (
             </div>
           </div>
         </div>
-        <p className="text-xs text-muted-foreground line-clamp-2 mb-4">Validate ideas and solve big problems in just five days.</p>
+        <p className="text-caption text-muted-foreground line-clamp-2 mb-4">Validate ideas and solve big problems in just five days.</p>
         <div className="flex flex-wrap gap-1.5 mt-auto">
            <Badge variant="secondary" className="text-[10px] h-5 font-normal">Strategy</Badge>
            <Badge variant="secondary" className="text-[10px] h-5 font-normal">Workshop</Badge>
@@ -653,10 +653,10 @@ const Organisms = () => (
              </div>
              <div className="p-4 flex flex-col flex-1">
                <div className="mb-2">
-                  <h4 className="font-semibold text-foreground text-sm leading-tight group-hover:text-primary transition-colors">Brainstorming Board</h4>
+                  <h4 className="font-semibold text-foreground text-body leading-tight group-hover:text-primary transition-colors">Brainstorming Board</h4>
                   <p className="text-[10px] text-muted-foreground mt-1">Ideation</p>
                </div>
-               <p className="text-xs text-muted-foreground line-clamp-2 flex-1">Collaborative space for generating ideas.</p>
+               <p className="text-caption text-muted-foreground line-clamp-2 flex-1">Collaborative space for generating ideas.</p>
              </div>
           </div>
        </div>
@@ -671,12 +671,12 @@ const Organisms = () => (
              <div className="flex-1 space-y-2">
                 <div className="bg-muted/50 p-4 rounded-lg rounded-tl-none">
                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-sm">Jane Doe</span>
-                      <span className="text-xs text-muted-foreground">2h ago</span>
+                      <span className="text-card-title">Jane Doe</span>
+                      <span className="text-caption text-muted-foreground">2h ago</span>
                    </div>
-                   <p className="text-sm">This design system is looking great! I really like the new atomic structure.</p>
+                   <p className="text-body">This design system is looking great! I really like the new atomic structure.</p>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground pl-2">
+                <div className="flex items-center gap-4 text-caption text-muted-foreground pl-2">
                    <button className="hover:text-foreground">Reply</button>
                    <button className="hover:text-foreground">Like</button>
                 </div>
@@ -690,10 +690,10 @@ const Organisms = () => (
              <div className="flex-1 space-y-2">
                 <div className="bg-muted/50 p-3 rounded-lg rounded-tl-none">
                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold text-sm">Mike King</span>
-                      <span className="text-xs text-muted-foreground">1h ago</span>
+                      <span className="text-card-title">Mike King</span>
+                      <span className="text-caption text-muted-foreground">1h ago</span>
                    </div>
-                   <p className="text-sm">Agreed. The consistent spacing is a huge improvement.</p>
+                   <p className="text-body">Agreed. The consistent spacing is a huge improvement.</p>
                 </div>
              </div>
           </div>
@@ -716,7 +716,7 @@ const Organisms = () => (
              <Upload className="w-6 h-6" />
           </div>
           <h4 className="font-medium mb-1">Upload files</h4>
-          <p className="text-sm text-muted-foreground mb-4">Drag and drop files here or click to browse</p>
+          <p className="text-body text-muted-foreground mb-4">Drag and drop files here or click to browse</p>
           <Button variant="secondary" size="sm">Select Files</Button>
        </div>
     </ComponentBlock>
@@ -812,22 +812,22 @@ const TemplatesAndPages = () => (
           <div className="bg-muted/20 h-96 flex items-center justify-center rounded-lg border border-border">
              <Card className="w-80 shadow-lg">
                 <CardHeader className="space-y-1">
-                   <CardTitle className="text-2xl font-bold text-center">Sign in</CardTitle>
+                   <CardTitle className="text-page-title text-center">Sign in</CardTitle>
                    <CardDescription className="text-center">Enter your email below to login</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Email</label>
+                      <label className="text-body-emphasis">Email</label>
                       <Input placeholder="m@example.com" />
                    </div>
                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Password</label>
+                      <label className="text-body-emphasis">Password</label>
                       <Input type="password" />
                    </div>
                    <Button className="w-full">Sign In</Button>
                 </CardContent>
                 <CardFooter>
-                   <p className="text-xs text-center w-full text-muted-foreground">Don't have an account? Sign up</p>
+                   <p className="text-caption text-center w-full text-muted-foreground">Don't have an account? Sign up</p>
                 </CardFooter>
              </Card>
           </div>
@@ -838,8 +838,8 @@ const TemplatesAndPages = () => (
              <div className="w-24 h-24 bg-muted/30 rounded-full flex items-center justify-center mb-6">
                 <AlertTriangle className="w-10 h-10 text-muted-foreground" />
              </div>
-             <h3 className="text-4xl font-bold text-foreground mb-2">404</h3>
-             <h4 className="text-xl font-semibold mb-4">Page not found</h4>
+             <h3 className="text-display text-foreground mb-2">404</h3>
+             <h4 className="text-section-title mb-4">Page not found</h4>
              <p className="text-muted-foreground mb-8 max-w-xs">Sorry, we couldn't find the page you're looking for.</p>
              <div className="flex gap-4">
                 <Button variant="outline">Go Back</Button>
@@ -912,7 +912,7 @@ const TemplatesAndPages = () => (
                </div>
                <div className="p-4">
                   <h4 className="font-semibold group-hover:text-primary transition-colors">{page.name}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">{page.desc}</p>
+                  <p className="text-caption text-muted-foreground mt-1">{page.desc}</p>
                </div>
             </Link>
          ))}
@@ -938,7 +938,7 @@ export default function DesignSystemPage() {
     <button 
       onClick={() => scrollToSection(id)}
       className={cn(
-        "w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-3",
+        "w-full text-left px-3 py-2 rounded-md text-body transition-colors flex items-center gap-3",
         activeSection === id 
           ? "bg-primary text-primary-foreground font-medium shadow-sm" 
           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -960,19 +960,19 @@ export default function DesignSystemPage() {
              </div>
              Atomic DS
           </div>
-          <p className="text-xs text-muted-foreground ml-12">v3.0.0 • Complete Catalog</p>
+          <p className="text-caption text-muted-foreground ml-12">v3.0.0 • Complete Catalog</p>
         </div>
         
         <nav className="px-6 pb-8 space-y-8">
           <div>
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Foundations</h4>
+            <h4 className="text-caption font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Foundations</h4>
             <div className="space-y-1">
               <NavItem id="tokens" label="Design Tokens" icon={Palette} />
             </div>
           </div>
           
           <div>
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Components</h4>
+            <h4 className="text-caption font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Components</h4>
             <div className="space-y-1">
               <NavItem id="atoms" label="Atoms" icon={MousePointer} />
               <NavItem id="molecules" label="Molecules" icon={Box} />
@@ -981,7 +981,7 @@ export default function DesignSystemPage() {
           </div>
 
           <div>
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Patterns</h4>
+            <h4 className="text-caption font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">Patterns</h4>
             <div className="space-y-1">
                <NavItem id="templates" label="Templates & Wireframes" icon={Lightbulb} />
             </div>
@@ -1002,15 +1002,15 @@ export default function DesignSystemPage() {
         <div className="max-w-[1600px] mx-auto px-12 py-16">
           <div className="max-w-4xl mb-20">
             <h1 className="text-6xl font-extrabold tracking-tight text-foreground mb-6">Design System</h1>
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-section-title text-muted-foreground leading-relaxed">
               The single source of truth for the Alkemio platform. 
               This catalog includes every component, token, and pattern used in the application.
             </p>
             <div className="flex gap-4 mt-8">
-               <Badge variant="secondary" className="px-3 py-1 text-sm">React</Badge>
-               <Badge variant="secondary" className="px-3 py-1 text-sm">Tailwind CSS</Badge>
-               <Badge variant="secondary" className="px-3 py-1 text-sm">shadcn/ui</Badge>
-               <Badge variant="secondary" className="px-3 py-1 text-sm">Lucide Icons</Badge>
+               <Badge variant="secondary" className="px-3 py-1 text-body">React</Badge>
+               <Badge variant="secondary" className="px-3 py-1 text-body">Tailwind CSS</Badge>
+               <Badge variant="secondary" className="px-3 py-1 text-body">shadcn/ui</Badge>
+               <Badge variant="secondary" className="px-3 py-1 text-body">Lucide Icons</Badge>
             </div>
           </div>
           

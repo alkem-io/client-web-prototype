@@ -39,7 +39,7 @@ export function SpaceChatDrawer({ spaceSlug, onClose, onViewInHub }: SpaceChatDr
     unread: 0,
     muted: false,
     memberCount: 0,
-    spaceSlug,
+    spaceSlug
   };
 
   const handleMouseDown = useCallback(
@@ -102,7 +102,7 @@ export function SpaceChatDrawer({ spaceSlug, onClose, onViewInHub }: SpaceChatDr
       style={{
         width,
         height: "100%",
-        transition: isDragging ? "none" : "width 0.25s ease",
+        transition: isDragging ? "none" : "width 0.25s ease"
       }}
     >
       {/* ── Resize Handle ─────────────────────────────────────────────── */}
@@ -118,7 +118,7 @@ export function SpaceChatDrawer({ spaceSlug, onClose, onViewInHub }: SpaceChatDr
           width: 4,
           background: "transparent",
           margin: 0,
-          padding: 0,
+          padding: 0
         }}
       >
         {/* Visible line */}
@@ -127,7 +127,7 @@ export function SpaceChatDrawer({ spaceSlug, onClose, onViewInHub }: SpaceChatDr
           style={{
             width: 1,
             left: 1,
-            background: isDragging ? "var(--primary)" : "var(--border)",
+            background: isDragging ? "var(--primary)" : "var(--border)"
           }}
         />
         {/* Grip dots — visible on hover */}
@@ -137,14 +137,14 @@ export function SpaceChatDrawer({ spaceSlug, onClose, onViewInHub }: SpaceChatDr
             background: "var(--card)",
             border: "1px solid var(--border)",
             padding: "4px 1px",
-            boxShadow: "var(--elevation-sm)",
+            boxShadow: "var(--elevation-sm)"
           }}
         >
           <GripVertical
             style={{
               width: 12,
               height: 12,
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           />
         </div>
@@ -157,7 +157,7 @@ export function SpaceChatDrawer({ spaceSlug, onClose, onViewInHub }: SpaceChatDr
           background: "var(--background)",
           borderLeft: "1px solid var(--border)",
           height: "100%",
-          overflow: "hidden",
+          overflow: "hidden"
         }}
       >
         <ChatView

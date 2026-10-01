@@ -1,15 +1,14 @@
 import { Link } from "react-router";
 import { Home, ArrowLeft, Search } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 
 export default function NotFoundPage() {
   return (
     <div
       className="flex flex-col items-center justify-center px-6 text-center"
       style={{
-        minHeight: "calc(100vh - 200px)",
-        fontFamily: "'Inter', sans-serif",
-      }}
+        minHeight: "calc(100vh - 200px)"
+        }}
     >
       {/* Large 404 */}
       <div
@@ -19,7 +18,7 @@ export default function NotFoundPage() {
           fontWeight: 800,
           lineHeight: 1,
           color: "var(--muted-foreground)",
-          opacity: 0.15,
+          opacity: 0.15
         }}
       >
         404
@@ -30,7 +29,7 @@ export default function NotFoundPage() {
         className="text-page-title"
         style={{
           color: "var(--foreground)",
-          marginTop: "-0.25em",
+          marginTop: "-0.25em"
         }}
       >
         Page not found
@@ -41,7 +40,7 @@ export default function NotFoundPage() {
         className="max-w-md text-body"
         style={{
           color: "var(--muted-foreground)",
-          marginTop: 12,
+          marginTop: 12
         }}
       >
         The page you&apos;re looking for doesn&apos;t exist or has been moved. Check the URL or head
@@ -66,11 +65,10 @@ export default function NotFoundPage() {
 
       <button
         onClick={() => window.history.back()}
-        className="mt-4 flex items-center gap-1.5 transition-colors text-control"
+        className="mt-4 flex items-center gap-1.5 transition-colors text-body-emphasis"
         style={{
-          color: "var(--muted-foreground)",
-          fontFamily: "'Inter', sans-serif",
-        }}
+          color: "var(--muted-foreground)"
+          }}
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         Go back

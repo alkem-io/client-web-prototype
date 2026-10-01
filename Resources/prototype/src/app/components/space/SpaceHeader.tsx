@@ -1,122 +1,71 @@
-import { Link } from "react-router";
+/**
+ * Space header — production's `@/crd/components/space/SpaceHeader`.
+ *
+ * This file is now the prototype's data wiring only: it reads the mock space
+ * and the admin banner settings, and hands CRD the props it exports.
+ *
+ * PHASE 1 REMOVALS (see PHASE-2.md §5):
+ *  - Banner **crop offset** (`cropY`). CRD sizes the banner by aspect ratio,
+ *    not by height + crop, so there is nowhere to express a crop origin.
+ *  - The **scaling variants** (`?v=2..5`). CRD has one header layout; the
+ *    max-width-container study has no equivalent.
+ *
+ * Preserved: the admin-configured banner **image**, and its configured
+ * **height** — approximated as CRD's `bannerAspectRatio` so a shorter banner
+ * still reads as shorter.
+ */
+import { useMemo } from 'react';
+import { SpaceHeader as CrdSpaceHeader } from '@/crd/components/space/SpaceHeader';
+import type { HeaderActionIconsData } from '@/crd/components/space/HeaderActionIcons';
+import { resolveBannerShape } from '@/app/mappers/spaceBanner';
 
-const BANNER_IMAGE = "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBjaGFsbGVuZ2UlMjBjcmVhdGl2ZSUyMHdvcmtzaG9wJTIwdGVhbSUyMGNvbGxhYm9yYXRpb24lMjBpbm5vdmF0aW9uJTIwc3ByaW50JTIwZGVzaWduJTIwc3ByaW50fGVufDF8fHx8MTc2OTA5NDMxMHww&ixlib=rb-4.1.0&q=80&w=1920";
+const BANNER_IMAGE =
+  'https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBjaGFsbGVuZ2UlMjBjcmVhdGl2ZSUyMHdvcmtzaG9wJTIwdGVhbSUyMGNvbGxhYm9yYXRpb24lMjBpbm5vdmF0aW9uJTIwc3ByaW50JTIwZGVzaWduJTIwc3ByaW50fGVufDF8fHx8MTc2OTA5NDMxMHww&ixlib=rb-4.1.0&q=80&w=1920&h=192&fit=crop';
 
-interface SpaceHeaderProps {
+const SPACE_TITLE = 'Steward-Ownership Field Builder Community';
+const SPACE_TAGLINE =
+  'The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.';
+
+/**
+ * CRD bounds the ratio at 6–10 and 10 is the default slim strip.
+ *
+ * Important: CRD renders a real banner `<img>` as `w-full h-auto object-contain`
+ * — the ratio only sizes the *placeholder* before load. So the rendered height
+ * comes from the image's own shape, exactly as in production where the server
+ * stores a banner already cropped to the admin's ratio. The prototype therefore
+ * requests a banner-shaped crop from Unsplash rather than trying to force the
+ * height with CSS the way the old header did.
+ */
+
+type SpaceHeaderProps = {
   spaceSlug: string;
   spaceName?: string;
+  /** Prototype-only layout study — accepted so existing call sites keep working,
+   *  but no longer changes rendering. See PHASE-2.md §5. */
   variant?: 1 | 2 | 3 | 4 | 5;
   onInfoClick?: () => void;
   actionButtons?: React.ReactNode;
-}
+};
 
-export function SpaceHeader({ spaceSlug, variant = 1, onInfoClick, actionButtons }: SpaceHeaderProps) {
+export function SpaceHeader({ spaceSlug, spaceName, onInfoClick }: SpaceHeaderProps) {
+  const banner = useMemo(() => resolveBannerShape(BANNER_IMAGE), []);
 
-  // V2+ use a max-width container so content scales into margins on zoom
-  const scaledContainer = { maxWidth: 1536, margin: "0 auto", width: "100%" };
-  const usesScaling = variant !== 1;
-
-  // Read admin-configured banner settings
-  const bannerSettings = (() => {
-    try {
-      const stored = localStorage.getItem('alkemio-banner-settings');
-      if (stored) return JSON.parse(stored);
-    } catch {}
-    return null;
-  })();
-  const bannerImage = bannerSettings?.image || BANNER_IMAGE;
-  const bannerHeight = bannerSettings?.height || 160;
-  const bannerCropY = bannerSettings?.cropY ?? 30;
+  const actions: HeaderActionIconsData = {
+    showInfo: true,
+    onInfoClick,
+    showShare: true,
+    showSettings: true,
+    settingsHref: `/space/${spaceSlug}/settings`,
+  };
 
   return (
-    <div className="flex flex-col">
-      {/* Banner */}
-      {variant === 4 ? (
-        <div style={{ marginTop: "-64px", height: "64px" }} />
-      ) : (
-        <div
-          className="w-full px-4"
-          style={{ marginTop: "-64px" }}
-        >
-          <div className="grid grid-cols-12 gap-6">
-            <div className="col-span-12 lg:col-start-2 lg:col-span-10">
-              <div
-                className="relative overflow-hidden rounded-b-lg"
-                style={{ height: bannerHeight, width: "100%" }}
-              >
-                <img
-                  src={bannerImage}
-                  alt="Space banner"
-                  className="w-full h-full object-cover"
-                  style={{ display: "block", objectPosition: `center ${bannerCropY}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Compact info bar — title + tagline */}
-      <div
-        className="w-full px-4"
-        style={{
-          paddingTop: 12,
-          paddingBottom: 12,
-          ...(!usesScaling ? { paddingLeft: 32, paddingRight: 32 } : {}),
-        }}
-      >
-        <div style={usesScaling ? scaledContainer : undefined}>
-          {usesScaling ? (
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2 min-w-0">
-                  <h1
-                    className="text-foreground truncate font-bold tracking-tight"
-                    style={{ fontSize: "clamp(22px, 3vw, 32px)", lineHeight: 1.2 }}
-                  >
-                    Steward-Ownership Field Builder Community
-                  </h1>
-                </div>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.4 }}>
-                  The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.
-                </p>
-                {actionButtons && (
-                  <div className="shrink-0">
-                    {actionButtons}
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-12 gap-6">
-              <div className="col-span-12 lg:col-start-2 lg:col-span-10 flex flex-col gap-1">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <h1
-                      className="text-foreground truncate font-bold tracking-tight"
-                      style={{ fontSize: "clamp(22px, 3vw, 32px)", lineHeight: 1.2 }}
-                    >
-                      Steward-Ownership Field Builder Community
-                    </h1>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-muted-foreground truncate text-sm" style={{ lineHeight: 1.4 }}>
-                    The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.
-                  </p>
-                  {actionButtons && (
-                    <div className="shrink-0">
-                      {actionButtons}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <CrdSpaceHeader
+      title={spaceName ?? SPACE_TITLE}
+      tagline={SPACE_TAGLINE}
+      bannerUrl={banner.url}
+      bannerAspectRatio={banner.ratio}
+      actions={actions}
+      overlayHeader={true}
+    />
   );
 }

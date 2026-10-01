@@ -6,23 +6,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogClose,
-} from "@/app/components/ui/dialog";
-import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
+  DialogClose
+} from "@/crd/primitives/dialog";
+import { ScrollArea } from "@/crd/primitives/scroll-area";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
-} from "@/app/components/ui/avatar";
+  AvatarImage
+} from "@/crd/primitives/avatar";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
-} from "@/app/components/ui/tooltip";
-import { Badge } from "@/app/components/ui/badge";
+  TooltipTrigger
+} from "@/crd/primitives/tooltip";
+import { Badge } from "@/crd/primitives/badge";
 import {
   X,
   Pencil,
@@ -33,7 +33,7 @@ import {
   Mail,
   BookOpen,
   ExternalLink,
-  Tags,
+  Tags
 } from "lucide-react";
 
 /* ─── Types ──────────────────────────────────────────────── */
@@ -98,35 +98,35 @@ Treat all community members with respect. Engage in constructive dialogue and be
 We are here to build together. Share your knowledge generously and support other members in achieving shared goals.
 
 **Quality Contributions**
-Strive to provide thoughtful and well-researched contributions. Cite sources where possible and be transparent about assumptions.`,
+Strive to provide thoughtful and well-researched contributions. Cite sources where possible and be transparent about assumptions.`
   },
   references: [
     {
       title: "EU Renewable Energy Directive",
       url: "https://energy.ec.europa.eu/topics/renewable-energy",
-      description: "Official EU framework and targets for renewable energy deployment across member states.",
+      description: "Official EU framework and targets for renewable energy deployment across member states."
     },
     {
       title: "Municipal Climate Action Toolkit",
       url: "https://www.c40.org/climate-action-toolkit",
-      description: "Practical tools and case studies for cities implementing climate transition strategies.",
+      description: "Practical tools and case studies for cities implementing climate transition strategies."
     },
     {
       title: "2030 Transition Roadmap (PDF)",
       url: "https://docs.greenfield.gov/transition-roadmap-2030.pdf",
-      description: "The approved roadmap document with phased milestones and budget allocations.",
+      description: "The approved roadmap document with phased milestones and budget allocations."
     },
   ],
   classifications: [
     {
       name: "UN Sustainable Development Goals",
-      values: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"],
+      values: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"]
     },
     {
       name: "Sector",
-      values: ["Energy", "Environment"],
+      values: ["Energy", "Environment"]
     },
-  ],
+  ]
 };
 
 const LEADS: SpaceLead[] = [
@@ -135,7 +135,7 @@ const LEADS: SpaceLead[] = [
     location: "'s-gravenhage",
     avatar:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NzIxMDQyMjl8MA&ixlib=rb-4.1.0&q=80&w=256",
-    initials: "JN",
+    initials: "JN"
   },
 ];
 
@@ -145,7 +145,7 @@ const HOST: SpaceHost = {
   avatar:
     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwxfHx8fDE3NzIxMDQyMjl8MA&ixlib=rb-4.1.0&q=80&w=256",
   initials: "JN",
-  email: "jeroen@alkemio.org",
+  email: "jeroen@alkemio.org"
 };
 
 /* ─── Component ──────────────────────────────────────────── */
@@ -154,7 +154,7 @@ export function AboutThisSpaceDialog({
   open,
   onOpenChange,
   isAdmin = true,
-  spaceSlug = "default-space",
+  spaceSlug = "default-space"
 }: AboutThisSpaceDialogProps) {
   const navigate = useNavigate();
   const [guidelinesOpen, setGuidelinesOpen] = useState(false);
@@ -211,7 +211,7 @@ export function AboutThisSpaceDialog({
                 className="rounded-lg overflow-hidden"
                 style={{
                   background: "rgb(29, 56, 74)",
-                  color: "white",
+                  color: "white"
                 }}
               >
                 {/* Admin edit icons */}
@@ -245,7 +245,7 @@ export function AboutThisSpaceDialog({
                   <p
                     className="mb-4 text-body"
                     style={{
-                      color: "rgba(255,255,255,0.9)",
+                      color: "rgba(255,255,255,0.9)"
                     }}
                   >
                     {SPACE_DATA.description}
@@ -256,7 +256,7 @@ export function AboutThisSpaceDialog({
                     <span
                       className="flex items-center gap-1 text-caption"
                       style={{
-                        color: "rgba(255,255,255,0.7)",
+                        color: "rgba(255,255,255,0.7)"
                       }}
                     >
                       <MapPin className="w-3 h-3" />
@@ -265,7 +265,7 @@ export function AboutThisSpaceDialog({
                     <span
                       className="flex items-center gap-1 text-caption"
                       style={{
-                        color: "rgba(255,255,255,0.7)",
+                        color: "rgba(255,255,255,0.7)"
                       }}
                     >
                       <Users className="w-3 h-3" />
@@ -281,7 +281,7 @@ export function AboutThisSpaceDialog({
                     <h4
                       className="mb-3 text-label uppercase"
                       style={{
-                        color: "rgba(255,255,255,0.6)",
+                        color: "rgba(255,255,255,0.6)"
                       }}
                     >
                       Leads
@@ -305,7 +305,7 @@ export function AboutThisSpaceDialog({
                                 fontSize: "10px",
                                 fontWeight: 700,
                                 background: "rgba(255,255,255,0.15)",
-                                color: "white",
+                                color: "white"
                               }}
                             >
                               {lead.initials}
@@ -315,7 +315,7 @@ export function AboutThisSpaceDialog({
                             <p
                               className="text-card-title"
                               style={{
-                                color: "white",
+                                color: "white"
                               }}
                             >
                               {lead.name}
@@ -323,7 +323,7 @@ export function AboutThisSpaceDialog({
                             <p
                               className="flex items-center gap-1 text-caption"
                               style={{
-                                color: "rgba(255,255,255,0.6)",
+                                color: "rgba(255,255,255,0.6)"
                               }}
                             >
                               <MapPin className="w-3 h-3" />
@@ -347,7 +347,7 @@ export function AboutThisSpaceDialog({
                 <p
                   className="text-body"
                   style={{
-                    color: "var(--muted-foreground)",
+                    color: "var(--muted-foreground)"
                   }}
                 >
                   {SPACE_DATA.whyText}
@@ -364,7 +364,7 @@ export function AboutThisSpaceDialog({
                 <p
                   className="text-body"
                   style={{
-                    color: "var(--muted-foreground)",
+                    color: "var(--muted-foreground)"
                   }}
                 >
                   {SPACE_DATA.whoText}
@@ -377,7 +377,7 @@ export function AboutThisSpaceDialog({
                   className="rounded-lg overflow-hidden"
                   style={{
                     border: "1px solid var(--border)",
-                    background: "var(--card)",
+                    background: "var(--card)"
                   }}
                 >
                   <div className="p-5">
@@ -428,7 +428,7 @@ export function AboutThisSpaceDialog({
                 className="rounded-lg overflow-hidden"
                 style={{
                   border: "1px solid var(--border)",
-                  background: "var(--card)",
+                  background: "var(--card)"
                 }}
               >
                 <div className="p-5">
@@ -441,7 +441,7 @@ export function AboutThisSpaceDialog({
                       <h3
                         className="text-card-title"
                         style={{
-                          color: "var(--foreground)",
+                          color: "var(--foreground)"
                         }}
                       >
                         {SPACE_DATA.guidelines.title}
@@ -453,7 +453,7 @@ export function AboutThisSpaceDialog({
                     ref={guidelinesRef}
                     className="line-clamp-6 space-y-1 text-body"
                     style={{
-                      color: "var(--muted-foreground)",
+                      color: "var(--muted-foreground)"
                     }}
                   >
                     {SPACE_DATA.guidelines.body
@@ -475,7 +475,7 @@ export function AboutThisSpaceDialog({
                       onClick={() => setGuidelinesOpen(true)}
                       className="mt-3 hover:underline text-body-emphasis"
                       style={{
-                        color: "var(--primary)",
+                        color: "var(--primary)"
                       }}
                     >
                       Read more
@@ -489,7 +489,7 @@ export function AboutThisSpaceDialog({
                 className="rounded-lg overflow-hidden"
                 style={{
                   border: "1px solid var(--border)",
-                  background: "var(--card)",
+                  background: "var(--card)"
                 }}
               >
                 <div className="p-5">
@@ -497,7 +497,7 @@ export function AboutThisSpaceDialog({
                     <h3
                       className="text-card-title"
                       style={{
-                        color: "var(--foreground)",
+                        color: "var(--foreground)"
                       }}
                     >
                       References
@@ -517,7 +517,7 @@ export function AboutThisSpaceDialog({
                             width: 36,
                             height: 36,
                             background:
-                              "color-mix(in srgb, var(--primary) 10%, transparent)",
+                              "color-mix(in srgb, var(--primary) 10%, transparent)"
                           }}
                         >
                           <Globe
@@ -529,7 +529,7 @@ export function AboutThisSpaceDialog({
                           <p
                             className="text-card-title"
                             style={{
-                              color: "var(--foreground)",
+                              color: "var(--foreground)"
                             }}
                           >
                             {ref.title}
@@ -538,7 +538,7 @@ export function AboutThisSpaceDialog({
                             <p
                               className="mt-0.5 line-clamp-2 text-caption"
                               style={{
-                                color: "var(--muted-foreground)",
+                                color: "var(--muted-foreground)"
                               }}
                             >
                               {ref.description}
@@ -550,7 +550,7 @@ export function AboutThisSpaceDialog({
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 mt-1 hover:underline text-caption"
                             style={{
-                              color: "var(--primary)",
+                              color: "var(--primary)"
                             }}
                             onClick={(e) => e.stopPropagation()}
                           >
@@ -569,14 +569,14 @@ export function AboutThisSpaceDialog({
                 className="rounded-lg overflow-hidden"
                 style={{
                   border: "1px solid var(--border)",
-                  background: "var(--card)",
+                  background: "var(--card)"
                 }}
               >
                 <div className="p-5">
                   <h3
                     className="mb-3 text-card-title"
                     style={{
-                      color: "var(--foreground)",
+                      color: "var(--foreground)"
                     }}
                   >
                     Hosted by
@@ -593,7 +593,7 @@ export function AboutThisSpaceDialog({
                           fontWeight: 700,
                           background:
                             "color-mix(in srgb, var(--primary) 15%, transparent)",
-                          color: "var(--primary)",
+                          color: "var(--primary)"
                         }}
                       >
                         {HOST.initials}
@@ -603,7 +603,7 @@ export function AboutThisSpaceDialog({
                       <p
                         className="text-card-title"
                         style={{
-                          color: "var(--foreground)",
+                          color: "var(--foreground)"
                         }}
                       >
                         {HOST.name}
@@ -611,7 +611,7 @@ export function AboutThisSpaceDialog({
                       <p
                         className="flex items-center gap-1 text-caption"
                         style={{
-                          color: "var(--muted-foreground)",
+                          color: "var(--muted-foreground)"
                         }}
                       >
                         <MapPin className="w-3 h-3" />
@@ -632,7 +632,7 @@ export function AboutThisSpaceDialog({
                     <p
                       className="text-body"
                       style={{
-                        color: "var(--muted-foreground)",
+                        color: "var(--muted-foreground)"
                       }}
                     >
                       The hosts are responsible for the content of the Space. Any
@@ -667,7 +667,7 @@ export function AboutThisSpaceDialog({
             <div
               className="px-6 py-5 space-y-3 text-body"
               style={{
-                color: "var(--muted-foreground)",
+                color: "var(--muted-foreground)"
               }}
             >
               {SPACE_DATA.guidelines.body
@@ -720,7 +720,7 @@ export function AboutThisSpaceDialog({
                     fontWeight: 700,
                     background:
                       "color-mix(in srgb, var(--primary) 15%, transparent)",
-                    color: "var(--primary)",
+                    color: "var(--primary)"
                   }}
                 >
                   {HOST.initials}
@@ -730,7 +730,7 @@ export function AboutThisSpaceDialog({
                 <p
                   className="text-card-title"
                   style={{
-                    color: "var(--foreground)",
+                    color: "var(--foreground)"
                   }}
                 >
                   To: {HOST.name}
@@ -738,7 +738,7 @@ export function AboutThisSpaceDialog({
                 <p
                   className="text-caption"
                   style={{
-                    color: "var(--muted-foreground)",
+                    color: "var(--muted-foreground)"
                   }}
                 >
                   {HOST.email}
@@ -752,7 +752,7 @@ export function AboutThisSpaceDialog({
                 htmlFor="contact-message"
                 className="block mb-1.5 text-body-emphasis"
                 style={{
-                  color: "var(--foreground)",
+                  color: "var(--foreground)"
                 }}
               >
                 Message
@@ -768,7 +768,7 @@ export function AboutThisSpaceDialog({
                   border: "1px solid var(--border)",
                   background: "var(--background)",
                   color: "var(--foreground)",
-                  focusRingColor: "var(--ring)",
+                  focusRingColor: "var(--ring)"
                 }}
               />
             </div>
@@ -817,14 +817,14 @@ function ContextSection({
   title,
   isAdmin,
   onEdit,
-  children,
+  children
 }: ContextSectionProps) {
   return (
     <div
       className="rounded-lg overflow-hidden"
       style={{
         border: "1px solid var(--border)",
-        background: "var(--card)",
+        background: "var(--card)"
       }}
     >
       <div className="p-5">
@@ -834,7 +834,7 @@ function ContextSection({
             <h3
               className="text-card-title"
               style={{
-                color: "var(--foreground)",
+                color: "var(--foreground)"
               }}
             >
               {title}

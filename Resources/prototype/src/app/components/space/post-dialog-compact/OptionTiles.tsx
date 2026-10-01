@@ -18,7 +18,7 @@
  * slot under the row — one line of plain language, always on the surface.
  */
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import type { OptionDef } from "./options";
 
 interface OptionTilesProps<T extends string> {
@@ -41,7 +41,7 @@ export function OptionTiles<T extends string>({
   label,
   onPreview,
   columns = "grid-cols-3 sm:grid-cols-5",
-  className,
+  className
 }: OptionTilesProps<T>) {
   return (
     <RadioGroupPrimitive.Root

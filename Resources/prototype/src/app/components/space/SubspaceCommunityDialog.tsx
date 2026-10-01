@@ -1,39 +1,18 @@
-import React, { useState } from "react";
-import {
- Dialog,
- DialogContent,
- DialogHeader,
- DialogTitle,
- DialogDescription,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import {
- DropdownMenu,
- DropdownMenuContent,
- DropdownMenuItem,
- DropdownMenuTrigger,
- DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
-import { Link } from "react-router";
-import { cn } from "@/lib/utils";
-import {
- Search,
- MoreHorizontal,
- UserPlus,
- Shield,
- User,
- CheckCircle2,
- Building2,
- ExternalLink,
- Users,
- ChevronLeft,
- ChevronRight,
-} from "lucide-react";
+/**
+ * Subspace community dialog — production's
+ * `@/crd/components/space/SubspaceCommunityDialog` wrapping its `SpaceMembers`.
+ *
+ * This is the home CRD intends for the member grid: production removed it from
+ * the community *tab* (feature 008, US6 — the tab uses a contributor-collection
+ * callout now) and kept it inside this dialog. That is also why `SpaceMembers`
+ * owns its own search, filter pills and paging — in a dialog there is no
+ * sidebar search to defer to.
+ */
+import { useTranslation } from 'react-i18next';
+import { SubspaceCommunityDialog as CrdSubspaceCommunityDialog } from '@/crd/components/space/SubspaceCommunityDialog';
+import { SpaceMembers } from '@/crd/components/space/SpaceMembers';
+import { toMemberCard, toOrgCard } from '@/app/mappers/members';
 
-// ── Types ──
 interface MemberEntry {
  kind: "user";
  id: string;
@@ -75,7 +54,7 @@ const RAW_MEMBERS: Omit<MemberEntry, "kind">[] = [
  joinDate: "Apr 2024",
  avatar: null as string | null,
  initials: ["JW", "ET", "LO", "SL", "OS", "AP", "WC", "IG", "HW", "MK", "AW"][i] || `M${i}`,
- bio: i % 2 === 0 ? "Contributing to the subspace community." : "",
+ bio: i % 2 === 0 ? "Contributing to the subspace community." : ""
  })),
 ];
 
@@ -88,7 +67,7 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
  avatar: "https://images.unsplash.com/photo-1769697264314-28f093151bbd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "GF",
  members: 4,
- website: "https://greenfuturelabs.org",
+ website: "https://greenfuturelabs.org"
  },
  {
  id: "sorg2",
@@ -98,7 +77,7 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
  avatar: "https://images.unsplash.com/photo-1631599143424-5bc234fbebf1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "UU",
  members: 3,
- website: "https://uu.nl",
+ website: "https://uu.nl"
  },
 ];
 
@@ -116,403 +95,23 @@ interface SubspaceCommunityDialogProps {
 }
 
 export function SubspaceCommunityDialog({ open, onOpenChange }: SubspaceCommunityDialogProps) {
- const [searchQuery, setSearchQuery] = useState("");
- const [selectedFilter, setSelectedFilter] = useState("All");
- const [currentPage, setCurrentPage] = useState(1);
- const ITEMS_PER_PAGE = 9;
+  const { t } = useTranslation('crd-space');
 
- const totalUsers = RAW_MEMBERS.length;
- const totalOrgs = RAW_ORGS.length;
+  const members = [
+    ...RAW_ORGS.map(toOrgCard),
+    ...RAW_MEMBERS.map(toMemberCard),
+  ];
 
- const filteredEntries = ALL_ENTRIES.filter((entry) => {
- const nameMatch = entry.name.toLowerCase().includes(searchQuery.toLowerCase());
- const extraMatch =
- entry.kind === "user"
- ? entry.role.toLowerCase().includes(searchQuery.toLowerCase())
- : entry.type.toLowerCase().includes(searchQuery.toLowerCase());
- if (!nameMatch && !extraMatch) return false;
- if (selectedFilter === "All") return true;
- if (selectedFilter === "Organization") return entry.kind === "org";
- return entry.kind === "user" && entry.role === selectedFilter;
- });
-
- const totalPages = Math.max(1, Math.ceil(filteredEntries.length / ITEMS_PER_PAGE));
- const safeCurrentPage = Math.min(currentPage, totalPages);
- const paginatedEntries = filteredEntries.slice(
- (safeCurrentPage - 1) * ITEMS_PER_PAGE,
- safeCurrentPage * ITEMS_PER_PAGE
- );
-
- const handleFilterChange = (filter: string) => {
- setSelectedFilter(filter);
- setCurrentPage(1);
- };
- const handleSearchChange = (value: string) => {
- setSearchQuery(value);
- setCurrentPage(1);
- };
-
- const getRoleBadgeColor = (roleType: string) => {
- switch (roleType) {
- case "admin":
- return "bg-primary/10 text-primary border-primary/20";
- case "moderator":
- return "bg-chart-2/10 text-chart-2 border-chart-2/20";
- default:
- return "bg-muted text-muted-foreground border-border";
- }
- };
-
- const getRoleIcon = (roleType: string) => {
- switch (roleType) {
- case "admin":
- return <Shield className="w-3 h-3 mr-1" />;
- case "moderator":
- return <CheckCircle2 className="w-3 h-3 mr-1" />;
- default:
- return <User className="w-3 h-3 mr-1" />;
- }
- };
-
- return (
- <Dialog open={open} onOpenChange={onOpenChange}>
- <DialogContent
- className="max-w-none sm:max-w-none max-h-[85vh] overflow-y-auto"
- style={{ width: 'calc((100vw - 2 * var(--grid-margin-desktop) - 11 * var(--grid-gutter)) / var(--grid-columns) * 8 + 7 * var(--grid-gutter))' }}
- >
- <DialogHeader>
- <DialogTitle className="flex items-center gap-2">
- <Users className="w-5 h-5" style={{ color: "var(--primary)" }} />
- Community
- </DialogTitle>
- <DialogDescription>
- {totalUsers} members and {totalOrgs} organizations in this subspace.
- </DialogDescription>
- </DialogHeader>
-
- <div className="space-y-5 mt-2">
- {/* Search & Filters */}
- <div className="flex flex-col sm:flex-row gap-3">
- <div className="relative flex-1">
- <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
- <input
- type="text"
- placeholder="Search members or organizations..."
- value={searchQuery}
- onChange={(e) => handleSearchChange(e.target.value)}
- className="w-full h-10 pl-9 pr-4 transition-all text-body"
- style={{
- fontFamily: "'Inter', sans-serif",
- borderRadius: "var(--radius)",
- border: "1px solid var(--border)",
- background: "var(--input-background)",
- color: "var(--foreground)",
- outline: "none",
- }}
- onFocus={(e) => {
- e.currentTarget.style.borderColor = "var(--primary)";
- e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
- }}
- onBlur={(e) => {
- e.currentTarget.style.borderColor = "var(--border)";
- e.currentTarget.style.boxShadow = "none";
- }}
- />
- </div>
-
- <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
- {FILTERS.map((filter) => (
- <button
- key={filter}
- onClick={() => handleFilterChange(filter)}
- className="px-3 py-2 whitespace-nowrap transition-colors text-control"
- style={{
- fontFamily: "'Inter', sans-serif",
- borderRadius: "var(--radius)",
- border: `1px solid ${selectedFilter === filter ? "var(--primary)" : "var(--border)"}`,
- background: selectedFilter === filter ? "var(--primary)" : "var(--background)",
- color: selectedFilter === filter ? "var(--primary-foreground)" : "var(--muted-foreground)",
- }}
- >
- {filter}
- </button>
- ))}
- </div>
- </div>
-
- {/* Grid */}
- <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
- {paginatedEntries.map((entry) =>
- entry.kind === "user" ? (
- <UserCard
- key={entry.id}
- member={entry}
- getRoleBadgeColor={getRoleBadgeColor}
- getRoleIcon={getRoleIcon}
- />
- ) : (
- <OrgCard key={entry.id} org={entry} />
- )
- )}
- </div>
-
- {/* Pagination */}
- {totalPages > 1 && (
- <div className="flex items-center justify-center mt-4">
- <IconButton
- variant="ghost"
- tooltipLabel="Previous page"
- className="h-8 w-8 text-muted-foreground"
- onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
- disabled={currentPage === 1}
- >
- <ChevronLeft className="w-4 h-4" />
- </IconButton>
- <span className="mx-2 text-body text-muted-foreground">
- Page {safeCurrentPage} of {totalPages}
- </span>
- <IconButton
- variant="ghost"
- tooltipLabel="Next page"
- className="h-8 w-8 text-muted-foreground"
- onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
- disabled={currentPage === totalPages}
- >
- <ChevronRight className="w-4 h-4" />
- </IconButton>
- </div>
- )}
-
- {/* Empty state */}
- {filteredEntries.length === 0 && (
- <div className="text-center py-12">
- <div
- className="inline-flex items-center justify-center w-12 h-12 mb-4"
- style={{ borderRadius: "999px", background: "var(--muted)" }}
- >
- <User className="w-6 h-6" style={{ color: "var(--muted-foreground)" }} />
- </div>
- <h3
- className="text-subheader"
- style={{
- color: "var(--foreground)",
- fontFamily: "'Inter', sans-serif",
- }}
- >
- No results found
- </h3>
- <p className="mt-1 text-body" style={{ color: "var(--muted-foreground)", fontFamily: "'Inter', sans-serif" }}>
- Try adjusting your search or filters.
- </p>
- <Button
- variant="link"
- onClick={() => {
- setSearchQuery("");
- setSelectedFilter("All");
- setCurrentPage(1);
- }}
- className="mt-2 text-primary"
- >
- Clear filters
- </Button>
- </div>
- )}
- </div>
- </DialogContent>
- </Dialog>
- );
-}
-
-// ── User Card ──
-function UserCard({
- member,
- getRoleBadgeColor,
- getRoleIcon,
-}: {
- member: MemberEntry;
- getRoleBadgeColor: (rt: string) => string;
- getRoleIcon: (rt: string) => React.ReactNode;
-}) {
- return (
- <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
- <CardContent className="p-0">
- <div className="p-4 flex items-start justify-between gap-3">
- <div className="flex items-start gap-3">
- <Link
- to={`/user/${member.name.toLowerCase().replace(/\s+/g, "-")}`}
- className="transition-opacity hover:opacity-80"
- >
- <Avatar className="w-12 h-12" style={{ border: "1px solid var(--border)" }}>
- {member.avatar && <AvatarImage src={member.avatar} alt={member.name} />}
- <AvatarFallback
- className="text-card-title"
- style={{
- fontFamily: "'Inter', sans-serif",
- }}
- >
- {member.initials}
- </AvatarFallback>
- </Avatar>
- </Link>
- <div>
- <Link
- to={`/user/${member.name.toLowerCase().replace(/\s+/g, "-")}`}
- className="hover:text-primary transition-colors block text-card-title"
- style={{
- fontFamily: "'Inter', sans-serif",
- color: "var(--foreground)",
- }}
- >
- {member.name}
- </Link>
- <div
- className={cn(
- "inline-flex items-center px-2 py-0.5 rounded-full text-caption font-medium border mt-1",
- getRoleBadgeColor(member.roleType)
- )}
- style={{ fontFamily: "'Inter', sans-serif" }}
- >
- {getRoleIcon(member.roleType)}
- {member.role}
- </div>
- </div>
- </div>
-
- <DropdownMenu>
- <DropdownMenuTrigger asChild>
- <IconButton variant="ghost" tooltipLabel="More options" className="text-muted-foreground">
- <MoreHorizontal className="w-4 h-4" />
- </IconButton>
- </DropdownMenuTrigger>
- <DropdownMenuContent align="end">
- <DropdownMenuItem>View Profile</DropdownMenuItem>
- <DropdownMenuItem>Message</DropdownMenuItem>
- <DropdownMenuSeparator />
- <DropdownMenuItem className="text-destructive">Remove from Space</DropdownMenuItem>
- </DropdownMenuContent>
- </DropdownMenu>
- </div>
-
- <div className="px-4 pb-4">
- {member.bio && (
- <p
- className="line-clamp-2 text-body"
- style={{
- color: "var(--muted-foreground)",
- fontFamily: "'Inter', sans-serif",
- }}
- >
- {member.bio}
- </p>
- )}
- <div
- className={cn("flex items-center gap-1 text-caption", member.bio ? "mt-4" : "mt-1")}
- style={{
- color: "var(--muted-foreground)",
- fontFamily: "'Inter', sans-serif",
- }}
- >
- <span>Joined {member.joinDate}</span>
- </div>
- </div>
- </CardContent>
- </Card>
- );
-}
-
-// ── Organization Card ──
-function OrgCard({ org }: { org: OrgEntry }) {
- return (
- <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
- <CardContent className="p-0">
- <div className="p-4 flex items-start justify-between gap-3">
- <div className="flex items-start gap-3">
- <Link
- to={`/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`}
- className="transition-opacity hover:opacity-80"
- >
- <Avatar
- className="w-12 h-12"
- style={{ borderRadius: "var(--radius)", border: "1px solid var(--border)" }}
- >
- <AvatarImage src={org.avatar} alt={org.name} style={{ borderRadius: "var(--radius)" }} />
- <AvatarFallback
- className="text-caption font-bold"
- style={{
- borderRadius: "var(--radius)",
- fontFamily: "'Inter', sans-serif",
- background: "color-mix(in srgb, var(--info) 15%, transparent)",
- color: "var(--info)",
- }}
- >
- {org.initials}
- </AvatarFallback>
- </Avatar>
- </Link>
- <div>
- <Link
- to={`/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`}
- className="hover:text-primary transition-colors block text-card-title"
- style={{
- fontFamily: "'Inter', sans-serif",
- color: "var(--foreground)",
- }}
- >
- {org.name}
- </Link>
- <div className="flex items-center gap-1.5 mt-1">
- <span
- className="inline-flex items-center gap-1 px-2 py-0.5 text-caption font-medium"
- style={{
- fontFamily: "'Inter', sans-serif",
- color: "var(--info)",
- background: "color-mix(in srgb, var(--info) 10%, transparent)",
- border: "1px solid color-mix(in srgb, var(--info) 20%, transparent)",
- borderRadius: "999px",
- }}
- >
- <Building2 className="w-3 h-3" />
- {org.type}
- </span>
- </div>
- </div>
- </div>
-
- <a
- href={org.website}
- target="_blank"
- rel="noopener noreferrer"
- className="shrink-0 p-1.5 transition-colors"
- style={{ color: "var(--muted-foreground)", borderRadius: "var(--radius)" }}
- onMouseEnter={(e) => (e.currentTarget.style.background = "var(--muted)")}
- onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
- >
- <ExternalLink className="w-3.5 h-3.5" />
- </a>
- </div>
-
- <div className="px-4 pb-4">
- <p
- className="line-clamp-2 min-h-[2.5rem] text-body"
- style={{
- color: "var(--muted-foreground)",
- fontFamily: "'Inter', sans-serif",
- }}
- >
- {org.description}
- </p>
- <div
- className="flex items-center gap-1 mt-4 text-caption"
- style={{
- color: "var(--muted-foreground)",
- fontFamily: "'Inter', sans-serif",
- }}
- >
- <Users className="w-3 h-3" />
- <span>{org.members} members in this space</span>
- </div>
- </div>
- </CardContent>
- </Card>
- );
+  return (
+    <CrdSubspaceCommunityDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('community.title', { defaultValue: 'Community' })}
+      description={t('community.description', {
+        defaultValue: 'The people and organisations in this subspace.',
+      })}
+    >
+      <SpaceMembers members={members} />
+    </CrdSubspaceCommunityDialog>
+  );
 }

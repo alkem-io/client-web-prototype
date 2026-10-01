@@ -1,6 +1,6 @@
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface SaveBarProps {
   isDirty: boolean;
@@ -26,7 +26,7 @@ export function SaveBar({ isDirty, isSaving = false, onSave, onDiscard, classNam
           <div className="col-span-12 lg:col-start-2 lg:col-span-10 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="inline-flex rounded-full h-2 w-2 bg-primary" />
-              <p className="text-sm text-foreground/70">
+              <p className="text-body text-foreground/70">
                 Unsaved changes
               </p>
             </div>
@@ -44,7 +44,7 @@ export function SaveBar({ isDirty, isSaving = false, onSave, onDiscard, classNam
               <Button
                 onClick={onSave}
                 disabled={!isDirty || isSaving}
-                className="min-w-[120px] px-5 py-2.5 text-sm font-medium shadow-md hover:shadow-lg transition-shadow"
+ className="min-w-[120px] px-5 py-2.5 shadow-md hover:shadow-lg transition-shadow"
               >
                 {isSaving ? (
                   <>

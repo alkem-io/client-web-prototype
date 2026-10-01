@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
-import { Card, CardContent } from "./card";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/crd/primitives/card";
+import { cn } from "@/crd/lib/utils";
 
 interface PlaceholderCardProps {
   label: string;
@@ -22,7 +22,7 @@ export function PlaceholderCard({
   description,
   size = "sm",
   onClick,
-  className,
+  className
 }: PlaceholderCardProps) {
   const isLarge = size === "lg";
 

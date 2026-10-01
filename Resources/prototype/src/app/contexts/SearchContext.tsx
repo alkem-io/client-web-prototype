@@ -23,7 +23,7 @@ const SearchContext = createContext<SearchContextValue>({
   openSearch: () => {},
   closeSearch: () => {},
   toggleSearch: () => {},
-  clearInitialQuery: () => {},
+  clearInitialQuery: () => {}
 });
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
@@ -67,7 +67,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         openSearch,
         closeSearch,
         toggleSearch,
-        clearInitialQuery,
+        clearInitialQuery
       }}
     >
       {children}

@@ -1,19 +1,19 @@
 import { useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Info, FileText, Trash2, Check, Loader2, Plus, X, Pencil, MessageSquare, Layers } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
-import { Switch } from "@/app/components/ui/switch";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
+import { Switch } from "@/crd/primitives/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,13 +23,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/app/components/ui/alert-dialog";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+  AlertDialogTrigger
+} from "@/crd/primitives/alert-dialog";
 
 import { toast } from "sonner";
 import { ALL_TEMPLATES } from "@/app/data/template-data";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 // ─── Mock Data ───────────────────────────────────────────────────────────────
 
@@ -128,7 +127,7 @@ const TEMPLATE_DATA: Record<string, {
       additionalContent: "whiteboard",
       whiteboardPreview: "https://images.unsplash.com/photo-1731924532579-d23ed102496c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
       references: [{ title: "BMC Guide", url: "https://strategyzer.com/canvas" }],
-      responseOptions: { comments: true, collection: "whiteboards" },
+      responseOptions: { comments: true, collection: "whiteboards" }
     }
   },
   t4: {
@@ -141,7 +140,7 @@ const TEMPLATE_DATA: Record<string, {
       additionalContent: "whiteboard",
       whiteboardPreview: "https://images.unsplash.com/photo-1731924532579-d23ed102496c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
       references: [],
-      responseOptions: { comments: true, collection: "none" },
+      responseOptions: { comments: true, collection: "none" }
     }
   },
   t5: {
@@ -154,7 +153,7 @@ const TEMPLATE_DATA: Record<string, {
       additionalContent: "whiteboard",
       whiteboardPreview: "https://images.unsplash.com/photo-1633613286991-611fe299c4be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
       references: [{ title: "New reference", url: "" }],
-      responseOptions: { comments: true, collection: "none" },
+      responseOptions: { comments: true, collection: "none" }
     }
   },
   t6: {
@@ -167,7 +166,7 @@ const TEMPLATE_DATA: Record<string, {
       additionalContent: "whiteboard",
       whiteboardPreview: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
       references: [],
-      responseOptions: { comments: true, collection: "whiteboards" },
+      responseOptions: { comments: true, collection: "whiteboards" }
     }
   },
   t7: {
@@ -180,7 +179,7 @@ const TEMPLATE_DATA: Record<string, {
       additionalContent: "whiteboard",
       whiteboardPreview: "https://images.unsplash.com/photo-1731924532579-d23ed102496c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
       references: [],
-      responseOptions: { comments: false, collection: "none" },
+      responseOptions: { comments: false, collection: "none" }
     }
   },
   t8: {
@@ -193,7 +192,7 @@ const TEMPLATE_DATA: Record<string, {
       additionalContent: "whiteboard",
       whiteboardPreview: "https://images.unsplash.com/photo-1768796370577-c6e8b708b980?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
       references: [],
-      responseOptions: { comments: false, collection: "none" },
+      responseOptions: { comments: false, collection: "none" }
     }
   },
   t11: {
@@ -206,7 +205,7 @@ const TEMPLATE_DATA: Record<string, {
       additionalContent: "whiteboard",
       whiteboardPreview: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
       references: [],
-      responseOptions: { comments: false, collection: "none" },
+      responseOptions: { comments: false, collection: "none" }
     }
   },
   t12: {
@@ -219,7 +218,7 @@ const TEMPLATE_DATA: Record<string, {
       additionalContent: "whiteboard",
       whiteboardPreview: "https://images.unsplash.com/photo-1633613286991-611fe299c4be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600",
       references: [],
-      responseOptions: { comments: false, collection: "none" },
+      responseOptions: { comments: false, collection: "none" }
     }
   },
   t9: {
@@ -231,7 +230,7 @@ const TEMPLATE_DATA: Record<string, {
       body: "<p><strong>What went well?</strong></p><p></p><p><strong>What could be improved?</strong></p><p></p><p><strong>What will we try next?</strong></p>",
       additionalContent: "none",
       references: [],
-      responseOptions: { comments: true, collection: "posts" },
+      responseOptions: { comments: true, collection: "posts" }
     }
   },
   t13: {
@@ -243,7 +242,7 @@ const TEMPLATE_DATA: Record<string, {
       body: "<p><strong>We want to hear from you!</strong></p><p>Share your ideas, suggestions, and innovations. Any form is welcome — describe your idea and explain why it matters.</p>",
       additionalContent: "none",
       references: [],
-      responseOptions: { comments: true, collection: "posts" },
+      responseOptions: { comments: true, collection: "posts" }
     }
   },
   t10: {
@@ -255,7 +254,7 @@ const TEMPLATE_DATA: Record<string, {
       body: "<p><strong>Community Guidelines for [Community Name]</strong></p><p><strong>Introduction</strong></p><p>Welcome to [Community Name]! Our community gathers passionate individuals who share a deep interest in [topic]. Here, we learn, share insights, and support each other. To ensure a positive and productive environment, we have established these guidelines.</p><p><strong>Key Guidelines</strong></p><ol><li><strong>Respect and Empathy</strong><ul><li>Treat every member with kindness and respect. Avoid harassment or derogatory remarks.</li><li>Approach disagreements constructively and understand diverse perspectives.</li></ul></li><li><strong>Share Knowledge Generously</strong><ul><li>Share your expertise and resources generously, ensuring accuracy.</li><li>Cite sources to maintain credibility and allow further exploration.</li></ul></li><li><strong>Stay On-Topic</strong><ul><li>Keep discussions relevant to [topic] to ensure the community remains valuable.</li><li>Use appropriate channels for specific content or questions.</li></ul></li><li><strong>Protect Privacy</strong><ul><li>Respect members' privacy. Do not share personal information without consent.</li><li>Anonymize details when discussing real-life examples.</li></ul></li><li><strong>Engage Positively</strong><ul><li>Be an active participant. Engage with others' posts by asking questions and providing feedback.</li><li>Celebrate community successes and appreciate members' efforts.</li></ul></li></ol><p><strong>Conclusion</strong></p><p>By following these guidelines, we create a supportive and inspiring environment. Let's collaborate, share, and grow together!</p>",
       additionalContent: "none",
       references: [],
-      responseOptions: { comments: false, collection: "none" },
+      responseOptions: { comments: false, collection: "none" }
     }
   },
   t14: {
@@ -267,9 +266,9 @@ const TEMPLATE_DATA: Record<string, {
       body: "<p><strong>Our Innovation Values</strong></p><p>We believe in the power of diverse perspectives and constructive collaboration to drive innovation.</p><ul><li><strong>Experiment Boldly</strong> — Share half-formed ideas without fear of judgment</li><li><strong>Build on Others' Ideas</strong> — Use \"Yes, and...\" rather than \"No, but...\"</li><li><strong>Embrace Failure</strong> — Every failed experiment teaches us something valuable</li><li><strong>Stay Curious</strong> — Ask questions, challenge assumptions respectfully</li><li><strong>Give Credit</strong> — Acknowledge contributions and inspirations</li></ul>",
       additionalContent: "none",
       references: [{ title: "Innovation Principles", url: "https://example.com/innovation" }],
-      responseOptions: { comments: false, collection: "none" },
+      responseOptions: { comments: false, collection: "none" }
     }
-  },
+  }
 };
 
 // Fallback for unknown templates
@@ -293,7 +292,7 @@ function getTemplate(id: string) {
         responseOptions: { comments: true, collection: "none" },
         innovationFlow: libTemplate.type === "Subspace" && libTemplate.structure?.stages
           ? { phases: libTemplate.structure.stages.map((s: any) => ({ name: s.name, description: "", collaborationTools: (s.posts || []).map((p: string) => ({ name: p, type: "Collaboration Tool" })) })) }
-          : undefined,
+          : undefined
       }
     };
   }
@@ -305,7 +304,7 @@ function getTemplate(id: string) {
     content: {
       title: "Template", body: "<p>Content here.</p>",
       additionalContent: "none", references: [],
-      responseOptions: { comments: true, collection: "none" },
+      responseOptions: { comments: true, collection: "none" }
     }
   };
 }
@@ -374,7 +373,7 @@ function TemplateAboutTab({ template }: { template: ReturnType<typeof getTemplat
   const dirty = {
     name: name !== savedName,
     description: description !== savedDescription,
-    tags: JSON.stringify(tags) !== JSON.stringify(savedTags),
+    tags: JSON.stringify(tags) !== JSON.stringify(savedTags)
   };
 
   const saveSection = (id: string) => {
@@ -394,15 +393,6 @@ function TemplateAboutTab({ template }: { template: ReturnType<typeof getTemplat
       }
       setTagInput("");
     }
-  };
-
-  const quillModules = {
-    toolbar: [
-      ['bold', 'italic', 'underline'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['link'],
-      ['clean']
-    ],
   };
 
   return (
@@ -432,8 +422,8 @@ function TemplateAboutTab({ template }: { template: ReturnType<typeof getTemplat
           <InlineSaveButton dirty={dirty.description} status={statuses["description"] || "idle"} onSave={() => saveSection("description")} />
         </div>
         <p className="text-caption text-muted-foreground">Explain what this template is for and when to use it.</p>
-        <div className="[&_.ql-editor]:min-h-[100px]">
-          <ReactQuill theme="snow" value={description} onChange={setDescription} modules={quillModules} />
+        <div className="[&_.ProseMirror]:min-h-[100px]">
+          <MarkdownEditor value={description} onChange={setDescription} />
         </div>
       </section>
 
@@ -483,7 +473,7 @@ function TemplateContentTab({ template }: { template: ReturnType<typeof getTempl
     flow: JSON.stringify(content.innovationFlow) !== JSON.stringify(savedContent.innovationFlow),
     whiteboard: content.whiteboardPreview !== savedContent.whiteboardPreview || content.additionalContent !== savedContent.additionalContent,
     references: JSON.stringify(content.references) !== JSON.stringify(savedContent.references),
-    responseOptions: JSON.stringify(content.responseOptions) !== JSON.stringify(savedContent.responseOptions),
+    responseOptions: JSON.stringify(content.responseOptions) !== JSON.stringify(savedContent.responseOptions)
   };
 
   const saveSection = (id: string) => {
@@ -491,16 +481,6 @@ function TemplateContentTab({ template }: { template: ReturnType<typeof getTempl
       setSavedContent({ ...content });
       toast.success("Saved");
     });
-  };
-
-  const quillModules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['link', 'blockquote', 'code-block'],
-      ['clean']
-    ],
   };
 
   // ─── Space / Subspace type: Link to source + Innovation Flow preview ─────────
@@ -673,12 +653,10 @@ function TemplateContentTab({ template }: { template: ReturnType<typeof getTempl
             <Label className="text-label uppercase text-muted-foreground">Description</Label>
             <InlineSaveButton dirty={dirty.body} status={statuses["body"] || "idle"} onSave={() => saveSection("body")} />
           </div>
-          <div className="[&_.ql-editor]:min-h-[200px]">
-            <ReactQuill
-              theme="snow"
+          <div className="[&_.ProseMirror]:min-h-[200px]">
+            <MarkdownEditor
               value={content.body}
               onChange={(value) => setContent(prev => ({ ...prev, body: value }))}
-              modules={quillModules}
             />
           </div>
         </section>
@@ -718,12 +696,10 @@ function TemplateContentTab({ template }: { template: ReturnType<typeof getTempl
             <Label className="text-label uppercase text-muted-foreground">Guidelines Body</Label>
             <InlineSaveButton dirty={dirty.body} status={statuses["body"] || "idle"} onSave={() => saveSection("body")} />
           </div>
-          <div className="[&_.ql-editor]:min-h-[300px]">
-            <ReactQuill
-              theme="snow"
+          <div className="[&_.ProseMirror]:min-h-[300px]">
+            <MarkdownEditor
               value={content.body}
               onChange={(value) => setContent(prev => ({ ...prev, body: value }))}
-              modules={quillModules}
             />
           </div>
         </section>
@@ -763,12 +739,10 @@ function TemplateContentTab({ template }: { template: ReturnType<typeof getTempl
           <Label className="text-label uppercase text-muted-foreground">Post Body</Label>
           <InlineSaveButton dirty={dirty.body} status={statuses["body"] || "idle"} onSave={() => saveSection("body")} />
         </div>
-        <div className="[&_.ql-editor]:min-h-[140px]">
-          <ReactQuill
-            theme="snow"
+        <div className="[&_.ProseMirror]:min-h-[140px]">
+          <MarkdownEditor
             value={content.body}
             onChange={(value) => setContent(prev => ({ ...prev, body: value }))}
-            modules={quillModules}
           />
         </div>
       </section>
@@ -961,7 +935,7 @@ export default function TemplateSettingsPage() {
   return (
     <div
       className="flex flex-col w-full px-6 md:px-8"
-      style={{ paddingBottom: 48, fontFamily: "'Inter', sans-serif" }}
+      style={{ paddingBottom: 48 }}
     >
       {/* Sticky header with title */}
       <div className="sticky top-16 z-20 border-b border-border bg-card -mx-6 md:-mx-8 px-6 md:px-8 pt-8 pb-6">
@@ -988,7 +962,7 @@ export default function TemplateSettingsPage() {
               style={{
                 background: "var(--card)",
                 border: "1px solid var(--border)",
-                borderRadius: "var(--radius)",
+                borderRadius: "var(--radius)"
               }}
             >
               <div className="space-y-10">

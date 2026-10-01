@@ -24,10 +24,10 @@ import {
  Send,
  Mail
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
 import {
  Table,
  TableBody,
@@ -35,33 +35,33 @@ import {
  TableHead,
  TableHeader,
  TableRow
-} from "@/app/components/ui/table";
+} from "@/crd/primitives/table";
 import {
  DropdownMenu,
  DropdownMenuContent,
  DropdownMenuItem,
  DropdownMenuTrigger,
  DropdownMenuSeparator
-} from "@/app/components/ui/dropdown-menu";
+} from "@/crd/primitives/dropdown-menu";
 import {
  Dialog,
  DialogContent,
  DialogHeader,
  DialogTitle,
  DialogDescription,
- DialogFooter,
-} from "@/app/components/ui/dialog";
+ DialogFooter
+} from "@/crd/primitives/dialog";
 import {
  Select,
  SelectContent,
  SelectItem,
  SelectTrigger,
- SelectValue,
-} from "@/app/components/ui/select";
-import { Textarea } from "@/app/components/ui/textarea";
-import { Separator } from "@/app/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+ SelectValue
+} from "@/crd/primitives/select";
+import { Textarea } from "@/crd/primitives/textarea";
+import { Separator } from "@/crd/primitives/separator";
+import { cn } from "@/crd/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 import { VCHoverCard } from "@/app/components/user/VCHoverCard";
 import { Link } from "react-router";
@@ -98,14 +98,14 @@ const MOCK_MEMBERS: CommunityMember[] = [
  status: "Active", role: "Host",
  avatar: "https://images.unsplash.com/photo-1623853589874-864b1dd4d922?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "EM",
- joinMethod: 'invited', invitedBy: 'Platform Admin',
+ joinMethod: 'invited', invitedBy: 'Platform Admin'
  },
  {
  id: 'u2', name: "Sarah Chen", email: "sarah.chen@example.com", date: "2023-11-02",
  status: "Active", role: "Admin",
  avatar: "https://images.unsplash.com/photo-1757347398206-7425300ef990?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "SC",
- joinMethod: 'direct',
+ joinMethod: 'direct'
  },
  {
  id: 'u3', name: "Maya Ross", email: "maya.r@example.com", date: "2023-12-10",
@@ -116,14 +116,14 @@ const MOCK_MEMBERS: CommunityMember[] = [
  applicationFormAnswers: [
  { question: "Why do you want to join this space?", answer: "I've been following Alkemio's work on innovation ecosystems for two years and believe my experience in sustainable tech can add real value to the discussions here." },
  { question: "Link to your portfolio or LinkedIn profile", answer: "https://linkedin.com/in/mayaross" },
- ],
+ ]
  },
  {
  id: 'u4', name: "David Kim", email: "dkim@design.co", date: "2024-01-05",
  status: "Active", role: "Member",
  avatar: "https://images.unsplash.com/photo-1651634099348-e4c38cfaa6d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "DK",
- joinMethod: 'invited', invitedBy: 'Elena Martinez',
+ joinMethod: 'invited', invitedBy: 'Elena Martinez'
  },
  {
  id: 'u5', name: "Robert Fox", email: "robert.fox@example.com", date: "2024-01-12",
@@ -131,7 +131,7 @@ const MOCK_MEMBERS: CommunityMember[] = [
  avatar: "https://images.unsplash.com/photo-1651097681268-851acda33b18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=256",
  initials: "RF",
  joinMethod: 'applied',
- applicationMessage: "Hi, I'm a product designer with 8 years in civic tech. I'd love to contribute to the UX challenges this space is tackling — happy to share my portfolio on request.",
+ applicationMessage: "Hi, I'm a product designer with 8 years in civic tech. I'd love to contribute to the UX challenges this space is tackling — happy to share my portfolio on request."
  },
  {
  id: 'p1', name: "Michael Chen", email: "m.chen@university.edu", date: "2024-02-20",
@@ -140,13 +140,13 @@ const MOCK_MEMBERS: CommunityMember[] = [
  applicationFormAnswers: [
  { question: "Why do you want to join this space?", answer: "As a researcher in urban mobility at TU Delft, this space aligns directly with my work on smart city adoption frameworks. I'd love to connect with practitioners here." },
  { question: "Link to your portfolio or LinkedIn profile", answer: "https://linkedin.com/in/michaelchen-research" },
- ],
+ ]
  },
  {
  id: 'p2', name: "Jessica Alverez", email: "jess.alverez@studio.com", date: "2024-02-21",
  status: "Pending", role: "Member", avatar: null, initials: "JA",
  joinMethod: 'applied',
- applicationMessage: "I run a design studio focused on social impact projects and would love to bring that perspective to this community. Looking forward to collaborating!",
+ applicationMessage: "I run a design studio focused on social impact projects and would love to bring that perspective to this community. Looking forward to collaborating!"
  },
  {
  // Accepted = admin approved the application; membership is being finalised.
@@ -157,17 +157,17 @@ const MOCK_MEMBERS: CommunityMember[] = [
  applicationFormAnswers: [
  { question: "Why do you want to join this space?", answer: "I work in venture capital focused on climate tech. This space looks like the right community to explore collaborative funding models with practitioners." },
  { question: "Link to your portfolio or LinkedIn profile", answer: "https://linkedin.com/in/lisapark-vc" },
- ],
+ ]
  },
  {
  id: 'i1', name: "Thomas Wright", email: "tom.wright@construction.com", date: "2024-02-18",
  status: "Invited", role: "Member", avatar: null, initials: "TW",
- joinMethod: 'invited', invitedBy: 'Elena Martinez',
+ joinMethod: 'invited', invitedBy: 'Elena Martinez'
  },
  {
  id: 'i2', name: "Emily Zhang", email: "emily.z@tech.io", date: "2024-02-19",
  status: "Invited", role: "Lead", avatar: null, initials: "EZ",
- joinMethod: 'invited', invitedBy: 'Sarah Chen',
+ joinMethod: 'invited', invitedBy: 'Sarah Chen'
  },
  ...Array.from({ length: 20 }).map((_, i) => ({
  id: `m${i + 6}`,
@@ -186,7 +186,7 @@ const MOCK_MEMBERS: CommunityMember[] = [
  "JW", "ET", "LO", "SL", "OS", "AP", "WC", "IG", "HW", "MK",
  "AW", "CD", "DL", "AW", "MC", "HL", "JH", "EY", "SA", "AK"
  ][i] || `M${i + 6}`,
- joinMethod: 'direct' as JoinMethod,
+ joinMethod: 'direct' as JoinMethod
  }))
 ];
 
@@ -248,7 +248,7 @@ const MOCK_VCS: VirtualContributor[] = [
  initials: 'SB',
  description: 'Automatically summarizes long discussions and documents',
  tags: ['Automation', 'Documentation', 'AI'],
- hostName: 'Sarah Chen',
+ hostName: 'Sarah Chen'
  },
  {
  id: 'vc2',
@@ -257,7 +257,7 @@ const MOCK_VCS: VirtualContributor[] = [
  initials: 'TA',
  description: 'Translates content to 50+ languages in real-time',
  tags: ['Translation', 'Multilingual', 'Communication'],
- hostName: 'Elena Martinez',
+ hostName: 'Elena Martinez'
  },
 ];
 
@@ -266,7 +266,7 @@ const MOCK_VCS: VirtualContributor[] = [
 function MembershipDetailsDialog({
  member,
  open,
- onOpenChange,
+ onOpenChange
 }: {
  member: CommunityMember | null;
  open: boolean;
@@ -287,11 +287,11 @@ function MembershipDetailsDialog({
  <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg border">
  <Avatar className="w-10 h-10 border">
  {member.avatar && <AvatarImage src={member.avatar} />}
- <AvatarFallback className="text-sm font-semibold">{member.initials}</AvatarFallback>
+ <AvatarFallback className="text-card-title">{member.initials}</AvatarFallback>
  </Avatar>
  <div>
- <div className="font-medium text-sm">{member.name}</div>
- <div className="text-xs text-muted-foreground">{member.email}</div>
+ <div className="text-body-emphasis">{member.name}</div>
+ <div className="text-caption text-muted-foreground">{member.email}</div>
  </div>
  <Badge
  variant="outline"
@@ -309,21 +309,21 @@ function MembershipDetailsDialog({
 
  {/* How they joined */}
  <div className="space-y-2">
- <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">How they joined</p>
+ <p className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">How they joined</p>
  {member.joinMethod === 'invited' ? (
- <div className="flex items-start gap-2.5 text-sm">
+ <div className="flex items-start gap-2.5 text-body">
  <UserPlus className="w-4 h-4 mt-0.5 text-primary shrink-0" />
  <span>
  Invited by <span className="font-medium">{member.invitedBy ?? 'an admin'}</span> on {joinedDate}
  </span>
  </div>
  ) : member.joinMethod === 'applied' ? (
- <div className="flex items-start gap-2.5 text-sm">
+ <div className="flex items-start gap-2.5 text-body">
  <ClipboardList className="w-4 h-4 mt-0.5 text-amber-600 shrink-0" />
  <span>Submitted an application on {joinedDate}</span>
  </div>
  ) : (
- <div className="flex items-start gap-2.5 text-sm text-muted-foreground">
+ <div className="flex items-start gap-2.5 text-body text-muted-foreground">
  <UserCheck className="w-4 h-4 mt-0.5 shrink-0" />
  <span>Added directly as a member on {joinedDate}</span>
  </div>
@@ -335,11 +335,11 @@ function MembershipDetailsDialog({
  <>
  <Separator />
  <div className="space-y-3">
- <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Application Form</p>
+ <p className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">Application Form</p>
  {member.applicationFormAnswers.map((qa, i) => (
  <div key={i} className="space-y-1">
- <p className="text-xs font-medium text-muted-foreground">{qa.question}</p>
- <p className="text-sm bg-muted/40 rounded-md px-3 py-2 border leading-relaxed">{qa.answer}</p>
+ <p className="text-caption text-muted-foreground">{qa.question}</p>
+ <p className="text-body bg-muted/40 rounded-md px-3 py-2 border leading-relaxed">{qa.answer}</p>
  </div>
  ))}
  </div>
@@ -351,10 +351,10 @@ function MembershipDetailsDialog({
  <>
  <Separator />
  <div className="space-y-2">
- <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Message</p>
+ <p className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">Message</p>
  <div className="flex items-start gap-2.5">
  <MessageSquare className="w-4 h-4 mt-2.5 text-muted-foreground shrink-0" />
- <p className="text-sm bg-muted/40 rounded-md px-3 py-2 border flex-1 leading-relaxed">{member.applicationMessage}</p>
+ <p className="text-body bg-muted/40 rounded-md px-3 py-2 border flex-1 leading-relaxed">{member.applicationMessage}</p>
  </div>
  </div>
  </>
@@ -362,7 +362,7 @@ function MembershipDetailsDialog({
 
  {/* No details */}
  {!member.applicationFormAnswers && !member.applicationMessage && member.joinMethod === 'direct' && (
- <p className="text-sm text-muted-foreground text-center py-2">No additional details available.</p>
+ <p className="text-body text-muted-foreground text-center py-2">No additional details available.</p>
  )}
  </div>
  </DialogContent>
@@ -377,7 +377,7 @@ function InviteOrgDialog({
  onOpenChange,
  onInvite,
  alreadyInvited,
- context = 'space',
+ context = 'space'
 }: {
  open: boolean;
  onOpenChange: (v: boolean) => void;
@@ -550,7 +550,7 @@ export function SpaceSettingsCommunity() {
  invitedDate: new Date().toISOString().slice(0, 10),
  status: 'pending' as OrgInviteStatus,
  role,
- message: message || undefined,
+ message: message || undefined
  },
  ]);
  };
@@ -954,7 +954,7 @@ export function SpaceSettingsCommunity() {
  initials: vc.initials,
  description: vc.description,
  tags: vc.tags,
- profileUrl: `/vc/${vc.name.toLowerCase().replace(/\s+/g, '-')}`,
+ profileUrl: `/vc/${vc.name.toLowerCase().replace(/\s+/g, '-')}`
  }}
  >
  <Link

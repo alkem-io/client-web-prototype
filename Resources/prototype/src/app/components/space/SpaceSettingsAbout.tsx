@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
 import { X, Plus, Type, MapPin, Image, FileText, Tag, Link2, Info, Check, Upload, Crop, Minus, Tags, MoreHorizontal, Pencil } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
@@ -14,19 +12,20 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Badge } from "@/app/components/ui/badge";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { Badge } from "@/crd/primitives/badge";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import {
   ClassificationPickerDialog,
   AppliedClassification,
-  AVAILABLE_CLASSIFICATION_TEMPLATES,
+  AVAILABLE_CLASSIFICATION_TEMPLATES
 } from "@/app/components/classifications/ClassificationPickerDialog";
 
 // Mock data for initial state
@@ -63,7 +62,7 @@ export function SpaceSettingsAbout() {
       templateName: "UN Sustainable Development Goals",
       selectedValues: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"],
       cardinality: "multi",
-      allValues: SDG_CLASSIFICATION_VALUES,
+      allValues: SDG_CLASSIFICATION_VALUES
     },
   ]);
   const [savedClassifications, setSavedClassifications] = useState<AppliedClassification[]>([
@@ -73,7 +72,7 @@ export function SpaceSettingsAbout() {
       templateName: "UN Sustainable Development Goals",
       selectedValues: ["SDG 7 – Affordable and Clean Energy", "SDG 13 – Climate Action"],
       cardinality: "multi",
-      allValues: SDG_CLASSIFICATION_VALUES,
+      allValues: SDG_CLASSIFICATION_VALUES
     },
   ]);
   const [classificationPickerOpen, setClassificationPickerOpen] = useState(false);
@@ -140,15 +139,6 @@ export function SpaceSettingsAbout() {
 
   const removeReference = (index: number) => {
     setFormData(prev => ({ ...prev, references: prev.references.filter((_, i) => i !== index) }));
-  };
-
-  const quillModules = {
-    toolbar: [
-      ['bold', 'italic', 'underline'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['link', 'blockquote'],
-      ['clean']
-    ],
   };
 
   return (
@@ -256,18 +246,16 @@ export function SpaceSettingsAbout() {
               const labels: Record<string, { title: string; hint: string }> = {
                 what: { title: "What", hint: "What is this space about?" },
                 why: { title: "Why", hint: "Why does this space exist?" },
-                who: { title: "Who", hint: "Who should join?" },
+                who: { title: "Who", hint: "Who should join?" }
               };
               const { title, hint } = labels[field];
               return (
                 <div key={field} className="space-y-2">
                   <Label>{title}</Label>
-                  <div className="prose-editor">
-                    <ReactQuill
-                      theme="snow"
+                  <div>
+                    <MarkdownEditor
                       value={formData[field] as string}
                       onChange={(val) => handleQuillChange(field, val)}
-                      modules={quillModules}
                       placeholder={hint}
                     />
                   </div>
@@ -405,7 +393,7 @@ export function SpaceSettingsAbout() {
                                       ...classification,
                                       selectedValues: classification.cardinality === "multi"
                                         ? [...classification.selectedValues, value]
-                                        : [value],
+                                        : [value]
                                     }
                                   : classification
                               )
@@ -639,7 +627,7 @@ function BannerEditor() {
     localStorage.setItem('alkemio-banner-settings', JSON.stringify({
       image: selectedImage,
       height: bannerHeight,
-      cropY: cropY,
+      cropY: cropY
     }));
     setDialogOpen(false);
   };
@@ -706,7 +694,7 @@ function BannerEditor() {
           <>
             <img src={savedImage} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors flex items-center justify-center">
-              <span className="text-white text-sm font-medium opacity-0 hover:opacity-100 transition-opacity">
+              <span className="text-white text-body-emphasis opacity-0 hover:opacity-100 transition-opacity">
                 Edit banner
               </span>
             </div>
@@ -735,7 +723,7 @@ function BannerEditor() {
           {/* Step 1: Choose image (only shown for new uploads or when changing image) */}
           {step === 1 && (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">Choose an image for your space banner, or upload your own.</p>
+              <p className="text-body text-muted-foreground">Choose an image for your space banner, or upload your own.</p>
 
               {/* Upload area */}
               <label className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 flex flex-col items-center gap-3 hover:border-primary/40 hover:bg-primary/5 transition-colors cursor-pointer">
@@ -753,8 +741,8 @@ function BannerEditor() {
                 />
                 <Upload className="w-8 h-8 text-muted-foreground/50" />
                 <div className="text-center">
-                  <p className="text-sm font-medium">Drop an image here or click to browse</p>
-                  <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB. Recommended: 1920px wide or larger.</p>
+                  <p className="text-body-emphasis">Drop an image here or click to browse</p>
+                  <p className="text-caption text-muted-foreground">PNG, JPG up to 5MB. Recommended: 1920px wide or larger.</p>
                 </div>
               </label>
             </div>
@@ -763,7 +751,7 @@ function BannerEditor() {
           {/* Step 2: Interactive crop & height */}
           {step === 2 && selectedImage && (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">Drag the selection to choose which part of the image to show. Drag the edges to adjust height.</p>
+              <p className="text-body text-muted-foreground">Drag the selection to choose which part of the image to show. Drag the edges to adjust height.</p>
 
               {/* Crop area — full image with draggable selection box */}
               <div
@@ -788,7 +776,7 @@ function BannerEditor() {
                     transparent ${cropY}%, 
                     transparent ${cropY + cropHeightPercent}%, 
                     rgba(0,0,0,0.5) ${cropY + cropHeightPercent}%, 
-                    rgba(0,0,0,0.5) 100%)`,
+                    rgba(0,0,0,0.5) 100%)`
                 }} />
 
                 {/* Crop selection box */}
@@ -797,7 +785,7 @@ function BannerEditor() {
                   style={{
                     top: `${cropY}%`,
                     height: `${cropHeightPercent}%`,
-                    cursor: isDragging === "move" ? "grabbing" : "grab",
+                    cursor: isDragging === "move" ? "grabbing" : "grab"
                   }}
                   onMouseDown={(e) => handleMouseDown(e, "move")}
                 >
@@ -833,14 +821,14 @@ function BannerEditor() {
                 </div>
 
                 {/* Height label */}
-                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm pointer-events-none">
+                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-caption px-2 py-1 rounded-md backdrop-blur-sm pointer-events-none">
                   {bannerHeight}px
                 </div>
               </div>
 
               {/* Preview strip — what the banner will actually look like */}
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Preview</p>
+                <p className="text-caption text-muted-foreground uppercase tracking-wider mb-2">Preview</p>
                 <div
                   className="overflow-hidden rounded-lg border border-border"
                   style={{ height: bannerHeight }}
@@ -851,7 +839,7 @@ function BannerEditor() {
                     className="w-full object-cover"
                     style={{
                       height: "100%",
-                      objectPosition: `center ${cropY + cropHeightPercent / 2}%`,
+                      objectPosition: `center ${cropY + cropHeightPercent / 2}%`
                     }}
                   />
                 </div>

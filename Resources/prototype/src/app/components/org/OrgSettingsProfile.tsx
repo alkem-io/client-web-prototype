@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { Input } from "@/app/components/ui/input";
-import { Button } from "@/app/components/ui/button";
+import { Input } from "@/crd/primitives/input";
+import { Button } from "@/crd/primitives/button";
 import { Building2, FileText, MapPin, Tag, Link2, Bookmark, Upload, Globe, X, Plus, Trash2 } from "lucide-react";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 interface OrgData {
   name: string;
@@ -24,7 +23,7 @@ const INITIAL_DATA = {
   country: "-",
   keywords: ["demo", "sandbox", "showcase", "examples"],
   website: "",
-  references: [] as { title: string; url: string; description: string }[],
+  references: [] as { title: string; url: string; description: string }[]
 };
 
 interface OrgSettingsProfileProps {
@@ -73,7 +72,7 @@ export function OrgSettingsProfile({ org }: OrgSettingsProfileProps) {
   const addReference = () => {
     setFormData((prev) => ({
       ...prev,
-      references: [...prev.references, { title: "", url: "", description: "" }],
+      references: [...prev.references, { title: "", url: "", description: "" }]
     }));
   };
 
@@ -85,16 +84,6 @@ export function OrgSettingsProfile({ org }: OrgSettingsProfileProps) {
 
   const removeReference = (index: number) => {
     setFormData((prev) => ({ ...prev, references: prev.references.filter((_, i) => i !== index) }));
-  };
-
-  const quillModules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "blockquote", "code-block"],
-      ["clean"],
-    ],
   };
 
   return (
@@ -131,12 +120,10 @@ export function OrgSettingsProfile({ org }: OrgSettingsProfileProps) {
               {/* Description */}
               <div>
                 <label className="text-body-emphasis block mb-1.5">Description</label>
-                <div className="[&_.ql-toolbar.ql-snow]:rounded-t-lg [&_.ql-container.ql-snow]:rounded-b-lg">
-                  <ReactQuill
-                    theme="snow"
+                <div>
+                  <MarkdownEditor
                     value={formData.description}
                     onChange={(val) => setFormData((prev) => ({ ...prev, description: val }))}
-                    modules={quillModules}
                     className="bg-background"
                   />
                 </div>
@@ -233,7 +220,7 @@ export function OrgSettingsProfile({ org }: OrgSettingsProfileProps) {
             <h3 className="text-subsection-title font-semibold mb-4">Logo</h3>
             <div className="flex flex-col items-center gap-3">
               <div
-                className="w-28 h-28 rounded-xl flex items-center justify-center text-white text-3xl font-bold"
+                className="w-28 h-28 rounded-xl flex items-center justify-center text-white text-hero"
                 style={{ backgroundColor: org.avatarColor }}
               >
                 {org.initials}

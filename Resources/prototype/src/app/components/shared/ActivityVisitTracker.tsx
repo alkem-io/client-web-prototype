@@ -4,7 +4,7 @@ import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext"
 import {
   spaceContainer,
   subspaceContainer,
-  tabContainer,
+  tabContainer
 } from "@/app/data/activity-data";
 
 /**

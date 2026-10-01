@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { Eye, EyeOff, Info, Fingerprint, HelpCircle } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Checkbox } from "@/app/components/ui/checkbox";
+import { Button } from "@/crd/primitives/button";
+import { Checkbox } from "@/crd/primitives/checkbox";
 import { Footer } from "@/app/components/layout/Footer";
 import AlkemioLogo from "@/imports/AlkemioLogo";
 
@@ -58,7 +58,7 @@ function FloatingInput({
   required = false,
   value,
   onChange,
-  endIcon,
+  endIcon
 }: {
   label: string;
   type?: string;
@@ -77,7 +77,7 @@ function FloatingInput({
         style={{
           border: `${focused ? "2px" : "1px"} solid ${focused ? "var(--primary)" : "var(--border)"}`,
           borderRadius: "4px",
-          transition: "border-color 0.2s",
+          transition: "border-color 0.2s"
         }}
       >
         <input
@@ -91,22 +91,20 @@ function FloatingInput({
             height: "56px",
             padding: "20px 14px 8px",
             paddingRight: endIcon ? "48px" : "14px",
-            fontSize: "var(--text-base)",
-            color: "var(--foreground)",
-            fontFamily: "'Inter', sans-serif",
-          }}
+            fontSize: "var(--text-subheader font-normal)",
+            color: "var(--foreground)"
+            }}
         />
         <label
           className="absolute left-3 pointer-events-none transition-all duration-200"
           style={{
             top: isFloating ? "6px" : "50%",
             transform: isFloating ? "none" : "translateY(-50%)",
-            fontSize: isFloating ? "12px" : "var(--text-base)",
+            fontSize: isFloating ? "12px" : "var(--text-subheader font-normal)",
             color: focused ? "var(--primary)" : "var(--muted-foreground)",
             background: "white",
-            padding: "0 4px",
-            fontFamily: "'Inter', sans-serif",
-          }}
+            padding: "0 4px"
+            }}
         >
           {label}{required && " *"}
         </label>
@@ -140,7 +138,7 @@ function SocialButtons({ showPasskey = true }: { showPasskey?: boolean }) {
             width: "48px",
             height: "48px",
             borderColor: "var(--border)",
-            background: "var(--card)",
+            background: "var(--card)"
           }}
           title={`Continue with ${p.label}`}
         >
@@ -156,7 +154,7 @@ function OrDivider() {
   return (
     <div className="flex items-center gap-3 my-5">
       <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
-      <span style={{ fontSize: "var(--text-sm)", color: "var(--muted-foreground)", fontFamily: "'Inter', sans-serif" }}>
+      <span style={{ fontSize: "var(--text-body)", color: "var(--muted-foreground)" }}>
         or continue with
       </span>
       <div className="flex-1 h-px" style={{ background: "var(--border)" }} />
@@ -170,7 +168,7 @@ function AuthCard({
   title,
   showSignUp,
   showSignIn,
-  onNavigate,
+  onNavigate
 }: {
   children: React.ReactNode;
   title: string;
@@ -185,9 +183,8 @@ function AuthCard({
         background: "var(--card)",
         borderRadius: "8px",
         boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-        padding: "32px 36px",
-        fontFamily: "'Inter', sans-serif",
-      }}
+        padding: "32px 36px"
+        }}
     >
       {/* Logo + Account toggle row */}
       <div className="flex items-center justify-between mb-6">
@@ -199,7 +196,7 @@ function AuthCard({
             className="mt-1.5"
             style={{
               fontSize: "11px",
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           >
             Safe Spaces for Collaboration
@@ -207,12 +204,12 @@ function AuthCard({
         </div>
         {showSignUp && (
           <div className="text-right">
-            <span style={{ fontSize: "var(--text-sm)", color: "var(--muted-foreground)" }}>No account?</span>
+            <span style={{ fontSize: "var(--text-body)", color: "var(--muted-foreground)" }}>No account?</span>
             <br />
             <button
               onClick={() => onNavigate("sign-up")}
               className="font-semibold hover:underline"
-              style={{ fontSize: "var(--text-sm)", color: "var(--foreground)" }}
+              style={{ fontSize: "var(--text-body)", color: "var(--foreground)" }}
             >
               Sign up
             </button>
@@ -220,12 +217,12 @@ function AuthCard({
         )}
         {showSignIn && (
           <div className="text-right">
-            <span style={{ fontSize: "var(--text-sm)", color: "var(--muted-foreground)" }}>Have an account?</span>
+            <span style={{ fontSize: "var(--text-body)", color: "var(--muted-foreground)" }}>Have an account?</span>
             <br />
             <button
               onClick={() => onNavigate("sign-in")}
               className="font-semibold hover:underline"
-              style={{ fontSize: "var(--text-sm)", color: "var(--foreground)" }}
+              style={{ fontSize: "var(--text-body)", color: "var(--foreground)" }}
             >
               Sign in
             </button>
@@ -240,7 +237,7 @@ function AuthCard({
           fontSize: "var(--text-3xl)",
           fontWeight: 700,
           color: "var(--foreground)",
-          lineHeight: 1.2,
+          lineHeight: 1.2
         }}
       >
         {title}
@@ -292,15 +289,14 @@ export default function AuthPageV3() {
   return (
     <div
       className="min-h-screen flex flex-col relative"
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
+      >
       {/* Background: Soft multi-stop gradient */}
       <div className="absolute inset-0" style={{ zIndex: 0 }}>
         {/* Primary gradient — very soft warm-to-cool sweep */}
         <div
           className="absolute inset-0"
           style={{
-            background: "linear-gradient(145deg, #f8fafc 0%, #eef4f9 25%, #f0f7fc 45%, #f5f0f8 65%, #faf5f0 85%, #f8fafc 100%)",
+            background: "linear-gradient(145deg, #f8fafc 0%, #eef4f9 25%, #f0f7fc 45%, #f5f0f8 65%, #faf5f0 85%, #f8fafc 100%)"
           }}
         />
 
@@ -313,7 +309,7 @@ export default function AuthPageV3() {
             width: "50vw",
             height: "50vh",
             borderRadius: "50%",
-            background: "radial-gradient(ellipse, rgba(9,188,212,0.06) 0%, transparent 70%)",
+            background: "radial-gradient(ellipse, rgba(9,188,212,0.06) 0%, transparent 70%)"
           }}
         />
         <div
@@ -324,7 +320,7 @@ export default function AuthPageV3() {
             width: "45vw",
             height: "45vh",
             borderRadius: "50%",
-            background: "radial-gradient(ellipse, rgba(168,85,247,0.04) 0%, transparent 70%)",
+            background: "radial-gradient(ellipse, rgba(168,85,247,0.04) 0%, transparent 70%)"
           }}
         />
         <div
@@ -335,7 +331,7 @@ export default function AuthPageV3() {
             width: "40vw",
             height: "40vh",
             borderRadius: "50%",
-            background: "radial-gradient(ellipse, rgba(59,130,246,0.035) 0%, transparent 70%)",
+            background: "radial-gradient(ellipse, rgba(59,130,246,0.035) 0%, transparent 70%)"
           }}
         />
       </div>
@@ -346,7 +342,7 @@ export default function AuthPageV3() {
         style={{
           opacity: isLoggingIn ? 0 : 1,
           transform: isLoggingIn ? "translateY(-40px) scale(0.97)" : "translateY(0) scale(1)",
-          transition: "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+          transition: "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
         }}
       >
         <div className="w-full max-w-[420px]">
@@ -376,7 +372,7 @@ export default function AuthPageV3() {
               <button
                 onClick={() => setView("recovery")}
                 className="hover:underline"
-                style={{ fontSize: "var(--text-sm)", color: "var(--primary)" }}
+                style={{ fontSize: "var(--text-body)", color: "var(--primary)" }}
               >
                 Forgot password?
               </button>
@@ -387,8 +383,8 @@ export default function AuthPageV3() {
                   background: "var(--primary)",
                   color: "var(--primary-foreground)",
                   height: "48px",
-                  fontSize: "var(--text-sm)",
-                  letterSpacing: "0.5px",
+ fontSize: "var(--text-base)",
+                  letterSpacing: "0.5px"
                 }}
                 onClick={handleSignIn}
               >
@@ -403,7 +399,7 @@ export default function AuthPageV3() {
         {view === "sign-up" && (
           <AuthCard title="Sign up" showSignIn onNavigate={handleNavigate}>
             <div className="space-y-5">
-              <p style={{ fontSize: "var(--text-sm)", color: "var(--muted-foreground)", lineHeight: 1.6 }}>
+              <p style={{ fontSize: "var(--text-body)", color: "var(--muted-foreground)", lineHeight: 1.6 }}>
                 Alkemio is designed to benefit society. Please read and accept the{" "}
                 <a href="#" className="underline font-medium" style={{ color: "var(--foreground)" }}>Terms of Use</a>{" "}
                 and{" "}
@@ -417,7 +413,7 @@ export default function AuthPageV3() {
                   onCheckedChange={(v) => setTermsAccepted(!!v)}
                   className="mt-0.5"
                 />
-                <label style={{ fontSize: "var(--text-sm)", color: "var(--foreground)", lineHeight: 1.5 }}>
+                <label style={{ fontSize: "var(--text-body)", color: "var(--foreground)", lineHeight: 1.5 }}>
                   I accept the{" "}
                   <a href="#" className="underline font-medium">Terms of Use</a>{" "}
                   and{" "}
@@ -452,9 +448,9 @@ export default function AuthPageV3() {
                   background: termsAccepted ? "var(--primary)" : "var(--muted)",
                   color: termsAccepted ? "var(--primary-foreground)" : "var(--muted-foreground)",
                   height: "48px",
-                  fontSize: "var(--text-sm)",
+ fontSize: "var(--text-base)",
                   letterSpacing: "0.5px",
-                  cursor: termsAccepted ? "pointer" : "not-allowed",
+                  cursor: termsAccepted ? "pointer" : "not-allowed"
                 }}
                 disabled={!termsAccepted}
                 onClick={handleSignUpNext}
@@ -475,11 +471,11 @@ export default function AuthPageV3() {
                 className="flex items-center gap-3 p-3 rounded"
                 style={{
                   background: "rgba(29, 56, 74, 0.06)",
-                  border: "1px solid rgba(29, 56, 74, 0.12)",
+                  border: "1px solid rgba(29, 56, 74, 0.12)"
                 }}
               >
                 <Info className="w-4 h-4 shrink-0" style={{ color: "var(--primary)" }} />
-                <span style={{ fontSize: "var(--text-sm)", color: "var(--primary)" }}>
+                <span style={{ fontSize: "var(--text-body)", color: "var(--primary)" }}>
                   Pick a password for your account
                 </span>
               </div>
@@ -504,8 +500,8 @@ export default function AuthPageV3() {
                   background: "var(--primary)",
                   color: "var(--primary-foreground)",
                   height: "48px",
-                  fontSize: "var(--text-sm)",
-                  letterSpacing: "0.5px",
+ fontSize: "var(--text-base)",
+                  letterSpacing: "0.5px"
                 }}
                 onClick={handleSignUpSubmit}
               >
@@ -518,10 +514,10 @@ export default function AuthPageV3() {
                 className="w-full uppercase tracking-wider font-semibold"
                 style={{
                   height: "48px",
-                  fontSize: "var(--text-sm)",
+ fontSize: "var(--text-base)",
                   letterSpacing: "0.5px",
                   borderColor: "var(--primary)",
-                  color: "var(--primary)",
+                  color: "var(--primary)"
                 }}
                 onClick={() => setView("sign-up")}
               >
@@ -537,8 +533,8 @@ export default function AuthPageV3() {
                   background: "var(--primary)",
                   color: "var(--primary-foreground)",
                   height: "48px",
-                  fontSize: "var(--text-sm)",
-                  letterSpacing: "0.5px",
+ fontSize: "var(--text-base)",
+                  letterSpacing: "0.5px"
                 }}
               >
                 <Fingerprint className="w-4 h-4" />
@@ -554,10 +550,10 @@ export default function AuthPageV3() {
         {view === "verify" && (
           <AuthCard title="Sign up" showSignIn onNavigate={handleNavigate}>
             <div className="space-y-6">
-              <p style={{ fontSize: "var(--text-base)", color: "var(--muted-foreground)", lineHeight: 1.7 }}>
+              <p style={{ fontSize: "var(--text-subheader font-normal)", color: "var(--muted-foreground)", lineHeight: 1.7 }}>
                 The last step is to verify your email address. Please check your inbox for an email with instructions.
               </p>
-              <p style={{ fontSize: "var(--text-base)", color: "var(--foreground)", lineHeight: 1.7 }}>
+              <p style={{ fontSize: "var(--text-subheader font-normal)", color: "var(--foreground)", lineHeight: 1.7 }}>
                 If you have not received an email,{" "}
                 <button className="underline font-medium hover:opacity-80">
                   click here to send it again.
@@ -570,7 +566,7 @@ export default function AuthPageV3() {
         {view === "recovery" && (
           <AuthCard title="Password recovery" showSignUp onNavigate={handleNavigate}>
             <div className="space-y-5">
-              <p style={{ fontSize: "var(--text-sm)", color: "var(--muted-foreground)", lineHeight: 1.6 }}>
+              <p style={{ fontSize: "var(--text-body)", color: "var(--muted-foreground)", lineHeight: 1.6 }}>
                 Please enter your email address below to receive a recovery link that will allow you to reset your password.
               </p>
               <FloatingInput
@@ -587,8 +583,8 @@ export default function AuthPageV3() {
                   background: "var(--primary)",
                   color: "var(--primary-foreground)",
                   height: "48px",
-                  fontSize: "var(--text-sm)",
-                  letterSpacing: "0.5px",
+ fontSize: "var(--text-base)",
+                  letterSpacing: "0.5px"
                 }}
                 onClick={handleRecovery}
               >
@@ -607,7 +603,7 @@ export default function AuthPageV3() {
           width: "48px",
           height: "48px",
           background: "var(--primary)",
-          color: "var(--primary-foreground)",
+          color: "var(--primary-foreground)"
         }}
       >
         <HelpCircle className="w-5 h-5" />

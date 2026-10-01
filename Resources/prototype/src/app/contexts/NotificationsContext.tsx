@@ -13,7 +13,7 @@ const NotificationsContext = createContext<NotificationsContextValue>({
   isOpen: false,
   initialTab: "notifications",
   openNotifications: () => {},
-  closeNotifications: () => {},
+  closeNotifications: () => {}
 });
 
 export function NotificationsProvider({ children }: { children: React.ReactNode }) {

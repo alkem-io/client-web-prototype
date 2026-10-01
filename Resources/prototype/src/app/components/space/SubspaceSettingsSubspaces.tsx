@@ -12,19 +12,19 @@ import {
  Grid,
  List as ListIcon,
  Lightbulb,
- Filter,
+ Filter
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
 import {
  DropdownMenu,
  DropdownMenuContent,
  DropdownMenuItem,
  DropdownMenuTrigger,
- DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
+ DropdownMenuSeparator
+} from "@/crd/primitives/dropdown-menu";
 import {
  Dialog,
  DialogContent,
@@ -32,10 +32,10 @@ import {
  DialogFooter,
  DialogHeader,
  DialogTitle,
- DialogTrigger,
-} from "@/app/components/ui/dialog";
-import { Separator } from "@/app/components/ui/separator";
-import { cn } from "@/lib/utils";
+ DialogTrigger
+} from "@/crd/primitives/dialog";
+import { Separator } from "@/crd/primitives/separator";
+import { cn } from "@/crd/lib/utils";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 
 interface SubSubspace {
@@ -56,7 +56,7 @@ const MOCK_SUBSUBSPACES: SubSubspace[] = [
  image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2xhciUyMHBhbmVsfGVufDF8fHx8MTc2OTQ0MTk1MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
  memberCount: 8,
  status: "Active",
- lastActive: "3 hours ago",
+ lastActive: "3 hours ago"
  },
  {
  id: "2",
@@ -65,7 +65,7 @@ const MOCK_SUBSUBSPACES: SubSubspace[] = [
  image: "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3aW5kJTIwdHVyYmluZXxlbnwxfHx8fDE3Njk0NDE5NTB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
  memberCount: 5,
  status: "Active",
- lastActive: "1 day ago",
+ lastActive: "1 day ago"
  },
  {
  id: "3",
@@ -74,7 +74,7 @@ const MOCK_SUBSUBSPACES: SubSubspace[] = [
  image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb2xpY3klMjBkb2N1bWVudHxlbnwxfHx8fDE3Njk0NDE5NTB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
  memberCount: 4,
  status: "Archived",
- lastActive: "2 weeks ago",
+ lastActive: "2 weeks ago"
  },
 ];
 
@@ -102,7 +102,7 @@ export function SubspaceSettingsSubspaces() {
  image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzb2xhciUyMHBhbmVsfGVufDF8fHx8MTc2OTQ0MTk1MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
  memberCount: 1,
  status: "Active",
- lastActive: "Just now",
+ lastActive: "Just now"
  };
  setSubspaces([newSubspace, ...subspaces]);
  setIsCreateModalOpen(false);

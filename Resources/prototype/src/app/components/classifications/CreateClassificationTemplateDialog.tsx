@@ -1,24 +1,24 @@
 import { useState } from "react";
 import { Plus, X, AlertCircle } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { Textarea } from "@/app/components/ui/textarea";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { Textarea } from "@/crd/primitives/textarea";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
+  DialogFooter
+} from "@/crd/primitives/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 interface CreateClassificationTemplateDialogProps {
   open: boolean;
@@ -34,7 +34,7 @@ interface CreateClassificationTemplateDialogProps {
 export function CreateClassificationTemplateDialog({
   open,
   onOpenChange,
-  onCreated,
+  onCreated
 }: CreateClassificationTemplateDialogProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -80,7 +80,7 @@ export function CreateClassificationTemplateDialog({
       name: name.trim(),
       description: description.trim(),
       cardinality,
-      values,
+      values
     });
 
     // Reset

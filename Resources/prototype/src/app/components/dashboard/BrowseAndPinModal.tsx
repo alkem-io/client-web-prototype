@@ -2,9 +2,9 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { IconButton } from "@/app/components/ui/icon-button";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { IconButton } from "@/crd/primitives/icon-button";
 import { MOCK_MEMBERSHIPS, MembershipItem } from "@/app/components/memberships/membershipData";
 import { Pin, Lock } from "lucide-react";
 import { useMemo } from "react";
@@ -24,7 +24,7 @@ function CompactCard({ item, overlay }: { item: MembershipItem; overlay?: React.
         background: "var(--card)",
         border: "1px solid var(--border)",
         borderRadius: "var(--radius)",
-        boxShadow: "none",
+        boxShadow: "none"
       }}
       onMouseEnter={(e) =>
         (e.currentTarget.style.boxShadow = "var(--elevation-sm)")
@@ -45,7 +45,7 @@ function CompactCard({ item, overlay }: { item: MembershipItem; overlay?: React.
           <div
             className="w-full h-full"
             style={{
-              background: `linear-gradient(135deg, ${item.color}, ${item.color}88)`,
+              background: `linear-gradient(135deg, ${item.color}, ${item.color}88)`
             }}
           />
         )}
@@ -55,7 +55,7 @@ function CompactCard({ item, overlay }: { item: MembershipItem; overlay?: React.
             style={{
               background:
                 "color-mix(in srgb, var(--foreground) 50%, transparent)",
-              color: "var(--primary-foreground)",
+              color: "var(--primary-foreground)"
             }}
           >
             <Lock className="w-3 h-3" />
@@ -70,7 +70,7 @@ function CompactCard({ item, overlay }: { item: MembershipItem; overlay?: React.
           className="w-8 h-8 rounded-lg shrink-0 overflow-hidden"
           style={{
             border: "1px solid var(--border)",
-            background: item.color,
+            background: item.color
           }}
         >
           {item.image ? (
@@ -80,15 +80,15 @@ function CompactCard({ item, overlay }: { item: MembershipItem; overlay?: React.
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-full h-full flex items-center justify-center text-white text-caption font-bold">
               {item.initials}
             </div>
           )}
         </div>
         <h3
-          className="truncate text-sm font-medium"
+          className="truncate text-body-emphasis"
           style={{
-            color: "var(--card-foreground)",
+            color: "var(--card-foreground)"
           }}
         >
           {item.name}
@@ -102,7 +102,7 @@ export function BrowseAndPinModal({
   open,
   onOpenChange,
   pinnedIds,
-  onPin,
+  onPin
 }: BrowseAndPinModalProps) {
   // Get all spaces that are not yet pinned
   const unpinnedSpaces = useMemo(() => {

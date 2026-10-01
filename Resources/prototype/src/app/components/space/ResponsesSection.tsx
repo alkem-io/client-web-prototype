@@ -1,5 +1,5 @@
 import { PlaceholderCard } from "@/app/components/ui/placeholder-card";
-import { Card, CardContent } from "@/app/components/ui/card";
+import { Card, CardContent } from "@/crd/primitives/card";
 
 interface Response {
   id: string;
@@ -26,7 +26,7 @@ interface ResponsesSectionProps {
 export function ResponsesSection({
   responses = [],
   responseTypes,
-  onAddResponse,
+  onAddResponse
 }: ResponsesSectionProps) {
   return (
     <div className="mt-6 space-y-4">
@@ -40,7 +40,7 @@ export function ResponsesSection({
             <Card key={response.id} className="cursor-pointer hover:shadow-md transition-all">
               <CardContent className="flex items-center justify-center aspect-square">
                 <div className="text-center">
-                  <div className="text-sm font-medium">{response.title}</div>
+                  <div className="text-body-emphasis">{response.title}</div>
                   <div className="text-caption text-muted-foreground mt-1">
                     {response.type}
                   </div>

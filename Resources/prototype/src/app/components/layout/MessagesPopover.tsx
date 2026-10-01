@@ -8,17 +8,17 @@ import {
  Phone,
  Video,
  Plus,
- ArrowLeft,
+ ArrowLeft
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
  Popover,
  PopoverContent,
- PopoverTrigger,
-} from "@/app/components/ui/popover";
-import { cn } from "@/lib/utils";
+ PopoverTrigger
+} from "@/crd/primitives/popover";
+import { cn } from "@/crd/lib/utils";
 
 interface Contact {
  id: string;
@@ -41,35 +41,35 @@ const CONTACTS: Contact[] = [
  name: "Sarah Chen",
  avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
  lastMessage: "That sounds great! Let me check the data...",
- time: "2m",
+ time: "2m"
  },
  {
  id: "2",
  name: "David Kim",
  avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
  lastMessage: "The prototype is ready for review",
- time: "1h",
+ time: "1h"
  },
  {
  id: "3",
  name: "Emily Davis",
  avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
  lastMessage: "Can we schedule a call tomorrow?",
- time: "3h",
+ time: "3h"
  },
  {
  id: "4",
  name: "Tom Bakker",
  avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
  lastMessage: "I've shared the latest report in the space",
- time: "Yesterday",
+ time: "Yesterday"
  },
  {
  id: "5",
  name: "Anna Martinez",
  avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
  lastMessage: "Thanks for the feedback!",
- time: "Yesterday",
+ time: "Yesterday"
  },
 ];
 
@@ -85,7 +85,7 @@ const MESSAGES: Record<string, ChatMessage[]> = {
  "2": [
  { id: "m7", sender: "them", text: "The prototype is ready for review. I've deployed it to the staging environment.", time: "9:15 AM" },
  { id: "m8", sender: "me", text: "Awesome, I'll take a look right away!", time: "9:20 AM" },
- ],
+ ]
 };
 
 export function MessagesPopover() {
@@ -118,7 +118,6 @@ export function MessagesPopover() {
  <PopoverContent
  align="end"
  className="w-[420px] p-0 overflow-hidden"
- style={{ fontFamily: "'Inter', sans-serif" }}
  sideOffset={8}
  >
  {!selectedContact ? (
@@ -129,7 +128,7 @@ export function MessagesPopover() {
  className="flex items-center justify-between px-4 py-3"
  style={{
  borderBottom: "1px solid var(--border)",
- background: "color-mix(in srgb, var(--muted) 30%, transparent)",
+ background: "color-mix(in srgb, var(--muted) 30%, transparent)"
  }}
  >
  <h3 className="text-card-title">Messages</h3>
@@ -173,7 +172,7 @@ export function MessagesPopover() {
  </Avatar>
  <div className="flex-1 min-w-0">
  <div className="flex items-center justify-between">
- <span className="text-control truncate">{c.name}</span>
+ <span className="text-body truncate">{c.name}</span>
  <span className="text-caption text-muted-foreground shrink-0">{c.time}</span>
  </div>
  <p className="text-caption text-muted-foreground truncate mt-0.5">
@@ -193,7 +192,7 @@ export function MessagesPopover() {
  style={{
  height: 48,
  borderBottom: "1px solid var(--border)",
- background: "color-mix(in srgb, var(--muted) 30%, transparent)",
+ background: "color-mix(in srgb, var(--muted) 30%, transparent)"
  }}
  >
  <div className="flex items-center gap-2">
@@ -244,7 +243,7 @@ export function MessagesPopover() {
  color:
  m.sender === "me"
  ? "var(--primary-foreground)"
- : "var(--foreground)",
+ : "var(--foreground)"
  }}
  >
  <p className="text-body">{m.text}</p>
@@ -265,7 +264,7 @@ export function MessagesPopover() {
  style={{
  height: 52,
  borderTop: "1px solid var(--border)",
- background: "color-mix(in srgb, var(--muted) 30%, transparent)",
+ background: "color-mix(in srgb, var(--muted) 30%, transparent)"
  }}
  >
  <IconButton variant="ghost" tooltipLabel="Attach file" className="shrink-0 text-muted-foreground">
@@ -279,7 +278,7 @@ export function MessagesPopover() {
  className="flex-1 h-8 px-3 rounded-md bg-transparent outline-none text-control"
  style={{
  border: "1px solid var(--border)",
- color: "var(--foreground)",
+ color: "var(--foreground)"
  }}
  />
  <IconButton

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, Globe } from "lucide-react";
-import { Switch } from "@/app/components/ui/switch";
+import { Switch } from "@/crd/primitives/switch";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
@@ -8,7 +8,7 @@ import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard
 const INITIAL_SETTINGS = {
   profilePublic: true,
   showActivity: true,
-  language: "English",
+  language: "English"
 };
 
 export function UserSettingsGeneral() {

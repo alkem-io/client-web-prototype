@@ -9,27 +9,27 @@ import {
   ExternalLink,
   Trash2,
   HardDrive,
-  Database,
+  Database
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/app/components/ui/table";
+  TableRow
+} from "@/crd/primitives/table";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { cn } from "@/lib/utils";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { cn } from "@/crd/lib/utils";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ const MOCK_TREE: DocumentNode[] = [
         mimeType: "image/png",
         uploader: "Elena Martinez",
         uploadDate: "2024-01-15",
-        url: "#",
+        url: "#"
       },
       {
         id: "d2",
@@ -72,9 +72,9 @@ const MOCK_TREE: DocumentNode[] = [
         mimeType: "application/pdf",
         uploader: "Sarah Chen",
         uploadDate: "2024-01-20",
-        url: "#",
+        url: "#"
       },
-    ],
+    ]
   },
   {
     id: "f2",
@@ -89,9 +89,9 @@ const MOCK_TREE: DocumentNode[] = [
         mimeType: "application/pdf",
         uploader: "Elena Martinez",
         uploadDate: "2024-02-01",
-        url: "#",
+        url: "#"
       },
-    ],
+    ]
   },
   {
     id: "f3",
@@ -106,7 +106,7 @@ const MOCK_TREE: DocumentNode[] = [
         mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         uploader: "Marcus Johnson",
         uploadDate: "2024-02-10",
-        url: "#",
+        url: "#"
       },
       {
         id: "d5",
@@ -116,7 +116,7 @@ const MOCK_TREE: DocumentNode[] = [
         mimeType: "image/svg+xml",
         uploader: "Elena Martinez",
         uploadDate: "2024-02-12",
-        url: "#",
+        url: "#"
       },
       {
         id: "d6",
@@ -126,15 +126,15 @@ const MOCK_TREE: DocumentNode[] = [
         mimeType: "video/mp4",
         uploader: "Sarah Chen",
         uploadDate: "2024-02-14",
-        url: "#",
+        url: "#"
       },
-    ],
+    ]
   },
   {
     id: "f4",
     name: "Subspaces",
     type: "folder",
-    children: [],
+    children: []
   },
 ];
 
@@ -170,7 +170,7 @@ function flattenTree(tree: DocumentNode[], expandedIds: Set<string>, depth = 0):
       node,
       depth,
       isExpanded: isFolder ? isExpanded : undefined,
-      hasChildren: isFolder && (node.children?.length ?? 0) > 0,
+      hasChildren: isFolder && (node.children?.length ?? 0) > 0
     });
     if (isFolder && isExpanded && node.children) {
       rows.push(...flattenTree(node.children, expandedIds, depth + 1));
@@ -317,7 +317,7 @@ export function SpaceSettingsStorage() {
                         ? new Date(node.uploadDate).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
-                            year: "numeric",
+                            year: "numeric"
                           })
                         : "—"}
                     </TableCell>

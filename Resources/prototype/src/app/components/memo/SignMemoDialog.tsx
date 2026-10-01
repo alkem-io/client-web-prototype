@@ -29,19 +29,19 @@ import {
   PenLine,
   Signature,
   SquareArrowOutUpRight,
-  UserCheck,
+  UserCheck
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
+  DialogTitle
+} from "@/crd/primitives/dialog";
 import { NativePdfViewer } from "./NativePdfViewer";
 import type { Signer } from "./signingData";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface SignMemoDialogProps {
   open: boolean;
@@ -59,19 +59,19 @@ const STEPS = [
     icon: SquareArrowOutUpRight,
     tint: "bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400",
     title: "You go to Cleverbase",
-    body: "This tab opens Cleverbase, the service Alkemio uses to witness signatures.",
+    body: "This tab opens Cleverbase, the service Alkemio uses to witness signatures."
   },
   {
     icon: Fingerprint,
     tint: "bg-purple-100 text-purple-600 dark:bg-purple-500/15 dark:text-purple-400",
     title: "You confirm it's you",
-    body: "With the ID method you linked to your account. Alkemio never sees those details.",
+    body: "With the ID method you linked to your account. Alkemio never sees those details."
   },
   {
     icon: UserCheck,
     tint: "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
     title: "You land back here",
-    body: "Your signed copy is attached to the memo. The whole trip takes about a minute.",
+    body: "Your signed copy is attached to the memo. The whole trip takes about a minute."
   },
 ];
 
@@ -81,7 +81,7 @@ export function SignMemoDialog({
   memoTitle,
   memoMarkdown,
   signer,
-  onContinue,
+  onContinue
 }: SignMemoDialogProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 

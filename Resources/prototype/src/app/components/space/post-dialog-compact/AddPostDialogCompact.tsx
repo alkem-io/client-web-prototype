@@ -38,24 +38,24 @@ import {
   Settings2,
   Sparkles,
   Trash2,
-  Upload,
+  Upload
 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
-import { Separator } from "@/app/components/ui/separator";
-import { Switch } from "@/app/components/ui/switch";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
+import { Separator } from "@/crd/primitives/separator";
+import { Switch } from "@/crd/primitives/switch";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
-import { TooltipProvider } from "@/app/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { TooltipProvider } from "@/crd/primitives/tooltip";
+import { cn } from "@/crd/lib/utils";
 import { OptionTiles } from "./OptionTiles";
 import {
   ATTACHMENT_OPTIONS,
@@ -65,11 +65,11 @@ import {
   type AttachmentType,
   type CollectionType,
   type CommentsMode,
-  type OptionDef,
+  type OptionDef
 } from "./options";
 import {
   AttachmentSettingsDialog,
-  type ConfigurableAttachment,
+  type ConfigurableAttachment
 } from "./AttachmentSettingsDialog";
 import { CollectionSettingsDialog } from "./CollectionSettingsDialog";
 import {
@@ -77,7 +77,7 @@ import {
   defaultCollectionConfig,
   type AttachmentConfig,
   type CollectionConfig,
-  type LinkRow,
+  type LinkRow
 } from "./types";
 
 /** Stand-in for a real whiteboard thumbnail, as elsewhere in the prototype. */
@@ -225,7 +225,7 @@ export function AddPostDialogCompact({ open, onOpenChange }: AddPostDialogCompac
                 value={description}
                 onChange={setDescription}
                 placeholder="Say what's on your mind…"
-                minHeight="140px"
+                className="min-h-[140px]"
               />
 
               <div className="flex items-center gap-2 px-1">
@@ -307,7 +307,7 @@ export function AddPostDialogCompact({ open, onOpenChange }: AddPostDialogCompac
                       value={memoText}
                       onChange={setMemoText}
                       placeholder="Write your memo…"
-                      minHeight="120px"
+                      className="min-h-[120px]"
                     />
                   )}
 
@@ -340,7 +340,7 @@ export function AddPostDialogCompact({ open, onOpenChange }: AddPostDialogCompac
                             key={doc.label}
                             className="flex flex-1 flex-col items-center gap-1.5 rounded-xl border bg-muted/20 p-3 transition-colors hover:bg-muted/50"
                           >
-                            <span className="text-xl">{doc.icon}</span>
+                            <span className="text-section-title">{doc.icon}</span>
                             <span className="text-caption text-muted-foreground">{doc.label}</span>
                           </button>
                         ))}
@@ -529,7 +529,7 @@ export function AddPostDialogCompact({ open, onOpenChange }: AddPostDialogCompac
                       () =>
                         responsesRef.current?.scrollIntoView({
                           behavior: "smooth",
-                          block: "end",
+                          block: "end"
                         }),
                       260,
                     );

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface ReadMoreTextProps {
   children: React.ReactNode;
@@ -23,7 +23,7 @@ const lineClampClass: Record<number, string> = {
   3: "line-clamp-3",
   4: "line-clamp-4",
   5: "line-clamp-5",
-  6: "line-clamp-6",
+  6: "line-clamp-6"
 };
 
 export function ReadMoreText({
@@ -34,7 +34,7 @@ export function ReadMoreText({
   readMoreLabel = "Read more",
   showLessLabel = "Show less",
   toggleColor,
-  toggleOpacity,
+  toggleOpacity
 }: ReadMoreTextProps) {
   const textRef = useRef<HTMLParagraphElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -63,13 +63,13 @@ export function ReadMoreText({
           onClick={() => setIsExpanded(!isExpanded)}
           className="hover:underline mt-1 cursor-pointer"
           style={{
-            fontSize: "var(--text-sm)",
+            fontSize: "var(--text-body)",
             fontWeight: "var(--font-weight-medium)" as any,
             color: toggleColor ?? "inherit",
             opacity: toggleOpacity ?? 0.8,
             background: "none",
             border: "none",
-            padding: 0,
+            padding: 0
           }}
         >
           {isExpanded ? showLessLabel : readMoreLabel}

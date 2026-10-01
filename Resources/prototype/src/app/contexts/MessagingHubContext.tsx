@@ -47,7 +47,7 @@ export function MessagingHubProvider({ children }: { children: React.ReactNode }
       openHub,
       closeHub,
       toggleHub,
-      clearInitialConversation,
+      clearInitialConversation
     }),
     [isHubOpen, initialConversationId, openHub, closeHub, toggleHub, clearInitialConversation]
   );

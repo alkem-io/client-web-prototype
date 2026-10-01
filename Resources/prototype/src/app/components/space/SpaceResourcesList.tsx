@@ -5,19 +5,19 @@ import {
   Image as ImageIcon,
   PenTool,
   Search,
-  Plus,
+  Plus
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Card, CardContent } from "@/crd/primitives/card";
+import { Avatar, AvatarFallback } from "@/crd/primitives/avatar";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 // Mock Data
 const RESOURCES = [
@@ -29,7 +29,7 @@ const RESOURCES = [
     type: "doc",
     uploadedBy: "Alex Contributor",
     initials: "AC",
-    date: "3 days ago",
+    date: "3 days ago"
   },
   {
     id: 2,
@@ -39,7 +39,7 @@ const RESOURCES = [
     type: "doc",
     uploadedBy: "Sarah Chen",
     initials: "SC",
-    date: "1 week ago",
+    date: "1 week ago"
   },
   {
     id: 3,
@@ -49,7 +49,7 @@ const RESOURCES = [
     type: "doc",
     uploadedBy: "James Wilson",
     initials: "JW",
-    date: "2 weeks ago",
+    date: "2 weeks ago"
   },
   {
     id: 4,
@@ -59,7 +59,7 @@ const RESOURCES = [
     type: "link",
     uploadedBy: "Elena Rodriguez",
     initials: "ER",
-    date: "3 weeks ago",
+    date: "3 weeks ago"
   },
   {
     id: 5,
@@ -69,7 +69,7 @@ const RESOURCES = [
     type: "whiteboard",
     uploadedBy: "Michael Chang",
     initials: "MC",
-    date: "1 month ago",
+    date: "1 month ago"
   },
   {
     id: 6,
@@ -79,7 +79,7 @@ const RESOURCES = [
     type: "image",
     uploadedBy: "Alex Contributor",
     initials: "AC",
-    date: "1 month ago",
+    date: "1 month ago"
   },
   {
     id: 7,
@@ -89,7 +89,7 @@ const RESOURCES = [
     type: "doc",
     uploadedBy: "David Miller",
     initials: "DM",
-    date: "2 months ago",
+    date: "2 months ago"
   },
   {
     id: 8,
@@ -99,7 +99,7 @@ const RESOURCES = [
     type: "whiteboard",
     uploadedBy: "Sarah Chen",
     initials: "SC",
-    date: "2 months ago",
+    date: "2 months ago"
   },
 ];
 
@@ -107,7 +107,7 @@ const TYPE_ICON_MAP: Record<string, { icon: typeof FileText; color: string }> = 
   doc: { icon: FileText, color: "var(--chart-1)" },
   link: { icon: LinkIcon, color: "var(--chart-2)" },
   whiteboard: { icon: PenTool, color: "var(--chart-3)" },
-  image: { icon: ImageIcon, color: "var(--chart-4)" },
+  image: { icon: ImageIcon, color: "var(--chart-4)" }
 };
 
 export function SpaceResourcesList() {
@@ -129,14 +129,14 @@ export function SpaceResourcesList() {
   const hasMore = filteredResources.length > visibleCount;
 
   return (
-    <div className="space-y-6" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="space-y-6" >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2
             className="text-page-title"
             style={{
-              color: "var(--foreground)",
+              color: "var(--foreground)"
             }}
           >
             Knowledge Base
@@ -144,7 +144,7 @@ export function SpaceResourcesList() {
           <p
             className="mt-1 text-body"
             style={{
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           >
             Access shared documents, whiteboards, and resources for this space.
@@ -211,7 +211,7 @@ export function SpaceResourcesList() {
                 style={{
                   background: "var(--card)",
                   border: "1px solid var(--border)",
-                  borderRadius: "var(--radius)",
+                  borderRadius: "var(--radius)"
                 }}
               >
                 <CardContent className="p-5 flex flex-col h-full">
@@ -220,7 +220,7 @@ export function SpaceResourcesList() {
                     className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-colors"
                     style={{
                       background: `color-mix(in srgb, ${typeInfo.color} 12%, transparent)`,
-                      color: typeInfo.color,
+                      color: typeInfo.color
                     }}
                   >
                     <Icon className="w-5 h-5" />
@@ -230,7 +230,7 @@ export function SpaceResourcesList() {
                   <h3
                     className="mb-2 line-clamp-2 group-hover:text-primary transition-colors text-card-title"
                     style={{
-                      color: "var(--foreground)",
+                      color: "var(--foreground)"
                     }}
                   >
                     {resource.name}
@@ -240,7 +240,7 @@ export function SpaceResourcesList() {
                   <p
                     className="line-clamp-2 flex-1 mb-4 text-body"
                     style={{
-                      color: "var(--muted-foreground)",
+                      color: "var(--muted-foreground)"
                     }}
                   >
                     {resource.description}
@@ -256,7 +256,7 @@ export function SpaceResourcesList() {
                           background: "color-mix(in srgb, var(--primary) 10%, transparent)",
                           color: "var(--primary)",
                           fontSize: "9px",
-                          fontWeight: 700,
+                          fontWeight: 700
                         }}
                       >
                         {resource.initials}
@@ -266,7 +266,7 @@ export function SpaceResourcesList() {
                       className="truncate"
                       style={{
                         fontSize: "12px",
-                        color: "var(--muted-foreground)",
+                        color: "var(--muted-foreground)"
                       }}
                     >
                       {resource.uploadedBy}
@@ -275,7 +275,7 @@ export function SpaceResourcesList() {
                       className="ml-auto shrink-0"
                       style={{
                         fontSize: "12px",
-                        color: "var(--muted-foreground)",
+                        color: "var(--muted-foreground)"
                       }}
                     >
                       {resource.date}
@@ -292,7 +292,7 @@ export function SpaceResourcesList() {
           className="flex flex-col items-center justify-center py-16"
           style={{
             border: "2px dashed var(--border)",
-            borderRadius: "var(--radius)",
+            borderRadius: "var(--radius)"
           }}
         >
           <Search
@@ -301,13 +301,13 @@ export function SpaceResourcesList() {
               width: 32,
               height: 32,
               color: "var(--muted-foreground)",
-              opacity: 0.5,
+              opacity: 0.5
             }}
           />
           <p
             className="text-body"
             style={{
-              color: "var(--muted-foreground)",
+              color: "var(--muted-foreground)"
             }}
           >
             No resources found matching your search.

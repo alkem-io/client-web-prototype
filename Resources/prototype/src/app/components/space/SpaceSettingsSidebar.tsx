@@ -3,9 +3,9 @@ import {
   ChevronDown, ChevronRight, LogOut, ArrowLeft, Lightbulb 
 } from "lucide-react";
 import { Link, useLocation, useParams } from "react-router";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { useState } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 
 interface NavItem {
   label: string;
@@ -105,7 +105,7 @@ export function SpaceSettingsSidebar({ className }: { className?: string }) {
                       key={item.id}
                       to={`/space/${spaceSlug}/settings/${item.id}`}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 text-control rounded-md transition-all duration-200",
+                        "flex items-center gap-3 px-3 py-2 text-body rounded-md transition-all duration-200",
                         isActive 
                           ? "bg-primary/10 text-primary border-l-2 border-primary" 
                           : "text-muted-foreground hover:bg-muted hover:text-foreground border-l-2 border-transparent"

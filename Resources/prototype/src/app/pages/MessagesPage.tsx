@@ -8,11 +8,11 @@ import {
   Phone,
   Video,
   Plus,
-  ArrowLeft,
+  ArrowLeft
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 
 interface Contact {
   id: string;
@@ -35,35 +35,35 @@ const CONTACTS: Contact[] = [
     name: "Sarah Chen",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
     lastMessage: "That sounds great! Let me check the data...",
-    time: "2m",
+    time: "2m"
   },
   {
     id: "2",
     name: "David Kim",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
     lastMessage: "The prototype is ready for review",
-    time: "1h",
+    time: "1h"
   },
   {
     id: "3",
     name: "Emily Davis",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
     lastMessage: "Can we schedule a call tomorrow?",
-    time: "3h",
+    time: "3h"
   },
   {
     id: "4",
     name: "Tom Bakker",
     avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
     lastMessage: "I've shared the latest report in the space",
-    time: "Yesterday",
+    time: "Yesterday"
   },
   {
     id: "5",
     name: "Anna Martinez",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=facearea&facepad=2&w=128&h=128&q=80",
     lastMessage: "Thanks for the feedback!",
-    time: "Yesterday",
+    time: "Yesterday"
   },
 ];
 
@@ -79,7 +79,7 @@ const MESSAGES: Record<string, ChatMessage[]> = {
   "2": [
     { id: "m7", sender: "them", text: "The prototype is ready for review. I've deployed it to the staging environment.", time: "9:15 AM" },
     { id: "m8", sender: "me", text: "Awesome, I'll take a look right away!", time: "9:20 AM" },
-  ],
+  ]
 };
 
 export default function MessagesPage() {
@@ -106,9 +106,8 @@ export default function MessagesPage() {
       style={{
         border: "1px solid var(--border)",
         borderRadius: "var(--radius)",
-        margin: "16px",
-        fontFamily: "'Inter', sans-serif",
-      }}
+        margin: "16px"
+        }}
     >
       {/* ─── Contact List ─── */}
       <div
@@ -118,7 +117,7 @@ export default function MessagesPage() {
         )}
         style={{
           borderRight: "1px solid var(--border)",
-          background: "var(--card)",
+          background: "var(--card)"
         }}
       >
         {/* Header */}
@@ -126,7 +125,7 @@ export default function MessagesPage() {
           className="flex items-center justify-between shrink-0 px-4"
           style={{
             height: 56,
-            borderBottom: "1px solid var(--border)",
+            borderBottom: "1px solid var(--border)"
           }}
         >
           <h2
@@ -145,7 +144,7 @@ export default function MessagesPage() {
           <div
             className="flex items-center gap-2 px-3 h-9 rounded-md"
             style={{
-              background: "var(--secondary)",
+              background: "var(--secondary)"
             }}
           >
             <Search className="w-4 h-4" style={{ color: "var(--muted-foreground)" }} />
@@ -156,9 +155,8 @@ export default function MessagesPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 bg-transparent outline-none text-body"
               style={{
-                color: "var(--foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--foreground)"
+                }}
             />
           </div>
         </div>
@@ -200,7 +198,7 @@ export default function MessagesPage() {
                     className="truncate text-caption"
                     style={{
                       color: "var(--muted-foreground)",
-                      maxWidth: "180px",
+                      maxWidth: "180px"
                     }}
                   >
                     {c.lastMessage}
@@ -228,7 +226,7 @@ export default function MessagesPage() {
               style={{
                 height: 56,
                 borderBottom: "1px solid var(--border)",
-                background: "var(--card)",
+                background: "var(--card)"
               }}
             >
               <div className="flex items-center gap-3">
@@ -285,22 +283,19 @@ export default function MessagesPage() {
                       color:
                         m.sender === "me"
                           ? "var(--primary-foreground)"
-                          : "var(--foreground)",
+                          : "var(--foreground)"
                     }}
                   >
                     <p
                       className="text-body"
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                      }}
-                    >
+                      >
                       {m.text}
                     </p>
                     <div
                       className="flex items-center justify-end gap-1 mt-1"
                       style={{
                         fontSize: "10px",
-                        opacity: 0.7,
+                        opacity: 0.7
                       }}
                     >
                       {m.time}
@@ -316,7 +311,7 @@ export default function MessagesPage() {
               style={{
                 height: 64,
                 borderTop: "1px solid var(--border)",
-                background: "var(--card)",
+                background: "var(--card)"
               }}
             >
               <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-muted-foreground">
@@ -330,9 +325,8 @@ export default function MessagesPage() {
                 className="flex-1 h-9 px-3 rounded-md bg-transparent outline-none text-body"
                 style={{
                   border: "1px solid var(--border)",
-                  color: "var(--foreground)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  color: "var(--foreground)"
+                  }}
               />
               <Button
                 size="icon"
@@ -354,9 +348,8 @@ export default function MessagesPage() {
             <p
               className="text-body"
               style={{
-                color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--muted-foreground)"
+                }}
             >
               Select a conversation to start messaging
             </p>

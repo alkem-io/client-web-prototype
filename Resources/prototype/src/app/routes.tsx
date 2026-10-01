@@ -116,19 +116,19 @@ export const router = createBrowserRouter([
           { path: "organization/:orgSlug", Component: OrgProfilePage },
           {
             path: "organization/:orgSlug/settings",
-            element: <Navigate to="profile" replace />,
+            element: <Navigate to="profile" replace />
           },
           { path: "organization/:orgSlug/settings/:tab", Component: OrgSettingsPage },
 
           {
             path: "user/:userSlug/settings",
-            element: <Navigate to="profile" replace />,
+            element: <Navigate to="profile" replace />
           },
           { path: "user/:userSlug/settings/:tab", Component: UserSettingsPage },
 
           /* 404 catch-all (within MainLayout) */
           { path: "*", Component: NotFoundPage },
-        ],
+        ]
       },
 
       /* ─── Space pages WITHOUT app sidebar (SpaceLayout — full-width + breadcrumbs) ─── */
@@ -148,7 +148,7 @@ export const router = createBrowserRouter([
               { path: "community", Component: SpaceCommunity },
               { path: "subspaces", Component: SpaceSubspaces },
               { path: "knowledge-base", Component: SpaceKnowledgeBase },
-            ],
+            ]
           },
 
           /* Settings — no SpaceShell (has its own sidebar layout) */
@@ -164,8 +164,8 @@ export const router = createBrowserRouter([
           /* Subspace settings */
           { path: "/space/:spaceSlug/subspaces/:subspaceSlug/settings", Component: SubspaceSettingsPage },
           { path: "/space/:spaceSlug/subspaces/:subspaceSlug/settings/:tab", Component: SubspaceSettingsPage },
-        ],
+        ]
       },
-    ],
+    ]
   },
 ]);

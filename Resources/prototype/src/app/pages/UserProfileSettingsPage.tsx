@@ -2,18 +2,22 @@ import { useState } from "react";
 import { useParams, Link } from "react-router";
 import { 
   User, Layout, CreditCard, Users, Bell, Settings, 
-  Camera, Plus, Link as LinkIcon, Github, Twitter, Linkedin, Mail, MapPin, Check, Loader2, Save, Undo2
+  Camera, Plus, Link as LinkIcon, Mail, MapPin, Check, Loader2, Save, Undo2
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Separator } from "@/app/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Card, CardContent } from "@/app/components/ui/card";
+// lucide v1 dropped its brand glyphs; production ships its own social SVGs.
+// Production's social vocabulary has no Twitter/X - BlueSky replaced it.
+import BlueSkyIcon from "@/crd/components/common/icons/social/BlueSky.svg?react";
+import GitHubIcon from "@/crd/components/common/icons/social/GitHub.svg?react";
+import LinkedInIcon from "@/crd/components/common/icons/social/LinkedIn.svg?react";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Separator } from "@/crd/primitives/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Card, CardContent } from "@/crd/primitives/card";
 import { toast } from "sonner";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 export default function UserProfileSettingsPage() {
   const { userSlug } = useParams<{ userSlug: string }>();
@@ -55,16 +59,6 @@ export default function UserProfileSettingsPage() {
       setIsLoading(false);
       toast.success("Profile updated successfully");
     }, 1000);
-  };
-
-  const quillModules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['link', 'blockquote', 'code-block'],
-      ['clean']
-    ],
   };
 
   return (
@@ -206,12 +200,10 @@ export default function UserProfileSettingsPage() {
 
               <div className="space-y-2">
                 <Label>Bio</Label>
-                <div className="prose-editor">
-                  <ReactQuill 
-                    theme="snow"
+                <div>
+                  <MarkdownEditor 
                     value={formData.bio}
                     onChange={(content) => setFormData({...formData, bio: content})}
-                    modules={quillModules}
                     className="bg-card"
                   />
                 </div>
@@ -229,7 +221,7 @@ export default function UserProfileSettingsPage() {
               <div className="grid grid-cols-1 gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-[#0077b5]/10 flex items-center justify-center text-[#0077b5] shrink-0">
-                    <Linkedin className="w-5 h-5" />
+                    <LinkedInIcon className="w-5 h-5" />
                   </div>
                   <Input 
                     placeholder="LinkedIn Profile URL" 
@@ -240,10 +232,10 @@ export default function UserProfileSettingsPage() {
 
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center text-info shrink-0">
-                    <Twitter className="w-5 h-5" />
+                    <BlueSkyIcon className="w-5 h-5" />
                   </div>
                   <Input 
-                    placeholder="Twitter / X Profile URL" 
+                    placeholder="BlueSky Profile URL" 
                     value={formData.links.twitter}
                     onChange={(e) => setFormData({...formData, links: { ...formData.links, twitter: e.target.value }})}
                   />
@@ -251,7 +243,7 @@ export default function UserProfileSettingsPage() {
 
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center text-foreground shrink-0">
-                    <Github className="w-5 h-5" />
+                    <GitHubIcon className="w-5 h-5" />
                   </div>
                   <Input 
                     placeholder="GitHub Profile URL" 

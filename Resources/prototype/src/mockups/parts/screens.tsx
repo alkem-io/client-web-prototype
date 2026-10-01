@@ -53,7 +53,7 @@ export function PhaseBlock({
   position,
   total,
   name,
-  description,
+  description
 }: {
   position: number;
   total: number;
@@ -105,7 +105,7 @@ export function SubspaceScreen({
   tabs,
   activeTab,
   rail,
-  posts,
+  posts
 }: {
   name: string;
   tagline: string;

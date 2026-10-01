@@ -1,5 +1,5 @@
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card";
+import { Button } from "@/crd/primitives/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/crd/primitives/card";
 import { Sparkles, ArrowRight, ShieldCheck, Network } from "lucide-react";
 import { useState } from "react";
 

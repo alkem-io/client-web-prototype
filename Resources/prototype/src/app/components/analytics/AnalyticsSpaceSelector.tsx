@@ -1,12 +1,12 @@
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { Input } from "@/app/components/ui/input";
-import { ScrollArea } from "@/app/components/ui/scroll-area";
+import { Button } from "@/crd/primitives/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/crd/primitives/card";
+import { Badge } from "@/crd/primitives/badge";
+import { Checkbox } from "@/crd/primitives/checkbox";
+import { Input } from "@/crd/primitives/input";
+import { ScrollArea } from "@/crd/primitives/scroll-area";
 import { Search, Filter, RefreshCw, BarChart2, Check, ArrowRight, Shield } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface SpaceOption {
   id: string;
@@ -97,7 +97,7 @@ export function AnalyticsSpaceSelector({ onGenerate }: AnalyticsSpaceSelectorPro
                        )}
                        style={{
                           border: selected.includes(space.id) ? '1px solid color-mix(in srgb, var(--primary) 30%, transparent)' : '1px solid transparent',
-                          background: selected.includes(space.id) ? 'color-mix(in srgb, var(--primary) 5%, var(--background))' : 'var(--background)',
+                          background: selected.includes(space.id) ? 'color-mix(in srgb, var(--primary) 5%, var(--background))' : 'var(--background)'
                        }}
                        onClick={() => toggleSelection(space.id)}
                        onMouseEnter={e => { if (!selected.includes(space.id)) { e.currentTarget.style.background = 'var(--muted)'; e.currentTarget.style.border = '1px solid var(--border)'; } }}

@@ -16,15 +16,15 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { Info, ShieldCheck, TriangleAlert } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { cn } from "@/lib/utils";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { cn } from "@/crd/lib/utils";
 import { SignMemoButton } from "./SignMemoButton";
 import { SignedCopyCard } from "./SignedCopyCard";
 import { uniqueSigners, type SignedCopy, type Signer } from "./signingData";
@@ -45,7 +45,7 @@ export function SignedCopiesDialog({
   copies,
   cleverbaseLinked,
   currentUser,
-  onSign,
+  onSign
 }: SignedCopiesDialogProps) {
   // Verification runs on open rather than on demand: the question "are these
   // good?" is the reason the screen exists, so it should not cost a click.

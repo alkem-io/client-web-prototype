@@ -7,30 +7,30 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { Separator } from "@/app/components/ui/separator";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
+import { Checkbox } from "@/crd/primitives/checkbox";
+import { Separator } from "@/crd/primitives/separator";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import {
   X, ImageIcon, ChevronLeft, Search, Brain, Fingerprint, Zap,
   BookOpen, MessageCircle, Users, Lightbulb, PenTool, BarChart3,
   Shield, Compass, FileText, Bot,
-  type LucideIcon,
+  type LucideIcon
 } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    Template Data
@@ -70,7 +70,7 @@ const VC_TEMPLATES: VCTemplate[] = [
     description: "Start from scratch. Choose your own knowledge source and configure capabilities.",
     icon: Bot,
     category: "getting-started",
-    defaults: {},
+    defaults: {}
   },
   {
     id: "research-assistant",
@@ -81,8 +81,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Your AI research companion",
       description: "I help teams find relevant research, summarize papers, and synthesize findings across multiple sources. Ask me about any topic and I'll point you to the right resources.",
-      tags: ["Research", "Knowledge", "Papers", "Analysis"],
-    },
+      tags: ["Research", "Knowledge", "Papers", "Analysis"]
+    }
   },
   {
     id: "knowledge-curator",
@@ -93,8 +93,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Keeping knowledge organized and accessible",
       description: "I help maintain and organize the community's collective knowledge. I can categorize contributions, identify gaps, and suggest related content.",
-      tags: ["Knowledge Base", "Organization", "Curation"],
-    },
+      tags: ["Knowledge Base", "Organization", "Curation"]
+    }
   },
   {
     id: "literature-reviewer",
@@ -105,8 +105,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Systematic literature review support",
       description: "I assist with systematic literature reviews by identifying relevant papers, extracting key findings, and identifying themes across publications.",
-      tags: ["Literature Review", "Systematic", "Academic"],
-    },
+      tags: ["Literature Review", "Systematic", "Academic"]
+    }
   },
   {
     id: "data-analyst",
@@ -117,8 +117,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Making sense of your data",
       description: "I analyze community data, engagement metrics, and content patterns to provide insights that help you understand what's working and where to focus.",
-      tags: ["Data", "Analytics", "Metrics", "Insights"],
-    },
+      tags: ["Data", "Analytics", "Metrics", "Insights"]
+    }
   },
   {
     id: "community-moderator",
@@ -129,8 +129,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Keeping discussions productive and welcoming",
       description: "I help maintain a healthy community by answering common questions, guiding new members, and ensuring discussions stay productive and respectful.",
-      tags: ["Moderation", "Community", "Guidelines", "Support"],
-    },
+      tags: ["Moderation", "Community", "Guidelines", "Support"]
+    }
   },
   {
     id: "onboarding-guide",
@@ -141,8 +141,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Your friendly guide to getting started",
       description: "I welcome new members, help them understand how this space works, point them to relevant content, and connect them with the right people.",
-      tags: ["Onboarding", "Welcome", "Guide", "New Members"],
-    },
+      tags: ["Onboarding", "Welcome", "Guide", "New Members"]
+    }
   },
   {
     id: "discussion-facilitator",
@@ -153,8 +153,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Sparking meaningful conversations",
       description: "I help facilitate discussions by posing thought-provoking questions, summarizing ongoing threads, and connecting related conversations.",
-      tags: ["Facilitation", "Discussion", "Engagement", "Dialogue"],
-    },
+      tags: ["Facilitation", "Discussion", "Engagement", "Dialogue"]
+    }
   },
   {
     id: "feedback-collector",
@@ -165,8 +165,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Collecting and organizing community feedback",
       description: "I help gather structured feedback from community members, categorize responses, identify common themes, and present actionable summaries.",
-      tags: ["Feedback", "Survey", "Synthesis", "Voice of Community"],
-    },
+      tags: ["Feedback", "Survey", "Synthesis", "Voice of Community"]
+    }
   },
   {
     id: "brainstorm-partner",
@@ -177,8 +177,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Your creative thinking companion",
       description: "I help teams brainstorm by generating diverse ideas, challenging assumptions, asking 'what if' questions, and connecting unexpected concepts.",
-      tags: ["Brainstorm", "Creativity", "Ideas", "Innovation"],
-    },
+      tags: ["Brainstorm", "Creativity", "Ideas", "Innovation"]
+    }
   },
   {
     id: "strategy-advisor",
@@ -189,8 +189,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Strategic thinking support",
       description: "I help teams think strategically by applying frameworks, analyzing trade-offs, considering multiple perspectives, and structuring complex decisions.",
-      tags: ["Strategy", "Frameworks", "Decision Making", "Analysis"],
-    },
+      tags: ["Strategy", "Frameworks", "Decision Making", "Analysis"]
+    }
   },
   {
     id: "content-creator",
@@ -201,8 +201,8 @@ const VC_TEMPLATES: VCTemplate[] = [
     defaults: {
       tagline: "Helping you write better, faster",
       description: "I assist with drafting posts, editing content, improving clarity, and maintaining consistent tone across community communications.",
-      tags: ["Writing", "Content", "Editing", "Communication"],
-    },
+      tags: ["Writing", "Content", "Editing", "Communication"]
+    }
   },
 ];
 
@@ -224,7 +224,7 @@ interface CreateVCDialogV3Props {
 
 export function CreateVCDialogV3({
   open,
-  onOpenChange,
+  onOpenChange
 }: CreateVCDialogV3Props) {
   const navigate = useNavigate();
   // -1 = template gallery, 0-2 = wizard steps
@@ -367,7 +367,7 @@ export function CreateVCDialogV3({
 
   const groupedTemplates = CATEGORIES.map((cat) => ({
     ...cat,
-    templates: filteredTemplates.filter((t) => t.category === cat.id),
+    templates: filteredTemplates.filter((t) => t.category === cat.id)
   })).filter((group) => group.templates.length > 0);
 
   return (
@@ -550,7 +550,7 @@ function VCTemplateGallery({
   selectedTemplate,
   onSelect,
   searchQuery,
-  onSearchChange,
+  onSearchChange
 }: {
   templates: { id: string; label: string; templates: VCTemplate[] }[];
   selectedTemplate: VCTemplate;
@@ -605,7 +605,7 @@ function VCTemplateGallery({
 function VCTemplateCard({
   template,
   isSelected,
-  onSelect,
+  onSelect
 }: {
   template: VCTemplate;
   isSelected: boolean;
@@ -644,7 +644,7 @@ function WizardStepKnowledgeSource({
   sourceType, setSourceType,
   selectedSpace, setSelectedSpace,
   apiEndpoint, setApiEndpoint,
-  apiKey, setApiKey,
+  apiKey, setApiKey
 }: {
   sourceType: string; setSourceType: (v: string) => void;
   selectedSpace: string; setSelectedSpace: (v: string) => void;
@@ -772,7 +772,7 @@ function WizardStepIdentity({
   avatar, setAvatar,
   tags, setTags,
   currentTag, setCurrentTag,
-  handleTagKeyDown,
+  handleTagKeyDown
 }: {
   name: string; setName: (v: string) => void;
   tagline: string; setTagline: (v: string) => void;
@@ -797,7 +797,7 @@ function WizardStepIdentity({
           value={name}
           onChange={(e) => setName(e.target.value)}
           autoFocus
-          className="h-11 text-base"
+          className="h-11 text-subheader font-normal"
         />
         <p className="text-caption text-muted-foreground">Give your VC a memorable name</p>
       </section>
@@ -830,7 +830,7 @@ function WizardStepIdentity({
           value={description}
           onChange={setDescription}
           placeholder="Describe what this VC can help with..."
-          minHeight="100px"
+          className="min-h-[100px]"
         />
       </section>
 
@@ -905,7 +905,7 @@ function WizardStepCapabilities({
   testQuestion, setTestQuestion,
   testResponse,
   isTesting,
-  handleTestVC,
+  handleTestVC
 }: {
   capAnswer: boolean; setCapAnswer: (v: boolean) => void;
   capPosts: boolean; setCapPosts: (v: boolean) => void;

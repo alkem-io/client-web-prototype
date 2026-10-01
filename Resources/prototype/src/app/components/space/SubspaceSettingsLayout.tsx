@@ -1,7 +1,20 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { motion, AnimatePresence } from "motion/react";
+import {
+  DndContext,
+  DragOverlay,
+  useDroppable,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+  verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+import { createPortal } from "react-dom";
+import { boardCollisionDetection, useBoardSensors } from "@/app/components/shared/boardDnd";
 import {
   GripVertical,
   Pencil,
@@ -22,17 +35,17 @@ import {
   Download,
   Upload,
   FileText,
-  PanelLeft,
+  PanelLeft
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
 import {
   Collapsible,
   CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/app/components/ui/collapsible";
+  CollapsibleContent
+} from "@/crd/primitives/collapsible";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -41,16 +54,16 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
-  DropdownMenuSeparator,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuSeparator
+} from "@/crd/primitives/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
-import { cn } from "@/lib/utils";
+  DialogDescription
+} from "@/crd/primitives/dialog";
+import { cn } from "@/crd/lib/utils";
 import {
   SidebarWidgetsDialog,
   loadSubspaceSidebarWidgets,
@@ -58,7 +71,7 @@ import {
   hiddenCount,
   SUBSPACE_WIDGET_DEFS,
   SUBSPACE_WIDGETS_DESCRIPTION,
-  type SidebarWidgetConfig,
+  type SidebarWidgetConfig
 } from "./SidebarWidgets";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -83,25 +96,25 @@ const DEFAULT_PHASES: PhaseItem[] = [
     id: "explore",
     label: "Explore",
     description: "Diverge — gather ideas, research, and inspiration.",
-    linkedToNext: true,
+    linkedToNext: true
   },
   {
     id: "define",
     label: "Define",
     description: "Converge — synthesise insights into a clear problem statement.",
-    linkedToNext: true,
+    linkedToNext: true
   },
   {
     id: "ideate",
     label: "Ideate",
     description: "Diverge — brainstorm and generate creative solutions.",
-    linkedToNext: true,
+    linkedToNext: true
   },
   {
     id: "prototype",
     label: "Prototype",
     description: "Converge — build and test low-fidelity prototypes.",
-    linkedToNext: false,
+    linkedToNext: false
   },
 ];
 
@@ -117,7 +130,7 @@ const DEFAULT_POSTS: PhasePosts = {
     { id: "p-i1", title: "Brainstorm: Solar Integration" },
     { id: "p-i2", title: "Concept Map: Grid Modernisation", responses: 2 },
   ],
-  prototype: [],
+  prototype: []
 };
 
 // Innovation flow templates
@@ -138,7 +151,7 @@ const FLOW_TEMPLATES: FlowTemplate[] = [
       { label: "Define", description: "Narrow down to a clear problem definition.", linkedToNext: true },
       { label: "Develop", description: "Co-create and iterate on possible solutions.", linkedToNext: true },
       { label: "Deliver", description: "Finalise and implement the solution.", linkedToNext: false },
-    ],
+    ]
   },
   {
     id: "design-thinking",
@@ -150,7 +163,7 @@ const FLOW_TEMPLATES: FlowTemplate[] = [
       { label: "Ideate", description: "Brainstorm a broad set of solutions.", linkedToNext: true },
       { label: "Prototype", description: "Build quick, low-cost prototypes.", linkedToNext: true },
       { label: "Test", description: "Gather feedback and refine.", linkedToNext: false },
-    ],
+    ]
   },
   {
     id: "lean-startup",
@@ -160,7 +173,7 @@ const FLOW_TEMPLATES: FlowTemplate[] = [
       { label: "Build", description: "Create a minimum viable product (MVP).", linkedToNext: true },
       { label: "Measure", description: "Collect data on how users interact.", linkedToNext: true },
       { label: "Learn", description: "Analyse results and decide on next steps.", linkedToNext: false },
-    ],
+    ]
   },
   {
     id: "challenge-driven",
@@ -172,13 +185,17 @@ const FLOW_TEMPLATES: FlowTemplate[] = [
       { label: "Propose", description: "Generate and evaluate proposals.", linkedToNext: true },
       { label: "Pilot", description: "Run small-scale pilots.", linkedToNext: true },
       { label: "Scale", description: "Expand successful pilots.", linkedToNext: false },
-    ],
+    ]
   },
 ];
 
 // ─── DnD Item Types ───────────────────────────────────────────────────────────
-const POST_CARD = "SUBSPACE_POST_CARD";
-const PHASE_COLUMN = "PHASE_COLUMN";
+/* Two-level drag (posts between phases + phase reorder). Phase sortable ids are
+   prefixed so they can't collide with the per-phase droppable ids or post ids. */
+const PHASE_SORTABLE_PREFIX = "phase:";
+const toPhaseSortableId = (phaseId: string) => `${PHASE_SORTABLE_PREFIX}${phaseId}`;
+const stripPhasePrefix = (id: string) =>
+  id.startsWith(PHASE_SORTABLE_PREFIX) ? id.slice(PHASE_SORTABLE_PREFIX.length) : id;
 
 interface PostDragItem {
   id: string;
@@ -219,65 +236,31 @@ const PhasePostCard = ({
   movePostInPhase,
   movePostBetweenPhases,
   onRemove,
-  onMoveToPhase,
+  onMoveToPhase
 }: PostCardProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [{ handlerId }, drop] = useDrop<
-    PostDragItem,
-    void,
-    { handlerId: string | symbol | null }
-  >({
-    accept: POST_CARD,
-    collect: (monitor) => ({ handlerId: monitor.getHandlerId() }),
-    hover(item, monitor) {
-      if (!ref.current) return;
-      const dragIndex = item.index;
-      const hoverIndex = index;
-      if (item.sourcePhaseId === phaseId && dragIndex === hoverIndex) return;
-      const rect = ref.current.getBoundingClientRect();
-      const midY = (rect.bottom - rect.top) / 2;
-      const clientOffset = monitor.getClientOffset();
-      if (!clientOffset) return;
-      const hoverY = clientOffset.y - rect.top;
-      if (item.sourcePhaseId === phaseId) {
-        if (dragIndex < hoverIndex && hoverY < midY) return;
-        if (dragIndex > hoverIndex && hoverY > midY) return;
-        movePostInPhase(phaseId, dragIndex, hoverIndex);
-        item.index = hoverIndex;
-        return;
-      }
-      movePostBetweenPhases(item.sourcePhaseId, dragIndex, phaseId, hoverIndex);
-      item.sourcePhaseId = phaseId;
-      item.index = hoverIndex;
-    },
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: post.id,
+    data: { type: "card", phaseId }
   });
-
-  const [{ isDragging }, drag] = useDrag({
-    type: POST_CARD,
-    item: (): PostDragItem => ({ id: post.id, index, sourcePhaseId: phaseId }),
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
-
-  drag(drop(ref));
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transition
+  };
 
   const otherPhases = allPhases.filter((p) => p.id !== phaseId);
 
   return (
-    <motion.div
-      ref={ref}
-      data-handler-id={handlerId}
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95, height: 0 }}
-      transition={{ duration: 0.15 }}
+    <div
+      ref={setNodeRef}
+      style={style}
       className={cn(
         "flex items-center gap-2 px-2.5 py-2 bg-background border border-border rounded-lg",
-        "cursor-grab active:cursor-grabbing group/post",
+        "cursor-grab active:cursor-grabbing touch-none group/post",
         "hover:border-primary/30 transition-all",
         isDragging && "opacity-30 border-dashed"
       )}
+      {...attributes}
+      {...listeners}
     >
       <GripVertical className="w-3.5 h-3.5 text-muted-foreground/30 group-hover/post:text-muted-foreground/60 shrink-0" />
       <span className="flex-1 min-w-0 text-caption font-medium leading-snug line-clamp-2 text-foreground">
@@ -325,7 +308,7 @@ const PhasePostCard = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </motion.div>
+    </div>
   );
 };
 
@@ -375,7 +358,7 @@ const PhaseColumn = ({
   onDeletePhase,
   isEditing,
   setEditingId,
-  isLast,
+  isLast
 }: PhaseColumnProps) => {
   const autoExpandTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -390,42 +373,21 @@ const PhaseColumn = ({
     if (e.key === "Enter" || e.key === "Escape") setEditingId(null);
   };
 
-  const [{ isOverColumn, canDropHere }, dropRef] = useDrop<
-    PostDragItem,
-    void,
-    { isOverColumn: boolean; canDropHere: boolean }
-  >({
-    accept: POST_CARD,
-    collect: (monitor) => ({
-      isOverColumn: monitor.isOver({ shallow: true }),
-      canDropHere: monitor.canDrop(),
-    }),
-    hover(item) {
-      if (!isOpen && autoExpandTimer.current === null) {
-        autoExpandTimer.current = setTimeout(() => {
-          onAutoExpand();
-          autoExpandTimer.current = null;
-        }, 500);
-      }
-      if (item.sourcePhaseId !== phase.id && posts.length === 0) {
-        movePostBetweenPhases(item.sourcePhaseId, item.index, phase.id, 0);
-        item.sourcePhaseId = phase.id;
-        item.index = 0;
-      }
-    },
-    drop(item) {
-      if (item.sourcePhaseId !== phase.id) {
-        movePostBetweenPhases(
-          item.sourcePhaseId,
-          item.index,
-          phase.id,
-          posts.length
-        );
-        item.sourcePhaseId = phase.id;
-        item.index = posts.length;
-      }
-    },
+  const { setNodeRef: dropRef, isOver: isOverColumn } = useDroppable({
+    id: phase.id,
+    data: { type: "column", phaseId: phase.id }
   });
+  const canDropHere = true;
+
+  // Hovering a collapsed phase for 500ms springs it open so you can drop in.
+  useEffect(() => {
+    if (isOverColumn && !isOpen && autoExpandTimer.current === null) {
+      autoExpandTimer.current = setTimeout(() => {
+        onAutoExpand();
+        autoExpandTimer.current = null;
+      }, 500);
+    }
+  }, [isOverColumn, isOpen, onAutoExpand]);
 
   useEffect(() => {
     if (!isOverColumn && autoExpandTimer.current) {
@@ -557,7 +519,7 @@ const PhaseColumn = ({
 
           <CollapsibleContent>
             <div
-              ref={(node) => { dropRef(node); }}
+              ref={dropRef}
               className={cn(
                 "p-1.5 space-y-1.5 min-h-[60px] transition-colors",
                 isOverColumn && canDropHere && "bg-primary/5"
@@ -570,7 +532,7 @@ const PhaseColumn = ({
                   </span>
                 </div>
               ) : (
-                <AnimatePresence initial={false}>
+                <SortableContext items={posts.map((p) => p.id)} strategy={verticalListSortingStrategy}>
                   {posts.map((post, idx) => (
                     <PhasePostCard
                       key={post.id}
@@ -584,7 +546,7 @@ const PhaseColumn = ({
                       onMoveToPhase={onMoveToPhase}
                     />
                   ))}
-                </AnimatePresence>
+                </SortableContext>
               )}
             </div>
           </CollapsibleContent>
@@ -599,58 +561,25 @@ const PhaseColumn = ({
 
 interface DraggablePhaseWrapperProps {
   phaseId: string;
-  index: number;
-  movePhase: (dragIndex: number, hoverIndex: number) => void;
   children: React.ReactNode;
 }
 
-const DraggablePhaseWrapper = ({
-  phaseId,
-  index,
-  movePhase,
-  children,
-}: DraggablePhaseWrapperProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const [{ handlerId }, drop] = useDrop<
-    ColumnDragItem,
-    void,
-    { handlerId: string | symbol | null }
-  >({
-    accept: PHASE_COLUMN,
-    collect: (monitor) => ({ handlerId: monitor.getHandlerId() }),
-    hover(item, monitor) {
-      if (!ref.current) return;
-      const dragIndex = item.index;
-      const hoverIndex = index;
-      if (dragIndex === hoverIndex) return;
-      const rect = ref.current.getBoundingClientRect();
-      const midX = (rect.right - rect.left) / 2;
-      const clientOffset = monitor.getClientOffset();
-      if (!clientOffset) return;
-      const hoverX = clientOffset.x - rect.left;
-      if (dragIndex < hoverIndex && hoverX < midX) return;
-      if (dragIndex > hoverIndex && hoverX > midX) return;
-      movePhase(dragIndex, hoverIndex);
-      item.index = hoverIndex;
-    },
+const DraggablePhaseWrapper = ({ phaseId, children }: DraggablePhaseWrapperProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: toPhaseSortableId(phaseId),
+    data: { type: "column", phaseId }
   });
-
-  const [{ isDragging }, drag, preview] = useDrag({
-    type: PHASE_COLUMN,
-    item: (): ColumnDragItem => ({ id: phaseId, index }),
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-  });
-
-  drop(ref);
-  preview(ref);
-  drag(ref);
 
   return (
     <div
-      ref={ref}
-      data-handler-id={handlerId}
-      className={cn("transition-opacity min-w-[220px]", isDragging && "opacity-40")}
+      ref={setNodeRef}
+      style={{
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        transition
+      }}
+      className={cn("transition-opacity touch-none min-w-[220px]", isDragging && "opacity-40")}
+      {...attributes}
+      {...listeners}
     >
       {children}
     </div>
@@ -778,7 +707,7 @@ export function SubspaceSettingsLayout() {
         return {
           ...prev,
           [fromPhase]: source,
-          [toPhase]: [...(prev[toPhase] || []), moved],
+          [toPhase]: [...(prev[toPhase] || []), moved]
         };
       });
       setExpandedCols((prev) => ({ ...prev, [toPhase]: true }));
@@ -791,7 +720,7 @@ export function SubspaceSettingsLayout() {
     (postId: string, phaseId: string) => {
       setPhasePosts((prev) => ({
         ...prev,
-        [phaseId]: (prev[phaseId] || []).filter((p) => p.id !== postId),
+        [phaseId]: (prev[phaseId] || []).filter((p) => p.id !== postId)
       }));
     },
     []
@@ -834,7 +763,7 @@ export function SubspaceSettingsLayout() {
           id: newId,
           label: "New Phase",
           description: "Describe this phase's purpose.",
-          linkedToNext: false,
+          linkedToNext: false
         },
       ];
     });
@@ -846,7 +775,7 @@ export function SubspaceSettingsLayout() {
   const handleLoadTemplate = (template: FlowTemplate) => {
     const newPhases: PhaseItem[] = template.phases.map((p, i) => ({
       ...p,
-      id: `${template.id}-${i}-${Date.now()}`,
+      id: `${template.id}-${i}-${Date.now()}`
     }));
     setPhases(newPhases);
     const newPosts: PhasePosts = {};
@@ -895,8 +824,85 @@ export function SubspaceSettingsLayout() {
     setExpandedCols((prev) => ({ ...prev, [phaseId]: true }));
   }, []);
 
+  // ─── Drag wiring ────────────────────────────────────────────────────────
+  const sensors = useBoardSensors();
+  const [activePostId, setActivePostId] = useState<string | null>(null);
+  const activePost = activePostId
+    ? (Object.values(phasePosts).flat() as PostEntry[]).find((p) => p.id === activePostId)
+    : undefined;
+
+  const phaseOfPost = useCallback(
+    (postId: string) => Object.keys(phasePosts).find((ph) => phasePosts[ph]?.some((p) => p.id === postId)),
+    [phasePosts]
+  );
+
+  /** `over.id` is either a phase droppable (`phase.id`) or a post card. */
+  const phaseOfDropTarget = useCallback(
+    (overId: string) => (phases.some((ph) => ph.id === overId) ? overId : phaseOfPost(overId)),
+    [phases, phaseOfPost]
+  );
+
+  const indexInPhase = useCallback(
+    (phaseId: string, overId: string) => {
+      const list = phasePosts[phaseId] ?? [];
+      const i = list.findIndex((p) => p.id === overId);
+      return i === -1 ? list.length : i;
+    },
+    [phasePosts]
+  );
+
+  const isColumnDrag = (e: DragStartEvent | DragOverEvent | DragEndEvent) =>
+    e.active.data.current?.type === "column";
+
+  const handleDragStart = (event: DragStartEvent) => {
+    if (isColumnDrag(event)) return;
+    setActivePostId(String(event.active.id));
+  };
+
+  // Cross-phase only — SortableContext handles same-phase reordering live.
+  const handleDragOver = (event: DragOverEvent) => {
+    if (isColumnDrag(event)) return;
+    const { active, over } = event;
+    if (!over) return;
+    const postId = String(active.id);
+    const overId = String(over.id);
+    if (postId === overId) return;
+    const from = phaseOfPost(postId);
+    const to = phaseOfDropTarget(overId);
+    if (!from || !to || from === to) return;
+    movePostBetweenPhases(from, indexInPhase(from, postId), to, indexInPhase(to, overId));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActivePostId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    if (isColumnDrag(event)) {
+      const fromIdx = phases.findIndex((ph) => ph.id === stripPhasePrefix(String(active.id)));
+      const toIdx = phases.findIndex((ph) => ph.id === stripPhasePrefix(String(over.id)));
+      if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) movePhase(fromIdx, toIdx);
+      return;
+    }
+
+    const postId = String(active.id);
+    const overId = String(over.id);
+    const from = phaseOfPost(postId);
+    const to = phaseOfDropTarget(overId);
+    if (!from || !to) return;
+    if (from === to) movePostInPhase(to, indexInPhase(to, postId), indexInPhase(to, overId));
+    else movePostBetweenPhases(from, indexInPhase(from, postId), to, indexInPhase(to, overId));
+  };
+
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={boardCollisionDetection}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={() => setActivePostId(null)}
+    >
       <div className="w-full h-full">
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -972,14 +978,10 @@ export function SubspaceSettingsLayout() {
           </div>
 
           {/* Phase columns */}
+          <SortableContext items={phases.map((ph) => toPhaseSortableId(ph.id))} strategy={rectSortingStrategy}>
           <div className="flex items-start gap-3 overflow-x-auto pb-2">
             {phases.map((phase, i) => (
-              <DraggablePhaseWrapper
-                key={phase.id}
-                phaseId={phase.id}
-                index={i}
-                movePhase={movePhase}
-              >
+              <DraggablePhaseWrapper key={phase.id} phaseId={phase.id}>
                 <PhaseColumn
                   phase={phase}
                   phaseIndex={i}
@@ -1002,6 +1004,7 @@ export function SubspaceSettingsLayout() {
               </DraggablePhaseWrapper>
             ))}
           </div>
+          </SortableContext>
 
           {/* Save / Reset bar */}
           <div className="mt-10 flex items-center justify-end gap-3">
@@ -1077,7 +1080,7 @@ export function SubspaceSettingsLayout() {
                 <div className="flex items-center gap-1.5 mt-2">
                   {template.phases.map((p, i) => (
                     <div key={i} className="flex items-center gap-1 shrink-0">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground">
+                      <span className="px-2 py-0.5 rounded-full text-badge bg-muted text-muted-foreground">
                         {p.label}
                       </span>
                       {i < template.phases.length - 1 && p.linkedToNext && (
@@ -1117,7 +1120,7 @@ export function SubspaceSettingsLayout() {
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
               {phases.map((phase, i) => (
                 <div key={phase.id} className="flex items-center gap-1 shrink-0">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary">
+                  <span className="px-2 py-0.5 rounded-full text-badge bg-primary/10 text-primary">
                     {phase.label}
                   </span>
                   {i < phases.length - 1 && (
@@ -1152,6 +1155,17 @@ export function SubspaceSettingsLayout() {
           </div>
         </DialogContent>
       </Dialog>
-    </DndProvider>
+      {createPortal(
+        <DragOverlay dropAnimation={null}>
+          {activePost ? (
+            <div className="flex items-center gap-2 px-2.5 py-2 bg-background border border-border rounded-lg shadow-lg rotate-2">
+              <GripVertical className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+              <span className="text-caption font-medium line-clamp-2 text-foreground">{activePost.title}</span>
+            </div>
+          ) : null}
+        </DragOverlay>,
+        document.body
+      )}
+    </DndContext>
   );
 }

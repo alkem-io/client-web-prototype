@@ -7,20 +7,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { Separator } from "@/app/components/ui/separator";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { Checkbox } from "@/crd/primitives/checkbox";
+import { Separator } from "@/crd/primitives/separator";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import {
   X, ImageIcon, GripVertical, Globe2, Palette, LayoutGrid, ChevronLeft,
-  Link2, FileText, Sparkles,
+  Link2, FileText, Sparkles
 } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    Types & Data
@@ -53,7 +53,7 @@ const HOSTED_SPACES: SpaceItem[] = [
 
 export function CreateInnovationHubDialogV3({
   open,
-  onOpenChange,
+  onOpenChange
 }: CreateInnovationHubDialogV3Props) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
@@ -311,7 +311,7 @@ function WizardStepHubIdentity({
   subdomain, handleSubdomainChange,
   name, setName,
   tagline, setTagline,
-  description, setDescription,
+  description, setDescription
 }: {
   subdomain: string; handleSubdomainChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name: string; setName: (v: string) => void;
@@ -361,7 +361,7 @@ function WizardStepHubIdentity({
           placeholder="e.g. Innovation Lab"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="h-11 text-base"
+          className="h-11 text-subheader font-normal"
         />
         <p className="text-caption text-muted-foreground">The display name shown to visitors</p>
       </section>
@@ -394,7 +394,7 @@ function WizardStepHubIdentity({
           value={description}
           onChange={setDescription}
           placeholder="Describe what this hub is about..."
-          minHeight="120px"
+          className="min-h-[120px]"
         />
         <p className="text-caption text-muted-foreground">Helps visitors understand the purpose of your hub</p>
       </section>
@@ -411,7 +411,7 @@ function WizardStepBranding({
   logo, setLogo,
   tags, setTags,
   currentTag, setCurrentTag,
-  handleTagKeyDown,
+  handleTagKeyDown
 }: {
   banner: string | null; setBanner: (v: string | null) => void;
   logo: string | null; setLogo: (v: string | null) => void;
@@ -521,7 +521,7 @@ function WizardStepCurateSpaces({
   addSpace,
   removeSpace,
   moveSpace,
-  availableSpaces,
+  availableSpaces
 }: {
   selectedSpaces: SpaceItem[];
   addSpace: (s: SpaceItem) => void;

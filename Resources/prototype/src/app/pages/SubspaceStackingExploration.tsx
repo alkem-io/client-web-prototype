@@ -6,7 +6,7 @@
  * that fundamentally change how the sidebar area looks when you're in a subspace.
  */
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import {
   Info,
   MapPin,
@@ -19,9 +19,9 @@ import {
   ChevronRight,
   ChevronUp,
   Check,
-  ArrowUpLeft,
+  ArrowUpLeft
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 
 /* ─── APPROACH 1: Parent Frame ───
  * The ENTIRE sidebar sits inside a visible "parent space frame" — 
@@ -42,7 +42,7 @@ function ApproachParentFrame({ depth }: { depth: 1 | 2 }) {
           background: hovered ? "color-mix(in srgb, var(--primary) 8%, var(--secondary))" : "var(--secondary)",
           border: "1px solid var(--border)",
           borderRadius: "var(--radius)",
-          padding: "10px 10px 12px 10px",
+          padding: "10px 10px 12px 10px"
         }}
       >
         {/* Parent space header — always visible */}
@@ -62,7 +62,7 @@ function ApproachParentFrame({ depth }: { depth: 1 | 2 }) {
             style={{
               fontSize: "10px",
               fontWeight: 700,
-              color: hovered ? "var(--primary)" : "var(--muted-foreground)",
+              color: hovered ? "var(--primary)" : "var(--muted-foreground)"
             }}
           >
             The Sandbox
@@ -77,7 +77,7 @@ function ApproachParentFrame({ depth }: { depth: 1 | 2 }) {
               border: "1px solid var(--border)",
               borderRadius: "calc(var(--radius) - 2px)",
               padding: "8px 8px 10px 8px",
-              marginBottom: 0,
+              marginBottom: 0
             }}
           >
             <a href="#" className="flex items-center gap-2 mb-2 px-1 group/mid" style={{ textDecoration: "none" }}>
@@ -123,7 +123,7 @@ function ApproachStackedTab({ depth }: { depth: 1 | 2 }) {
             border: "1px solid var(--border)",
             borderBottom: "1px solid var(--secondary)",
             textDecoration: "none",
-            marginLeft: 8,
+            marginLeft: 8
           }}
         >
           <div className="w-4 h-4 rounded-sm flex items-center justify-center" style={{ background: "#22c55e" }}>
@@ -143,7 +143,7 @@ function ApproachStackedTab({ depth }: { depth: 1 | 2 }) {
               border: "1px solid var(--border)",
               borderBottom: "none",
               borderRadius: "var(--radius) var(--radius) 0 0",
-              padding: "6px 10px",
+              padding: "6px 10px"
             }}
           >
             <a href="#" className="inline-flex items-center gap-1.5" style={{ textDecoration: "none" }}>
@@ -160,7 +160,7 @@ function ApproachStackedTab({ depth }: { depth: 1 | 2 }) {
           style={{
             border: "1px solid var(--border)",
             borderRadius: depth === 2 ? "0 var(--radius) var(--radius) var(--radius)" : "var(--radius)",
-            overflow: "hidden",
+            overflow: "hidden"
           }}
         >
           <ChallengeBox noBorderRadius />
@@ -193,7 +193,7 @@ function ApproachBoldStack({ depth }: { depth: 1 | 2 }) {
               height: "calc(100% + 8px)",
               background: "var(--muted)",
               border: "1px solid var(--border)",
-              borderRadius: "var(--radius)",
+              borderRadius: "var(--radius)"
             }}
           >
             <div className="absolute top-0 left-0 right-0 h-4 rounded-t-[5px] overflow-hidden" style={{ background: "#22c55e", opacity: 0.3 }} />
@@ -211,7 +211,7 @@ function ApproachBoldStack({ depth }: { depth: 1 | 2 }) {
             background: parentHovered ? "color-mix(in srgb, var(--primary) 4%, var(--card))" : "var(--card)",
             border: parentHovered ? "1.5px solid color-mix(in srgb, var(--primary) 30%, var(--border))" : "1px solid var(--border)",
             borderRadius: "var(--radius)",
-            boxShadow: parentHovered ? "0 2px 8px rgba(0,0,0,0.08)" : "none",
+            boxShadow: parentHovered ? "0 2px 8px rgba(0,0,0,0.08)" : "none"
           }}
           onMouseEnter={() => setParentHovered(true)}
           onMouseLeave={() => setParentHovered(false)}
@@ -228,7 +228,7 @@ function ApproachBoldStack({ depth }: { depth: 1 | 2 }) {
             style={{
               top: 9,
               left: 10,
-              opacity: parentHovered ? 1 : 0.7,
+              opacity: parentHovered ? 1 : 0.7
             }}
           >
             <div className="w-4 h-4 rounded-sm flex items-center justify-center" style={{ background: "#22c55e" }}>
@@ -248,7 +248,7 @@ function ApproachBoldStack({ depth }: { depth: 1 | 2 }) {
           className="relative"
           style={{
             boxShadow: "0 6px 20px -4px rgba(0,0,0,0.15), 0 2px 6px -2px rgba(0,0,0,0.08)",
-            borderRadius: "var(--radius)",
+            borderRadius: "var(--radius)"
           }}
         >
           <ChallengeBox />
@@ -293,7 +293,7 @@ function ApproachRail({ depth }: { depth: 1 | 2 }) {
               borderTopLeftRadius: 6,
               borderBottomLeftRadius: 6,
               textDecoration: "none",
-              marginRight: 2,
+              marginRight: 2
             }}
             title="Go to The Sandbox"
           >
@@ -304,7 +304,7 @@ function ApproachRail({ depth }: { depth: 1 | 2 }) {
                 height: 22,
                 borderRadius: 4,
                 background: "#22c55e",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.1)"
               }}
             >
               <span style={{ color: "white", fontSize: "8px", fontWeight: 700, letterSpacing: "-0.02em" }}>S</span>
@@ -325,7 +325,7 @@ function ApproachRail({ depth }: { depth: 1 | 2 }) {
                   textTransform: "uppercase",
                   color: "var(--muted-foreground)",
                   opacity: 0.5,
-                  whiteSpace: "nowrap",
+                  whiteSpace: "nowrap"
                 }}
               >
                 The Sandbox
@@ -348,7 +348,7 @@ function ApproachRail({ depth }: { depth: 1 | 2 }) {
             borderTopLeftRadius: depth === 2 ? 0 : 6,
             borderBottomLeftRadius: depth === 2 ? 0 : 6,
             background: railHovered ? "var(--muted)" : "transparent",
-            textDecoration: "none",
+            textDecoration: "none"
           }}
           title={depth === 2 ? "Go to Lux-Lab" : "Go to The Sandbox"}
           onMouseEnter={() => setRailHovered(true)}
@@ -363,7 +363,7 @@ function ApproachRail({ depth }: { depth: 1 | 2 }) {
               borderRadius: 4,
               background: depth === 2 ? "#0ea5e9" : "#22c55e",
               boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-              transform: railHovered ? "scale(1.1)" : "scale(1)",
+              transform: railHovered ? "scale(1.1)" : "scale(1)"
             }}
           >
             <span style={{ color: "white", fontSize: "8px", fontWeight: 700, letterSpacing: "-0.02em" }}>
@@ -388,7 +388,7 @@ function ApproachRail({ depth }: { depth: 1 | 2 }) {
                 textTransform: "uppercase",
                 color: railHovered ? "var(--foreground)" : "var(--muted-foreground)",
                 opacity: railHovered ? 1 : 0.7,
-                whiteSpace: "nowrap",
+                whiteSpace: "nowrap"
               }}
             >
               {depth === 2 ? "Lux-Lab" : "The Sandbox"}
@@ -403,7 +403,7 @@ function ApproachRail({ depth }: { depth: 1 | 2 }) {
               height: 16,
               borderRadius: "50%",
               background: railHovered ? "color-mix(in srgb, var(--primary) 10%, transparent)" : "transparent",
-              opacity: railHovered ? 1 : 0,
+              opacity: railHovered ? 1 : 0
             }}
           >
             <ArrowUpLeft className="w-3 h-3" style={{ color: "var(--primary)" }} />
@@ -417,7 +417,7 @@ function ApproachRail({ depth }: { depth: 1 | 2 }) {
             style={{
               background: "var(--primary)",
               color: "var(--primary-foreground)",
-              borderRadius: "0 var(--radius) var(--radius) 0",
+              borderRadius: "0 var(--radius) var(--radius) 0"
             }}
           >
             <div className="flex items-center gap-2 mb-3">
@@ -463,7 +463,7 @@ function ChallengeBox({ noBorderRadius }: { noBorderRadius?: boolean }) {
       style={{
         background: "var(--primary)",
         color: "var(--primary-foreground)",
-        borderRadius: noBorderRadius ? 0 : "var(--radius)",
+        borderRadius: noBorderRadius ? 0 : "var(--radius)"
       }}
     >
       <div className="flex items-center gap-2 mb-3">
@@ -555,14 +555,14 @@ export default function SubspaceStackingExploration() {
   ];
 
   return (
-    <div className="min-h-screen bg-background" style={{ fontFamily: "var(--font-family, 'Inter', sans-serif)" }}>
+    <div className="min-h-screen bg-background" >
       {/* Header */}
       <div className="sticky top-0 z-50 border-b" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
         <div className="max-w-[1400px] mx-auto px-6 py-4">
-          <h1 className="text-lg font-semibold" style={{ color: "var(--foreground)" }}>
+          <h1 className="text-subsection-title" style={{ color: "var(--foreground)" }}>
             Subspace Depth — Bold Approaches
           </h1>
-          <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
+          <p className="text-body mt-1" style={{ color: "var(--muted-foreground)" }}>
             Making it unmissable that you're one level deeper. The parent should be VISIBLE, not just hinted at.
           </p>
         </div>
@@ -572,14 +572,14 @@ export default function SubspaceStackingExploration() {
         {/* Controls */}
         <div className="flex flex-wrap gap-6 mb-10">
           <div className="flex-1 min-w-[300px] p-4 rounded-lg" style={{ border: "1px solid var(--border)" }}>
-            <p className="text-sm font-semibold mb-3" style={{ color: "var(--foreground)" }}>Approach</p>
+            <p className="text-card-title mb-3" style={{ color: "var(--foreground)" }}>Approach</p>
             <div className="space-y-1.5">
               {variants.map(v => (
                 <button
                   key={v.id}
                   onClick={() => setActiveVariant(v.id)}
                   className={cn(
-                    "w-full text-left px-3 py-2.5 rounded-md transition-colors text-sm",
+                    "w-full text-left px-3 py-2.5 rounded-md transition-colors text-body",
                     activeVariant === v.id ? "bg-primary/10 font-medium" : "hover:bg-muted"
                   )}
                   style={{ color: activeVariant === v.id ? "var(--primary)" : "var(--foreground)" }}
@@ -588,7 +588,7 @@ export default function SubspaceStackingExploration() {
                     {activeVariant === v.id && <Check className="w-3.5 h-3.5 shrink-0" />}
                     <span>{v.id}. {v.label}</span>
                   </div>
-                  <p className="text-xs mt-0.5" style={{ color: "var(--muted-foreground)", paddingLeft: activeVariant === v.id ? 22 : 0 }}>
+                  <p className="text-caption mt-0.5" style={{ color: "var(--muted-foreground)", paddingLeft: activeVariant === v.id ? 22 : 0 }}>
                     {v.desc}
                   </p>
                 </button>
@@ -597,14 +597,14 @@ export default function SubspaceStackingExploration() {
           </div>
 
           <div className="w-[180px] p-4 rounded-lg" style={{ border: "1px solid var(--border)" }}>
-            <p className="text-sm font-semibold mb-3" style={{ color: "var(--foreground)" }}>Depth</p>
+            <p className="text-card-title mb-3" style={{ color: "var(--foreground)" }}>Depth</p>
             <div className="space-y-2">
               {([1, 2] as const).map(d => (
                 <button
                   key={d}
                   onClick={() => setDepth(d)}
                   className={cn(
-                    "w-full px-3 py-2 rounded-md text-sm transition-colors text-left",
+                    "w-full px-3 py-2 rounded-md text-body transition-colors text-left",
                     depth === d ? "bg-primary text-primary-foreground font-medium" : "bg-muted text-foreground hover:bg-muted/80"
                   )}
                 >
@@ -620,9 +620,9 @@ export default function SubspaceStackingExploration() {
           {/* Mock nav */}
           <div className="px-6 py-3 flex items-center gap-3" style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}>
             <div className="w-6 h-6 rounded bg-white/20" />
-            <span className="text-xs font-medium opacity-80">THE SANDBOX</span>
+            <span className="text-caption opacity-80">THE SANDBOX</span>
             <ChevronRight className="w-3 h-3 opacity-50" />
-            <span className="text-xs font-semibold">RENEWABLE ENERGY</span>
+            <span className="text-caption font-semibold">RENEWABLE ENERGY</span>
           </div>
 
           {/* Banner */}
@@ -630,10 +630,10 @@ export default function SubspaceStackingExploration() {
 
           {/* Subspace info bar */}
           <div className="px-6 py-3 flex items-center gap-3" style={{ borderBottom: "1px solid var(--border)" }}>
-            <div className="w-10 h-10 rounded-md flex items-center justify-center text-xs font-bold text-white" style={{ background: "#22c55e" }}>RE</div>
+            <div className="w-10 h-10 rounded-md flex items-center justify-center text-caption font-bold text-white" style={{ background: "#22c55e" }}>RE</div>
             <div>
-              <h2 className="font-semibold text-sm" style={{ color: "var(--foreground)" }}>Renewable Energy Transition</h2>
-              <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Accelerating the shift to sustainable energy sources</p>
+              <h2 className="text-card-title" style={{ color: "var(--foreground)" }}>Renewable Energy Transition</h2>
+              <p className="text-caption" style={{ color: "var(--muted-foreground)" }}>Accelerating the shift to sustainable energy sources</p>
             </div>
           </div>
 
@@ -653,7 +653,7 @@ export default function SubspaceStackingExploration() {
                 {["Introduction", "Body of Knowledge", "Platform Playground", "Creative Space"].map((tab, i) => (
                   <button
                     key={tab}
-                    className={cn("text-sm pb-1 transition-colors", i === 1 ? "font-medium border-b-2" : "text-muted-foreground hover:text-foreground")}
+                    className={cn("text-body pb-1 transition-colors", i === 1 ? "font-medium border-b-2" : "text-muted-foreground hover:text-foreground")}
                     style={i === 1 ? { borderColor: "var(--primary)", color: "var(--foreground)" } : undefined}
                   >
                     {tab}
@@ -666,11 +666,11 @@ export default function SubspaceStackingExploration() {
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-8 h-8 rounded-full bg-muted" />
                       <div>
-                        <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>Contributor Name</p>
-                        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>7/{i}/2025 · Post</p>
+                        <p className="text-body-emphasis" style={{ color: "var(--foreground)" }}>Contributor Name</p>
+                        <p className="text-caption" style={{ color: "var(--muted-foreground)" }}>7/{i}/2025 · Post</p>
                       </div>
                     </div>
-                    <p className="text-sm font-semibold mb-1" style={{ color: "var(--foreground)" }}>Post title {i}</p>
+                    <p className="text-card-title mb-1" style={{ color: "var(--foreground)" }}>Post title {i}</p>
                     <div className="h-3 w-3/4 rounded bg-muted/50" />
                     <div className="h-3 w-1/2 rounded bg-muted/50 mt-1" />
                   </div>

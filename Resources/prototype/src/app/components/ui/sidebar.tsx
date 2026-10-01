@@ -6,25 +6,25 @@ import { VariantProps, cva } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 
 import { useIsMobile } from "./use-mobile";
-import { cn } from "./utils";
-import { Button } from "./button";
-import { IconButton } from "./icon-button";
-import { Input } from "./input";
-import { Separator } from "./separator";
+import { cn } from "@/crd/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Separator } from "@/crd/primitives/separator";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetTitle,
-} from "./sheet";
-import { Skeleton } from "./skeleton";
+  SheetTitle
+} from "@/crd/primitives/sheet";
+import { Skeleton } from "@/crd/primitives/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
-} from "./tooltip";
+  TooltipTrigger
+} from "@/crd/primitives/tooltip";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -122,7 +122,7 @@ function SidebarProvider({
       isMobile,
       openMobile,
       setOpenMobile,
-      toggleSidebar,
+      toggleSidebar
     }),
     [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
   );
@@ -136,7 +136,7 @@ function SidebarProvider({
             {
               "--sidebar-width": SIDEBAR_WIDTH,
               "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-              ...style,
+              ...style
             } as React.CSSProperties
           }
           className={cn(
@@ -191,7 +191,7 @@ function Sidebar({
           className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+              "--sidebar-width": SIDEBAR_WIDTH_MOBILE
             } as React.CSSProperties
           }
           side={side}
@@ -481,18 +481,18 @@ const sidebarMenuButtonVariants = cva(
       variant: {
         default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
         outline:
-          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
+          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]"
       },
       size: {
         default: "h-8 text-control",
         sm: "h-7 text-caption",
-        lg: "h-12 text-control group-data-[collapsible=icon]:p-0!",
-      },
+        lg: "h-12 text-control group-data-[collapsible=icon]:p-0!"
+      }
     },
     defaultVariants: {
       variant: "default",
-      size: "default",
-    },
+      size: "default"
+    }
   },
 );
 
@@ -529,7 +529,7 @@ function SidebarMenuButton({
 
   if (typeof tooltip === "string") {
     tooltip = {
-      children: tooltip,
+      children: tooltip
     };
   }
 
@@ -630,7 +630,7 @@ function SidebarMenuSkeleton({
         data-sidebar="menu-skeleton-text"
         style={
           {
-            "--skeleton-width": width,
+            "--skeleton-width": width
           } as React.CSSProperties
         }
       />
@@ -723,5 +723,5 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
+  useSidebar
 };

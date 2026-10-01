@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { Search, Check, ChevronRight, Library, Tags, Globe2, Leaf, ArrowRight } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
+import { cn } from "@/crd/lib/utils";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
+  DialogFooter
+} from "@/crd/primitives/dialog";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -62,7 +62,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
       "SDG 17 – Partnerships for the Goals",
     ],
     source: "space",
-    packName: "VNG Innovation Hub",
+    packName: "VNG Innovation Hub"
   },
   {
     id: "ct-sector",
@@ -71,7 +71,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "multi",
     values: ["Energy", "Healthcare", "Education", "Agriculture", "Finance", "Technology", "Transportation", "Government", "Environment", "Social Services"],
     source: "space",
-    packName: "VNG Innovation Hub",
+    packName: "VNG Innovation Hub"
   },
   // Platform Library
   {
@@ -81,7 +81,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "multi",
     values: ["Dutch", "English", "French", "German", "Spanish", "Portuguese", "Arabic", "Mandarin"],
     source: "platform",
-    packName: "Alkemio Defaults",
+    packName: "Alkemio Defaults"
   },
   {
     id: "ct-phase",
@@ -90,7 +90,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "single",
     values: ["Discovery", "Design", "Pilot", "Scale", "Maintenance", "Completed"],
     source: "platform",
-    packName: "Alkemio Defaults",
+    packName: "Alkemio Defaults"
   },
   {
     id: "ct-impact",
@@ -99,7 +99,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "single",
     values: ["Local", "Regional", "National", "International"],
     source: "platform",
-    packName: "Alkemio Defaults",
+    packName: "Alkemio Defaults"
   },
   {
     id: "ct-region",
@@ -108,7 +108,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "multi",
     values: ["Europe", "North America", "South America", "Asia", "Africa", "Oceania", "Middle East"],
     source: "platform",
-    packName: "Alkemio Defaults",
+    packName: "Alkemio Defaults"
   },
   {
     id: "ct-audience",
@@ -117,7 +117,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "multi",
     values: ["Citizens", "Government", "NGOs", "Business", "Academia", "Youth", "Elderly"],
     source: "platform",
-    packName: "Community Builder Pack",
+    packName: "Community Builder Pack"
   },
   {
     id: "ct-maturity",
@@ -126,7 +126,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "single",
     values: ["Idea", "Proof of Concept", "Pilot", "Growth", "Mature", "Sunset"],
     source: "platform",
-    packName: "Innovation Hub Pack",
+    packName: "Innovation Hub Pack"
   },
   {
     id: "ct-funding",
@@ -135,7 +135,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "single",
     values: ["Pre-seed", "Seed", "Series A", "Series B", "Growth", "Self-sustaining"],
     source: "platform",
-    packName: "Startup Pack",
+    packName: "Startup Pack"
   },
   // Your Template Packs (personal/org template packs)
   {
@@ -145,7 +145,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "single",
     values: ["Critical", "High", "Medium", "Low", "Backlog"],
     source: "personal",
-    packName: "My Organization Pack",
+    packName: "My Organization Pack"
   },
   {
     id: "ct-department",
@@ -154,7 +154,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "single",
     values: ["Engineering", "Product", "Design", "Marketing", "Sales", "Operations", "HR", "Finance"],
     source: "personal",
-    packName: "My Organization Pack",
+    packName: "My Organization Pack"
   },
   {
     id: "ct-compliance",
@@ -163,7 +163,7 @@ export const AVAILABLE_CLASSIFICATION_TEMPLATES: ClassificationTemplate[] = [
     cardinality: "multi",
     values: ["GDPR", "SOC 2", "ISO 27001", "HIPAA", "PCI-DSS"],
     source: "personal",
-    packName: "My Organization Pack",
+    packName: "My Organization Pack"
   },
 ];
 
@@ -175,7 +175,7 @@ function TemplatePickerStep({
   onSelect,
   onGoToTemplates,
   excludeIds,
-  availableTemplates,
+  availableTemplates
 }: {
   onSelect: (template: ClassificationTemplate) => void;
   onGoToTemplates: () => void;
@@ -321,7 +321,7 @@ function ValueSelectorStep({
   template,
   selectedValues,
   onToggle,
-  onBack,
+  onBack
 }: {
   template: ClassificationTemplate;
   selectedValues: string[];
@@ -431,7 +431,7 @@ export function ClassificationPickerDialog({
   onAdd,
   onGoToTemplates,
   existingClassificationIds,
-  availableTemplates = AVAILABLE_CLASSIFICATION_TEMPLATES,
+  availableTemplates = AVAILABLE_CLASSIFICATION_TEMPLATES
 }: ClassificationPickerDialogProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedTemplate, setSelectedTemplate] = useState<ClassificationTemplate | null>(null);
@@ -464,7 +464,7 @@ export function ClassificationPickerDialog({
       templateName: selectedTemplate.name,
       selectedValues,
       cardinality: selectedTemplate.cardinality,
-      allValues: selectedTemplate.values,
+      allValues: selectedTemplate.values
     });
 
     // Reset and close

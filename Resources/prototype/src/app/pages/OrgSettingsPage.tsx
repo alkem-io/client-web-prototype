@@ -1,6 +1,6 @@
 import { useParams, Link, useLocation, Navigate } from "react-router";
 import { Building2, CreditCard, Users, Settings, Bell } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { OrgSettingsProfile } from "@/app/components/org/OrgSettingsProfile";
 import { OrgSettingsAccount } from "@/app/components/org/OrgSettingsAccount";
 import { OrgSettingsAssociates } from "@/app/components/org/OrgSettingsAssociates";
@@ -19,20 +19,20 @@ const ORG_DATA: Record<string, OrgData> = {
     name: "Sandbox Organization",
     initials: "SO",
     avatarColor: "#0ea5e9",
-    logo: undefined,
+    logo: undefined
   },
   "vng-innovation": {
     name: "VNG Innovation",
     initials: "VN",
-    avatarColor: "#16a34a",
-  },
+    avatarColor: "#16a34a"
+  }
 };
 
 function getOrgData(slug: string): OrgData {
   return ORG_DATA[slug] || {
     name: slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
     initials: slug.substring(0, 2).toUpperCase(),
-    avatarColor: "#64748b",
+    avatarColor: "#64748b"
   };
 }
 

@@ -1,19 +1,26 @@
 import { Fragment, useState } from "react";
 import { useLocation } from "react-router";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
+  DialogDescription
+} from "@/crd/primitives/dialog";
 import { Plus, Mail, UserPlus, Search, List, FileText, X, Calendar, ChevronDown, Target, ExternalLink, ArrowUpDown } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
+import { SpaceSidebar as CrdSpaceSidebar } from "@/crd/components/space/SpaceSidebar";
+import { CollapsibleTagList } from "@/crd/components/common/CollapsibleTagList";
+import { CreatePostButton } from "@/crd/components/space/sidebar/CreatePostButton";
+import { CreateSubspaceButton } from "@/crd/components/space/sidebar/CreateSubspaceButton";
+import { InviteButton } from "@/crd/components/space/sidebar/InviteButton";
+import { PostIndexButton } from "@/crd/components/space/sidebar/PostIndexButton";
+import { SearchField } from "@/crd/forms/SearchField";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { ActivityDot } from "@/app/components/shared/ActivityDot";
 import { spaceOrSubspaceIds } from "@/app/data/activity-data";
@@ -23,7 +30,7 @@ import {
   normalizeConfig,
   visibleWidgets,
   SPACE_WIDGET_DEFS,
-  type SidebarWidgetConfig,
+  type SidebarWidgetConfig
 } from "@/app/components/space/SidebarWidgets";
 
 interface SpaceSidebarProps {
@@ -40,7 +47,7 @@ const TAB_TAGS: Record<string, string[]> = {
   home:       ["Updates", "Events", "Ideas", "Announcements", "Strategy", "Discussion", "Question", "Feedback", "Milestone", "Decision", "Blocker", "Action Item", "Proposal", "Vote", "Summary", "Minutes", "Agenda", "Follow-up", "Retrospective", "Planning", "Sprint", "Release", "Bug Report", "Feature Request", "Enhancement", "Onboarding", "Welcome", "Celebration", "Recognition", "Resource", "Link", "Tutorial", "Guide", "Best Practice", "Lesson Learned", "Case Study", "Interview", "Podcast", "Webinar", "Workshop", "Hackathon", "Challenge"],
   community:  ["Members", "Active", "Leads", "New"],
   workspaces: ["Energy", "Strategy", "Transport", "Urban", "Green Spaces", "Policy", "Community", "Digital", "Simulation", "Regulation"],
-  knowledge:  ["Reports", "Policy", "Research", "Data", "Technical", "Funding", "Community", "Templates", "Legal", "Infrastructure", "Governance", "Environment", "Education", "Standards", "Compliance", "Audit", "Budget", "Procurement", "Contracts", "Risk Assessment", "Impact Analysis", "Benchmarks", "Case Studies", "White Papers", "Presentations", "Dashboards", "Metrics", "KPIs", "Frameworks", "Methodologies", "Tools", "Software", "Hardware", "IoT", "AI/ML", "Blockchain", "Open Data", "APIs", "Integrations", "Workflows", "Automation", "Security", "Privacy", "Accessibility", "Sustainability", "Carbon", "Circular Economy", "Social Impact", "Equity", "Innovation", "Pilots", "Prototypes"],
+  knowledge:  ["Reports", "Policy", "Research", "Data", "Technical", "Funding", "Community", "Templates", "Legal", "Infrastructure", "Governance", "Environment", "Education", "Standards", "Compliance", "Audit", "Budget", "Procurement", "Contracts", "Risk Assessment", "Impact Analysis", "Benchmarks", "Case Studies", "White Papers", "Presentations", "Dashboards", "Metrics", "KPIs", "Frameworks", "Methodologies", "Tools", "Software", "Hardware", "IoT", "AI/ML", "Blockchain", "Open Data", "APIs", "Integrations", "Workflows", "Automation", "Security", "Privacy", "Accessibility", "Sustainability", "Carbon", "Circular Economy", "Social Impact", "Equity", "Innovation", "Pilots", "Prototypes"]
 };
 
 const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: string; tags: string[] }>> = {
@@ -84,7 +91,7 @@ const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: str
     { title: "Youth Engagement Program Curriculum", type: "Document", author: "Elena Rodriguez", tags: ["Community", "Education"] },
     { title: "Grant Application: DOE Community Power Accelerator", type: "Document", author: "Nina Petrova", tags: ["Funding", "Reports"] },
     { title: "Climate Resilience & Adaptation Strategy", type: "Collection", author: "Michael Chang", tags: ["Research", "Environment"] },
-  ],
+  ]
 };
 
 export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription, widgetConfig }: SpaceSidebarProps) {
@@ -108,7 +115,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         description: "What would you like to call your subspace?",
         required: true,
         order: 1,
-        constraints: { maxLength: 100 },
+        constraints: { maxLength: 100 }
       },
       {
         id: "initiating-municipality",
@@ -117,7 +124,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         description: "Which municipality is initiating this subspace?",
         required: true,
         order: 2,
-        constraints: { maxLength: 100 },
+        constraints: { maxLength: 100 }
       },
       {
         id: "first-lead",
@@ -126,7 +133,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         description: "Who is the primary lead?",
         required: true,
         order: 3,
-        constraints: { fields: ["name", "email", "organization"] },
+        constraints: { fields: ["name", "email", "organization"] }
       },
       {
         id: "second-lead",
@@ -135,7 +142,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         description: "Who is the co-lead?",
         required: false,
         order: 4,
-        constraints: { maxSelections: 1 },
+        constraints: { maxSelections: 1 }
       },
       {
         id: "supporting-municipalities",
@@ -220,7 +227,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
             { id: "zoeterwoude", label: "Zoeterwoude" },
             { id: "noorden-zuid-holland", label: "Noorden Zuid-Holland" },
           ]
-        },
+        }
       },
       {
         id: "vision",
@@ -229,18 +236,18 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         description: "Please describe: (1) Who will benefit from this initiative? (2) What are you trying to achieve? (3) Why is this important? (4) How will you do it?",
         required: true,
         order: 6,
-        constraints: { maxLength: 2000, maxWords: 400 },
+        constraints: { maxLength: 2000, maxWords: 400 }
       },
     ],
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 
   const currentUser = {
     id: "user-1",
     name: "Current User",
     email: "user@example.com",
-    organization: "Organization",
+    organization: "Organization"
   };
 
   const tags = TAB_TAGS[variant] ?? TAB_TAGS.home;
@@ -269,10 +276,10 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
   // always clearable.
   const filterFeedback = hasFilters && (
     <div
-      className="flex items-center justify-between gap-2 p-2 rounded-md text-xs mb-3"
+      className="flex items-center justify-between gap-2 p-2 rounded-md text-caption mb-3"
       style={{
         background: "color-mix(in srgb, var(--primary) 10%, transparent)",
-        color: "var(--primary)",
+        color: "var(--primary)"
       }}
     >
       <span>
@@ -308,7 +315,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       <div className="pb-2">
         <ReadMoreText
           maxLines={3}
-          className="text-sm text-foreground/85 leading-relaxed"
+          className="text-body text-foreground/85 leading-relaxed"
           toggleColor="var(--foreground)"
           toggleOpacity={0.75}
         >
@@ -322,61 +329,29 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
           <IntentLeadsBox />
         </div>
       ) : null,
-    post: (
-      <Button
-        size="sm"
-        className="w-full gap-2 justify-start"
-        onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))}
-      >
-        <Plus className="w-4 h-4" />
-        Post
-      </Button>
-    ),
-    addUser:
-      variant === "community" ? (
-        <Button variant="outline" size="sm" className="w-full gap-2 justify-start">
-          <UserPlus className="w-4 h-4" />
-          Add User
-        </Button>
-      ) : null,
+    post: <CreatePostButton onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))} />,
+    addUser: variant === "community" ? <InviteButton onClick={() => {}} /> : null,
     createSubspace:
       variant === "home" || variant === "workspaces" ? (
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full gap-2 justify-start"
-          onClick={() => setApplicationDialogOpen(true)}
-        >
-          <Plus className="w-4 h-4" />
-          Apply for a Subspace
-        </Button>
+        <CreateSubspaceButton onClick={() => setApplicationDialogOpen(true)} />
       ) : null,
     search: (
       <div className="pb-2">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="w-full h-9 pl-8 pr-3 transition-all text-sm rounded-md border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "var(--primary)";
-              e.currentTarget.style.boxShadow = "0 0 0 1px var(--ring)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = "var(--border)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          />
-        </div>
+        <SearchField
+          value={searchValue}
+          onValueChange={setSearchValue}
+          placeholder={searchPlaceholder}
+          ariaLabel={searchPlaceholder}
+        />
         {!config.enabled.tags && filterFeedback}
       </div>
     ),
     tags: (
       <>
-        <TagCloud tags={tags} activeTags={activeTags} toggleTag={toggleTag} />
+        {/* CRD bundles search + tags into one `SearchSection`; the prototype keeps
+            them as two independently-togglable widgets (Settings → Layout), so the
+            tag half is composed from `CollapsibleTagList` directly. */}
+        <CollapsibleTagList tags={tags} selectedTags={activeTags} onTagClick={toggleTag} />
         {filterFeedback}
         <div className="mb-2" />
       </>
@@ -401,17 +376,9 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       ) : null,
     index: (
       <div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full gap-2 justify-start"
-          onClick={() => setIndexOpen(true)}
-        >
-          <List className="w-3.5 h-3.5" />
-          Index
-        </Button>
+        <PostIndexButton onClick={() => setIndexOpen(true)} />
       </div>
-    ),
+    )
   };
 
   // Post / Add User / Apply stay grouped in one button stack while adjacent.
@@ -427,7 +394,10 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
     }, []);
 
   return (
-    <div className="flex flex-col w-full">
+    /* Production's sidebar frame. It is purely the <nav> shell — every widget is
+       an ordered child, which is the same config-driven composition the
+       prototype already used and production does in SpaceTabSidebarConnector. */
+    <CrdSpaceSidebar className="flex flex-col space-y-0">
       {/* Widgets — visibility and order come from Settings → Layout */}
       {widgetGroups.map((group, i) =>
         group.family === "action" ? (
@@ -469,7 +439,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
                 >
                   <FileText className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--primary)" }} />
                   <div className="flex-1 min-w-0">
-                    <p className="truncate text-sm font-medium text-foreground">
+                    <p className="truncate text-body-emphasis text-foreground">
                       {item.title}
                     </p>
                     <p className="text-caption text-muted-foreground">
@@ -483,7 +453,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
                             className="px-1.5 py-0.5 rounded text-badge"
                             style={{
                               background: "color-mix(in srgb, var(--primary) 10%, transparent)",
-                              color: "var(--primary)",
+                              color: "var(--primary)"
                             }}
                           >
                             {t}
@@ -497,7 +467,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
             </div>
           ) : (
             <div style={{ padding: "24px", textAlign: "center", color: "var(--muted-foreground)" }}>
-              <p style={{ fontSize: "var(--text-sm)" }}>No items in this view.</p>
+              <p style={{ fontSize: "var(--text-body)" }}>No items in this view.</p>
             </div>
           )}
         </DialogContent>
@@ -511,7 +481,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
         spaceName={spaceSlug}
         currentUser={currentUser}
       />
-    </div>
+    </CrdSpaceSidebar>
   );
 }
 
@@ -552,7 +522,7 @@ export function TagCloud({ tags, activeTags, toggleTag }: { tags: string[]; acti
       {expanded && hiddenCount > 0 && (
         <button
           onClick={() => setExpanded(false)}
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          className="text-caption text-muted-foreground hover:text-foreground transition-colors"
         >
           Show fewer
         </button>
@@ -576,7 +546,7 @@ function UpcomingEvents() {
           onClick={() => setCollapsed(!collapsed)}
           className="flex items-center gap-1 hover:text-foreground transition-colors"
         >
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <span className="text-caption text-muted-foreground uppercase tracking-wider">
             Events
           </span>
           <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
@@ -594,17 +564,17 @@ function UpcomingEvents() {
           {events.map((event) => (
             <button
               key={event.title}
-              className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+              className="flex items-center gap-2.5 py-1.5 rounded-md text-body hover:bg-muted/50 transition-colors text-left"
             >
               <span
                 className="w-8 h-8 rounded-lg shrink-0 flex flex-col items-center justify-center leading-none"
                 style={{
                   background: "color-mix(in srgb, var(--primary) 10%, transparent)",
-                  color: "var(--primary)",
+                  color: "var(--primary)"
                 }}
               >
                 <span className="text-[9px] font-medium uppercase">{event.date.split(" ")[0]}</span>
-                <span className="text-xs font-bold">{event.date.split(" ")[1]}</span>
+                <span className="text-caption font-bold">{event.date.split(" ")[1]}</span>
               </span>
               <span className="text-foreground/85 truncate">{event.title}</span>
             </button>
@@ -619,12 +589,12 @@ function IntentLeadsBox() {
   return (
     <div className="rounded-lg border border-border bg-white p-3 pb-5 flex flex-col gap-3">
       <div className="flex flex-col gap-2">
-        <p className="text-sm text-foreground/85 leading-relaxed">
+        <p className="text-body text-foreground/85 leading-relaxed">
           A place to try and play around with various Alkemio features, to gain a better understanding of the platform, its flows and experience.
         </p>
         <button
           onClick={() => window.dispatchEvent(new CustomEvent("open-about-dialog"))}
-          className="flex items-center gap-1 text-xs font-medium transition-colors hover:opacity-80 self-start"
+          className="flex items-center gap-1 text-caption transition-colors hover:opacity-80 self-start"
           style={{ color: "var(--primary)" }}
         >
           Learn more
@@ -633,14 +603,14 @@ function IntentLeadsBox() {
       </div>
       <div className="border-t border-border" />
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        <span className="text-caption text-muted-foreground uppercase tracking-wider">
           Leads
         </span>
         <div className="flex flex-col gap-1">
           {SIDEBAR_LEADS.map((lead) => (
             <button
               key={lead.name}
-              className="flex items-center gap-2.5 py-1 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+              className="flex items-center gap-2.5 py-1 rounded-md text-body hover:bg-muted/50 transition-colors text-left"
             >
               <Avatar className="w-7 h-7 shrink-0">
                 <AvatarImage src={lead.avatar} alt={lead.name} />
@@ -659,12 +629,12 @@ const SIDEBAR_LEADS = [
   {
     name: "Jeroen Nijkamp",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
-    initials: "JN",
+    initials: "JN"
   },
   {
     name: "Elena Martinez",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
-    initials: "EM",
+    initials: "EM"
   },
 ];
 
@@ -678,7 +648,7 @@ function LeadsSection() {
           onClick={() => setCollapsed(!collapsed)}
           className="flex items-center gap-1 hover:text-foreground transition-colors"
         >
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <span className="text-caption text-muted-foreground uppercase tracking-wider">
             Leads
           </span>
           <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
@@ -689,7 +659,7 @@ function LeadsSection() {
           {SIDEBAR_LEADS.map((lead) => (
             <button
               key={lead.name}
-              className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left"
+              className="flex items-center gap-2.5 py-1.5 rounded-md text-body hover:bg-muted/50 transition-colors text-left"
             >
               <Avatar className="w-7 h-7 shrink-0">
                 <AvatarImage src={lead.avatar} alt={lead.name} />
@@ -744,7 +714,7 @@ export function SubspaceQuickLinks() {
           onClick={() => setCollapsed(!collapsed)}
           className="flex items-center gap-1 hover:text-foreground transition-colors"
         >
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          <span className="text-caption text-muted-foreground uppercase tracking-wider">
             Subspaces
           </span>
           <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
@@ -753,7 +723,7 @@ export function SubspaceQuickLinks() {
           <div className="relative">
             <button
               onClick={() => setSortOpen(!sortOpen)}
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-badge text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               title="Sort subspaces"
             >
               <ArrowUpDown className="w-3 h-3" />
@@ -768,7 +738,7 @@ export function SubspaceQuickLinks() {
                     key={mode}
                     onClick={() => { setSortMode(mode); setSortOpen(false); }}
                     className={cn(
-                      "w-full text-left px-3 py-1.5 text-xs transition-colors hover:bg-muted/50",
+                      "w-full text-left px-3 py-1.5 text-caption transition-colors hover:bg-muted/50",
                       sortMode === mode ? "text-primary font-medium" : "text-foreground"
                     )}
                   >
@@ -789,7 +759,7 @@ export function SubspaceQuickLinks() {
               <a
                 key={s.title}
                 href={subspacesBase + slug}
-                className="flex items-center gap-2.5 py-1.5 rounded-md text-sm hover:bg-muted/50 transition-colors text-left no-underline"
+                className="flex items-center gap-2.5 py-1.5 rounded-md text-body hover:bg-muted/50 transition-colors text-left no-underline"
               >
                 <img
                   src={SUBSPACE_AVATARS[i % SUBSPACE_AVATARS.length]}

@@ -1,8 +1,7 @@
 import { useLocation, useParams } from "react-router";
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
-import { INDIVIDUAL_TEMPLATES, TEMPLATE_PACKS, PACK_SPECIFIC_TEMPLATES } from "@/app/data/template-data";
+import { ALL_TEMPLATES, TEMPLATE_PACKS } from "@/app/data/template-data";
 
 // ─── BreadcrumbSegment interface (per contracts/README.md) ───
 
@@ -47,38 +46,37 @@ function slugToName(slug: string): string {
   return SPACE_MAP[slug]?.name ?? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/**
+ * Space / subspace identity mark in the breadcrumb.
+ *
+ * Mirrors production's `BreadcrumbsTrail` exactly: a rounded *square*, not a
+ * circle. The prototype previously used the CRD `Avatar` primitive, which is
+ * `rounded-full` by design — correct for people, wrong for spaces. Production
+ * deliberately renders a plain span so spaces read as places, not persons.
+ *
+ * Keep the classes identical to
+ * `@/crd/components/common/BreadcrumbsTrail` — if that changes, change this.
+ */
+function breadcrumbAvatar(src: string | undefined, initials: string): React.ReactNode {
+  return React.createElement(
+    "span",
+    {
+      "aria-hidden": "true",
+      className:
+        "flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-primary/15 text-primary text-badge",
+    },
+    src ? React.createElement("img", { src, alt: "", className: "size-full object-cover" }) : initials
+  );
+}
+
 function spaceAvatar(slug: string): React.ReactNode {
   const space = SPACE_MAP[slug];
-  const initials = space?.initials ?? slug.substring(0, 2).toUpperCase();
-  const bannerImage = space?.bannerImage;
-  return React.createElement(
-    Avatar,
-    { className: "w-5 h-5", style: { border: "1px solid var(--border)" } },
-    bannerImage
-      ? React.createElement(AvatarImage, { src: bannerImage, alt: space?.name ?? slug, className: "object-cover" })
-      : null,
-    React.createElement(AvatarFallback, {
-      className: "text-[9px] font-semibold",
-      style: { background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)" },
-    }, initials)
-  );
+  return breadcrumbAvatar(space?.bannerImage, space?.initials ?? slug.substring(0, 2).toUpperCase());
 }
 
 function subspaceAvatar(slug: string): React.ReactNode {
   const sub = SUBSPACE_MAP[slug];
-  const initials = sub?.initials ?? slug.substring(0, 2).toUpperCase();
-  const avatarUrl = sub?.avatar;
-  return React.createElement(
-    Avatar,
-    { className: "w-5 h-5", style: { border: "1px solid var(--border)" } },
-    avatarUrl
-      ? React.createElement(AvatarImage, { src: avatarUrl, alt: sub?.name ?? slug, className: "object-cover" })
-      : null,
-    React.createElement(AvatarFallback, {
-      className: "text-[9px] font-semibold",
-      style: { background: "color-mix(in srgb, var(--primary) 15%, transparent)", color: "var(--primary)" },
-    }, initials)
-  );
+  return breadcrumbAvatar(sub?.avatar, sub?.initials ?? slug.substring(0, 2).toUpperCase());
 }
 
 function logoIcon(): React.ReactNode {
@@ -93,13 +91,12 @@ function lookupPackName(packSlug: string): string {
   return pack?.name ?? packSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function lookupTemplateName(templateId: string, packSlug?: string): string {
-  // Check pack-specific templates first
-  if (packSlug) {
-    const packTemplate = PACK_SPECIFIC_TEMPLATES.find((t) => t.id === templateId);
-    if (packTemplate) return packTemplate.name;
-  }
-  const tmpl = INDIVIDUAL_TEMPLATES.find((t) => t.id === templateId);
+function lookupTemplateName(templateId: string, _packSlug?: string): string {
+  // Resolve against ALL_TEMPLATES — the same list, in the same order, that
+  // TemplateDetail renders from. Pack-specific and individual fixtures share
+  // ids (both define `temp-1`), so looking them up separately made the
+  // breadcrumb name a different template from the one on the page.
+  const tmpl = ALL_TEMPLATES.find((t) => t.id === templateId);
   return tmpl?.name ?? templateId.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
@@ -343,6 +340,37 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
     return [
       { ...spaceSegment, isCurrentPage: true },
     ];
+  }
+
+  // ── Organisation profile ──
+  // Pre-existing gap: `/organization/:slug` had no case, so every organisation
+  // profile fell through to the "Page Not Found" crumb below. Settings pages
+  // under it are handled by the settings block above.
+  if (path.startsWith("/organization/") && !path.includes("/settings")) {
+    const slug = path.split("/")[2];
+    const name = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    return [{ label: name, href: `/organization/${slug}`, isCurrentPage: true }];
+  }
+
+  // ── Forum ──
+  if (path === "/forum" || path.startsWith("/forum/")) {
+    return [{ label: "Forum", href: "/forum", isCurrentPage: true }];
+  }
+
+  // ── Innovation hub ──
+  // Pre-existing gap: this route had no case, so every hub page fell through to
+  // the "Page Not Found" crumb below.
+  if (path.startsWith("/innovation-hub/")) {
+    const hubSlug = path.split("/")[2];
+    const hubName = hubSlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    const hubHref = `/innovation-hub/${hubSlug}`;
+    if (path.endsWith("/settings")) {
+      return [
+        { label: hubName, href: hubHref, isCurrentPage: false },
+        { label: "Settings", href: `${hubHref}/settings`, isCurrentPage: true },
+      ];
+    }
+    return [{ label: hubName, href: hubHref, isCurrentPage: true }];
   }
 
   // ── Fallback: Page Not Found ──

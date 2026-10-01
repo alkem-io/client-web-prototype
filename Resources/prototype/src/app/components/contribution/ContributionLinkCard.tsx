@@ -1,6 +1,6 @@
 import { ExternalLink, FileText, Pencil, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { ReactionBar } from '@/app/components/space/PostReactions';
+import { cn } from '@/crd/lib/utils';
+import { ReactionBar } from '@/app/components/space/ReactionBar';
 
 type ContributionLinkCardProps = {
   title: string;
@@ -24,7 +24,7 @@ export function ContributionLinkCard({
   reactionId,
   reactionsEnabled = true,
   onClick,
-  className,
+  className
 }: ContributionLinkCardProps) {
   const Icon = isFile ? FileText : ExternalLink;
 

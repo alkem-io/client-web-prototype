@@ -1,13 +1,12 @@
 import { useState, useCallback } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Separator } from "@/app/components/ui/separator";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Separator } from "@/crd/primitives/separator";
 import { Upload, X, Plus, Loader2, Check, Pencil, Info as InfoIcon, Users } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 interface SubspaceSettingsAboutProps {
  subspaceName: string;
@@ -27,7 +26,7 @@ const INITIAL_DATA = {
  tags: ["Innovation", "Collaboration"],
  references: [
  { title: "Challenge Brief", url: "https://example.com/brief" },
- ],
+ ]
 };
 
 // ─── Per-section save status ─────────────────────────────────────────────────
@@ -37,7 +36,7 @@ type SaveStatus = "idle" | "saving" | "saved";
 function useSectionSave() {
  const [statuses, setStatuses] = useState<Record<SectionId, SaveStatus>>({
  name: "idle", branding: "idle", what: "idle", why: "idle",
- who: "idle", tags: "idle", references: "idle",
+ who: "idle", tags: "idle", references: "idle"
  });
 
  const save = useCallback((id: SectionId, onCommit: () => void) => {
@@ -56,7 +55,7 @@ function useSectionSave() {
 function InlineSaveButton({
  dirty,
  status,
- onSave,
+ onSave
 }: {
  dirty: boolean;
  status: SaveStatus;
@@ -110,7 +109,7 @@ export function SubspaceSettingsAbout({
  avatarColor,
  parentInitials,
  parentAvatarColor,
- memberCount,
+ memberCount
 }: SubspaceSettingsAboutProps) {
  const initialFormData = { ...INITIAL_DATA, name: subspaceName };
  const [formData, setFormData] = useState(initialFormData);
@@ -126,7 +125,7 @@ export function SubspaceSettingsAbout({
  why: formData.why !== savedData.why,
  who: formData.who !== savedData.who,
  tags: JSON.stringify(formData.tags) !== JSON.stringify(savedData.tags),
- references: JSON.stringify(formData.references) !== JSON.stringify(savedData.references),
+ references: JSON.stringify(formData.references) !== JSON.stringify(savedData.references)
  };
 
  const saveSection = (id: SectionId) => {
@@ -157,14 +156,14 @@ export function SubspaceSettingsAbout({
  const removeTag = (tagToRemove: string) => {
  setFormData((prev) => ({
  ...prev,
- tags: prev.tags.filter((tag) => tag !== tagToRemove),
+ tags: prev.tags.filter((tag) => tag !== tagToRemove)
  }));
  };
 
  const addReference = () => {
  setFormData((prev) => ({
  ...prev,
- references: [...prev.references, { title: "", url: "" }],
+ references: [...prev.references, { title: "", url: "" }]
  }));
  };
 
@@ -177,17 +176,8 @@ export function SubspaceSettingsAbout({
  const removeReference = (index: number) => {
  setFormData((prev) => ({
  ...prev,
- references: prev.references.filter((_, i) => i !== index),
+ references: prev.references.filter((_, i) => i !== index)
  }));
- };
-
- const quillModules = {
- toolbar: [
- ["bold", "italic", "underline"],
- [{ list: "ordered" }, { list: "bullet" }],
- ["link", "blockquote", "code-block"],
- ["clean"],
- ],
  };
 
  return (
@@ -237,15 +227,14 @@ export function SubspaceSettingsAbout({
  className="w-[140px] h-[140px] rounded-xl overflow-hidden flex items-center justify-center"
  style={{
  background: avatarColor,
- border: "2px solid var(--border)",
+ border: "2px solid var(--border)"
  }}
  >
  <span
  style={{
  fontSize: 36,
  fontWeight: 700,
- color: "#fff",
- fontFamily: "'Inter', sans-serif",
+ color: "#fff"
  }}
  >
  {initials}
@@ -301,7 +290,7 @@ export function SubspaceSettingsAbout({
  const labels: Record<string, { title: string; hint: string }> = {
  what: { title: "What", hint: "A clear description of the subspace's focus or subject matter." },
  why: { title: "Why", hint: "Why does this subspace exist? What problem does it solve?" },
- who: { title: "Who", hint: "Who should join this subspace? What are their roles or interests?" },
+ who: { title: "Who", hint: "Who should join this subspace? What are their roles or interests?" }
  };
  const { title, hint } = labels[field];
  const htmlContent = formData[field] as string;
@@ -311,12 +300,10 @@ export function SubspaceSettingsAbout({
  <Label className="text-subheader font-semibold">{title}</Label>
 
  <div className="space-y-2">
- <div className="prose-editor">
- <ReactQuill
- theme="snow"
+ <div>
+ <MarkdownEditor
  value={htmlContent}
  onChange={(val) => handleQuillChange(field, val)}
- modules={quillModules}
  placeholder={hint}
  />
  </div>
@@ -409,7 +396,7 @@ export function SubspaceSettingsAbout({
  <div className="hidden xl:block">
  <div className="sticky top-6 space-y-6">
  <div className="flex items-center justify-between mb-2">
- <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+ <h3 className="text-card-title text-muted-foreground uppercase tracking-wider">
  Preview
  </h3>
  {Object.values(dirty).some(Boolean) ? (
@@ -432,7 +419,7 @@ export function SubspaceSettingsAbout({
  <div
  className="absolute inset-0"
  style={{
- background: `linear-gradient(135deg, ${avatarColor}44 0%, ${parentAvatarColor}44 100%)`,
+ background: `linear-gradient(135deg, ${avatarColor}44 0%, ${parentAvatarColor}44 100%)`
  }}
  />
  </div>
@@ -449,10 +436,10 @@ export function SubspaceSettingsAbout({
  borderRadius: 7,
  border: "2px solid var(--card)",
  background: parentAvatarColor,
- zIndex: 1,
+ zIndex: 1
  }}
  >
- <span style={{ fontSize: 9, fontWeight: 700, color: "#fff", fontFamily: "'Inter', sans-serif" }}>
+ <span style={{ fontSize: 9, fontWeight: 700, color: "#fff" }}>
  {parentInitials}
  </span>
  </div>
@@ -468,10 +455,10 @@ export function SubspaceSettingsAbout({
  border: "2px solid var(--card)",
  background: avatarColor,
  zIndex: 2,
- boxShadow: "0 1px 3px rgba(0,0,0,.12)",
+ boxShadow: "0 1px 3px rgba(0,0,0,.12)"
  }}
  >
- <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", fontFamily: "'Inter', sans-serif" }}>
+ <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>
  {initials}
  </span>
  </div>
@@ -493,7 +480,7 @@ export function SubspaceSettingsAbout({
  dangerouslySetInnerHTML={{
  __html:
  formData.what ||
- "<p class='text-muted-foreground italic'>No description yet…</p>",
+ "<p class='text-muted-foreground italic'>No description yet…</p>"
  }}
  />
  </div>
@@ -534,7 +521,7 @@ export function SubspaceSettingsAbout({
  style={{
  background: "color-mix(in srgb, var(--primary) 5%, transparent)",
  border: "1px solid color-mix(in srgb, var(--primary) 10%, transparent)",
- color: "color-mix(in srgb, var(--primary) 80%, var(--foreground))",
+ color: "color-mix(in srgb, var(--primary) 80%, var(--foreground))"
  }}
  >
  <p className="font-semibold flex items-center gap-2">

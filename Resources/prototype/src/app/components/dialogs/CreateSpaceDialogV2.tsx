@@ -7,24 +7,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Separator } from "@/app/components/ui/separator";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
+import { Separator } from "@/crd/primitives/separator";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import { X, ImageIcon, ChevronLeft, Sparkles, Palette, Users, Globe, Lock, UserPlus, BookOpen } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 interface CreateSpaceDialogV2Props {
   open: boolean;
@@ -33,7 +33,7 @@ interface CreateSpaceDialogV2Props {
 
 export function CreateSpaceDialogV2({
   open,
-  onOpenChange,
+  onOpenChange
 }: CreateSpaceDialogV2Props) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
@@ -269,7 +269,7 @@ function StepIdentity({
   name, setName,
   template, setTemplate,
   tagline, setTagline,
-  description, setDescription,
+  description, setDescription
 }: {
   name: string; setName: (v: string) => void;
   template: string; setTemplate: (v: string) => void;
@@ -288,7 +288,7 @@ function StepIdentity({
           value={name}
           onChange={(e) => setName(e.target.value)}
           autoFocus
-          className="h-11 text-base"
+          className="h-11 text-subheader font-normal"
         />
         <p className="text-caption text-muted-foreground">
           Give your space a clear, descriptive name
@@ -334,7 +334,7 @@ function StepIdentity({
           value={description}
           onChange={setDescription}
           placeholder="Describe what this space is about..."
-          minHeight="100px"
+          className="min-h-[100px]"
         />
         <p className="text-caption text-muted-foreground">
           Rich text — supports headings, links, and lists
@@ -353,7 +353,7 @@ function StepBranding({
   currentTag, setCurrentTag,
   handleTagKeyDown,
   avatar, setAvatar,
-  banner, setBanner,
+  banner, setBanner
 }: {
   tags: string[]; setTags: (v: string[]) => void;
   currentTag: string; setCurrentTag: (v: string) => void;
@@ -459,7 +459,7 @@ function StepBranding({
 
 function StepPurpose({
   why, setWhy,
-  who, setWho,
+  who, setWho
 }: {
   why: string; setWhy: (v: string) => void;
   who: string; setWho: (v: string) => void;
@@ -473,7 +473,7 @@ function StepPurpose({
           value={why}
           onChange={setWhy}
           placeholder="The purpose and mission of this space..."
-          minHeight="100px"
+          className="min-h-[100px]"
         />
         <p className="text-caption text-muted-foreground">
           Help members understand the space's purpose and motivation
@@ -487,7 +487,7 @@ function StepPurpose({
           value={who}
           onChange={setWho}
           placeholder="Describe the target audience or participants..."
-          minHeight="100px"
+          className="min-h-[100px]"
         />
         <p className="text-caption text-muted-foreground">
           Help the right people find and join your space
@@ -506,7 +506,7 @@ function StepAccess({
   membershipMode, setMembershipMode,
   invitees, setInvitees,
   currentInvitee, setCurrentInvitee,
-  handleInviteeKeyDown,
+  handleInviteeKeyDown
 }: {
   visibility: string; setVisibility: (v: string) => void;
   membershipMode: string; setMembershipMode: (v: string) => void;

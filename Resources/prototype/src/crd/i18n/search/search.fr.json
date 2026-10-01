@@ -1,0 +1,57 @@
+{
+  "search": {
+    "placeholder": "Rechercher\u2026",
+    "emptyTitle": "Saisissez un terme de recherche et appuyez sur Entrée",
+    "emptyDescription": "Recherchez dans les Espaces, Publications, Réponses, Utilisateurs et Organisations.",
+    "noResultsTitle": "Aucun résultat trouvé pour {{terms}}",
+    "noResultsSuggestion": "Essayez d'autres mots-clés ou élargissez votre recherche.",
+    "searchAllSpaces": "Rechercher dans toute la plateforme",
+    "loading": "Recherche\u2026",
+    "disclaimer": "Ces résultats peuvent ne pas refléter l'état actuel de la plateforme. Les résultats de recherche sont mis à jour périodiquement.",
+    "loadMore": "Charger plus",
+    "scopeAll": "Toute la plateforme",
+    "scopeTriggerLabel": "Rechercher dans : {{option}}",
+    "categories": {
+      "spaces": "Espaces",
+      "posts": "Publications",
+      "responses": "Réponses",
+      "users": "Utilisateurs",
+      "organizations": "Organisations"
+    },
+    "filters": {
+      "all": "Tout",
+      "spacesOnly": "Espaces uniquement",
+      "subspacesOnly": "Sous-espaces uniquement",
+      "whiteboards": "Tableaux blancs",
+      "memos": "Mémos",
+      "posts": "Publications",
+      "documents": "Documents"
+    },
+    "postTypes": {
+      "post": "Publication",
+      "whiteboard": "Tableau blanc",
+      "memo": "Mémo",
+      "collaboraDocument": "Document"
+    },
+    "responseTo": "Réponse à : {{title}}",
+    "spaceContext": "dans : {{spaceName}}",
+    "fallback": {
+      "unknown": "Inconnu",
+      "organization": "Organisation"
+    },
+    "a11y": {
+      "searchInput": "Champ de recherche",
+      "closeSearch": "Fermer la recherche",
+      "removeTag": "Supprimer le terme de recherche : {{term}}",
+      "activeTags": "Termes de recherche actifs",
+      "resultCategories": "Catégories de résultats",
+      "searchResults": "Résultats de recherche",
+      "categoryResults": "Résultats {{category}}",
+      "platformSearch": "Recherche de plateforme",
+      "filterBy": "Filtrer {{category}}",
+      "resultsFound": "{{count}} résultats trouvés",
+      "noResultsFound": "Aucun résultat trouvé",
+      "scopeTrigger": "Modifier la portée de la recherche. Recherche actuelle dans : {{option}}"
+    }
+  }
+}

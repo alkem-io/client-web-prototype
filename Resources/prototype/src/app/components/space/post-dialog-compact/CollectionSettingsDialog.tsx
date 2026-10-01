@@ -31,34 +31,34 @@ import {
   Trash2,
   Type,
   Users,
-  X,
+  X
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
-import { Switch } from "@/app/components/ui/switch";
-import { Textarea } from "@/app/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+  SelectValue
+} from "@/crd/primitives/select";
+import { Switch } from "@/crd/primitives/switch";
+import { Textarea } from "@/crd/primitives/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/crd/primitives/tooltip";
+import { cn } from "@/crd/lib/utils";
 import {
   ANSWER_TYPE_DESCRIPTORS,
   ANSWER_TYPE_ORDER,
-  type CalloutFormAnswerType,
+  type CalloutFormAnswerType
 } from "@/app/components/callout/calloutFormTypes";
 import { collectionOption, type CollectionType } from "./options";
 import { CHIP_REST, type OptionColor } from "./optionStyles";
@@ -68,7 +68,7 @@ import {
   POST_TEMPLATES,
   WHITEBOARD_TEMPLATES,
   uid,
-  type CollectionConfig,
+  type CollectionConfig
 } from "./types";
 
 interface CollectionSettingsDialogProps {
@@ -89,7 +89,7 @@ function Section({
   color = "primary",
   title,
   help,
-  children,
+  children
 }: {
   icon: React.ElementType;
   color?: OptionColor;
@@ -123,7 +123,7 @@ function SwitchRow({
   label,
   help,
   checked,
-  onCheckedChange,
+  onCheckedChange
 }: {
   icon: React.ElementType;
   label: string;
@@ -155,7 +155,7 @@ export function CollectionSettingsDialog({
   onOpenChange,
   type,
   value,
-  onSave,
+  onSave
 }: CollectionSettingsDialogProps) {
   const option = collectionOption(type);
   const [draft, setDraft] = useState<CollectionConfig>(value);
@@ -279,7 +279,7 @@ export function CollectionSettingsDialog({
                     value={draft.defaultDescription}
                     onChange={next => patch({ defaultDescription: next })}
                     placeholder="Default description"
-                    minHeight="120px"
+                    className="min-h-[120px]"
                   />
                 </div>
               )}
@@ -410,7 +410,7 @@ export function CollectionSettingsDialog({
                       taskColumns: [
                         ...draft.taskColumns,
                         { id: uid("col"), label: "", color: "#6b7280" },
-                      ],
+                      ]
                     })
                   }
                 >
@@ -456,7 +456,7 @@ export function CollectionSettingsDialog({
                                   options:
                                     next === "choice" && question.options.length === 0
                                       ? [createDraftOption(), createDraftOption()]
-                                      : question.options,
+                                      : question.options
                                 })
                               }
                             >
@@ -506,7 +506,7 @@ export function CollectionSettingsDialog({
                                     updateQuestion(question.id, {
                                       options: question.options.map(o =>
                                         o.id === option.id ? { ...o, label: e.target.value } : o,
-                                      ),
+                                      )
                                     })
                                   }
                                   placeholder={`Option ${optionIndex + 1}`}
@@ -518,7 +518,7 @@ export function CollectionSettingsDialog({
                                   disabled={question.options.length <= 2}
                                   onClick={() =>
                                     updateQuestion(question.id, {
-                                      options: question.options.filter(o => o.id !== option.id),
+                                      options: question.options.filter(o => o.id !== option.id)
                                     })
                                   }
                                 >
@@ -532,7 +532,7 @@ export function CollectionSettingsDialog({
                               className="gap-1.5 text-caption text-muted-foreground"
                               onClick={() =>
                                 updateQuestion(question.id, {
-                                  options: [...question.options, createDraftOption()],
+                                  options: [...question.options, createDraftOption()]
                                 })
                               }
                             >

@@ -5,20 +5,20 @@ import {
   Settings, CreditCard, Users, Bell, User, 
   LogOut, ExternalLink, Folder
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
-import { Input } from "@/app/components/ui/input";
+import { Button } from "@/crd/primitives/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/crd/primitives/card";
+import { Badge } from "@/crd/primitives/badge";
+import { Input } from "@/crd/primitives/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 
 export default function UserMembershipPage() {
   const { userSlug } = useParams<{ userSlug: string }>();

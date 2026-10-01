@@ -7,17 +7,17 @@ import {
   Settings,
   MoreVertical,
   BellOff,
-  MessageCircle,
+  MessageCircle
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
+import { cn } from "@/crd/lib/utils";
 import { MessageComposer } from "./MessageComposer";
 import type { Conversation, Message } from "./messagingData";
 import { CONVERSATIONS, MESSAGES, USERS } from "./messagingData";
@@ -43,7 +43,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
     unread: 0,
     muted: false,
     memberCount: 0,
-    spaceSlug,
+    spaceSlug
   };
 
   const messages = MESSAGES[fallbackChannel.id] ?? [];
@@ -75,11 +75,11 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
         timestamp: new Date().toISOString(),
         timeLabel: new Date().toLocaleTimeString([], {
           hour: "2-digit",
-          minute: "2-digit",
+          minute: "2-digit"
         }),
         dateLabel: "Today",
         isOwn: true,
-        replyTo: replyTo ?? undefined,
+        replyTo: replyTo ?? undefined
       };
       setLocalMessages((prev) => [...prev, newMsg]);
       setReplyTo(null);
@@ -113,7 +113,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
       className="flex flex-col h-full"
       style={{
         background: "var(--background)",
-        minHeight: 0,
+        minHeight: 0
       }}
     >
       {/* ── Channel Header ───────────────────────────────────────────── */}
@@ -122,7 +122,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
         style={{
           padding: "12px 20px",
           borderBottom: "1px solid var(--border)",
-          background: "var(--card)",
+          background: "var(--card)"
         }}
       >
         <div className="flex items-center gap-3">
@@ -133,7 +133,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
               height: 36,
               borderRadius: "calc(var(--radius) + 2px)",
               background: fallbackChannel.avatarColor ?? "var(--secondary)",
-              color: "var(--primary-foreground)",
+              color: "var(--primary-foreground)"
             }}
           >
             <Hash style={{ width: 18, height: 18 }} />
@@ -143,7 +143,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
               <span
                 className="text-subheader font-semibold"
                 style={{
-                  color: "var(--foreground)",
+                  color: "var(--foreground)"
                 }}
               >
                 {fallbackChannel.name}
@@ -151,7 +151,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
               <span
                 className="text-body"
                 style={{
-                  color: "var(--muted-foreground)",
+                  color: "var(--muted-foreground)"
                 }}
               >
                 — Channel
@@ -160,7 +160,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
             <span
               className="text-caption"
               style={{
-                color: "var(--muted-foreground)",
+                color: "var(--muted-foreground)"
               }}
             >
               {fallbackChannel.memberCount ?? 0} members
@@ -227,7 +227,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
           style={{
             padding: "8px 20px",
             borderBottom: "1px solid var(--border)",
-            background: "color-mix(in srgb, var(--primary) 3%, var(--background))",
+            background: "color-mix(in srgb, var(--primary) 3%, var(--background))"
           }}
         >
           <Search
@@ -235,7 +235,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
               width: 14,
               height: 14,
               color: "var(--muted-foreground)",
-              flexShrink: 0,
+              flexShrink: 0
             }}
           />
           <input
@@ -246,7 +246,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
             autoFocus
             className="flex-1 bg-transparent outline-none text-body"
             style={{
-              color: "var(--foreground)",
+              color: "var(--foreground)"
             }}
           />
           {searchQuery && (
@@ -254,7 +254,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
               className="text-caption"
               style={{
                 color: "var(--muted-foreground)",
-                whiteSpace: "nowrap",
+                whiteSpace: "nowrap"
               }}
             >
               {filteredMessages.length} result{filteredMessages.length !== 1 ? "s" : ""}
@@ -292,14 +292,14 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                     height: 36,
                     color: "var(--muted-foreground)",
                     opacity: 0.3,
-                    marginBottom: 16,
+                    marginBottom: 16
                   }}
                 />
                 <p
                   className="text-body"
                   style={{
                     color: "var(--muted-foreground)",
-                    maxWidth: 320,
+                    maxWidth: 320
                   }}
                 >
                   No messages match "{searchQuery}".
@@ -313,7 +313,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                     width: 56,
                     height: 56,
                     background: "color-mix(in srgb, var(--primary) 8%, transparent)",
-                    marginBottom: 16,
+                    marginBottom: 16
                   }}
                 >
                   <MessageCircle
@@ -321,7 +321,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                       width: 28,
                       height: 28,
                       color: "var(--primary)",
-                      opacity: 0.6,
+                      opacity: 0.6
                     }}
                   />
                 </div>
@@ -329,7 +329,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                   className="text-subheader font-semibold"
                   style={{
                     color: "var(--foreground)",
-                    marginBottom: 8,
+                    marginBottom: 8
                   }}
                 >
                   This is the {fallbackChannel.name} channel
@@ -339,7 +339,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                   style={{
                     color: "var(--muted-foreground)",
                     maxWidth: 360,
-                    marginBottom: 20,
+                    marginBottom: 20
                   }}
                 >
                   Say hello to your team! Messages here are visible to all{" "}
@@ -357,7 +357,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                         padding: "6px 16px",
                         background: "var(--secondary)",
                         color: "var(--foreground)",
-                        border: "1px solid var(--border)",
+                        border: "1px solid var(--border)"
                       }}
                       onMouseEnter={(e) =>
                         (e.currentTarget.style.background = "var(--accent)")
@@ -393,7 +393,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                           color: "var(--muted-foreground)",
                           background: "var(--secondary)",
                           padding: "4px 14px",
-                          borderRadius: "999px",
+                          borderRadius: "999px"
                         }}
                       >
                         {msg.dateLabel}
@@ -410,7 +410,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                     style={{
                       padding: showSender ? "10px 0 3px" : "3px 0",
                       maxWidth: "80%",
-                      marginLeft: msg.isOwn ? "auto" : undefined,
+                      marginLeft: msg.isOwn ? "auto" : undefined
                     }}
                   >
                     {/* Avatar (non-own, first in group) */}
@@ -421,7 +421,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                             style={{
                               width: 32,
                               height: 32,
-                              border: "1px solid var(--border)",
+                              border: "1px solid var(--border)"
                             }}
                           >
                             <AvatarImage src={msg.senderAvatar} alt={msg.senderName} />
@@ -440,7 +440,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                       style={{
                         alignItems: msg.isOwn ? "flex-end" : "flex-start",
                         flex: 1,
-                        minWidth: 0,
+                        minWidth: 0
                       }}
                     >
                       {/* Sender name */}
@@ -449,7 +449,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                           className="text-caption font-semibold"
                           style={{
                             color: "var(--foreground)",
-                            marginBottom: 2,
+                            marginBottom: 2
                           }}
                         >
                           {msg.senderName}
@@ -466,7 +466,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                             background: "var(--muted)",
                             borderLeft: "2px solid var(--primary)",
                             marginBottom: 4,
-                            maxWidth: "100%",
+                            maxWidth: "100%"
                           }}
                           className="truncate text-caption"
                         >
@@ -487,15 +487,15 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                             ? {
                                 background: "var(--primary)",
                                 color: "var(--primary-foreground)",
-                                borderBottomRightRadius: "calc(var(--radius))",
+                                borderBottomRightRadius: "calc(var(--radius))"
                               }
                             : {
                                 background: "var(--secondary)",
                                 color: "var(--foreground)",
-                                borderBottomLeftRadius: "calc(var(--radius))",
+                                borderBottomLeftRadius: "calc(var(--radius))"
                               }),
                           maxWidth: "100%",
-                          wordBreak: "break-word" as const,
+                          wordBreak: "break-word" as const
                         }}
                       >
                         {msg.content}
@@ -510,7 +510,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                               background: msg.isOwn
                                 ? "color-mix(in srgb, var(--primary-foreground) 15%, transparent)"
                                 : "var(--background)",
-                              border: msg.isOwn ? "none" : "1px solid var(--border)",
+                              border: msg.isOwn ? "none" : "1px solid var(--border)"
                             }}
                           >
                             <span className="text-caption">📄</span>
@@ -518,7 +518,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                               <p
                                 className="truncate text-caption font-medium"
                                 style={{
-                                  margin: 0,
+                                  margin: 0
                                 }}
                               >
                                 {msg.attachment.name}
@@ -540,7 +540,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                             border: "1px solid var(--border)",
                             borderRadius: "var(--radius)",
                             padding: "3px 5px",
-                            boxShadow: "var(--elevation-sm)",
+                            boxShadow: "var(--elevation-sm)"
                           }}
                         >
                           {["😊", "👍", "❤️"].map((emoji) => (
@@ -562,12 +562,12 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                             className="p-0.5 rounded-sm transition-colors text-caption"
                             style={{
                               color: "var(--muted-foreground)",
-                              lineHeight: 1,
+                              lineHeight: 1
                             }}
                             onClick={() =>
                               setReplyTo({
                                 senderName: msg.senderName,
-                                content: msg.content,
+                                content: msg.content
                               })
                             }
                             title="Reply"
@@ -591,7 +591,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                                   : "1px solid var(--border)",
                                 background: r.reacted
                                   ? "color-mix(in srgb, var(--primary) 10%, transparent)"
-                                  : "var(--card)",
+                                  : "var(--card)"
                               }}
                             >
                               <span>{r.emoji}</span>
@@ -600,7 +600,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                                 style={{
                                   color: r.reacted
                                     ? "var(--primary)"
-                                    : "var(--muted-foreground)",
+                                    : "var(--muted-foreground)"
                                 }}
                               >
                                 {r.count}
@@ -618,7 +618,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                         <span
                           style={{
                             fontSize: "10px",
-                            color: "var(--muted-foreground)",
+                            color: "var(--muted-foreground)"
                           }}
                         >
                           {msg.timeLabel}
@@ -628,7 +628,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
                             style={{
                               fontSize: "10px",
                               color: "var(--muted-foreground)",
-                              fontStyle: "italic",
+                              fontStyle: "italic"
                             }}
                           >
                             (edited)
@@ -648,7 +648,7 @@ export function SpaceChatTab({ spaceSlug }: SpaceChatTabProps) {
       <div
         style={{
           borderTop: "1px solid var(--border)",
-          background: "var(--card)",
+          background: "var(--card)"
         }}
       >
         <div className="max-w-3xl mx-auto">

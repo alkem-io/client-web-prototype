@@ -6,19 +6,20 @@ import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
-} from "@/app/components/ui/tooltip";
-import { Button } from "@/app/components/ui/button";
+  TooltipTrigger
+} from "@/crd/primitives/tooltip";
+import { Button } from "@/crd/primitives/button";
 import { SubspaceHeader } from "@/app/components/space/SubspaceHeader";
 import { SubspaceSidebar } from "@/app/components/space/SubspaceSidebar";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs";
+import { HeaderActionIcons } from "@/crd/components/space/HeaderActionIcons";
 import { PostCard, type PostProps } from "@/app/components/space/PostCard";
+import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { KanbanPostDialog } from "@/app/components/space/KanbanBoardPost";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { AboutThisSpaceDialog } from "@/app/components/space/AboutThisSpaceDialog";
-import { SubspaceBoardView } from "@/app/components/space/SubspaceBoardView";
 
 /* ─── Mock subspace metadata ─── */
 
@@ -55,7 +56,7 @@ const SUBSPACE_MAP: Record<string, SubspaceInfo> = {
       { id: "municipal", label: "Municipal Data", description: "Data sets and reports from participating municipalities, including energy consumption baselines, renewable capacity assessments, grid infrastructure surveys, and quarterly progress metrics tracked across all pilot regions.", linkedToNext: true },
       { id: "policy", label: "Policy Drafts", description: "Draft policy frameworks and regulatory proposals.", count: 2, linkedToNext: false },
       { id: "stakeholders", label: "Stakeholders", description: "Stakeholder mapping, contacts, and engagement plans.", linkedToNext: false },
-    ],
+    ]
   },
   "urban-mobility-lab": {
     title: "Urban Mobility Lab",
@@ -72,7 +73,7 @@ const SUBSPACE_MAP: Record<string, SubspaceInfo> = {
       { id: "research", label: "Research", description: "Studies and literature on urban mobility patterns.", count: 3, linkedToNext: true },
       { id: "prototypes", label: "Prototypes", description: "Prototype designs and pilot programme documentation.", linkedToNext: false },
       { id: "field-tests", label: "Field Tests", description: "On-the-ground testing results and feedback.", count: 1, linkedToNext: false },
-    ],
+    ]
   },
   "green-infrastructure": {
     title: "Green Infrastructure",
@@ -88,8 +89,8 @@ const SUBSPACE_MAP: Record<string, SubspaceInfo> = {
     callouts: [
       { id: "planning", label: "Planning", description: "Urban green space planning documents and proposals.", count: 4, linkedToNext: true },
       { id: "implementation", label: "Implementation", description: "Progress updates and implementation guides.", linkedToNext: false },
-    ],
-  },
+    ]
+  }
 };
 
 // Fallback for unrecognized slugs
@@ -104,7 +105,7 @@ const DEFAULT_SUBSPACE: SubspaceInfo = {
   memberCount: 10,
   callouts: [
     { id: "general", label: "General", description: "General discussions and shared content." },
-  ],
+  ]
 };
 
 /* ─── Mock posts with callout tags ─── */
@@ -124,17 +125,16 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "strategy",
     author: {
       name: "Sarah Chen",
-      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Amsterdam, NL",
-      skills: ["Energy Systems", "Green Tech", "Data Analysis", "Renewable Energy", "Smart Grids", "Python", "Research"],
+      skills: ["Energy Systems", "Green Tech", "Data Analysis", "Renewable Energy", "Smart Grids", "Python", "Research"]
     },
     title: "Kickoff: Municipal Transition Strategy",
     snippet:
       "We are officially launching the strategy phase for the 2030 renewable transition. Our goal is to outline a clear path for municipalities to reach 100% renewable energy.",
     timestamp: "2 hours ago",
-    stats: { comments: 5 },
+    stats: { comments: 5 }
   },
   {
     id: "sp-2",
@@ -142,18 +142,17 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "strategy",
     author: {
       name: "David Kim",
-      role: "Member",
       avatarUrl:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Seoul, KR",
-      skills: ["Software Development", "React", "TypeScript", "UX Design"],
+      skills: ["Software Development", "React", "TypeScript", "UX Design"]
     },
     title: "Renewable Grid Architecture — Visual Mapping",
     snippet:
       "Interactive whiteboard exploring the interconnections between solar, wind and storage for the 2030 grid model.",
     timestamp: "5 hours ago",
     contentPreview: { imageUrl: wb1 },
-    stats: { comments: 3 },
+    stats: { comments: 3 }
   },
   {
     id: "sp-3",
@@ -161,17 +160,16 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "policy",
     author: {
       name: "Emily Davis",
-      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "London, UK",
-      skills: ["Policy Design", "Tax Incentives", "Municipal Finance", "Economic Modeling", "Sustainability"],
+      skills: ["Policy Design", "Tax Incentives", "Municipal Finance", "Economic Modeling", "Sustainability"]
     },
     title: "Draft: Incentive Framework for Early Adopters",
     snippet:
       "Sharing the first draft of the municipal incentive framework. Please review Section 3 on tax credits and provide feedback by Friday.",
     timestamp: "1 day ago",
-    stats: { comments: 8 },
+    stats: { comments: 8 }
   },
   {
     id: "sp-4",
@@ -179,11 +177,10 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "municipal",
     author: {
       name: "Alex Torres",
-      role: "Member",
       avatarUrl:
         "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Lisbon, PT",
-      skills: ["Community Engagement", "Solar Energy", "Project Management", "Urban Design"],
+      skills: ["Community Engagement", "Solar Energy", "Project Management", "Urban Design"]
     },
     title: "Call for Ideas: Community Solar Projects",
     snippet:
@@ -194,16 +191,16 @@ const SUBSPACE_POSTS: CalloutPost[] = [
         {
           title: "Community Solar Model A",
           imageUrl: wb1,
-          author: "Sarah Chen",
+          author: "Sarah Chen"
         },
         {
           title: "Rooftop Sharing Plan",
           imageUrl: wb2,
-          author: "David Kim",
+          author: "David Kim"
         },
-      ],
+      ]
     },
-    stats: { comments: 12 },
+    stats: { comments: 12 }
   },
   {
     id: "sp-5",
@@ -211,11 +208,10 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "stakeholders",
     author: {
       name: "Anna Martinez",
-      role: "Lead",
       avatarUrl:
         "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Madrid, ES",
-      skills: ["Stakeholder Management", "NGO Relations", "Networking", "Strategic Planning"],
+      skills: ["Stakeholder Management", "NGO Relations", "Networking", "Strategic Planning"]
     },
     title: "Stakeholder Contact Directory",
     snippet:
@@ -226,9 +222,9 @@ const SUBSPACE_POSTS: CalloutPost[] = [
         { title: "Municipality Contacts", type: "spreadsheet" },
         { title: "Industry Partners", type: "document" },
         { title: "NGO Directory", type: "document" },
-      ],
+      ]
     },
-    stats: { comments: 2 },
+    stats: { comments: 2 }
   },
   {
     id: "sp-6",
@@ -236,17 +232,16 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "policy",
     author: {
       name: "Robert Fox",
-      role: "Member",
       avatarUrl:
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
       location: "Brussels, BE",
-      skills: ["EU Policy", "Renewable Directives", "Legal", "Research", "Comparative Analysis", "Climate Law"],
+      skills: ["EU Policy", "Renewable Directives", "Legal", "Research", "Comparative Analysis", "Climate Law"]
     },
     title: "Comparative Analysis: EU Renewable Directives",
     snippet:
       "A comparative study of EU member-state approaches to the Renewable Energy Directive (RED III) and implications for our municipal framework.",
     timestamp: "4 days ago",
-    stats: { comments: 4 },
+    stats: { comments: 4 }
   },
   {
     id: "sp-7",
@@ -254,9 +249,8 @@ const SUBSPACE_POSTS: CalloutPost[] = [
     callout: "strategy",
     author: {
       name: "Sarah Chen",
-      role: "Lead",
       avatarUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
     },
     title: "Energy Transition — Task Board",
     snippet:
@@ -273,7 +267,7 @@ const SUBSPACE_POSTS: CalloutPost[] = [
             { id: "k3", title: "Draft cost-benefit analysis template" },
             { id: "k4", title: "Schedule follow-up with provincial authorities", assignee: "Anna Martinez" },
             { id: "k5", title: "Collect baseline consumption data from pilot municipalities" },
-          ],
+          ]
         },
         {
           id: "in-progress",
@@ -281,14 +275,14 @@ const SUBSPACE_POSTS: CalloutPost[] = [
           cards: [
             { id: "k6", title: "Wind capacity assessment for northern corridor", assignee: "Alex Torres" },
             { id: "k7", title: "Solar panel feasibility study — urban rooftops", assignee: "Sarah Chen" },
-          ],
+          ]
         },
         {
           id: "review",
           label: "Review",
           cards: [
             { id: "k8", title: "Grid interconnection proposal v2", assignee: "Robert Fox" },
-          ],
+          ]
         },
         {
           id: "done",
@@ -298,11 +292,11 @@ const SUBSPACE_POSTS: CalloutPost[] = [
             { id: "k10", title: "Kickoff meeting held", assignee: "Sarah Chen" },
             { id: "k11", title: "Baseline energy audit — Amsterdam district", assignee: "David Kim" },
             { id: "k12", title: "EU directive compliance checklist finalized", assignee: "Robert Fox" },
-          ],
+          ]
         },
-      ],
+      ]
     },
-    stats: { comments: 3 },
+    stats: { comments: 3 }
   },
 ];
 
@@ -311,7 +305,7 @@ export default function SubspacePage() {
   const {
     spaceSlug = "green-energy",
     subspaceSlug = "renewable-energy-transition",
-    subSubspaceSlug,
+    subSubspaceSlug
   } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -322,7 +316,7 @@ export default function SubspacePage() {
     ...DEFAULT_SUBSPACE,
     title: activeSlug
       .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase()),
+      .replace(/\b\w/g, (c) => c.toUpperCase())
   };
 
   const [activeCallout, setActiveCallout] = useState(info.callouts[0]?.id ?? "");
@@ -330,7 +324,6 @@ export default function SubspacePage() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCommunityDialogOpen, setIsCommunityDialogOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"feed" | "board">("feed");
   const [kanbanDialogPost, setKanbanDialogPost] = useState<(typeof SUBSPACE_POSTS)[number] | null>(null);
 
   // Listen for sidebar "New Post" button event
@@ -374,7 +367,7 @@ export default function SubspacePage() {
               className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
               style={{
                 background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-                color: "var(--muted-foreground)",
+                color: "var(--muted-foreground)"
               }}
               title="About this Subspace"
             >
@@ -390,7 +383,7 @@ export default function SubspacePage() {
                 className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
                 style={{
                   background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-                  color: "var(--muted-foreground)",
+                  color: "var(--muted-foreground)"
                 }}
                 title={title}
               >
@@ -402,7 +395,7 @@ export default function SubspacePage() {
                 className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
                 style={{
                   background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
-                  color: "var(--muted-foreground)",
+                  color: "var(--muted-foreground)"
                 }}
                 title="Settings"
               >
@@ -467,11 +460,11 @@ export default function SubspacePage() {
               paddingLeft: 10,
               paddingRight: 10,
               marginLeft: -10,
-              marginRight: -10,
+              marginRight: -10
             }}
           >
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-4">
+              <div className="flex flex-1 items-center gap-2 min-w-0">
                 <TooltipProvider delayDuration={300}>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -492,70 +485,35 @@ export default function SubspacePage() {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                {viewMode === "feed" && (
-                  <CalloutTabs
+                <CalloutTabs
+                    action={
+                      <HeaderActionIcons
+                        actions={{
+                          showInfo: true,
+                          onInfoClick: () => setIsAboutOpen(true),
+                          showActivity: true,
+                          showVideoCall: true,
+                          showShare: true,
+                          showSettings: true,
+                          settingsHref: `/space/${spaceSlug}/subspaces/${subspaceSlug}/settings/about`,
+                        }}
+                      />
+                    }
                     tabs={info.callouts}
                     activeTab={activeCallout}
                     onTabChange={setActiveCallout}
-                    activityOwner={activeSlug}
-                  />
-                )}
-                {viewMode === "board" && (
-                  <span className="text-sm font-medium text-foreground">Board View</span>
-                )}
-              </div>
-              {/* View mode toggle */}
-              <div className="flex items-center gap-0.5 shrink-0 bg-muted rounded-lg p-0.5">
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setViewMode("feed")}
-                        className={cn(
-                          "p-1.5 rounded-md transition-colors",
-                          viewMode === "feed"
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                        aria-label="Feed view"
-                      >
-                        <List className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Feed view</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setViewMode("board")}
-                        className={cn(
-                          "p-1.5 rounded-md transition-colors",
-                          viewMode === "board"
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                        aria-label="Board view"
-                      >
-                        <Columns3 className="w-4 h-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Board view</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                  activityOwner={activeSlug}
+                />
               </div>
             </div>
           </div>
 
           {/* Tab description (feed mode only) */}
-          {viewMode === "feed" && info.callouts.find((c) => c.id === activeCallout)?.description && (
+          {info.callouts.find((c) => c.id === activeCallout)?.description && (
             <div className="mb-4">
               <ReadMoreText
                 maxLines={2}
-                className="text-sm"
+                className="text-body"
                 style={{
                   color: "var(--muted-foreground)",
                   lineHeight: 1.6
@@ -567,20 +525,12 @@ export default function SubspacePage() {
             </div>
           )}
 
-          {/* Board View */}
-          {viewMode === "board" && (
-            <SubspaceBoardView
-              phases={info.callouts}
-              posts={SUBSPACE_POSTS}
-            />
-          )}
-
-          {/* Feed View */}
-          {viewMode === "feed" && (
           <div className="space-y-6">
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => (
                 <PostCard
+                  // Comments open inline in the card footer — production's thread.
+                  commentsSlot={<CommentsPanel threadId={post.id} />}
                   key={post.id}
                   post={post}
                   onOpenFraming={
@@ -616,7 +566,6 @@ export default function SubspacePage() {
               </div>
             )}
           </div>
-          )}
           </div>
         </div>
       </main>

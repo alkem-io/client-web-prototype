@@ -1,5 +1,5 @@
 import { Layers, Bot, FileBox, Home, Plus } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/crd/primitives/card";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 
 export function OrgSettingsAccount() {

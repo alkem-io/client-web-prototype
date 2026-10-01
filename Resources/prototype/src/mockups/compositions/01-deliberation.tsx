@@ -34,7 +34,7 @@ export default register(
             tabs={mobilityFlow.map(p => ({
               id: p.id,
               label: p.label,
-              linkedToNext: p.linkedToNext,
+              linkedToNext: p.linkedToNext
             }))}
             activeTab="deliberation"
             rail={
@@ -50,7 +50,7 @@ export default register(
             }
             posts={[posts.proposal, posts.counts]}
           />
-        ),
+        )
       },
     ],
 
@@ -59,7 +59,7 @@ export default register(
         id: 'poll',
         at: 'top-left',
         width: 336,
-        node: <PollCard {...polls.kerkstraat} />,
+        node: <PollCard {...polls.kerkstraat} />
       },
       {
         id: 'thread',
@@ -67,20 +67,20 @@ export default register(
         width: 348,
         node: (
           <CommentThreadCard onPost={posts.counts.title} comments={comments.kerkstraat} />
-        ),
+        )
       },
       {
         id: 'flow',
         at: 'bottom-left',
         width: 320,
-        node: <PhaseFlowCard phases={mobilityFlow} currentId="deliberation" />,
+        node: <PhaseFlowCard phases={mobilityFlow} currentId="deliberation" />
       },
       {
         id: 'outcome',
         at: 'bottom-right',
         width: 380,
         bare: true,
-        node: <PostCard post={posts.decision} />,
+        node: <PostCard post={posts.decision} />
       },
     ],
 
@@ -90,12 +90,12 @@ export default register(
       '@/app/components/space/PostCard',
       '@/app/components/space/PostReactions',
       '@/app/components/space/ChannelTabs',
-      '@/app/components/ui/avatar',
-      '@/app/components/ui/separator',
-      '@/app/components/common/CollapsibleTagList',
+      '@/crd/primitives/avatar',
+      '@/crd/primitives/separator',
+      '@/crd/components/common/CollapsibleTagList',
     ],
 
     notes:
-      'The poll tally and the standing phase list are mockup-local: both features exist, neither has a renderer in the repo. Recorded in COMPONENT-MAP.md.',
+      'The poll tally and the standing phase list are mockup-local: both features exist, neither has a renderer in the repo. Recorded in COMPONENT-MAP.md.'
   }),
 );

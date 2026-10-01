@@ -1,749 +1,139 @@
+/**
+ * Post card — production's `@/crd/components/space/PostCard`.
+ *
+ * In client-web a "post" is a **callout**; the prototype's name and props are
+ * kept so its ~10 call sites compile unchanged, but everything rendered here is
+ * CRD's. The prototype's own copy had been derived from this component and had
+ * drifted, which is exactly the drift this branch exists to remove.
+ *
+ * Three prototype extras are preserved by composing into CRD's slots rather
+ * than by forking the card:
+ *
+ *   · emoji reactions  → `reactionsSlot`, via the `ReactionBar` adapter. This is
+ *     the slot the dev described; in the client a `<CalloutReactionsConnector>`
+ *     goes here.
+ *   · form settings gear → folded into `settingsSlot` beside any menu the
+ *     caller passes, since CRD has no `onOpenFormSettings`.
+ *   · the extra fixture fields (`contributionForm`, `reactions`,
+ *     `reactionOptions`, `embeddedImages`) ride on an extended `PostCardData`.
+ *
+ * PHASE 1 REMOVALS — recorded in PHASE-2.md:
+ *   · the activity dot beside the title (§1 — CRD renders the title, no slot)
+ *   · `onDeleteMediaGalleryImage` (§4 — CRD's `MediaGalleryFeedGrid` has no
+ *     per-thumbnail delete). The prop is still accepted so the five callers
+ *     compile; it is simply not forwarded.
+ */
+import { Settings } from 'lucide-react';
+import type { ReactNode } from 'react';
 import {
-  BarChart3,
-  ChevronDown,
-  FileText,
-  ImagePlus,
-  Images,
-  type LucideIcon,
-  Maximize2,
-  Megaphone,
-  MessageSquare,
-  Presentation,
-  Settings,
-  StickyNote,
-} from 'lucide-react';
-import { type MouseEvent as ReactMouseEvent, type ReactNode, useState, useRef, useEffect, useCallback } from 'react';
-import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
-import { ActivityDot } from '@/app/components/shared/ActivityDot';
-import { postItem } from '@/app/data/activity-data';
-import {
-  CalloutCollaboraPreview,
-  type CollaboraDocumentPreviewType,
-} from '@/app/components/callout/CalloutCollaboraPreview';
+  PostCard as CrdPostCard,
+  type PostCardData as CrdPostCardData,
+} from '@/crd/components/space/PostCard';
+import type { MediaGalleryFeedThumbnail } from '@/crd/components/mediaGallery/MediaGalleryFeedGrid';
+import { Button } from '@/crd/primitives/button';
+import { ReactionBar } from '@/app/components/space/ReactionBar';
+import type { PostReaction } from '@/app/components/space/post-reactions-data';
 import type { CalloutFormData } from '@/app/components/callout/calloutFormTypes';
-import { CalloutLinkAction } from '@/app/components/callout/CalloutLinkAction';
-import {
-  ReferencesAndTagsStrip,
-  type ReferencesAndTagsStripReference,
-} from '@/app/components/callout/ReferencesAndTagsStrip';
-import {
-  MediaGalleryFeedGrid,
-  type MediaGalleryFeedThumbnail,
-} from '@/app/components/mediaGallery/MediaGalleryFeedGrid';
 
 export type { MediaGalleryFeedThumbnail };
-import { cn } from '@/lib/utils';
-import { PostReactions } from '@/app/components/space/PostReactions';
-import {
-  type PostReaction,
-  seedDemoReactions,
-  toggleReaction,
-} from '@/app/components/space/post-reactions-data';
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
-import { Badge } from '@/app/components/ui/badge';
-import { Button } from '@/app/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/app/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/app/components/ui/collapsible';
-
-export type PostType = 'text' | 'whiteboard' | 'memo' | 'mediaGallery' | 'document' | 'callToAction' | 'poll';
-
-type PostTypeLabelKey =
-  | 'callout.post'
-  | 'callout.whiteboard'
-  | 'callout.memo'
-  | 'callout.mediaGallery'
-  | 'callout.document'
-  | 'callout.callToAction'
-  | 'callout.poll';
+export { POST_TYPE_DESCRIPTORS, type PostType } from '@/crd/components/space/PostCard';
 
 /**
- * Single source of truth for the icon and translation key per `PostType`.
- * Adding a new framing type means adding one entry here — the typed Record
- * forces every `PostType` to be covered, so the icon and label can never
- * silently fall through to the wrong default. Label keys are typed as a
- * literal union so the strict-typed `t()` (see `@types/i18next.d.ts`) accepts
- * them without a cast.
+ * CRD's callout data plus the fields the prototype explores ahead of it.
+ * Nothing here overrides a CRD field — these are additions only.
  */
-export const POST_TYPE_DESCRIPTORS: Record<PostType, { icon: LucideIcon; labelKey: PostTypeLabelKey; label: string }> = {
-  text: { icon: FileText, labelKey: 'callout.post', label: 'Post' },
-  whiteboard: { icon: Presentation, labelKey: 'callout.whiteboard', label: 'Whiteboard' },
-  memo: { icon: StickyNote, labelKey: 'callout.memo', label: 'Memo' },
-  document: { icon: FileText, labelKey: 'callout.document', label: 'Document' },
-  mediaGallery: { icon: Images, labelKey: 'callout.mediaGallery', label: 'Media Gallery' },
-  callToAction: { icon: Megaphone, labelKey: 'callout.callToAction', label: 'Call to Action' },
-  poll: { icon: BarChart3, labelKey: 'callout.poll', label: 'Poll' },
-};
-
-/**
- * Expandable content component using DOM-based overflow detection.
- * Uses a fixed max-height (~3 lines) and checks scrollHeight vs clientHeight
- * to determine if content is clipped. Works with text, images, and mixed content.
- */
-function SimpleExpandableText({
-  content,
-  maxLines = 3,
-  defaultExpanded = false,
-  embeddedImages,
-}: {
-  content: string;
-  maxLines?: number;
-  defaultExpanded?: boolean;
-  embeddedImages?: Array<{ url: string; alt?: string; position?: 'before' | 'after' }>;
-}) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-  const [needsCollapse, setNeedsCollapse] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Sync with external defaultExpanded changes (e.g. "Expand all posts" toggle)
-  useEffect(() => {
-    setIsExpanded(defaultExpanded);
-  }, [defaultExpanded]);
-
-  const checkOverflow = useCallback(() => {
-    if (containerRef.current && !isExpanded) {
-      setNeedsCollapse(containerRef.current.scrollHeight > containerRef.current.clientHeight + 2);
-    }
-  }, [isExpanded]);
-
-  useEffect(() => {
-    checkOverflow();
-  }, [checkOverflow, content, embeddedImages]);
-
-  const isCollapsed = !isExpanded;
-  const showAffordance = (isCollapsed && needsCollapse) || (isExpanded && needsCollapse);
-
-  // maxLines * 1.5em line-height = max height in em
-  const maxHeightEm = `${maxLines * 1.5}em`;
-
-  return (
-    <div className="space-y-0">
-      <div
-        ref={containerRef}
-        className={cn(isCollapsed ? 'overflow-hidden' : '')}
-        style={isCollapsed ? { maxHeight: maxHeightEm } : undefined}
-      >
-        {/* Embedded images before text */}
-        {embeddedImages?.filter(img => img.position === 'before').map((img, idx) => (
-          <div key={`before-${idx}`} className="rounded-lg overflow-hidden mb-3">
-            <img
-              src={img.url}
-              alt={img.alt || ''}
-              className="w-full rounded-lg"
-              onLoad={checkOverflow}
-            />
-          </div>
-        ))}
-
-        <p className="text-body text-foreground whitespace-pre-wrap break-words">
-          {content}
-        </p>
-
-        {/* Embedded images after text */}
-        {embeddedImages?.filter(img => img.position !== 'before').map((img, idx) => (
-          <div key={`after-${idx}`} className="rounded-lg overflow-hidden mt-3">
-            <img
-              src={img.url}
-              alt={img.alt || ''}
-              className="w-full rounded-lg"
-              onLoad={checkOverflow}
-            />
-          </div>
-        ))}
-      </div>
-      {showAffordance && (
-        <Button
-          variant="link"
-          size="sm"
-          className="h-auto p-0 mt-2 text-primary"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsExpanded(!isExpanded);
-          }}
-        >
-          {isExpanded ? 'Show less' : 'Read more'}
-        </Button>
-      )}
-    </div>
-  );
-}
-
-export type PostCardData = {
-  id: string;
-  type: PostType;
-  author?: {
-    name: string;
-    avatarUrl?: string;
-    profileUrl?: string;
-    role?: string;
-  };
-  title: string;
-  snippet?: string;
-  timestamp?: string;
-  isDraft?: boolean;
-  /** Framing-level preview image (whiteboard framing only) */
-  framingImageUrl?: string;
-  /** Framing-level memo markdown (memo framing only) — rendered as a compact cropped preview in the feed */
-  framingMemoMarkdown?: string;
-  /**
-   * Framing-level media gallery preview (media gallery framing only) — up to 4 thumbnails
-   * as `{ id, url }` pairs; the feed grid shows a "+N more" overlay on the 4th cell when
-   * `totalCount > thumbnails.length`. Using `id` as the React key keeps rows stable across
-   * reorders / deletions even when image URLs change.
-   */
-  framingMediaGallery?: { thumbnails: MediaGalleryFeedThumbnail[]; totalCount: number };
-  /** Framing-level Collabora document type (document framing only) — drives the icon + label in the feed preview */
-  framingDocumentType?: CollaboraDocumentPreviewType;
-  /** Framing-level call-to-action link (Link framing only). `isValid` is false for non-http(s) or malformed URIs. */
-  framingCallToAction?: { uri: string; displayName: string; isExternal: boolean; isValid: boolean };
+export type PostCardData = CrdPostCardData & {
   /**
    * Contribution-level form (`contributionType: 'form'` only) — the ordered
-   * question list that defines the shape of a response, plus the responses
-   * collected so far and the two per-form settings.
-   *
-   * Deliberately NOT a `framing*` field: the questions are a schema for what
-   * contributors submit, not the callout's head content, so the callout keeps
-   * its own framing (text, whiteboard, …) and the whole thing renders through
-   * `contributionsPreview`. The card itself only reads it to decide whether to
-   * show the form settings gear.
+   * question list defining a response's shape, plus the responses collected so
+   * far. Prototype-only: production has no form callout type.
    */
   contributionForm?: CalloutFormData;
-  commentCount?: number;
-  /**
-   * Emoji responses on this post. Omit and the card seeds a deterministic demo
-   * set from the post id so existing feeds show the feature without being
-   * rewritten; pass `[]` for a post that genuinely has none.
-   */
+  /** Emoji reactions. Omit and `ReactionBar` seeds a deterministic demo set from the id. */
   reactions?: PostReaction[];
-  /**
-   * The emoji this space offers. Set by a space lead from a platform pool.
-   * Omit to use the platform default set.
-   */
+  /** The emoji this space offers; omit for the platform default set. */
   reactionOptions?: readonly string[];
-  /**
-   * Mirrors `callout.settings.framing.commentsEnabled`. When `false`:
-   *  - the comments footer is hidden entirely if there are no existing messages
-   *  - existing messages stay visible (read-only) when there are some — input gating is the consumer's call (`commentInputSlot`).
-   * Default `true` (legacy callsites stay unchanged).
-   */
-  commentsEnabled?: boolean;
-  /**
-   * Whether the snippet/description starts expanded. Mirrors the space-level
-   * `calloutDescriptionDisplayMode` setting (Expanded vs Collapsed). Only takes
-   * effect when the snippet actually overflows the clamp height.
-   */
-  descriptionExpanded?: boolean;
-  /** User-embedded images in the post body (plain images, no interactive overlay) */
+  /** User-embedded images in the post body. */
   embeddedImages?: Array<{ url: string; alt?: string; position?: 'before' | 'after' }>;
-  /** External references attached to the callout — each rendered on its own line as a link. */
-  references?: ReferencesAndTagsStripReference[];
-  /** Default-tagset tags — rendered as a wrap-row of pills below the references (MUI parity). */
-  tags?: string[];
-};
-
-type PostCardProps = {
-  post: PostCardData;
-  /** URL for the callout title link. Falls back to onClick when omitted. */
-  href?: string;
-  onClick?: () => void;
-  /**
-   * Fired when the user clicks "Open Whiteboard" / "Open Memo" inside the framing
-   * preview. When omitted, the buttons fall back to `onClick` (i.e. open the
-   * callout dialog). Consumers wire this to launch the framing editor directly.
-   */
-  onOpenFraming?: () => void;
-  /**
-   * Fired when the user clicks "Add images" on a media-gallery framing preview.
-   * When omitted, the button is hidden. Consumer wires this to a hidden file
-   * picker + direct upload, matching the dialog-level flow.
-   */
-  onAddMediaGalleryImages?: () => void;
-  /**
-   * Fired when the user requests deletion of a specific image in the media gallery.
-   * When omitted, no delete affordance is shown. Consumer filters/updates the post's
-   * framingMediaGallery in response.
-   */
-  onDeleteMediaGalleryImage?: (thumbnail: MediaGalleryFeedThumbnail) => void;
-  /**
-   * Fallback handler for the footer when no `commentsSlot` is provided — e.g.
-   * the standalone preview app or future callers that want a dialog-only flow.
-   * When `commentsSlot` is supplied the footer becomes a collapsible and this
-   * prop is ignored.
-   */
-  onCommentsClick?: () => void;
-  /**
-   * 3-dots settings area rendered in the card header. The consumer provides a full
-   * menu component (e.g. `CalloutContextMenu`) that brings its own `DropdownMenuTrigger`
-   * button — this card never renders a standalone settings button (plan D8 / T060).
-   */
-  settingsSlot?: ReactNode;
-  /**
-   * Opens the form settings dialog (response visibility, multiple responses).
-   * Only meaningful when the post carries a `contributionForm`. When omitted
-   * the gear is hidden — the consumer passes it only for viewers allowed to
-   * change settings, so the button's presence is itself the permission check.
-   */
-  onOpenFormSettings?: () => void;
-  onExpandClick?: () => void;
-  /** Opens the Collabora editor directly from the feed preview (document framing only).
-   *  Distinct from `onClick`, which opens the callout dialog via the title link. */
-  onOpenFramingDocument?: () => void;
-  /** Contribution preview rendered by the integration layer (ContributionsPreviewConnector) */
-  contributionsPreview?: ReactNode;
-  /** Content injected after the description/preview area, before the footer (e.g. poll) */
-  children?: ReactNode;
-  /**
-   * Full comment thread rendered inside the expanded footer. When supplied the
-   * footer renders a `<Collapsible>` with a chevron-toggle trigger. The
-   * integration layer (`CalloutCommentsConnector`) provides the node.
-   */
-  commentsSlot?: ReactNode;
-  /**
-   * Comment input rendered above the thread inside the expanded footer.
-   * Consumer passes `null` when the viewer cannot post.
-   */
-  commentInputSlot?: ReactNode | null;
-  /**
-   * Emits on every open/close of the inline comments footer. The integration
-   * layer uses this to gate the live subscription (see
-   * `CalloutCommentsConnector.skipSubscription`).
-   */
-  onCommentsExpandedChange?: (expanded: boolean) => void;
-  /**
-   * Emitted whenever the viewer adds, changes or removes their reaction. The
-   * card keeps its own optimistic copy, so this is for persistence only.
-   */
-  onReactionsChange?: (reactions: PostReaction[]) => void;
-  /** Hides the reaction cluster entirely (read-only surfaces, previews). */
-  reactionsEnabled?: boolean;
-  /** Whether the viewer may react. Reactions stay visible when `false`. */
-  canReact?: boolean;
-  className?: string;
 };
 
 /** @deprecated Use PostCardData instead */
 export type PostProps = PostCardData;
 
+type PostCardProps = {
+  post: PostCardData;
+  href?: string;
+  onClick?: () => void;
+  onOpenFraming?: () => void;
+  onAddMediaGalleryImages?: () => void;
+  /** Accepted for call-site compatibility; not forwarded — see PHASE-2.md §4. */
+  onDeleteMediaGalleryImage?: (thumbnail: MediaGalleryFeedThumbnail) => void;
+  onCommentsClick?: () => void;
+  settingsSlot?: ReactNode;
+  /** Opens the form settings dialog. Its presence is the permission check. */
+  onOpenFormSettings?: () => void;
+  onExpandClick?: () => void;
+  expandIcon?: 'expand' | 'fullscreen';
+  onOpenFramingDocument?: () => void;
+  onOpenMemoSignedCopies?: () => void;
+  contributionsPreview?: ReactNode;
+  children?: ReactNode;
+  commentsSlot?: ReactNode;
+  commentInputSlot?: ReactNode | null;
+  onCommentsExpandedChange?: (expanded: boolean) => void;
+  /** Hides the reaction row entirely (e.g. a card in a read-only preview). */
+  reactionsEnabled?: boolean;
+  canReact?: boolean;
+  onReactionsChange?: (reactions: PostReaction[]) => void;
+  className?: string;
+};
+
 export function PostCard({
   post,
-  href,
-  onClick,
-  onOpenFraming,
-  onAddMediaGalleryImages,
-  onDeleteMediaGalleryImage,
-  onCommentsClick,
   settingsSlot,
   onOpenFormSettings,
-  onExpandClick,
-  onOpenFramingDocument,
-  contributionsPreview,
-  children,
-  commentsSlot,
-  commentInputSlot,
-  onCommentsExpandedChange,
-  onReactionsChange,
   reactionsEnabled = true,
   canReact = true,
-  className,
+  onReactionsChange,
+  // Accepted, deliberately unused — see the header note.
+  onDeleteMediaGalleryImage: _onDeleteMediaGalleryImage,
+  ...rest
 }: PostCardProps) {
-  const TypeIcon = post.type && POST_TYPE_DESCRIPTORS[post.type] ? POST_TYPE_DESCRIPTORS[post.type].icon : FileText;
-  const hasCollapsibleComments = commentsSlot !== undefined;
-  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-
-  // Seeded once per post id. A caller that owns the data passes `post.reactions`
-  // and drives updates through `onReactionsChange`.
-  const [reactions, setReactions] = useState<PostReaction[]>(
-    () => post.reactions ?? seedDemoReactions(post.id, post.reactionOptions),
-  );
-
-  const handleToggleReaction = (emoji: string) => {
-    setReactions(current => {
-      const next = toggleReaction(current, emoji);
-      onReactionsChange?.(next);
-      return next;
-    });
-  };
-
-  const handleCommentsOpenChange = (open: boolean) => {
-    setIsCommentsOpen(open);
-    onCommentsExpandedChange?.(open);
-  };
-
-  const commentLabel = post.commentCount
-    ? `${post.commentCount} Comment${post.commentCount !== 1 ? 's' : ''}`
-    : 'No comments';
-
-  const { hasItemActivity, markItemSeen } = useActivityIndicators();
-  const activityItemId = postItem(post.id);
-  const hasActivity = hasItemActivity(activityItemId);
-  const hoverTimer = useRef<number | null>(null);
-
-  const cancelHoverClear = useCallback(() => {
-    if (hoverTimer.current !== null) {
-      window.clearTimeout(hoverTimer.current);
-      hoverTimer.current = null;
-    }
-  }, []);
-
-  // Hovering is deliberate attention; scrolling past is not. The short delay
-  // stops a cursor sweeping across the feed from clearing everything it crosses.
-  const handleActivityHover = useCallback(() => {
-    if (!hasActivity || hoverTimer.current !== null) return;
-    hoverTimer.current = window.setTimeout(() => {
-      hoverTimer.current = null;
-      markItemSeen(activityItemId);
-    }, 400);
-  }, [hasActivity, markItemSeen, activityItemId]);
-
-  useEffect(() => cancelHoverClear, [cancelHoverClear]);
-
-  // Comments and reactions gate independently: a post with commenting switched
-  // off still shows the responses it already has.
-  const showComments = post.commentsEnabled !== false || (post.commentCount ?? 0) > 0;
-  const showReactions = reactionsEnabled;
-  const reactionCluster = showReactions ? (
-    <PostReactions
-      reactions={reactions}
-      options={post.reactionOptions}
-      onToggle={handleToggleReaction}
-      canReact={canReact}
-    />
-  ) : null;
+  // CRD renders one settings area; the form gear joins whatever menu the caller
+  // passes rather than replacing it.
+  const settings =
+    onOpenFormSettings || settingsSlot ? (
+      <div className="flex items-center gap-1">
+        {onOpenFormSettings && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onOpenFormSettings}
+            aria-label="Form settings"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Settings className="size-4" aria-hidden="true" />
+          </Button>
+        )}
+        {settingsSlot}
+      </div>
+    ) : undefined;
 
   return (
-    <Card
-      onMouseEnter={handleActivityHover}
-      onMouseLeave={cancelHoverClear}
-      className={cn(
-        'group hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border-border/60',
-        post.isDraft && 'border-l-4 border-l-amber-400',
-        className
-      )}
-    >
-      <CardHeader className="relative isolate flex flex-row items-start justify-between pb-0 pt-5 px-6 space-y-0">
-        {/* Stretched-link overlay: clicking anywhere in the header (the empty
-            space, timestamp, badges, type label) opens the callout — the same
-            target as the title link in the body. The avatar/name profile
-            links and the action cluster (expand + 3-dot menu) sit above it via
-            `relative z-10`, so they keep their own behaviour. Rendered only
-            when the consumer wires a destination, so it never becomes a dead
-            `#` click-trap. It's a sibling of the avatar/name anchors, not an
-            ancestor — no nested-anchor invalidity. `tabIndex={-1}` keeps it
-            out of the keyboard tab order so it doesn't duplicate the visible
-            title link's focus stop — the title link stays the keyboard
-            control. We deliberately don't add `aria-hidden` (Biome
-            `useAnchorContent` forbids a no-accessible-content link); the
-            `sr-only` label keeps it discoverable in AT browse mode. */}
-        {(href || onClick) && (
-          <a
-            href={href ?? '#'}
-            tabIndex={-1}
-            onClick={
-              onClick
-                ? e => {
-                    e.preventDefault();
-                    onClick();
-                  }
-                : undefined
-            }
-            className="absolute inset-0 z-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-          >
-            <span className="sr-only">Open {post.title}</span>
-          </a>
-        )}
-        <div className="flex gap-3">
-          {post.author &&
-            (post.author.profileUrl ? (
-              <a
-                href={post.author.profileUrl}
-                onClick={e => e.stopPropagation()}
-                aria-label={post.author.name}
-                className="relative z-10 block shrink-0 self-start rounded-full -m-0.5 p-0.5 hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Avatar className="w-10 h-10 border border-border">
-                  {post.author.avatarUrl && <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />}
-                  <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </a>
-            ) : (
-              <Avatar className="w-10 h-10 border border-border">
-                {post.author.avatarUrl && <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />}
-                <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-            ))}
-          <div>
-            <div className="flex items-center gap-2">
-              {post.author &&
-                (post.author.profileUrl ? (
-                  <a
-                    href={post.author.profileUrl}
-                    onClick={e => e.stopPropagation()}
-                    className="relative z-10 rounded-sm text-card-title text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    {post.author.name}
-                  </a>
-                ) : (
-                  <span className="text-card-title text-foreground">{post.author.name}</span>
-                ))}
-              {post.timestamp && <span className="text-caption text-muted-foreground">• {post.timestamp}</span>}
-            </div>
-            <div className="flex items-center gap-2 mt-0.5">
-              {post.isDraft && (
-                <Badge className="text-badge h-5 px-1.5 font-semibold bg-amber-100 text-amber-700 border border-amber-300 hover:bg-amber-100">
-                  Draft
-                </Badge>
-              )}
-              <span className="text-caption text-muted-foreground flex items-center gap-1">
-                <TypeIcon className="w-4 h-4" aria-hidden="true" />
-                {post.type && POST_TYPE_DESCRIPTORS[post.type] ? POST_TYPE_DESCRIPTORS[post.type].label : 'Post'}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="relative z-10 flex items-center gap-1">
-          {/* Form settings — response visibility is the setting most likely to
-              need changing after the fact, so it gets a labelled control of its
-              own. Only rendered when the consumer supplies the handler, which is
-              how the admin-only permission is expressed. */}
-          {post.contributionForm && onOpenFormSettings && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              onClick={e => {
-                e.stopPropagation();
-                onOpenFormSettings();
-              }}
-              aria-label="Form settings"
-              title="Form settings"
-            >
-              <Settings className="w-4 h-4" aria-hidden="true" />
-            </Button>
-          )}
-          {onExpandClick && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              onClick={e => {
-                e.stopPropagation();
-                onExpandClick();
-              }}
-              aria-label="Expand"
-            >
-              <Maximize2 className="w-4 h-4" aria-hidden="true" />
-            </Button>
-          )}
-          {settingsSlot}
-        </div>
-      </CardHeader>
-
-      <CardContent className="px-6 pb-0">
-        <h3 className="text-subsection-title mb-2 text-foreground group-hover:text-primary transition-colors">
-          <a
-            href={href ?? '#'}
-            className="hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-            onClick={
-              onClick
-                ? e => {
-                    e.preventDefault();
-                    markItemSeen(activityItemId);
-                    onClick();
-                  }
-                : () => markItemSeen(activityItemId)
-            }
-          >
-            {post.title}
-          </a>
-          {hasActivity && <ActivityDot className="ml-2 align-middle" label="New" />}
-        </h3>
-        {post.snippet && (
-          <SimpleExpandableText content={post.snippet} maxLines={3} defaultExpanded={post.descriptionExpanded} embeddedImages={post.embeddedImages} />
-        )}
-
-        {/* References + tags row — same component as the detail dialog (DRY). */}
-        <ReferencesAndTagsStrip references={post.references} tags={post.tags} />
-
-        {/* Whiteboard framing preview — always render (even when empty), MUI parity.
-            The whole preview is the click target (cursor-pointer everywhere), not just the centered
-            label — matching the contribution cards. The label is a non-interactive <span> (nesting a
-            <button> would be invalid). */}
-        {post.type === 'whiteboard' && (
-          <button
-            type="button"
-            onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-              event.stopPropagation();
-              (onOpenFraming ?? onClick)?.();
-            }}
-            className="relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 aspect-video text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            {post.framingImageUrl ? (
-              <img
-                src={post.framingImageUrl}
-                alt="Whiteboard"
-                className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <Presentation className="w-12 h-12 text-muted-foreground/50" aria-hidden="true" />
-              </div>
-            )}
-            <div className="absolute inset-0 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
-              <span className="inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-sm h-9 px-4 text-control">
-                Open Whiteboard
-              </span>
-            </div>
-          </button>
-        )}
-
-        {/* Memo framing preview — fixed-height box; renders icon centred when empty.
-            Whole box is the click target (cursor-pointer everywhere); the label is a non-interactive
-            <span>. Mirrors the contribution cards, which likewise nest CroppedMarkdown in a button. */}
-        {post.type === 'memo' && (
-          <button
-            type="button"
-            onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-              event.stopPropagation();
-              (onOpenFraming ?? onClick)?.();
-            }}
-            className="relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 h-32 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            {post.framingMemoMarkdown ? (
-              <div className="p-3 h-full overflow-hidden text-sm text-foreground line-clamp-4">
-                {post.framingMemoMarkdown}
-              </div>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <StickyNote className="w-12 h-12 text-muted-foreground/50" aria-hidden="true" />
-              </div>
-            )}
-            <div className="absolute inset-0 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
-              <span className="inline-flex items-center justify-center rounded-md bg-secondary text-secondary-foreground shadow-sm h-9 px-4 text-control">
-                Open Memo
-              </span>
-            </div>
-          </button>
-        )}
-
-        {/* Media gallery framing preview — 4-tile grid; falls back to a placeholder
-            (icon-centred empty box) when there are no images yet so the gallery has
-            a visible affordance in the feed. Mirrors the whiteboard / memo empty-state
-            pattern. The "Add images" button below opens the OS file picker directly
-            (MUI parity — no edit-dialog round-trip). */}
-        {post.type === 'mediaGallery' && (
-          <div className="space-y-2">
-            {post.framingMediaGallery && post.framingMediaGallery.thumbnails.length > 0 ? (
-              <MediaGalleryFeedGrid
-                thumbnails={post.framingMediaGallery.thumbnails}
-                totalCount={post.framingMediaGallery.totalCount}
-                onOpenAt={onClick}
-                onDeleteThumbnail={onDeleteMediaGalleryImage}
-              />
-            ) : (
-              <div className="rounded-lg overflow-hidden border border-border bg-muted/30 relative aspect-video flex items-center justify-center">
-                <Images className="w-12 h-12 text-muted-foreground/50" aria-hidden="true" />
-              </div>
-            )}
-            {onAddMediaGalleryImages && (
-              <div className="flex justify-end">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-                    event.stopPropagation();
-                    onAddMediaGalleryImages();
-                  }}
-                >
-                  <ImagePlus className="size-4" aria-hidden="true" />
-                  Add Images
-                </Button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Collabora document framing preview — compact variant for the feed */}
-        {post.type === 'document' && post.framingDocumentType && (
-          <CalloutCollaboraPreview
-            documentType={post.framingDocumentType}
-            onOpen={onOpenFramingDocument ?? onClick ?? (() => {})}
-            size="compact"
+    <CrdPostCard
+      {...rest}
+      post={post}
+      settingsSlot={settings}
+      reactionsSlot={
+        reactionsEnabled ? (
+          <ReactionBar
+            id={post.id}
+            options={post.reactionOptions}
+            canReact={canReact}
+            onChange={onReactionsChange}
           />
-        )}
-
-        {/* Call-to-action framing preview — full-width link button */}
-        {post.type === 'callToAction' && post.framingCallToAction && (
-          <CalloutLinkAction
-            url={post.framingCallToAction.uri}
-            displayName={post.framingCallToAction.displayName}
-            isExternal={post.framingCallToAction.isExternal}
-            isValid={post.framingCallToAction.isValid}
-            className="mt-4"
-          />
-        )}
-
-        {/* Contribution previews — rendered by integration layer */}
-        {contributionsPreview}
-      </CardContent>
-
-      {children && <div className="px-6 pb-4">{children}</div>}
-
-      {/* Footer is hidden entirely when comments are disabled AND there are no existing messages —
-          mirrors the MUI behavior. When messages exist, the thread stays visible (read-only via
-          consumer-gated `commentInputSlot`) even after the admin disables further commenting. */}
-      {(showComments || showReactions) &&
-        (showComments && hasCollapsibleComments ? (
-          <CardFooter className="!p-0 flex-col items-stretch gap-0 border-t bg-muted/5">
-            <Collapsible open={isCommentsOpen} onOpenChange={handleCommentsOpenChange}>
-              {/* The count and the reactions share one row: comments left,
-                  responses right. The trigger can no longer be full-width
-                  because a button may not contain the reaction buttons. */}
-              <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-3">
-                <CollapsibleTrigger asChild={true}>
-                  <button
-                    type="button"
-                    className="group/comments flex items-center gap-2 text-caption text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    aria-label={isCommentsOpen ? 'Collapse comments' : 'Expand comments'}
-                  >
-                    <ChevronDown
-                      className="size-4 transition-transform duration-200 group-data-[state=open]/comments:rotate-180"
-                      aria-hidden="true"
-                    />
-                    <MessageSquare className="size-4" aria-hidden="true" />
-                    <span>{commentLabel}</span>
-                  </button>
-                </CollapsibleTrigger>
-                {reactionCluster}
-              </div>
-              <CollapsibleContent className="px-6 pb-4">
-                <div className="flex flex-col gap-3">
-                  {commentInputSlot}
-                  <div className="max-h-[400px] overflow-y-auto pr-2">{commentsSlot}</div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </CardFooter>
-        ) : (
-          <CardFooter className="!py-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t bg-muted/5 px-6">
-            {showComments ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 gap-2 text-muted-foreground hover:text-foreground pl-0 hover:bg-transparent"
-                onClick={(event: ReactMouseEvent<HTMLButtonElement>) => {
-                  event.stopPropagation();
-                  onCommentsClick?.();
-                }}
-              >
-                <MessageSquare className="w-4 h-4" aria-hidden="true" />
-                <span className="text-caption">{commentLabel}</span>
-              </Button>
-            ) : (
-              <span />
-            )}
-            {reactionCluster}
-          </CardFooter>
-        ))}
-    </Card>
+        ) : undefined
+      }
+    />
   );
 }

@@ -12,18 +12,18 @@ import {
   Layout,
   Copy,
   FileBox,
-  Users2,
+  Users2
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Switch } from "@/app/components/ui/switch";
-import { Label } from "@/app/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
+import { Button } from "@/crd/primitives/button";
+import { Switch } from "@/crd/primitives/switch";
+import { Label } from "@/crd/primitives/label";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
-} from "@/app/components/ui/accordion";
+  AccordionTrigger
+} from "@/crd/primitives/accordion";
 import {
   Dialog,
   DialogContent,
@@ -31,9 +31,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/app/components/ui/dialog";
-import { Separator } from "@/app/components/ui/separator";
+  DialogTrigger
+} from "@/crd/primitives/dialog";
+import { Separator } from "@/crd/primitives/separator";
 
 // Icon helper
 function FileTextIcon({ className }: { className?: string }) {
@@ -72,7 +72,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
     videoCalls: true,
     guestContributions: false,
     createSubSubspaces: false,
-    parentContribute: true,
+    parentContribute: true
   });
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
@@ -108,7 +108,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
               <h3 className="text-subsection-title flex items-center gap-2">
                 Visibility
               </h3>
-              <p className="text-sm text-muted-foreground font-normal text-left">
+              <p className="text-body text-muted-foreground font-normal text-left">
                 Control who can see and access this subspace
               </p>
             </div>
@@ -131,7 +131,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
                   >
                     <Globe className="w-4 h-4 text-info" /> Public
                   </Label>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-body text-muted-foreground leading-relaxed">
                     This subspace and its contents are visible to all members of
                     the parent space.
                   </p>
@@ -149,7 +149,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
                   >
                     <Lock className="w-4 h-4 text-warning" /> Private
                   </Label>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-body text-muted-foreground leading-relaxed">
                     Only subspace members can see this subspace and its contents.
                   </p>
                 </div>
@@ -171,7 +171,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
               <h3 className="text-subsection-title flex items-center gap-2">
                 Membership
               </h3>
-              <p className="text-sm text-muted-foreground font-normal text-left">
+              <p className="text-body text-muted-foreground font-normal text-left">
                 Choose how users join this subspace
               </p>
             </div>
@@ -195,7 +195,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
                     <UserPlus className="w-4 h-4 text-success" /> No Application
                     Required
                   </Label>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-body text-muted-foreground leading-relaxed">
                     All parent space members can join directly without approval.
                   </p>
                   <p className="text-caption text-muted-foreground italic mt-1">Best for public, open collaboration spaces</p>
@@ -213,7 +213,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
                   >
                     <FileTextIcon className="w-4 h-4 text-info" /> Application Required
                   </Label>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-body text-muted-foreground leading-relaxed">
                     Members must submit an application that leads can approve or
                     reject.
                   </p>
@@ -232,7 +232,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
                   >
                     <Mail className="w-4 h-4 text-primary" /> Invitation Only
                   </Label>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-body text-muted-foreground leading-relaxed">
                     Members can only join after being invited by a lead.
                   </p>
                   <p className="text-caption text-muted-foreground italic mt-1">Best for private, restricted collaboration teams</p>
@@ -252,7 +252,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
               <h3 className="text-subsection-title flex items-center gap-2">
                 Allowed Actions
               </h3>
-              <p className="text-sm text-muted-foreground font-normal text-left">
+              <p className="text-body text-muted-foreground font-normal text-left">
                 Configure what members can do in this subspace
               </p>
             </div>
@@ -318,7 +318,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
               <h3 className="text-subsection-title flex items-center gap-2">
                 Template & Duplication
               </h3>
-              <p className="text-sm text-muted-foreground font-normal text-left">
+              <p className="text-body text-muted-foreground font-normal text-left">
                 Save this subspace as a reusable template or create a copy
               </p>
             </div>
@@ -365,7 +365,7 @@ export function SubspaceSettingsSettings({ subspaceName }: SubspaceSettingsSetti
                 <AlertTriangle className="w-5 h-5" />
                 Danger Zone
               </h3>
-              <p className="text-sm text-destructive/80 font-normal text-left">
+              <p className="text-body text-destructive/80 font-normal text-left">
                 Irreversible actions for this subspace
               </p>
             </div>
@@ -437,7 +437,7 @@ function ActionToggle({
   description,
   checked,
   onCheckedChange,
-  icon: Icon,
+  icon: Icon
 }: {
   id: string;
   label: string;

@@ -18,10 +18,10 @@ import {
   Users as UsersIcon,
   Zap
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Switch } from "@/app/components/ui/switch";
-import { Label } from "@/app/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
+import { Button } from "@/crd/primitives/button";
+import { Switch } from "@/crd/primitives/switch";
+import { Label } from "@/crd/primitives/label";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
 import {
   Dialog,
   DialogContent,
@@ -29,9 +29,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/app/components/ui/dialog";
-import { cn } from "@/lib/utils";
+  DialogTrigger
+} from "@/crd/primitives/dialog";
+import { cn } from "@/crd/lib/utils";
 import { SaveBar } from "@/app/components/shared/SaveBar";
 import { UnsavedChangesGuard } from "@/app/components/shared/UnsavedChangesGuard";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
@@ -79,43 +79,43 @@ const ACTION_META: Record<AllowedActionKey, { label: string; description: string
   subspaceAdminInvitations: {
     label: 'Space Invitations',
     description: 'Allow admins of Subspaces to invite platform users.',
-    icon: UserPlus,
+    icon: UserPlus
   },
   memberCreatePosts: {
     label: 'Create Posts',
     description: 'Allow members to create posts in the community.',
-    icon: Edit3,
+    icon: Edit3
   },
   videoCalls: {
     label: 'Video Calls',
     description: 'Show video call button for conferences.',
-    icon: Video,
+    icon: Video
   },
   guestContributions: {
     label: 'Guest Contributions',
     description: 'Allow whiteboards to be shared with non-members.',
-    icon: Share2,
+    icon: Share2
   },
   memberCreateSubspaces: {
     label: 'Create Subspaces',
     description: 'Allow members to create Subspaces.',
-    icon: Layout,
+    icon: Layout
   },
   inheritMembershipRights: {
     label: 'Inherit Membership',
     description: 'Parent Space members gain access automatically.',
-    icon: UsersIcon,
+    icon: UsersIcon
   },
   subspaceEvents: {
     label: 'Subspace Events',
     description: 'Allow events from Subspaces to be visible.',
-    icon: Calendar,
+    icon: Calendar
   },
   alkemioSupportAccess: {
     label: 'Alkemio Support',
     description: 'Allow Alkemio Support team to act as admin.',
-    icon: Shield,
-  },
+    icon: Shield
+  }
 };
 
 // ─── Initial State ───────────────────────────────────────────────────────────
@@ -139,8 +139,8 @@ const INITIAL_STATE: SettingsState = {
     memberCreateSubspaces: false,
     inheritMembershipRights: false,
     subspaceEvents: true,
-    alkemioSupportAccess: true,
-  },
+    alkemioSupportAccess: true
+  }
 };
 
 // ─── Component ───────────────────────────────────────────────────────────────

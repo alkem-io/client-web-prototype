@@ -8,10 +8,10 @@ import {
   Sparkles,
   Globe,
   Target,
-  Lightbulb,
+  Lightbulb
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { cn } from "@/crd/lib/utils";
 import AlkemioLogo from "@/imports/AlkemioLogo";
 
 const INTERESTS = [
@@ -34,25 +34,25 @@ const STEPS = [
     id: "welcome",
     title: "Welcome to Alkemio",
     subtitle: "Let's set up your profile and connect you with the right spaces.",
-    icon: Sparkles,
+    icon: Sparkles
   },
   {
     id: "interests",
     title: "What are you interested in?",
     subtitle: "Select topics that matter to you. We'll recommend relevant spaces.",
-    icon: Lightbulb,
+    icon: Lightbulb
   },
   {
     id: "goals",
     title: "What brings you here?",
     subtitle: "Understanding your goals helps us personalize your experience.",
-    icon: Target,
+    icon: Target
   },
   {
     id: "ready",
     title: "You're all set!",
     subtitle: "Start exploring spaces and connecting with your community.",
-    icon: Check,
+    icon: Check
   },
 ];
 
@@ -61,25 +61,25 @@ const GOALS = [
     id: "collaborate",
     icon: Users,
     title: "Collaborate on challenges",
-    desc: "Work with others to solve complex problems",
+    desc: "Work with others to solve complex problems"
   },
   {
     id: "explore",
     icon: Globe,
     title: "Explore new ideas",
-    desc: "Discover innovative approaches and solutions",
+    desc: "Discover innovative approaches and solutions"
   },
   {
     id: "lead",
     icon: Target,
     title: "Lead a space or initiative",
-    desc: "Create and manage your own collaborative space",
+    desc: "Create and manage your own collaborative space"
   },
   {
     id: "connect",
     icon: Sparkles,
     title: "Connect with experts",
-    desc: "Find and engage with domain specialists",
+    desc: "Find and engage with domain specialists"
   },
 ];
 
@@ -125,9 +125,8 @@ export default function OnboardingPage() {
     <div
       className="min-h-screen flex flex-col items-center justify-center px-6 py-12"
       style={{
-        background: "var(--background)",
-        fontFamily: "'Inter', sans-serif",
-      }}
+        background: "var(--background)"
+        }}
     >
       {/* Logo */}
       <div className="mb-10 w-40">
@@ -143,7 +142,7 @@ export default function OnboardingPage() {
             style={{
               width: i === currentStep ? 32 : 12,
               background:
-                i <= currentStep ? "var(--primary)" : "var(--border)",
+                i <= currentStep ? "var(--primary)" : "var(--border)"
             }}
           />
         ))}
@@ -156,7 +155,7 @@ export default function OnboardingPage() {
           background: "var(--card)",
           border: "1px solid var(--border)",
           borderRadius: "var(--radius)",
-          padding: "40px 32px",
+          padding: "40px 32px"
         }}
       >
         {/* Step icon + title */}
@@ -165,7 +164,7 @@ export default function OnboardingPage() {
             className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
             style={{
               background: "var(--primary)",
-              color: "var(--primary-foreground)",
+              color: "var(--primary-foreground)"
             }}
           >
             <step.icon className="w-6 h-6" />
@@ -190,7 +189,7 @@ export default function OnboardingPage() {
             className="p-4 rounded-md text-center"
             style={{
               background: "var(--secondary)",
-              border: "1px solid var(--border)",
+              border: "1px solid var(--border)"
             }}
           >
             <p className="text-body" style={{ color: "var(--foreground)" }}>
@@ -215,7 +214,7 @@ export default function OnboardingPage() {
                 style={{
                   border: selectedInterests.includes(interest)
                     ? "1px solid var(--primary)"
-                    : "1px solid var(--border)",
+                    : "1px solid var(--border)"
                 }}
               >
                 {selectedInterests.includes(interest) && (
@@ -240,7 +239,7 @@ export default function OnboardingPage() {
                     : "1px solid var(--border)",
                   background: selectedGoals.includes(goal.id)
                     ? "color-mix(in srgb, var(--primary) 5%, transparent)"
-                    : "var(--background)",
+                    : "var(--background)"
                 }}
               >
                 <div
@@ -251,7 +250,7 @@ export default function OnboardingPage() {
                       : "var(--secondary)",
                     color: selectedGoals.includes(goal.id)
                       ? "var(--primary-foreground)"
-                      : "var(--muted-foreground)",
+                      : "var(--muted-foreground)"
                   }}
                 >
                   <goal.icon className="w-4 h-4" />
@@ -267,7 +266,7 @@ export default function OnboardingPage() {
                     className="text-caption"
                     style={{
                       color: "var(--muted-foreground)",
-                      marginTop: 2,
+                      marginTop: 2
                     }}
                   >
                     {goal.desc}
@@ -284,7 +283,7 @@ export default function OnboardingPage() {
               className="p-4 rounded-md space-y-3"
               style={{
                 background: "var(--secondary)",
-                border: "1px solid var(--border)",
+                border: "1px solid var(--border)"
               }}
             >
               <div className="flex items-center gap-2">
@@ -303,7 +302,7 @@ export default function OnboardingPage() {
                     className="px-2.5 py-1 rounded-full text-badge"
                     style={{
                       background: "var(--primary)",
-                      color: "var(--primary-foreground)",
+                      color: "var(--primary-foreground)"
                     }}
                   >
                     {i}
@@ -315,7 +314,7 @@ export default function OnboardingPage() {
               className="p-4 rounded-md space-y-3"
               style={{
                 background: "var(--secondary)",
-                border: "1px solid var(--border)",
+                border: "1px solid var(--border)"
               }}
             >
               <div className="flex items-center gap-2">
@@ -334,7 +333,7 @@ export default function OnboardingPage() {
                     className="px-2.5 py-1 rounded-full text-badge"
                     style={{
                       background: "var(--primary)",
-                      color: "var(--primary-foreground)",
+                      color: "var(--primary-foreground)"
                     }}
                   >
                     {g.title}

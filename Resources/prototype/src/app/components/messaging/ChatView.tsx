@@ -10,17 +10,17 @@ import {
   Hash,
   X,
   Search as SearchIcon,
-  SquareArrowOutUpRight,
+  SquareArrowOutUpRight
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
+import { cn } from "@/crd/lib/utils";
 import { MessageComposer } from "./MessageComposer";
 import type { Conversation, Message } from "./messagingData";
 import { MESSAGES, USERS } from "./messagingData";
@@ -44,7 +44,7 @@ export function ChatView({
   onViewInHub,
   compact = false,
   closeIcon = false,
-  onVisitSpace,
+  onVisitSpace
 }: ChatViewProps) {
   const messages = MESSAGES[conversation.id] ?? [];
   const [localMessages, setLocalMessages] = useState<Message[]>(messages);
@@ -76,11 +76,11 @@ export function ChatView({
         timestamp: new Date().toISOString(),
         timeLabel: new Date().toLocaleTimeString([], {
           hour: "2-digit",
-          minute: "2-digit",
+          minute: "2-digit"
         }),
         dateLabel: "Today",
         isOwn: true,
-        replyTo: replyTo ?? undefined,
+        replyTo: replyTo ?? undefined
       };
       setLocalMessages((prev) => [...prev, newMsg]);
       setReplyTo(null);
@@ -117,7 +117,7 @@ export function ChatView({
         style={{
           padding: compact ? "10px 14px" : "12px 16px",
           borderBottom: "1px solid var(--border)",
-          background: "var(--card)",
+          background: "var(--card)"
         }}
       >
         <button
@@ -139,7 +139,7 @@ export function ChatView({
             style={{
               width: 36,
               height: 36,
-              border: "1px solid var(--border)",
+              border: "1px solid var(--border)"
             }}
           >
             <AvatarImage src={conversation.avatar} alt={conversation.name} />
@@ -147,9 +147,8 @@ export function ChatView({
               className="text-caption font-semibold"
               style={{
                 background: "var(--secondary)",
-                color: "var(--secondary-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--secondary-foreground)"
+                }}
             >
               {conversation.initials}
             </AvatarFallback>
@@ -165,9 +164,8 @@ export function ChatView({
                   ? "calc(var(--radius) + 2px)"
                   : "calc(var(--radius) + 2px)",
               background: conversation.avatarColor ?? "var(--secondary)",
-              color: "var(--primary-foreground)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              color: "var(--primary-foreground)"
+              }}
           >
             {isSpace ? (
               <Hash style={{ width: 16, height: 16 }} />
@@ -183,9 +181,8 @@ export function ChatView({
             <span
               className="truncate text-card-title"
               style={{
-                color: "var(--foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--foreground)"
+                }}
             >
               {conversation.name}
             </span>
@@ -195,7 +192,7 @@ export function ChatView({
                 style={{
                   width: 7,
                   height: 7,
-                  background: "var(--success)",
+                  background: "var(--success)"
                 }}
               />
             )}
@@ -204,9 +201,8 @@ export function ChatView({
             <span
               className="text-caption"
               style={{
-                color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--muted-foreground)"
+                }}
             >
               {conversation.memberCount} members
             </span>
@@ -221,9 +217,8 @@ export function ChatView({
             style={{
               color: "var(--primary)",
               background: "color-mix(in srgb, var(--primary) 8%, transparent)",
-              border: "1px solid color-mix(in srgb, var(--primary) 15%, transparent)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              border: "1px solid color-mix(in srgb, var(--primary) 15%, transparent)"
+              }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.background = "color-mix(in srgb, var(--primary) 14%, transparent)")
             }
@@ -252,7 +247,7 @@ export function ChatView({
             {conversation.type === "dm" && (
               <DropdownMenuItem className="gap-2 cursor-pointer">
                 <UserIcon style={{ width: 14, height: 14 }} />
-                <span className="text-control" style={{ fontFamily: "'Inter', sans-serif" }}>
+                <span className="text-control" >
                   View Profile
                 </span>
               </DropdownMenuItem>
@@ -260,7 +255,7 @@ export function ChatView({
             {isGroup && (
               <DropdownMenuItem className="gap-2 cursor-pointer">
                 <Users style={{ width: 14, height: 14 }} />
-                <span className="text-control" style={{ fontFamily: "'Inter', sans-serif" }}>
+                <span className="text-control" >
                   Manage Members
                 </span>
               </DropdownMenuItem>
@@ -273,14 +268,14 @@ export function ChatView({
                     onClick={onViewInHub}
                   >
                     <ExternalLink style={{ width: 14, height: 14 }} />
-                    <span className="text-control" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <span className="text-control" >
                       View in Messages
                     </span>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Users style={{ width: 14, height: 14 }} />
-                  <span className="text-control" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  <span className="text-control" >
                     View Members
                   </span>
                 </DropdownMenuItem>
@@ -290,7 +285,7 @@ export function ChatView({
                     onClick={onVisitSpace}
                   >
                     <SquareArrowOutUpRight style={{ width: 14, height: 14 }} />
-                    <span className="text-control" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <span className="text-control" >
                       Visit Space
                     </span>
                   </DropdownMenuItem>
@@ -299,7 +294,7 @@ export function ChatView({
             )}
             <DropdownMenuItem className="gap-2 cursor-pointer">
               <BellOff style={{ width: 14, height: 14 }} />
-              <span className="text-control" style={{ fontFamily: "'Inter', sans-serif" }}>
+              <span className="text-control" >
                 Mute Notifications
               </span>
             </DropdownMenuItem>
@@ -311,7 +306,7 @@ export function ChatView({
                   style={{ color: "var(--destructive)" }}
                 >
                   <LogOut style={{ width: 14, height: 14 }} />
-                  <span className="text-control" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  <span className="text-control" >
                     Leave Group
                   </span>
                 </DropdownMenuItem>
@@ -329,16 +324,15 @@ export function ChatView({
                 style={{
                   width: 22,
                   height: 22,
-                  border: "2px solid var(--card)",
+                  border: "2px solid var(--card)"
                 }}
               >
                 <AvatarImage src={m.avatar} alt={m.name} />
                 <AvatarFallback
                   style={{
                     fontSize: "8px",
-                    fontWeight: 600,
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    fontWeight: 600
+                    }}
                 >
                   {m.initials}
                 </AvatarFallback>
@@ -362,9 +356,8 @@ export function ChatView({
             <p
               className="text-body"
               style={{
-                color: "var(--muted-foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--muted-foreground)"
+                }}
             >
               {isSpace
                 ? `This is the ${conversation.name} channel. Start a conversation with your Space team! 👋`
@@ -393,9 +386,8 @@ export function ChatView({
                           color: "var(--muted-foreground)",
                           background: "var(--secondary)",
                           padding: "3px 12px",
-                          borderRadius: "999px",
-                          fontFamily: "'Inter', sans-serif",
-                        }}
+                          borderRadius: "999px"
+                          }}
                       >
                         {msg.dateLabel}
                       </span>
@@ -411,7 +403,7 @@ export function ChatView({
                     style={{
                       padding: showSender ? "8px 0 2px" : "2px 0",
                       maxWidth: "85%",
-                      marginLeft: msg.isOwn ? "auto" : undefined,
+                      marginLeft: msg.isOwn ? "auto" : undefined
                     }}
                   >
                     {/* Avatar (others, first in group) */}
@@ -422,7 +414,7 @@ export function ChatView({
                             style={{
                               width: 28,
                               height: 28,
-                              border: "1px solid var(--border)",
+                              border: "1px solid var(--border)"
                             }}
                           >
                             <AvatarImage
@@ -431,10 +423,7 @@ export function ChatView({
                             />
                             <AvatarFallback
                               className="text-badge"
-                              style={{
-                                fontFamily: "'Inter', sans-serif",
-                              }}
-                            >
+                              >
                               {msg.senderInitials}
                             </AvatarFallback>
                           </Avatar>
@@ -447,7 +436,7 @@ export function ChatView({
                       style={{
                         alignItems: msg.isOwn ? "flex-end" : "flex-start",
                         flex: 1,
-                        minWidth: 0,
+                        minWidth: 0
                       }}
                     >
                       {/* Sender name */}
@@ -456,9 +445,8 @@ export function ChatView({
                           className="text-caption font-semibold"
                           style={{
                             color: "var(--foreground)",
-                            marginBottom: 2,
-                            fontFamily: "'Inter', sans-serif",
-                          }}
+                            marginBottom: 2
+                            }}
                         >
                           {msg.senderName}
                         </span>
@@ -474,9 +462,8 @@ export function ChatView({
                             background: "var(--muted)",
                             borderLeft: "2px solid var(--primary)",
                             marginBottom: 4,
-                            maxWidth: "100%",
-                            fontFamily: "'Inter', sans-serif",
-                          }}
+                            maxWidth: "100%"
+                            }}
                           className="truncate text-caption"
                         >
                           <span className="font-semibold">
@@ -496,16 +483,15 @@ export function ChatView({
                             ? {
                                 background: "var(--primary)",
                                 color: "var(--primary-foreground)",
-                                borderBottomRightRadius: "calc(var(--radius))",
+                                borderBottomRightRadius: "calc(var(--radius))"
                               }
                             : {
                                 background: "var(--secondary)",
                                 color: "var(--foreground)",
-                                borderBottomLeftRadius: "calc(var(--radius))",
+                                borderBottomLeftRadius: "calc(var(--radius))"
                               }),
-                          fontFamily: "'Inter', sans-serif",
                           maxWidth: "100%",
-                          wordBreak: "break-word" as const,
+                          wordBreak: "break-word" as const
                         }}
                       >
                         {msg.content}
@@ -522,33 +508,28 @@ export function ChatView({
                                 : "var(--background)",
                               border: msg.isOwn
                                 ? "none"
-                                : "1px solid var(--border)",
+                                : "1px solid var(--border)"
                             }}
                           >
                             <span
                               className="text-caption"
-                              style={{
-                                fontFamily: "'Inter', sans-serif",
-                              }}
-                            >
+                              >
                               📄
                             </span>
                             <div className="min-w-0 flex-1">
                               <p
                                 className="truncate text-caption font-medium"
                                 style={{
-                                  margin: 0,
-                                  fontFamily: "'Inter', sans-serif",
-                                }}
+                                  margin: 0
+                                  }}
                               >
                                 {msg.attachment.name}
                               </p>
                               <span
                                 style={{
                                   fontSize: "10px",
-                                  opacity: 0.7,
-                                  fontFamily: "'Inter', sans-serif",
-                                }}
+                                  opacity: 0.7
+                                  }}
                               >
                                 {msg.attachment.size}
                               </span>
@@ -566,7 +547,7 @@ export function ChatView({
                             border: "1px solid var(--border)",
                             borderRadius: "var(--radius)",
                             padding: "2px 4px",
-                            boxShadow: "var(--elevation-sm)",
+                            boxShadow: "var(--elevation-sm)"
                           }}
                         >
                           {["😊", "👍", "❤️"].map((emoji) => (
@@ -590,12 +571,12 @@ export function ChatView({
                             className="p-0.5 rounded-sm transition-colors text-caption"
                             style={{
                               color: "var(--muted-foreground)",
-                              lineHeight: 1,
+                              lineHeight: 1
                             }}
                             onClick={() =>
                               setReplyTo({
                                 senderName: msg.senderName,
-                                content: msg.content,
+                                content: msg.content
                               })
                             }
                             title="Reply"
@@ -622,9 +603,8 @@ export function ChatView({
                                   : "1px solid var(--border)",
                                 background: r.reacted
                                   ? "color-mix(in srgb, var(--primary) 10%, transparent)"
-                                  : "var(--card)",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
+                                  : "var(--card)"
+                                }}
                             >
                               <span>{r.emoji}</span>
                               <span
@@ -632,7 +612,7 @@ export function ChatView({
                                 style={{
                                   color: r.reacted
                                     ? "var(--primary)"
-                                    : "var(--muted-foreground)",
+                                    : "var(--muted-foreground)"
                                 }}
                               >
                                 {r.count}
@@ -650,9 +630,8 @@ export function ChatView({
                         <span
                           style={{
                             fontSize: "10px",
-                            color: "var(--muted-foreground)",
-                            fontFamily: "'Inter', sans-serif",
-                          }}
+                            color: "var(--muted-foreground)"
+                            }}
                         >
                           {msg.timeLabel}
                         </span>
@@ -661,9 +640,8 @@ export function ChatView({
                             style={{
                               fontSize: "10px",
                               color: "var(--muted-foreground)",
-                              fontStyle: "italic",
-                              fontFamily: "'Inter', sans-serif",
-                            }}
+                              fontStyle: "italic"
+                              }}
                           >
                             (edited)
                           </span>

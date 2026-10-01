@@ -11,23 +11,23 @@
  */
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, Lock, Users } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/app/components/ui/avatar';
-import { Badge } from '@/app/components/ui/badge';
-import { Button } from '@/app/components/ui/button';
+import { cn } from '@/crd/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
+import { Badge } from '@/crd/primitives/badge';
+import { Button } from '@/crd/primitives/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
+  DialogTitle
+} from '@/crd/primitives/dialog';
 import {
   type CalloutFormData,
   type CalloutFormResponse,
   findAnswer,
-  sortedQuestions,
+  sortedQuestions
 } from './calloutFormTypes';
 
 type FormResponsesDialogProps = {
@@ -56,7 +56,7 @@ export function FormResponsesDialog({
   form,
   responses,
   currentUserId,
-  isRestricted,
+  isRestricted
 }: FormResponsesDialogProps) {
   const questions = sortedQuestions(form);
   const [expandedId, setExpandedId] = useState<string | null>(null);

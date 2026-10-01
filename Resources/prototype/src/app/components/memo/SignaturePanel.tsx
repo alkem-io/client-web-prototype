@@ -13,8 +13,8 @@
  * than to argue for it.
  */
 import { PanelRightClose, ShieldCheck } from "lucide-react";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { cn } from "@/lib/utils";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { cn } from "@/crd/lib/utils";
 import { SignMemoButton } from "./SignMemoButton";
 import { SignedCopyCard } from "./SignedCopyCard";
 import type { SignedCopy, Signer } from "./signingData";
@@ -34,7 +34,7 @@ export function SignaturePanel({
   currentUser,
   onSign,
   onCollapse,
-  className,
+  className
 }: SignaturePanelProps) {
   const alreadySigned = copies.some(c => c.signer.id === currentUser.id);
   const allVerified = copies.length > 0 && copies.every(c => c.verification === "verified");

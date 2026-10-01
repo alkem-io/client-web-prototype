@@ -16,17 +16,17 @@ import {
  FileText,
  MessageSquare
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { Input } from "@/app/components/ui/input";
-import { Badge } from "@/app/components/ui/badge";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { Input } from "@/crd/primitives/input";
+import { Badge } from "@/crd/primitives/badge";
 import { 
  DropdownMenu, 
  DropdownMenuContent, 
  DropdownMenuItem, 
  DropdownMenuTrigger,
  DropdownMenuSeparator
-} from "@/app/components/ui/dropdown-menu";
+} from "@/crd/primitives/dropdown-menu";
 import {
  Dialog,
  DialogContent,
@@ -34,10 +34,10 @@ import {
  DialogFooter,
  DialogHeader,
  DialogTitle,
- DialogTrigger,
-} from "@/app/components/ui/dialog";
-import { Separator } from "@/app/components/ui/separator";
-import { cn } from "@/lib/utils";
+ DialogTrigger
+} from "@/crd/primitives/dialog";
+import { Separator } from "@/crd/primitives/separator";
+import { cn } from "@/crd/lib/utils";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 import { SubspaceFormBuilderDialog } from "@/app/components/dialogs/SubspaceFormBuilderDialog";
@@ -141,7 +141,7 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  description: "The name of your initiative",
  required: true,
  order: 0,
- constraints: { maxLength: 80 },
+ constraints: { maxLength: 80 }
  },
  {
  id: "initiating-municipality",
@@ -149,7 +149,7 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  label: "Initiating Municipality",
  required: true,
  order: 1,
- constraints: { maxLength: 80 },
+ constraints: { maxLength: 80 }
  },
  {
  id: "first-lead",
@@ -158,7 +158,7 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  description: "Your contact details",
  required: true,
  order: 2,
- constraints: { fields: ["name", "email", "organization"] },
+ constraints: { fields: ["name", "email", "organization"] }
  },
  {
  id: "second-lead",
@@ -167,7 +167,7 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  description: "Search for an existing member or invite someone new",
  required: false,
  order: 3,
- constraints: { allowManualEntry: true, allowEmailInvite: true },
+ constraints: { allowManualEntry: true, allowEmailInvite: true }
  },
  {
  id: "supporting-municipalities",
@@ -185,8 +185,8 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  { id: "den-haag", label: "Den Haag" },
  { id: "utrecht", label: "Utrecht" },
  { id: "eindhoven", label: "Eindhoven" },
- ],
- },
+ ]
+ }
  },
  {
  id: "who",
@@ -195,7 +195,7 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  description: "Describe the goal and target audience (max 250 words)",
  required: true,
  order: 5,
- constraints: { maxWords: 250 },
+ constraints: { maxWords: 250 }
  },
  {
  id: "what-for",
@@ -203,7 +203,7 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  label: "WHAT FOR? Strategic Contribution",
  required: true,
  order: 6,
- constraints: { maxWords: 250 },
+ constraints: { maxWords: 250 }
  },
  {
  id: "why",
@@ -211,7 +211,7 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  label: "WHY? Urgency and Value",
  required: true,
  order: 7,
- constraints: { maxWords: 250 },
+ constraints: { maxWords: 250 }
  },
  {
  id: "how",
@@ -219,7 +219,7 @@ const DEFAULT_FORM_QUESTIONS: FormField[] = [
  label: "HOW? Development and Scaling",
  required: true,
  order: 8,
- constraints: { maxWords: 250 },
+ constraints: { maxWords: 250 }
  },
 ];
 
@@ -258,10 +258,10 @@ export function SpaceSettingsSubspaces() {
  "who": "Exploring next-generation photovoltaic technologies and materials for sustainable energy.",
  "what-for": "Contributing to regional renewable energy goals and knowledge sharing across municipalities.",
  "why": "The urgency of accelerating solar adoption to meet climate targets.",
- "how": "Phased implementation with pilot projects and scaling to 10+ municipalities.",
+ "how": "Phased implementation with pilot projects and scaling to 10+ municipalities."
  },
  status: "submitted",
- submittedAt: "2026-06-28T10:30:00Z",
+ submittedAt: "2026-06-28T10:30:00Z"
  },
  ]);
 

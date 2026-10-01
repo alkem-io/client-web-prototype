@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 import { ChevronsRight } from "lucide-react";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { ActivityDot } from "@/app/components/shared/ActivityDot";
@@ -26,6 +26,12 @@ interface CalloutTabsProps {
   onTabChange: (id: string) => void;
   /** Space or subspace slug these phases belong to. Enables activity dots. */
   activityOwner?: string;
+  /**
+   * Right-aligned slot for the header action icons. CRD's headers render those
+   * `sm:hidden`, so on desktop production puts them in the tab row — this
+   * mirrors `SpaceNavigationTabs.action` in CRD.
+   */
+  action?: React.ReactNode;
 }
 
 export function CalloutTabs({
@@ -33,6 +39,7 @@ export function CalloutTabs({
   activeTab,
   onTabChange,
   activityOwner,
+  action
 }: CalloutTabsProps) {
   const { hasContainerActivity, visitContainer } = useActivityIndicators();
 
@@ -42,7 +49,7 @@ export function CalloutTabs({
   }, [activityOwner, activeTab, visitContainer]);
 
   return (
-    <nav className="w-full">
+    <nav className="w-full flex items-center justify-between gap-4">
       <div
         className="flex items-center gap-6 overflow-x-auto scrollbar-hide [-ms-overflow-style:none] [scrollbar-width:none] overscroll-x-contain"
         style={{ WebkitOverflowScrolling: "touch" }}
@@ -67,8 +74,7 @@ export function CalloutTabs({
                 )}
                 style={{
                   fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
-                  lineHeight: "20px",
+                  lineHeight: "20px"
                 }}
               >
               {tab.label}
@@ -78,6 +84,7 @@ export function CalloutTabs({
           );
         })}
       </div>
+      {action && <div className="shrink-0">{action}</div>}
     </nav>
   );
 }

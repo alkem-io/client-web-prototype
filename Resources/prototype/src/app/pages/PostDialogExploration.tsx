@@ -14,11 +14,11 @@ import {
   LayoutPanelTop,
   Palette,
   PanelBottomOpen,
-  SquareStack,
+  SquareStack
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
+import { Button } from "@/crd/primitives/button";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { AddPostDialogCompact } from "@/app/components/space/post-dialog-compact/AddPostDialogCompact";
 
@@ -29,7 +29,7 @@ const PRINCIPLES = [
     old: "The old dialog was warmer than today's, but it was still MUI grey: notched outlines, ALL-CAPS buttons, no colour anywhere.",
     now: "Uppercase micro-labels, and option names — “Tasks”, “Form” — that mean nothing until you hover for a tooltip.",
     change:
-      "The settings vocabulary, used with its own restraint: a tinted chip and a plain-word heading per *group*, one sentence of explanation, and a caption that names whatever option you are pointing at. Colour marks sections, never individual options — nine tinted tiles in a row was tried and read as noise.",
+      "The settings vocabulary, used with its own restraint: a tinted chip and a plain-word heading per *group*, one sentence of explanation, and a caption that names whatever option you are pointing at. Colour marks sections, never individual options — nine tinted tiles in a row was tried and read as noise."
   },
   {
     icon: ChevronsDownUp,
@@ -37,7 +37,7 @@ const PRINCIPLES = [
     old: "Choosing a collection type cost nothing: its settings opened elsewhere. The composer was the same height whether you added a whiteboard collection or nothing at all.",
     now: "Every choice expands a panel in place. Empty the current dialog is 625px of content; add a contributor block and a form and it is 1,359px, and 1,674px with More options open.",
     change:
-      "Same journey, 1,330px — and picking a response type adds nothing at all, because its settings are a stacked dialog.",
+      "Same journey, 1,330px — and picking a response type adds nothing at all, because its settings are a stacked dialog."
   },
   {
     icon: CircleDot,
@@ -45,7 +45,7 @@ const PRINCIPLES = [
     old: "A circle-and-label row with “None” selected by default. You could see it was a single choice, and that a choice had been made.",
     now: "Pill chips read as multi-select filters. Nothing communicates that picking Poll drops Whiteboard, and no state reads as “deliberately none”.",
     change:
-      "One control in both places — OptionTiles, a Radix radio group with arrow-key roving, a real aria-checked state and “None” always first. Comments is a yes/no, so it is a switch row, the way the settings pages write every binary.",
+      "One control in both places — OptionTiles, a Radix radio group with arrow-key roving, a real aria-checked state and “None” always first. Comments is a yes/no, so it is a switch row, the way the settings pages write every binary."
   },
   {
     icon: SquareStack,
@@ -53,7 +53,7 @@ const PRINCIPLES = [
     old: "“Collection Settings” opened stacked over the composer with its own Back / Save. The composer never changed height.",
     now: "Settings expand into a grey panel under the chip you just clicked. Choosing Form drops a whole questionnaire builder into the middle of the composer.",
     change:
-      "CollectionSettingsDialog and AttachmentSettingsDialog — transactional, Back discards, Save commits. Picking a type costs zero vertical space.",
+      "CollectionSettingsDialog and AttachmentSettingsDialog — transactional, Back discards, Save commits. Picking a type costs zero vertical space."
   },
   {
     icon: LayoutPanelTop,
@@ -61,7 +61,7 @@ const PRINCIPLES = [
     old: "Title* and Tags sat side by side in outlined fields — legible, but three boxes to fill in before you had written a word.",
     now: "Title is a borderless input styled like a heading, and tags are buried in “More options” where nobody finds them.",
     change:
-      "One quiet writing surface: a title line that shows a hairline once it has content, the editor, and a “# Add tags” row underneath. Tags are back where you can reach them, and nothing around the words is boxed.",
+      "One quiet writing surface: a title line that shows a hairline once it has content, the editor, and a “# Add tags” row underneath. Tags are back where you can reach them, and nothing around the words is boxed."
   },
   {
     icon: PanelBottomOpen,
@@ -69,7 +69,7 @@ const PRINCIPLES = [
     old: "A whiteboard preview appeared in the post body with Edit and delete on it; settings never did.",
     now: "Content and configuration both expand into the same grey panel, so a memo editor and a contributor query look alike.",
     change:
-      "If picking it gives you something to write (memo, media, document, whiteboard), you author it inline. If it gives you something to configure (poll, action, contributors, subspaces), the form opens stacked.",
+      "If picking it gives you something to write (memo, media, document, whiteboard), you author it inline. If it gives you something to configure (poll, action, contributors, subspaces), the form opens stacked."
   },
 ];
 

@@ -1,16 +1,16 @@
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
 import {
  Dialog,
  DialogContent,
  DialogTitle,
- DialogDescription,
-} from "@/app/components/ui/dialog";
-import { Input } from "@/app/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+ DialogDescription
+} from "@/crd/primitives/dialog";
+import { Input } from "@/crd/primitives/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { Search, Send, Plus, MoreVertical, Phone, Video } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface MessagesDialogProps {
  open: boolean;

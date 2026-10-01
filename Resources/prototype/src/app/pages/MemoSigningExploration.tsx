@@ -18,13 +18,13 @@ import {
   MapPin,
   PartyPopper,
   ShieldCheck,
-  SignpostBig,
+  SignpostBig
 } from "lucide-react";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
-import { Label } from "@/app/components/ui/label";
-import { Separator } from "@/app/components/ui/separator";
-import { Switch } from "@/app/components/ui/switch";
+import { Badge } from "@/crd/primitives/badge";
+import { Button } from "@/crd/primitives/button";
+import { Label } from "@/crd/primitives/label";
+import { Separator } from "@/crd/primitives/separator";
+import { Switch } from "@/crd/primitives/switch";
 import { MemoSignedDialog } from "@/app/components/memo/MemoSignedDialog";
 import { MemoSurfaceMock } from "@/app/components/memo/MemoSurfaceMock";
 import { SignMemoDialog } from "@/app/components/memo/SignMemoDialog";
@@ -43,7 +43,7 @@ const SCREENS = [
     step: "Before",
     title: "Sign this memo",
     now: "A 768px modal with the PDF at 52% inside the browser's viewer, the same instruction printed twice, and a button naming a company it never explains.",
-    next: "One wide dialog. The document takes the whole left side at a size where the browser opens it near 100%; the right rail says what pressing the button will do to you before you press it.",
+    next: "One wide dialog. The document takes the whole left side at a size where the browser opens it near 100%; the right rail says what pressing the button will do to you before you press it."
   },
   {
     icon: PartyPopper,
@@ -51,7 +51,7 @@ const SCREENS = [
     step: "The return",
     title: "It's signed",
     now: "Nothing lands. The confirmation only turns up once the memo has been closed and reopened, so the moment you came back for happens off-screen.",
-    next: "A one-shot celebration on return: the seal, the burst, and the copy you just made — shown with the same card the list uses, so the shape is already familiar next time.",
+    next: "A one-shot celebration on return: the seal, the burst, and the copy you just made — shown with the same card the list uses, so the shape is already familiar next time."
   },
   {
     icon: ShieldCheck,
@@ -59,7 +59,7 @@ const SCREENS = [
     step: "After",
     title: "Signed copies",
     now: "Lines of text, a machine timestamp, three identical ALL-CAPS buttons per row, and the verification result hidden behind the third one.",
-    next: "Signed copies as things you can see: a page thumbnail with a seal, the signer's face, a date in words, and the verdict already on the card when the list opens.",
+    next: "Signed copies as things you can see: a page thumbnail with a seal, the signer's face, a date in words, and the verdict already on the card when the list opens."
   },
 ];
 
@@ -69,35 +69,35 @@ const PRINCIPLES = [
     title: "The document gets the room",
     old: "715×480 of modal, of which the PDF got a 480px box — so the browser opened the page at 52% and the widest thing on screen was a toolbar of controls nobody needs here.",
     change:
-      "The embed cannot be replaced — it is the browser's viewer, toolbar and all. What a bigger frame buys is the page opening near 100%, which turns the toolbar from the headline into a strip along the top.",
+      "The embed cannot be replaced — it is the browser's viewer, toolbar and all. What a bigger frame buys is the page opening near 100%, which turns the toolbar from the headline into a strip along the top."
   },
   {
     icon: SignpostBig,
     title: "Say what the button does before it does it",
     old: "\"Continue to Cleverbase\" named a company, not an outcome. Nothing said you would leave Alkemio, be asked to prove your identity, and come back.",
     change:
-      "Three steps in the settings pages' vocabulary — tinted chip, plain-word heading, one sentence each. Go, prove it's you, land back here. About a minute.",
+      "Three steps in the settings pages' vocabulary — tinted chip, plain-word heading, one sentence each. Go, prove it's you, land back here. About a minute."
   },
   {
     icon: CheckCircle2,
     title: "Answer the question the screen exists for",
     old: "Is this signature good? You could only find out by pressing VERIFY SIGNATURE on each row and reading a bare line of text underneath it.",
     change:
-      "Every copy is checked as the list opens and the verdict is the first thing on the card — with one strip at the top for the answer most people came for: all of them check out.",
+      "Every copy is checked as the list opens and the verdict is the first thing on the card — with one strip at the top for the answer most people came for: all of them check out."
   },
   {
     icon: MapPin,
     title: "A fact is not a command",
     old: "Signed copies sat in the title bar as an outlined button beside Sign memo — a thing you can read about the document, dressed as a thing to do to it.",
     change:
-      "It moves into the byline with the document's other facts, as a quiet text button with the signers' faces. Sign memo stays in the bar and stops competing.",
+      "It moves into the byline with the document's other facts, as a quiet text button with the signers' faces. Sign memo stays in the bar and stops competing."
   },
   {
     icon: ShieldCheck,
     title: "Never hide the button from the people who haven't set it up",
     old: "No linked Cleverbase account meant no button — so the only people who could learn the feature exists were the ones who had already found it.",
     change:
-      "Always shown when signing is on for the space. Without a linked account it is aria-disabled (still focusable, so keyboards reach the explanation) and carries a hover card with a link to the docs — a tooltip cannot hold a link.",
+      "Always shown when signing is on for the space. Without a linked account it is aria-disabled (still focusable, so keyboards reach the explanation) and carries a hover card with a link to the docs — a tooltip cannot hold a link."
   },
 ];
 

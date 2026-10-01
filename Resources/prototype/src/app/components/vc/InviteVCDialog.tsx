@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/crd/primitives/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Input } from "@/app/components/ui/input";
-import { Textarea } from "@/app/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
+  DialogTitle
+} from "@/crd/primitives/dialog";
+import { Input } from "@/crd/primitives/input";
+import { Textarea } from "@/crd/primitives/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
 import { Search, ChevronLeft, Bot, ExternalLink, Loader2, MapPin, Brain } from "lucide-react";
 import { VirtualContributor, MOCK_VC_LIBRARY } from "./VirtualContributor";
 import { VCLibraryCard } from "./VCLibraryCard";
@@ -32,7 +32,7 @@ export function InviteVCDialog({
   open,
   onOpenChange,
   existingVCIds = [],
-  onInvite,
+  onInvite
 }: InviteVCDialogProps) {
   const [currentView, setCurrentView] = useState<InviteVCView>("library");
   const [direction, setDirection] = useState<"forward" | "back">("forward");
@@ -191,7 +191,7 @@ export function InviteVCDialog({
             <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
               <Avatar className="w-8 h-8">
                 <AvatarImage src={selectedVC.host.avatarUrl} alt={selectedVC.host.name} />
-                <AvatarFallback className="text-xs">{selectedVC.host.name[0]}</AvatarFallback>
+                <AvatarFallback className="text-caption">{selectedVC.host.name[0]}</AvatarFallback>
               </Avatar>
               <div>
                 <p className="text-caption font-medium text-foreground">Hosted by</p>
@@ -249,7 +249,7 @@ export function InviteVCDialog({
             <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
               <Avatar className="w-10 h-10">
                 <AvatarImage src={selectedVC.avatarUrl} alt={selectedVC.name} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                <AvatarFallback className="bg-primary/10 text-primary text-caption">
                   <Bot className="w-5 h-5" />
                 </AvatarFallback>
               </Avatar>

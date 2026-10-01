@@ -9,7 +9,7 @@ import {
   defaultBaseline,
   descendantContainers,
   type ContainerId,
-  type ItemId,
+  type ItemId
 } from "@/app/data/activity-data";
 
 const ENABLED_KEY = "alkemio-activity-enabled";
@@ -54,7 +54,7 @@ const ActivityIndicatorsContext = createContext<ActivityIndicatorsValue>({
   visitContainer: () => {},
   markItemSeen: () => {},
   markAllRead: () => ({ cleared: 0, undo: () => {} }),
-  resetAll: () => {},
+  resetAll: () => {}
 });
 
 export function ActivityIndicatorsProvider({ children }: { children: React.ReactNode }) {
@@ -63,7 +63,7 @@ export function ActivityIndicatorsProvider({ children }: { children: React.React
   );
   const [state, setState] = useState<ReadState>(() => ({
     visits: readJson<Visits>(VISITS_KEY, {}),
-    seen: readJson<string[]>(SEEN_KEY, []),
+    seen: readJson<string[]>(SEEN_KEY, [])
   }));
   const [baseline] = useState(() => {
     const stored = localStorage.getItem(BASELINE_KEY);
@@ -193,7 +193,7 @@ export function ActivityIndicatorsProvider({ children }: { children: React.React
       visitContainer,
       markItemSeen,
       markAllRead,
-      resetAll,
+      resetAll
     }),
     [
       enabled,

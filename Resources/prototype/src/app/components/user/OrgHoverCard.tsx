@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/app/components/ui/hover-card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { MapPin } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 export interface OrgHoverCardData {
   name: string;
@@ -32,7 +32,7 @@ export function OrgHoverCard({
   sideOffset = 8,
   align = "center",
   openDelay = 200,
-  closeDelay = 0,
+  closeDelay = 0
 }: OrgHoverCardProps) {
   const profileUrl = org.profileUrl || `/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`;
   const visibleTags = org.tags?.slice(0, MAX_VISIBLE_TAGS) ?? [];
@@ -58,7 +58,7 @@ export function OrgHoverCard({
                 className="w-14 h-14 shrink-0"
                 style={{
                   borderRadius: "var(--radius)",
-                  border: "1px solid var(--border)",
+                  border: "1px solid var(--border)"
                 }}
               >
                 {org.avatarUrl && (
@@ -73,7 +73,7 @@ export function OrgHoverCard({
                   style={{
                     borderRadius: "var(--radius)",
                     background: "color-mix(in srgb, var(--info) 15%, transparent)",
-                    color: "var(--info)",
+                    color: "var(--info)"
                   }}
                 >
                   {org.initials || org.name.substring(0, 2).toUpperCase()}

@@ -1,36 +1,35 @@
 import { useState, useCallback } from "react";
 import { useParams } from "react-router";
 import { Lightbulb, Plus, MoreHorizontal, Trash2, Eye, Search, ChevronDown, ChevronRight, Check, Loader2, Pencil, Upload, X, Layers } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
-import { Switch } from "@/app/components/ui/switch";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
+import { Switch } from "@/crd/primitives/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu";
+  DropdownMenuTrigger
+} from "@/crd/primitives/dropdown-menu";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/app/components/ui/collapsible";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+  CollapsibleTrigger
+} from "@/crd/primitives/collapsible";
 
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { CreateClassificationTemplateDialog } from "@/app/components/classifications/CreateClassificationTemplateDialog";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 // ─── Mock Data ───────────────────────────────────────────────────────────────
 
@@ -46,7 +45,7 @@ const PACK_DATA = {
   references: [
     { title: "Sprint Book", url: "https://www.thesprintbook.com" },
     { title: "GV Design Sprint", url: "https://designsprintkit.withgoogle.com" },
-  ],
+  ]
 };
 
 const PACK_TEMPLATES = [
@@ -143,7 +142,7 @@ function PackSettingsAbout() {
     tags: PACK_DATA.tags,
     listedInStore: PACK_DATA.listedInStore,
     searchVisibility: PACK_DATA.searchVisibility,
-    references: PACK_DATA.references,
+    references: PACK_DATA.references
   });
   const [savedData, setSavedData] = useState({ ...formData });
   const [tagInput, setTagInput] = useState("");
@@ -154,7 +153,7 @@ function PackSettingsAbout() {
     description: formData.description !== savedData.description,
     tags: JSON.stringify(formData.tags) !== JSON.stringify(savedData.tags),
     visibility: formData.listedInStore !== savedData.listedInStore || formData.searchVisibility !== savedData.searchVisibility,
-    references: JSON.stringify(formData.references) !== JSON.stringify(savedData.references),
+    references: JSON.stringify(formData.references) !== JSON.stringify(savedData.references)
   };
 
   const saveSection = (id: string) => {
@@ -189,15 +188,6 @@ function PackSettingsAbout() {
 
   const removeReference = (index: number) => {
     setFormData(prev => ({ ...prev, references: prev.references.filter((_, i) => i !== index) }));
-  };
-
-  const quillModules = {
-    toolbar: [
-      ['bold', 'italic', 'underline'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['link', 'blockquote'],
-      ['clean']
-    ],
   };
 
   return (
@@ -290,12 +280,10 @@ function PackSettingsAbout() {
           <Label className="text-label uppercase text-muted-foreground">Description</Label>
           <InlineSaveButton dirty={dirty.description} status={statuses["description"] || "idle"} onSave={() => saveSection("description")} />
         </div>
-        <div className="[&_.ql-editor]:min-h-[120px]">
-          <ReactQuill
-            theme="snow"
+        <div className="[&_.ProseMirror]:min-h-[120px]">
+          <MarkdownEditor
             value={formData.description}
             onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
-            modules={quillModules}
           />
         </div>
       </section>
@@ -595,7 +583,7 @@ export default function PackSettingsPage() {
               style={{
                 background: "var(--card)",
                 border: "1px solid var(--border)",
-                borderRadius: "var(--radius)",
+                borderRadius: "var(--radius)"
               }}
             >
               <div className="space-y-10">

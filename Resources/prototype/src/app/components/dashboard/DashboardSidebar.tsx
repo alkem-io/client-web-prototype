@@ -1,22 +1,38 @@
-import { useState } from "react";
-import {
-  Rocket,
-  Mail,
-  Lightbulb,
-  Bot,
-  Tag,
-  Eye,
-} from "lucide-react";
-import { Link, useLocation } from "react-router";
-import { cn } from "@/lib/utils";
-import { Switch } from "@/app/components/ui/switch";
-import { Avatar, AvatarFallback } from "@/app/components/ui/avatar";
-import { InvitationsDialog } from "@/app/components/dialogs/InvitationsDialog";
-import { CreateSpaceDialogV3 } from "@/app/components/dialogs/CreateSpaceDialogV3";
-import { useLanguage } from "@/app/contexts/LanguageContext";
-import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { ActivityDot } from "@/app/components/shared/ActivityDot";
-import { spaceContainer } from "@/app/data/activity-data";
+/**
+ * Dashboard sidebar — production's `@/crd/components/dashboard/DashboardSidebar`.
+ *
+ * This file is now only data + behaviour wiring: it holds the prototype's mock
+ * menu, spaces and virtual contributors, maps them to CRD's exported
+ * `SidebarMenuItemData` / `SidebarResourceSection`, and owns the two dialogs
+ * the menu opens.
+ *
+ * Two things deliberately live *outside* CRD's component:
+ *
+ * - The New User View / Has Pending switches are prototype demo controls, not
+ *   design. They drive which dashboard variant is on screen so the empty and
+ *   pending states can be shown without a backend. They render in their own
+ *   labelled block below the sidebar rather than being smuggled into CRD's.
+ * - `sticky top-20` is gone. Production's `DashboardLayout` renders the sidebar
+ *   in a plain `<nav className="hidden md:block">` that scrolls with the page,
+ *   and it also supplies the `<nav>` element — so this component returns a
+ *   fragment, not a nav.
+ *
+ * PHASE 1 REMOVALS — recorded in PHASE-2.md §1:
+ *   · the activity dot beside each space name (CRD renders the name; no slot)
+ *   · the Bot glyph on virtual contributors (`SidebarResourceItem` takes
+ *     `initials` or an image, not an icon)
+ *   · the active-route highlight on menu rows (CRD's rows have no active state)
+ */
+import { useState } from 'react';
+import { DashboardSidebar as CrdDashboardSidebar } from '@/crd/components/dashboard/DashboardSidebar';
+import type {
+  SidebarMenuItemData,
+  SidebarResourceSection,
+} from '@/crd/components/dashboard/DashboardSidebar';
+import { Switch } from '@/crd/primitives/switch';
+import { InvitationsDialog } from '@/app/components/dialogs/InvitationsDialog';
+import { CreateSpaceDialogV3 } from '@/app/components/dialogs/CreateSpaceDialogV3';
+import { useLanguage } from '@/app/contexts/LanguageContext';
 
 interface DashboardSidebarProps {
   activityView: boolean;
@@ -27,188 +43,114 @@ interface DashboardSidebarProps {
   onToggleHasPending: (value: boolean) => void;
 }
 
-export function DashboardSidebar({ activityView, onToggleView, newUserView, onToggleNewUserView, hasPending, onToggleHasPending }: DashboardSidebarProps) {
+const MY_SPACES: SidebarResourceSection = {
+  title: 'My Spaces',
+  // Space avatars are rounded squares everywhere in production — the circle is
+  // reserved for people. CRD exposes that as `square`.
+  square: true,
+  items: [
+    {
+      id: 'green-energy',
+      name: 'Green Energy Space',
+      href: '/space/green-energy',
+      initials: 'GE',
+      avatarUrl:
+        'https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100',
+    },
+    {
+      id: 'community-garden',
+      name: 'Community Garden',
+      href: '/space/community-garden',
+      initials: 'CG',
+      avatarUrl:
+        'https://images.unsplash.com/photo-1768659347532-74d3b1efb0ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100',
+    },
+    {
+      id: 'digital-trans',
+      name: 'Digital Transformation',
+      href: '/space/digital-trans',
+      initials: 'DT',
+      avatarUrl:
+        'https://images.unsplash.com/photo-1676276376052-dc9c9c0b6917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100',
+    },
+  ],
+};
+
+const VIRTUAL_CONTRIBUTORS: SidebarResourceSection = {
+  title: 'Virtual Contributors',
+  items: [
+    { id: 'softmann', name: 'Softmann', href: '/vc/softmann', initials: 'SM' },
+    {
+      id: 'collaboration-methodologist',
+      name: 'The Collaboration Methodologist',
+      href: '/vc/collaboration-methodologist',
+      initials: 'CM',
+    },
+  ],
+};
+
+export function DashboardSidebar({
+  activityView,
+  onToggleView,
+  newUserView,
+  onToggleNewUserView,
+  hasPending,
+  onToggleHasPending,
+}: DashboardSidebarProps) {
   const [showInvitations, setShowInvitations] = useState(false);
   const [showCreateSpace, setShowCreateSpace] = useState(false);
-  const location = useLocation();
   const { t } = useLanguage();
-  const { hasContainerActivity } = useActivityIndicators();
 
-  const navItems: Array<{
-    icon: React.ElementType;
-    label: string;
-    href?: string;
-    onClick?: () => void;
-    badge?: number;
-  }> = [
+  // `iconName` is a key into CRD's own icon map — the design system decides
+  // which glyph each row gets, so the prototype cannot pass an arbitrary icon.
+  const menuItems: SidebarMenuItemData[] = [
     {
-      icon: Mail,
-      label: t("nav.invitations"),
+      id: 'invitations',
+      label: t('nav.invitations'),
+      iconName: 'Mail',
       onClick: () => setShowInvitations(true),
-      badge: 2,
+      badgeCount: 2,
     },
-    { icon: Rocket, label: "Create my own Space", onClick: () => setShowCreateSpace(true) },
-    { icon: Lightbulb, label: "Tips & Tricks", href: "#" },
-    { icon: Lightbulb, label: "Template Library", href: "/templates" },
-    { icon: Tag, label: "My Account", href: "/user/alex-rivera/settings/account" },
-  ];
-
-  const spaces = [
-    { name: "Green Energy Space", initials: "GE", href: "/space/green-energy", bannerImage: "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100" },
-    { name: "Community Garden", initials: "CG", href: "/space/community-garden", bannerImage: "https://images.unsplash.com/photo-1768659347532-74d3b1efb0ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100" },
-    { name: "Digital Transformation", initials: "DT", href: "/space/digital-trans", bannerImage: "https://images.unsplash.com/photo-1676276376052-dc9c9c0b6917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=100" },
-  ];
-
-  const virtualContributors = [
-    { name: "Softmann", initials: "SM", slug: "softmann" },
-    { name: "The Collaboration Methodologist", initials: "CM", slug: "collaboration-methodologist" },
+    {
+      id: 'create-space',
+      label: 'Create my own Space',
+      iconName: 'Rocket',
+      onClick: () => setShowCreateSpace(true),
+    },
+    { id: 'tips', label: 'Tips & Tricks', iconName: 'Lightbulb', href: '#' },
+    { id: 'templates', label: 'Template Library', iconName: 'Lightbulb', href: '/templates' },
+    { id: 'account', label: 'My Account', iconName: 'Tag', href: '/user/alex-rivera/settings/account' },
   ];
 
   return (
-    <nav className="sticky top-20 space-y-6">
-      {/* Nav items */}
-      <div className="space-y-1">
-        {navItems.map((item) => {
-          const isActive = item.href && location.pathname === item.href;
-          const commonClasses = cn(
-            "flex items-center justify-between rounded-md transition-colors h-9 w-full px-2 text-control",
-            isActive
-              ? "bg-accent text-accent-foreground"
-              : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-          );
+    <>
+      <CrdDashboardSidebar
+        menuItems={menuItems}
+        resourceSections={[MY_SPACES, VIRTUAL_CONTRIBUTORS]}
+        activityEnabled={activityView}
+        onActivityToggle={onToggleView}
+      />
 
-          const content = (
-            <>
-              <div className="flex items-center gap-2.5 min-w-0">
-                <item.icon className="w-4 h-4 shrink-0" />
-                <span className="truncate text-control">{item.label}</span>
-              </div>
-              {item.badge && (
-                <span className="rounded-full bg-primary text-primary-foreground text-badge font-bold px-1.5 py-px">
-                  {item.badge}
-                </span>
-              )}
-            </>
-          );
-
-          if (item.href) {
-            return (
-              <Link key={item.label} to={item.href} className={commonClasses}>
-                {content}
-              </Link>
-            );
-          }
-
-          return (
-            <button key={item.label} onClick={item.onClick} className={commonClasses} type="button">
-              {content}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Activity View toggle */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
-            <Eye className="w-4 h-4" />
-            <span>{t("nav.activityView")}</span>
-          </div>
-          <Switch
-            id="activity-view"
-            checked={activityView}
-            onCheckedChange={onToggleView}
-          />
+      {/* Prototype demo controls — no production equivalent. */}
+      <div className="mt-6 space-y-3 border-t border-border pt-4">
+        <div className="flex items-center gap-2 px-2">
+          <Switch id="new-user-view" checked={newUserView} onCheckedChange={onToggleNewUserView} />
+          <label htmlFor="new-user-view" className="text-caption cursor-pointer text-muted-foreground">
+            New User View
+          </label>
         </div>
-
-        {/* New User View toggle */}
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
-            <Eye className="w-4 h-4" />
-            <span className="text-xs">New User View</span>
-          </div>
-          <Switch
-            id="new-user-view"
-            checked={newUserView}
-            onCheckedChange={onToggleNewUserView}
-          />
-        </div>
-
-        {/* Has Pending toggle (only visible when new user view is on) */}
         {newUserView && (
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-2 text-body-emphasis text-muted-foreground">
-            <Eye className="w-4 h-4" />
-            <span className="text-xs">Has Pending</span>
+          <div className="flex items-center gap-2 px-2">
+            <Switch id="has-pending" checked={hasPending} onCheckedChange={onToggleHasPending} />
+            <label htmlFor="has-pending" className="text-caption cursor-pointer text-muted-foreground">
+              Has Pending
+            </label>
           </div>
-          <Switch
-            id="has-pending"
-            checked={hasPending}
-            onCheckedChange={onToggleHasPending}
-          />
-        </div>
         )}
-      </div>
-
-      {/* My Spaces */}
-      <div>
-        <div className="text-sidebar-label uppercase px-2 mb-2 text-muted-foreground/50">
-          {t("nav.mySpaces")}
-        </div>
-        <div className="space-y-1">
-          {spaces.map((space) => {
-            const slug = space.href.replace("/space/", "");
-            const hasActivity = hasContainerActivity(spaceContainer(slug));
-            return (
-            <Link
-              key={space.href}
-              to={space.href}
-              className="flex items-center gap-2.5 rounded-md transition-colors h-9 px-2 text-control text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-            >
-              {space.bannerImage ? (
-                <div className="w-6 h-6 rounded-md shrink-0 overflow-hidden">
-                  <img src={space.bannerImage} alt={space.name} className="w-full h-full object-cover" />
-                </div>
-              ) : (
-                <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 bg-primary/10 text-primary text-badge font-bold">
-                  {space.initials}
-                </div>
-              )}
-              <span className="truncate">{space.name}</span>
-              {hasActivity && (
-                <ActivityDot className="ml-auto mr-1" label={`${space.name} has new activity`} />
-              )}
-            </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Virtual Contributors */}
-      <div>
-        <div className="text-sidebar-label uppercase px-2 mb-2 text-muted-foreground/50">
-          Virtual Contributors
-        </div>
-        <div className="space-y-1">
-          {virtualContributors.map((vc) => (
-            <Link
-              key={vc.name}
-              to={`/vc/${vc.slug}`}
-              className="flex items-center gap-2.5 rounded-md transition-colors h-9 px-2 w-full text-control text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-            >
-              <Avatar className="w-6 h-6 shrink-0">
-                <AvatarFallback className="text-badge font-bold bg-chart-2/15 text-chart-2">
-                  <Bot className="w-3.5 h-3.5" />
-                </AvatarFallback>
-              </Avatar>
-              <span className="truncate">{vc.name}</span>
-            </Link>
-          ))}
-        </div>
       </div>
 
       <InvitationsDialog open={showInvitations} onOpenChange={setShowInvitations} />
       <CreateSpaceDialogV3 open={showCreateSpace} onOpenChange={setShowCreateSpace} />
-    </nav>
+    </>
   );
 }

@@ -11,18 +11,18 @@ import {
   Target,
   Info,
   GripVertical,
-  LayoutGrid,
+  LayoutGrid
 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { cn } from "@/lib/utils";
+  DialogDescription
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Checkbox } from "@/crd/primitives/checkbox";
+import { cn } from "@/crd/lib/utils";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types — shared by Space (per tab) and Subspace (one set for the whole subspace)
@@ -103,7 +103,7 @@ export type SpaceTabKey = "home" | "community" | "subspaces" | "knowledge";
 const SPACE_TAB_OVERRIDES: Record<string, Partial<Record<string, boolean>>> = {
   community: { createSubspace: false, subspaceLinks: false },
   subspaces: { addUser: false },
-  knowledge: { addUser: false, createSubspace: false, subspaceLinks: false },
+  knowledge: { addUser: false, createSubspace: false, subspaceLinks: false }
 };
 
 export function spaceTabDefaults(tabId: string): SidebarWidgetConfig {
@@ -201,7 +201,7 @@ export function SidebarWidgetsDialog({
   description,
   defs,
   config,
-  onSave,
+  onSave
 }: SidebarWidgetsDialogProps) {
   // Buffer the edits so Cancel can walk away from them.
   const [draft, setDraft] = useState<SidebarWidgetConfig>(config);

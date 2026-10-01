@@ -3,11 +3,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/app/components/ui/dialog";
-import { Input } from "@/app/components/ui/input";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
+  DialogDescription
+} from "@/crd/primitives/dialog";
+import { Input } from "@/crd/primitives/input";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
 import { 
   Search, 
   X, 
@@ -31,16 +31,16 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useState, useMemo } from "react";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/app/components/ui/badge";
-import { Separator } from "@/app/components/ui/separator";
+import { cn } from "@/crd/lib/utils";
+import { Badge } from "@/crd/primitives/badge";
+import { Separator } from "@/crd/primitives/separator";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 interface ExploreSpacesDialogProps {
   open: boolean;

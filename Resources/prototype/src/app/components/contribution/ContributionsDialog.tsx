@@ -12,17 +12,17 @@
  * room is the whole improvement.
  */
 import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/app/components/ui/badge';
-import { Button } from '@/app/components/ui/button';
+import { cn } from '@/crd/lib/utils';
+import { Badge } from '@/crd/primitives/badge';
+import { Button } from '@/crd/primitives/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
+  DialogTitle
+} from '@/crd/primitives/dialog';
 
 type ContributionsDialogProps = {
   open: boolean;
@@ -50,7 +50,7 @@ export function ContributionsDialog({
   count,
   layout = 'grid',
   onAddClick,
-  addLabel,
+  addLabel
 }: ContributionsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

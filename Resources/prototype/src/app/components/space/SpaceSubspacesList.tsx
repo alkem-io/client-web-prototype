@@ -1,10 +1,31 @@
-import { useState } from "react";
-import { useParams } from "react-router";
-import { Plus, Folder } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { SpaceCard, type SpaceCardData } from "@/app/components/space/SpaceCard";
-import { cn } from "@/lib/utils";
-import { useSpaceFilters } from "@/app/components/space/FilterContext";
+/**
+ * Subspaces — a **spaces callout**.
+ *
+ * Production does not render a bespoke subspaces block. Subspaces are one of
+ * the framing types a callout can have (CRD's `PostType` has `spaces`, and
+ * `CalloutDetailDialog` has a `spacesFramingSlot`), so this is a post whose
+ * body is the collection.
+ *
+ * `PostCard` renders that framing through `children`; `SpaceCollection` is the
+ * body — itself a thin wrapper over `SpaceSubspacesList` whose own docs say it
+ * "replaces the hard-coded subspaces block".
+ *
+ * CRD owns the search field, the tag filter popover, the status pills, the
+ * active-filter summary, the card grid and show-more. This file is the
+ * prototype's fixtures mapped to `SpaceCardData`.
+ *
+ * The prototype's sidebar search no longer drives this block, which matches
+ * production: the sidebar search filters which callouts appear, and each
+ * collection filters within itself.
+ *
+ * Gone with the conversion: the list/grid toggle. It read `viewMode` from a
+ * context that never provided the field, so the list branch was unreachable —
+ * every render was already a grid.
+ */
+import { useNavigate, useParams } from 'react-router';
+import { SpaceCollection } from '@/crd/components/callout/SpaceCollection/SpaceCollection';
+import { PostCard } from '@/app/components/space/PostCard';
+import { toSpaceCard, type MockSpaceCard } from '@/app/mappers/spaceCard';
 
 // Subspace avatar colors
 const SUBSPACE_COLORS = [
@@ -19,8 +40,8 @@ const SUBSPACE_COLORS = [
 // Parent space banner for avatar derivation
 const PARENT_BANNER = "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400";
 
-// Mock Data — mapped to SpaceCardData format
-const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = [
+// Mock Data — mapped to MockSpaceCard format
+const SUBSPACES: (MockSpaceCard & { status: string; filterTags: string[] })[] = [
   {
     id: "sub-1",
     slug: "renewable-energy-transition",
@@ -38,7 +59,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     leads: [
       { name: "Sarah Chen", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
       { name: "Green Future Org", avatar: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
-    ],
+    ]
   },
   {
     id: "sub-2",
@@ -56,7 +77,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     filterTags: ["Active", "Planning"],
     leads: [
       { name: "David Kim", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
-    ],
+    ]
   },
   {
     id: "sub-3",
@@ -76,7 +97,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
       { name: "Emily Davis", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
       { name: "City Planning Dept", avatar: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
       { name: "James Wilson", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
-    ],
+    ]
   },
   {
     id: "sub-4",
@@ -94,7 +115,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     filterTags: ["Archived"],
     leads: [
       { name: "Policy Institute", avatar: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
-    ],
+    ]
   },
   {
     id: "sub-5",
@@ -113,7 +134,7 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     leads: [
       { name: "Anna Martinez", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
       { name: "Local Council", avatar: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
-    ],
+    ]
   },
   {
     id: "sub-6",
@@ -132,103 +153,45 @@ const SUBSPACES: (SpaceCardData & { status: string; filterTags: string[] })[] = 
     leads: [
       { name: "Tech Innovations", avatar: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80", type: "org" },
       { name: "Robert Fox", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80", type: "person" },
-    ],
+    ]
   },
 ];
 
 export function SpaceSubspacesList() {
+  const navigate = useNavigate();
   const { spaceSlug } = useParams<{ spaceSlug: string }>();
-  const slug = spaceSlug || "default-space";
-  const [filter, setFilter] = useState("All");
-  const { searchValue, activeTags, viewMode: ctxViewMode } = useSpaceFilters();
-  const viewMode = ctxViewMode || "grid";
+  const slug = spaceSlug || 'default-space';
 
-  // Attach parent info so SpaceCard can build the correct subspace link
-  const subspacesWithParent = SUBSPACES.map((s) => ({
-    ...s,
-    parent: {
-      name: slug
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
-      slug,
-      bannerImage: PARENT_BANNER,
-      initials: slug.substring(0, 2).toUpperCase(),
-      avatarColor: "#2563eb",
-    },
-  }));
-
-  const filteredSubspaces = subspacesWithParent.filter((s) => {
-    // Status filter (local)
-    if (filter !== "All" && s.status !== filter) return false;
-    
-    // Search filter (from context)
-    const matchesSearch = !searchValue || 
-      s.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      s.description.toLowerCase().includes(searchValue.toLowerCase());
-    if (!matchesSearch) return false;
-    
-    // Tag filter (from context) — match against content tags on cards
-    const matchesTags = activeTags.length === 0 || activeTags.every((tag) => s.tags.includes(tag));
-    if (!matchesTags) return false;
-    
-    return true;
-  });
+  const subspaces = SUBSPACES.map(subspace =>
+    toSpaceCard(
+      {
+        ...subspace,
+        parent: {
+          name: slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+          slug,
+          bannerImage: PARENT_BANNER,
+          initials: slug.substring(0, 2).toUpperCase(),
+          avatarColor: '#2563eb',
+        },
+      },
+      slug
+    )
+  );
 
   return (
-    <div className="space-y-6" style={{ fontFamily: "'Inter', sans-serif" }}>
-      {/* Card Grid/List — uses the shared SpaceCard component */}
-      {filteredSubspaces.length > 0 ? (
-        <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" : "flex flex-col gap-3"}>
-          {filteredSubspaces.map((subspace) => (
-            <SpaceCard
-              key={subspace.id}
-              space={subspace}
-              compact={viewMode === "list"}
-            />
-          ))}
-        </div>
-      ) : (
-        <div
-          className="flex flex-col items-center justify-center py-16"
-          style={{
-            border: "2px dashed var(--border)",
-            borderRadius: "var(--radius)",
-          }}
-        >
-          <Folder
-            className="mb-3"
-            style={{
-              width: 40,
-              height: 40,
-              color: "var(--muted-foreground)",
-              opacity: 0.5,
-            }}
-          />
-          <h3
-            className="text-subsection-title font-medium"
-            style={{
-              color: "var(--foreground)",
-            }}
-          >
-            No subspaces found
-          </h3>
-          <p
-            className="text-body"
-            style={{
-              color: "var(--muted-foreground)",
-            }}
-          >
-            No subspaces match your current filter.
-          </p>
-          <Button
-            variant="link"
-            onClick={() => setFilter("All")}
-            className="mt-2"
-          >
-            Clear filters
-          </Button>
-        </div>
-      )}
-    </div>
+    <PostCard
+      post={{
+        id: 'callout-subspaces',
+        type: 'spaces',
+        title: 'Subspaces',
+        snippet: 'Focused collaboration areas within this space.',
+        author: { name: 'Elena Martinez' },
+        timestamp: '3 days ago',
+        commentCount: 0,
+      }}
+      reactionsEnabled={false}
+    >
+      <SpaceCollection subspaces={subspaces} onSubspaceClick={space => navigate(space.href)} />
+    </PostCard>
   );
 }

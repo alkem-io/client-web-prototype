@@ -1,6 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Badge } from "@/app/components/ui/badge";
-import { Card, CardContent } from "@/app/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Badge } from "@/crd/primitives/badge";
+import { Card, CardContent } from "@/crd/primitives/card";
 import { Users } from "lucide-react";
 
 interface OrganizationCardProps {

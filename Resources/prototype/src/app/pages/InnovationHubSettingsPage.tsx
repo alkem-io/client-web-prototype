@@ -12,15 +12,14 @@ import {
   Loader2,
   Pencil,
   GripVertical,
-  Minus,
+  Minus
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Separator } from "@/app/components/ui/separator";
-import { cn } from "@/lib/utils";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Separator } from "@/crd/primitives/separator";
+import { cn } from "@/crd/lib/utils";
+import { MarkdownEditor } from '@/crd/forms/markdown/MarkdownEditor';
 
 /* ─── Types ─── */
 type TabId = "about" | "spaces" | "settings" | "account";
@@ -34,7 +33,7 @@ const HUB_DATA = {
   description:
     'De <strong>open innovatiehub</strong> voor <strong>samenwerking tussen en voor de gemeentes</strong> in Nederland.<br/>Hier vind je communities die werken aan nieuwe vormen van publieke dienstverlening die aansluiten bij de leefwereld van mensen.<br/>Een plek waar de <strong>overheid, markt, wetenschap</strong> en <strong>samenleving</strong> samen kunnen werken aan <em>maatschappelijke missies</em>.',
   tags: ["gemeenten", "vng", "digitale twin"],
-  bannerImage: "/banners/vng-innovation-hub.png",
+  bannerImage: "/banners/vng-innovation-hub.png"
 };
 
 const AVAILABLE_SPACES = [
@@ -69,7 +68,7 @@ function useSectionSave() {
 function InlineSaveButton({
   dirty,
   status,
-  onSave,
+  onSave
 }: {
   dirty: boolean;
   status: SaveStatus;
@@ -130,7 +129,7 @@ function AboutTab() {
     tagline: formData.tagline !== savedData.tagline,
     description: formData.description !== savedData.description,
     tags: JSON.stringify(formData.tags) !== JSON.stringify(savedData.tags),
-    banner: false,
+    banner: false
   };
 
   const saveSection = (id: string) => {
@@ -156,15 +155,6 @@ function AboutTab() {
 
   const removeTag = (tag: string) => {
     setFormData((prev) => ({ ...prev, tags: prev.tags.filter((t) => t !== tag) }));
-  };
-
-  const quillModules = {
-    toolbar: [
-      ["bold", "italic", "underline"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      ["link", "blockquote", "code-block"],
-      ["clean"],
-    ],
   };
 
   return (
@@ -258,12 +248,10 @@ function AboutTab() {
       <section>
         <Label className="text-label uppercase text-muted-foreground">Description</Label>
         <div className="mt-2 space-y-2">
-          <ReactQuill
+          <MarkdownEditor
             value={formData.description}
             onChange={(v) => setFormData((prev) => ({ ...prev, description: v }))}
-            modules={quillModules}
-            theme="snow"
-            className="[&_.ql-container]:min-h-[120px] [&_.ql-editor]:min-h-[120px]"
+            className="[&_.ProseMirror]:min-h-[120px]"
           />
           <div className="flex items-center justify-end gap-2">
             <InlineSaveButton
@@ -290,7 +278,7 @@ function AboutTab() {
                 style={{
                   background: "color-mix(in srgb, var(--primary) 10%, var(--card))",
                   border: "1px solid color-mix(in srgb, var(--primary) 20%, var(--border))",
-                  color: "var(--foreground)",
+                  color: "var(--foreground)"
                 }}
               >
                 {tag}
@@ -309,7 +297,7 @@ function AboutTab() {
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleAddTag}
               placeholder="Type a tag and press Enter"
-              className="text-sm"
+              className="text-body"
             />
           </div>
           <div className="flex items-center justify-end gap-2">
@@ -449,7 +437,7 @@ function SpacesTab() {
                     color:
                       space.visibility === "ACTIVE"
                         ? "var(--chart-2)"
-                        : "var(--muted-foreground)",
+                        : "var(--muted-foreground)"
                   }}
                 >
                   {space.visibility}
@@ -671,7 +659,7 @@ export default function InnovationHubSettingsPage() {
               style={{
                 background: "var(--card)",
                 border: "1px solid var(--border)",
-                borderRadius: "var(--radius)",
+                borderRadius: "var(--radius)"
               }}
             >
               {tab === "about" ? (

@@ -28,7 +28,7 @@ const newSlot = (id: string, kind: Slot['kind'], w: number, h: number, box: Quad
   kind,
   width: w,
   height: h,
-  quad: box,
+  quad: box
 });
 
 export default function CalibratePage() {
@@ -131,7 +131,7 @@ export default function CalibratePage() {
                   style={{
                     borderColor: active === i ? 'var(--primary)' : 'var(--border)',
                     background: active === i ? 'var(--primary)' : 'var(--card)',
-                    color: active === i ? 'var(--primary-foreground)' : 'var(--foreground)',
+                    color: active === i ? 'var(--primary-foreground)' : 'var(--foreground)'
                   }}
                 >
                   {s.id}
@@ -174,7 +174,7 @@ export default function CalibratePage() {
                 width: size.width,
                 height: size.height,
                 transformOrigin: 'top left',
-                transform: `scale(${scale()})`,
+                transform: `scale(${scale()})`
               }}
             >
               <img src={src} alt="" width={size.width} height={size.height} draggable={false} />
@@ -197,7 +197,7 @@ export default function CalibratePage() {
                             'linear-gradient(rgba(29,56,74,.55) 1px, transparent 1px), linear-gradient(90deg, rgba(29,56,74,.55) 1px, transparent 1px)',
                           backgroundSize: `${slot.width / 8}px ${slot.height / 8}px`,
                           outline: '2px solid rgba(29,56,74,.8)',
-                          opacity: si === active ? 0.95 : 0.4,
+                          opacity: si === active ? 0.95 : 0.4
                         }}
                       />
                     ) : null}
@@ -220,7 +220,7 @@ export default function CalibratePage() {
                           border: '2px solid #fff',
                           background: si === active ? '#DC2626' : '#64748B',
                           boxShadow: '0 2px 6px rgba(0,0,0,.4)',
-                          cursor: 'grab',
+                          cursor: 'grab'
                         }}
                       />
                     ))}

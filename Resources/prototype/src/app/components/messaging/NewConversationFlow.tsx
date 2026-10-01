@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { ArrowLeft, X, Search, Check, MessageSquare, Users, Hash } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 import { ALL_USERS, CONVERSATIONS, type UserInfo, type Conversation } from "./messagingData";
 
 type Step = "choose" | "dm-search" | "group-select" | "group-name" | "space-browse";
@@ -13,7 +13,7 @@ interface NewConversationFlowProps {
 
 export function NewConversationFlow({
   onBack,
-  onOpenConversation,
+  onOpenConversation
 }: NewConversationFlowProps) {
   const [step, setStep] = useState<Step>("choose");
   const [search, setSearch] = useState("");
@@ -62,7 +62,7 @@ export function NewConversationFlow({
         style={{
           padding: "12px 16px",
           borderBottom: "1px solid var(--border)",
-          background: "var(--card)",
+          background: "var(--card)"
         }}
       >
         <button
@@ -84,9 +84,8 @@ export function NewConversationFlow({
         <span
           className="text-card-title"
           style={{
-            color: "var(--foreground)",
-            fontFamily: "'Inter', sans-serif",
-          }}
+            color: "var(--foreground)"
+            }}
         >
           {step === "choose" && "New Message"}
           {step === "dm-search" && "Direct Message"}
@@ -104,19 +103,19 @@ export function NewConversationFlow({
               icon: MessageSquare,
               label: "Direct Message",
               desc: "Send a private message to one person",
-              action: () => setStep("dm-search"),
+              action: () => setStep("dm-search")
             },
             {
               icon: Users,
               label: "New Group",
               desc: "Create a group chat with multiple people",
-              action: () => setStep("group-select"),
+              action: () => setStep("group-select")
             },
             {
               icon: Hash,
               label: "Space Channels",
               desc: "Browse your Space channels",
-              action: () => setStep("space-browse"),
+              action: () => setStep("space-browse")
             },
           ].map((item) => (
             <button
@@ -127,7 +126,7 @@ export function NewConversationFlow({
                 padding: "12px 14px",
                 border: "1px solid var(--border)",
                 background: "var(--card)",
-                borderRadius: "var(--radius)",
+                borderRadius: "var(--radius)"
               }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.background = "var(--accent)")
@@ -142,28 +141,26 @@ export function NewConversationFlow({
                   width: 36,
                   height: 36,
                   background: "var(--secondary)",
-                  color: "var(--foreground)",
+                  color: "var(--foreground)"
                 }}
               >
                 <item.icon style={{ width: 18, height: 18 }} />
               </div>
               <div className="min-w-0">
                 <span
-                  className="text-control"
+                  className="text-body"
                   style={{
                     color: "var(--foreground)",
-                    display: "block",
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    display: "block"
+                    }}
                 >
                   {item.label}
                 </span>
                 <span
                   className="text-caption"
                   style={{
-                    color: "var(--muted-foreground)",
-                    fontFamily: "'Inter', sans-serif",
-                  }}
+                    color: "var(--muted-foreground)"
+                    }}
                 >
                   {item.desc}
                 </span>
@@ -182,7 +179,7 @@ export function NewConversationFlow({
               style={{
                 background: "var(--input-background)",
                 border: "1px solid var(--border)",
-                borderRadius: "var(--radius)",
+                borderRadius: "var(--radius)"
               }}
             >
               <Search
@@ -191,7 +188,7 @@ export function NewConversationFlow({
                   left: 10,
                   width: 14,
                   height: 14,
-                  color: "var(--muted-foreground)",
+                  color: "var(--muted-foreground)"
                 }}
               />
               <input
@@ -203,9 +200,8 @@ export function NewConversationFlow({
                 className="w-full bg-transparent outline-none text-body"
                 style={{
                   padding: "8px 12px 8px 32px",
-                  color: "var(--foreground)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  color: "var(--foreground)"
+                  }}
               />
             </div>
           </div>
@@ -227,36 +223,31 @@ export function NewConversationFlow({
                   style={{
                     width: 36,
                     height: 36,
-                    border: "1px solid var(--border)",
+                    border: "1px solid var(--border)"
                   }}
                 >
                   <AvatarImage src={user.avatar} alt={user.name} />
                   <AvatarFallback
                     className="text-caption font-semibold"
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                    }}
-                  >
+                    >
                     {user.initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
                   <span
-                    className="text-control"
+                    className="text-body"
                     style={{
                       color: "var(--foreground)",
-                      display: "block",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      display: "block"
+                      }}
                   >
                     {user.name}
                   </span>
                   <span
                     className="flex items-center gap-1.5 text-caption"
                     style={{
-                      color: "var(--muted-foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--muted-foreground)"
+                      }}
                   >
                     <span
                       className="rounded-full"
@@ -268,7 +259,7 @@ export function NewConversationFlow({
                             ? "var(--success)"
                             : user.status === "busy"
                             ? "var(--destructive)"
-                            : "var(--muted-foreground)",
+                            : "var(--muted-foreground)"
                       }}
                     />
                     {user.status === "online"
@@ -301,14 +292,13 @@ export function NewConversationFlow({
                     style={{
                       padding: "3px 8px 3px 4px",
                       background: "var(--primary)",
-                      color: "var(--primary-foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--primary-foreground)"
+                      }}
                   >
                     <Avatar
                       style={{
                         width: 18,
-                        height: 18,
+                        height: 18
                       }}
                     >
                       <AvatarImage src={u.avatar} alt={u.name} />
@@ -329,7 +319,7 @@ export function NewConversationFlow({
               style={{
                 background: "var(--input-background)",
                 border: "1px solid var(--border)",
-                borderRadius: "var(--radius)",
+                borderRadius: "var(--radius)"
               }}
             >
               <Search
@@ -338,7 +328,7 @@ export function NewConversationFlow({
                   left: 10,
                   width: 14,
                   height: 14,
-                  color: "var(--muted-foreground)",
+                  color: "var(--muted-foreground)"
                 }}
               />
               <input
@@ -350,9 +340,8 @@ export function NewConversationFlow({
                 className="w-full bg-transparent outline-none text-body"
                 style={{
                   padding: "8px 12px 8px 32px",
-                  color: "var(--foreground)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  color: "var(--foreground)"
+                  }}
               />
             </div>
           </div>
@@ -377,25 +366,21 @@ export function NewConversationFlow({
                     style={{
                       width: 36,
                       height: 36,
-                      border: "1px solid var(--border)",
+                      border: "1px solid var(--border)"
                     }}
                   >
                     <AvatarImage src={user.avatar} alt={user.name} />
                     <AvatarFallback
                       className="text-caption font-semibold"
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                      }}
-                    >
+                      >
                       {user.initials}
                     </AvatarFallback>
                   </Avatar>
                   <span
-                    className="flex-1 text-control"
+                    className="flex-1 text-body"
                     style={{
-                      color: "var(--foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--foreground)"
+                      }}
                   >
                     {user.name}
                   </span>
@@ -410,7 +395,7 @@ export function NewConversationFlow({
                       background: isSelected
                         ? "var(--primary)"
                         : "transparent",
-                      borderRadius: "var(--radius)",
+                      borderRadius: "var(--radius)"
                     }}
                   >
                     {isSelected && (
@@ -418,7 +403,7 @@ export function NewConversationFlow({
                         style={{
                           width: 12,
                           height: 12,
-                          color: "var(--primary-foreground)",
+                          color: "var(--primary-foreground)"
                         }}
                       />
                     )}
@@ -438,9 +423,8 @@ export function NewConversationFlow({
                   padding: "10px",
                   background: "var(--primary)",
                   color: "var(--primary-foreground)",
-                  borderRadius: "var(--radius)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  borderRadius: "var(--radius)"
+                  }}
               >
                 Next — {selectedUsers.length} selected
               </button>
@@ -456,9 +440,8 @@ export function NewConversationFlow({
             <label
               className="text-caption font-semibold"
               style={{
-                color: "var(--foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--foreground)"
+                }}
             >
               Group Name
             </label>
@@ -474,9 +457,8 @@ export function NewConversationFlow({
                 color: "var(--foreground)",
                 background: "var(--input-background)",
                 border: "1px solid var(--border)",
-                borderRadius: "var(--radius)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                borderRadius: "var(--radius)"
+                }}
             />
           </div>
 
@@ -484,9 +466,8 @@ export function NewConversationFlow({
             <span
               className="text-caption font-semibold"
               style={{
-                color: "var(--foreground)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--foreground)"
+                }}
             >
               Members ({selectedUsers.length})
             </span>
@@ -502,9 +483,8 @@ export function NewConversationFlow({
                   <span
                     className="text-caption"
                     style={{
-                      color: "var(--foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--foreground)"
+                      }}
                   >
                     {u.name.split(" ")[0]}
                   </span>
@@ -526,9 +506,8 @@ export function NewConversationFlow({
                 ? "var(--primary-foreground)"
                 : "var(--muted-foreground)",
               borderRadius: "var(--radius)",
-              fontFamily: "'Inter', sans-serif",
               marginTop: 8,
-              cursor: groupName.trim() ? "pointer" : "not-allowed",
+              cursor: groupName.trim() ? "pointer" : "not-allowed"
             }}
           >
             Create Group
@@ -547,9 +526,8 @@ export function NewConversationFlow({
               <p
                 className="text-body"
                 style={{
-                  color: "var(--muted-foreground)",
-                  fontFamily: "'Inter', sans-serif",
-                }}
+                  color: "var(--muted-foreground)"
+                  }}
               >
                 No Space channels available.
               </p>
@@ -575,28 +553,26 @@ export function NewConversationFlow({
                     height: 40,
                     borderRadius: "calc(var(--radius) + 2px)",
                     background: ch.avatarColor ?? "var(--secondary)",
-                    color: "var(--primary-foreground)",
+                    color: "var(--primary-foreground)"
                   }}
                 >
                   <Hash style={{ width: 18, height: 18 }} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <span
-                    className="text-control"
+                    className="text-body"
                     style={{
                       color: "var(--foreground)",
-                      display: "block",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      display: "block"
+                      }}
                   >
                     {ch.name}
                   </span>
                   <span
                     className="text-caption"
                     style={{
-                      color: "var(--muted-foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--muted-foreground)"
+                      }}
                   >
                     {ch.memberCount} members
                   </span>
@@ -609,9 +585,8 @@ export function NewConversationFlow({
                       height: 18,
                       padding: "0 5px",
                       background: "var(--primary)",
-                      color: "var(--primary-foreground)",
-                      fontFamily: "'Inter', sans-serif",
-                    }}
+                      color: "var(--primary-foreground)"
+                      }}
                   >
                     {ch.unread}
                   </span>

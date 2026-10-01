@@ -1,0 +1,238 @@
+{
+  "sidebar": {
+    "invitations": "Invitations",
+    "tipsAndTricks": "Astuces et Conseils",
+    "myAccount": "Mon Compte",
+    "createSpace": "Créer mon propre Espace",
+    "activityView": "Vue d'activité",
+    "mySpaces": "Mes Espaces",
+    "virtualContributors": "Contributeurs Virtuels",
+    "innovationHubs": "Centres d'Innovation",
+    "innovationPacks": "Packs d'Innovation",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "navigation": "Navigation du tableau de bord",
+    "pendingCount": "{{count}} en attente"
+  },
+  "recentSpaces": {
+    "title": "Espaces Récents",
+    "exploreAll": "Explorer tous vos Espaces",
+    "homeSpacePlaceholder": {
+      "title": "Définir votre Espace d'Accueil",
+      "subtitle": "Épinglez votre espace favori sur le tableau de bord"
+    },
+    "homeSpaceSettings": "Paramètres de l'espace d'accueil",
+    "private": "Privé"
+  },
+  "activity": {
+    "spacesTitle": "Dernière activité dans mes Espaces",
+    "personalTitle": "Ma dernière activité",
+    "filter": {
+      "space": {
+        "label": "Espace",
+        "all": "Tous les Espaces"
+      },
+      "role": {
+        "label": "Mon rôle",
+        "all": "Tous les rôles",
+        "member": "Membre",
+        "lead": "Responsable",
+        "admin": "Administrateur"
+      }
+    },
+    "showMore": "Afficher plus",
+    "noActivity": "Aucune activité récente",
+    "iconLabel": {
+      "CALLOUT_PUBLISHED": "Nouvelle publication",
+      "CALLOUT_POST_CREATED": "Nouvelle publication",
+      "CALLOUT_POST_COMMENT": "Nouveau commentaire",
+      "DISCUSSION_COMMENT": "Nouveau commentaire",
+      "CALLOUT_WHITEBOARD_CREATED": "Nouveau tableau blanc",
+      "CALLOUT_WHITEBOARD_CONTENT_MODIFIED": "Tableau blanc mis à jour",
+      "CALLOUT_MEMO_CREATED": "Nouveau mémo",
+      "CALLOUT_LINK_CREATED": "Nouveau lien",
+      "MEMBER_JOINED": "Nouveau membre",
+      "SUBSPACE_CREATED": "Nouveau subspace",
+      "CALENDAR_EVENT_CREATED": "Nouvel événement",
+      "UPDATE_SENT": "Nouvelle mise à jour"
+    }
+  },
+  "dialogs": {
+    "tipsAndTricks": "Astuces et Conseils",
+    "myActivity": "Ma dernière activité",
+    "mySpaceActivity": "Dernière activité dans mes Espaces",
+    "findMore": "Découvrir plus d'astuces et conseils",
+    "findMoreUrl": "https://welcome.alkem.io/blog/"
+  },
+  "myMembershipsPanel": {
+    "title": "Mes Espaces",
+    "subtitle_one": "{{count}} espace dont vous faites partie",
+    "subtitle_other": "{{count}} espaces dont vous faites partie",
+    "close": "Fermer",
+    "searchPlaceholder": "Rechercher vos espaces...",
+    "clearSearch": "Effacer la recherche",
+    "loading": "Chargement de vos espaces",
+    "privacy": {
+      "public": "Public",
+      "private": "Privé"
+    },
+    "expand": "Développer {{name}}",
+    "collapse": "Réduire {{name}}",
+    "subspaces_one": "{{count}} sous-espace",
+    "subspaces_other": "{{count}} sous-espaces",
+    "filter": {
+      "role": {
+        "label": "Filtrer par rôle",
+        "all": "Tous les rôles"
+      },
+      "visibility": {
+        "label": "Filtrer par visibilité",
+        "all": "Tous",
+        "public": "Public",
+        "private": "Privé"
+      }
+    },
+    "role": {
+      "admin": "Administrateur",
+      "lead": "Responsable",
+      "member": "Membre"
+    },
+    "empty": {
+      "noSpaces": "Vous ne faites encore partie d'aucun espace.",
+      "browseAll": "Parcourir tous les espaces",
+      "noMatches": "Aucun espace ne correspond à votre recherche.",
+      "clearFilters": "Effacer les filtres"
+    }
+  },
+  "tips": {
+    "items": [
+      {
+        "title": "Rejoignez l'espace Welcome@Alkemio",
+        "description": "Pour trouver des exemples, bonnes pratiques, astuces et conseils",
+        "imageUrl": "/my-dashboard/tipsntricks-welcome.webp",
+        "url": "https://alkem.io/welcome-space/dashboard"
+      },
+      {
+        "title": "Consultez la documentation",
+        "description": "Pour trouver les réponses à vos questions les plus urgentes",
+        "imageUrl": "/my-dashboard/tipsntricks-faq.webp",
+        "url": "https://alkem.io/docs"
+      },
+      {
+        "title": "En savoir plus sur la structure des Espaces Alkemio",
+        "description": "Pour vous aider à démarrer en douceur sur la plateforme",
+        "imageUrl": "/my-dashboard/tipsntricks-concepts.webp",
+        "url": "https://alkem.io/docs/structure/space"
+      },
+      {
+        "title": "Créer un nouvel Espace",
+        "description": "Pour rassembler des contributeurs autour de votre vision du changement",
+        "imageUrl": "/my-dashboard/tipsntricks-space.webp",
+        "url": "https://welcome.alkem.io/want-to-own-space/"
+      },
+      {
+        "title": "Propulsé par l'IA générative",
+        "description": "Découvrez le Chat de Guidance Automatisé d'Alkemio",
+        "imageUrl": "/my-dashboard/tipsntricks-genai.webp",
+        "url": "https://welcome.alkem.io/blog/2024-01-chatbot/"
+      }
+    ]
+  },
+  "invitations": {
+    "title": "Invitations en Attente",
+    "loading": "Chargement des invitations",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "noInvitations": "Aucune invitation en attente",
+    "invitedBy": "Invité(e) par {{name}}"
+  },
+  "applications": {
+    "title": "Candidatures en Attente",
+    "pending": "En attente"
+  },
+  "campaign": {
+    "title": "Créez votre Contributeur Virtuel",
+    "description": "Commencez avec votre propre contributeur alimenté par l'IA",
+    "cta": "Créer un Contributeur Virtuel"
+  },
+  "releaseNotes": {
+    "dismiss": "Fermer",
+    "readMore": "En savoir plus"
+  },
+  "spaces": {
+    "loadMore": "Charger Plus",
+    "seeMoreSubspaces": "Voir plus de sous-espaces"
+  },
+  "unauthenticated": {
+    "signUp": "S'inscrire"
+  },
+  "withoutMemberships": {
+    "createSpace": "Créez votre propre Espace",
+    "createSpaceDescription": "Commencez à collaborer en créant votre premier espace"
+  },
+  "pendingMemberships": {
+    "title": "Adhésions en Attente",
+    "empty": "Vous n'avez aucune invitation ou candidature en cours.",
+    "loading": "Chargement des adhésions en attente",
+    "loadingInvitation": "Chargement de l'invitation",
+    "loadingApplication": "Chargement de la candidature",
+    "close": "Fermer",
+    "closeDialog": "Fermer le dialogue",
+    "invitationsSection": "Invitations",
+    "vcInvitationsSection": "Invitations de Contributeurs Virtuels",
+    "applicationsSection": "Candidatures Ouvertes",
+    "detail": {
+      "back": "Retour à la liste",
+      "reject": "Refuser",
+      "rejectAriaLabel": "Refuser l'invitation à {{spaceName}}",
+      "accept": "Accepter",
+      "acceptAriaLabel": "Accepter l'invitation à {{spaceName}}",
+      "join": "Rejoindre",
+      "joinAriaLabel": "Rejoindre {{spaceName}}"
+    },
+    "applicationAriaLabel": "Voir la candidature en attente pour {{spaceName}}",
+    "orgInvitationsSection": "Invitations d'organisation",
+    "orgInvitationDialog": {
+      "title": "Invitation pour {{organizationName}}",
+      "accept": "Accepter",
+      "role": "Rôle",
+      "spacesToJoin": "L'acceptation entraîne l'adhésion à : {{spaces}}"
+    },
+    "orgAssociateInvitationsSection": "Invitations en tant qu’Associé",
+    "orgAssociateApplicationsSection": "Candidatures en tant qu’Associé",
+    "orgAssociateCard": {
+      "badge": "Organisation",
+      "role": {
+        "associate": "Associé",
+        "associateAdmin": "Associé + Admin",
+        "associateOwner": "Associé + Propriétaire"
+      },
+      "pendingLabel": "En attente",
+      "invitedBy": "Invité(e) par {{name}}"
+    }
+  },
+  "nonActivity": {
+    "sections": {
+      "pinnedLastActive": "Épinglés & Activité récente",
+      "mostActivity": "Espaces avec le plus d’activité",
+      "leadAdmin": "Espaces que je dirige et administre",
+      "host": "Espaces que j’héberge"
+    },
+    "showMore_one": "Afficher plus : {{count}} espace",
+    "showMore_other": "Afficher plus : {{count}} espaces"
+  },
+  "welcome": {
+    "title": "Bienvenue sur Alkemio",
+    "message": "Vous ne faites encore partie d’aucun Espace. Explorez l’Espace de bienvenue pour découvrir les possibilités, ou consultez la documentation pour commencer.",
+    "welcomeSpaceLink": "Visiter l’Espace de bienvenue",
+    "documentationLink": "Documentation",
+    "documentationUrl": "https://alkem.io/docs"
+  },
+  "pending": {
+    "title": "Demandes et invitations en attente"
+  },
+  "explore": {
+    "title": "Explorer les Espaces",
+    "exploreAll": "Explorer tous les Espaces"
+  }
+}

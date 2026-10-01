@@ -1,6 +1,6 @@
 import { Users, Clock } from "lucide-react";
-import { Badge } from "@/app/components/ui/badge";
-import { Button } from "@/app/components/ui/button";
+import { Badge } from "@/crd/primitives/badge";
+import { Button } from "@/crd/primitives/button";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
 
 export function UserSettingsMembership() {

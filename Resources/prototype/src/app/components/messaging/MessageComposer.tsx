@@ -8,9 +8,9 @@ import {
   Strikethrough,
   Code,
   Link2,
-  X,
+  X
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/crd/lib/utils";
 
 interface MessageComposerProps {
   onSend: (text: string) => void;
@@ -23,7 +23,7 @@ export function MessageComposer({
   onSend,
   placeholder = "Type a message...",
   replyTo,
-  onCancelReply,
+  onCancelReply
 }: MessageComposerProps) {
   const [text, setText] = useState("");
   const [showToolbar, setShowToolbar] = useState(false);
@@ -63,7 +63,7 @@ export function MessageComposer({
       style={{
         borderTop: "1px solid var(--border)",
         background: "var(--card)",
-        padding: "12px 16px",
+        padding: "12px 16px"
       }}
     >
       {/* Reply preview */}
@@ -75,16 +75,15 @@ export function MessageComposer({
             marginBottom: 8,
             borderRadius: "var(--radius)",
             background: "var(--secondary)",
-            borderLeft: "3px solid var(--primary)",
+            borderLeft: "3px solid var(--primary)"
           }}
         >
           <div className="flex-1 min-w-0">
             <span
               className="text-caption font-semibold"
               style={{
-                color: "var(--primary)",
-                fontFamily: "'Inter', sans-serif",
-              }}
+                color: "var(--primary)"
+                }}
             >
               {replyTo.senderName}
             </span>
@@ -92,9 +91,8 @@ export function MessageComposer({
               className="truncate text-body"
               style={{
                 color: "var(--muted-foreground)",
-                margin: 0,
-                fontFamily: "'Inter', sans-serif",
-              }}
+                margin: 0
+                }}
             >
               {replyTo.content}
             </p>
@@ -115,7 +113,7 @@ export function MessageComposer({
           className="flex items-center gap-0.5"
           style={{
             marginBottom: 6,
-            padding: "4px 0",
+            padding: "4px 0"
           }}
         >
           {[Bold, Italic, Strikethrough, Code, Link2].map((Icon, i) => (
@@ -153,7 +151,7 @@ export function MessageComposer({
             background: "var(--input-background)",
             border: "1px solid var(--border)",
             borderRadius: "calc(var(--radius) + 4px)",
-            padding: "0 12px",
+            padding: "0 12px"
           }}
         >
           <textarea
@@ -168,9 +166,8 @@ export function MessageComposer({
             className="w-full resize-none outline-none bg-transparent text-body"
             style={{
               color: "var(--foreground)",
-              fontFamily: "'Inter', sans-serif",
               padding: "8px 0",
-              maxHeight: 120,
+              maxHeight: 120
             }}
             aria-label="Message input"
           />
@@ -198,7 +195,7 @@ export function MessageComposer({
             background: text.trim() ? "var(--primary)" : "var(--muted)",
             color: text.trim()
               ? "var(--primary-foreground)"
-              : "var(--muted-foreground)",
+              : "var(--muted-foreground)"
           }}
           title="Send message"
         >

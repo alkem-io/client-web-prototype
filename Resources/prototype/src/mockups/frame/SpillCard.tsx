@@ -14,7 +14,7 @@ export function SpillCard({
   style,
   children,
   padded = true,
-  bare = false,
+  bare = false
 }: {
   id: string;
   style?: CSSProperties;
@@ -33,7 +33,7 @@ export function SpillCard({
         borderRadius: 10,
         boxShadow: SPILL_SHADOW,
         padding: bare || !padded ? 0 : 15,
-        ...style,
+        ...style
       }}
     >
       {children}

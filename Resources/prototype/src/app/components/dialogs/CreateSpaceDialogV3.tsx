@@ -7,23 +7,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Separator } from "@/app/components/ui/separator";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
+import { Separator } from "@/crd/primitives/separator";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import {
   X, ImageIcon, ChevronLeft, ChevronDown, ChevronRight, Sparkles, Palette, Users, Globe, Lock,
   UserPlus, BookOpen, Search, FileText, Lightbulb, Rocket, GraduationCap,
   Calendar, UsersRound, Target, Layers, FlaskConical, Puzzle, Presentation,
   Link2,
-  type LucideIcon,
+  type LucideIcon
 } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    Template Data
@@ -69,7 +69,7 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     icon: FileText,
     category: "getting-started",
     recommended: true,
-    defaults: {},
+    defaults: {}
   },
   {
     id: "community-of-practice",
@@ -81,8 +81,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "A community for practitioners to learn and grow together",
       description: "This space brings together practitioners who share a common domain of interest. Members share experiences, develop shared resources, and support each other's professional growth.",
-      tags: ["Community", "Knowledge Sharing", "Best Practices"],
-    },
+      tags: ["Community", "Knowledge Sharing", "Best Practices"]
+    }
   },
   {
     id: "working-group",
@@ -93,8 +93,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Focused collaboration toward shared outcomes",
       description: "A structured space for team members to coordinate efforts, track progress, and deliver results together.",
-      tags: ["Collaboration", "Coordination", "Deliverables"],
-    },
+      tags: ["Collaboration", "Coordination", "Deliverables"]
+    }
   },
   {
     id: "stakeholder-network",
@@ -105,8 +105,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Connecting stakeholders around shared challenges",
       description: "Bring together organizations, individuals, and communities to align on shared challenges and co-create solutions.",
-      tags: ["Stakeholders", "Network", "Multi-actor"],
-    },
+      tags: ["Stakeholders", "Network", "Multi-actor"]
+    }
   },
   {
     id: "peer-learning",
@@ -117,8 +117,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Learning together through structured peer exchange",
       description: "A small-group format where peers take turns sharing insights, asking questions, and reflecting on each other's experiences.",
-      tags: ["Peer Learning", "Reflection", "Small Group"],
-    },
+      tags: ["Peer Learning", "Reflection", "Small Group"]
+    }
   },
   {
     id: "innovation-challenge",
@@ -130,8 +130,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Sourcing innovative solutions through open challenge",
       description: "Define a challenge, invite participants to submit ideas, collaborate on promising solutions, and select winners.",
-      tags: ["Innovation", "Challenge", "Ideas", "Solutions"],
-    },
+      tags: ["Innovation", "Challenge", "Ideas", "Solutions"]
+    }
   },
   {
     id: "research-hub",
@@ -142,8 +142,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Collaborative research and shared discovery",
       description: "A dedicated space for researchers to collaborate, share papers, discuss findings, and build collective understanding.",
-      tags: ["Research", "Knowledge", "Academic", "Discovery"],
-    },
+      tags: ["Research", "Knowledge", "Academic", "Discovery"]
+    }
   },
   {
     id: "idea-incubator",
@@ -154,8 +154,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "From spark to viable proposal",
       description: "Submit early-stage ideas, get feedback from the community, refine concepts, and develop them into actionable proposals.",
-      tags: ["Ideas", "Incubation", "Early Stage", "Feedback"],
-    },
+      tags: ["Ideas", "Incubation", "Early Stage", "Feedback"]
+    }
   },
   {
     id: "design-sprint",
@@ -166,8 +166,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Solve big problems in a structured sprint",
       description: "Follow a structured design sprint methodology to understand, ideate, prototype, and test solutions within a fixed timeframe.",
-      tags: ["Design Sprint", "Prototyping", "Time-boxed"],
-    },
+      tags: ["Design Sprint", "Prototyping", "Time-boxed"]
+    }
   },
   {
     id: "project-space",
@@ -179,8 +179,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Structured project collaboration and delivery",
       description: "Organize your project with clear goals, assign tasks, track milestones, and keep your team aligned.",
-      tags: ["Project", "Management", "Milestones", "Delivery"],
-    },
+      tags: ["Project", "Management", "Milestones", "Delivery"]
+    }
   },
   {
     id: "program-coordination",
@@ -191,8 +191,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Coordinating multiple workstreams toward program goals",
       description: "A high-level space to coordinate related projects, track cross-cutting themes, and maintain strategic alignment.",
-      tags: ["Program", "Coordination", "Strategy", "Oversight"],
-    },
+      tags: ["Program", "Coordination", "Strategy", "Oversight"]
+    }
   },
   {
     id: "course-space",
@@ -203,8 +203,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Structured learning with interactive modules",
       description: "Organize course content into modules, facilitate discussions, provide assignments, and track learner progress.",
-      tags: ["Course", "Learning", "Education", "Modules"],
-    },
+      tags: ["Course", "Learning", "Education", "Modules"]
+    }
   },
   {
     id: "workshop-series",
@@ -215,8 +215,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Interactive workshop series with shared learning",
       description: "Plan and deliver a series of workshops. Share materials beforehand, collaborate during sessions, and capture outcomes.",
-      tags: ["Workshops", "Interactive", "Series", "Hands-on"],
-    },
+      tags: ["Workshops", "Interactive", "Series", "Hands-on"]
+    }
   },
   {
     id: "knowledge-base",
@@ -227,8 +227,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Curated knowledge for your community",
       description: "Create a structured repository of guides, how-tos, reference materials, and best practices that evolves over time.",
-      tags: ["Knowledge Base", "Documentation", "Reference", "Guides"],
-    },
+      tags: ["Knowledge Base", "Documentation", "Reference", "Guides"]
+    }
   },
   {
     id: "event-space",
@@ -239,8 +239,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Bringing people together around shared events",
       description: "Plan events with agendas, manage speakers, engage attendees before and after, and capture outcomes.",
-      tags: ["Events", "Conference", "Meetup", "Networking"],
-    },
+      tags: ["Events", "Conference", "Meetup", "Networking"]
+    }
   },
   {
     id: "hackathon",
@@ -251,8 +251,8 @@ const SPACE_TEMPLATES: SpaceTemplate[] = [
     defaults: {
       tagline: "Build something amazing in limited time",
       description: "Set up challenges, form teams, provide resources, and run a judging process to select winners.",
-      tags: ["Hackathon", "Sprint", "Teams", "Competition"],
-    },
+      tags: ["Hackathon", "Sprint", "Teams", "Competition"]
+    }
   },
 ];
 
@@ -267,7 +267,7 @@ interface CreateSpaceDialogV3Props {
 
 export function CreateSpaceDialogV3({
   open,
-  onOpenChange,
+  onOpenChange
 }: CreateSpaceDialogV3Props) {
   const navigate = useNavigate();
   // -1 = template gallery, 0-3 = wizard steps
@@ -398,7 +398,7 @@ export function CreateSpaceDialogV3({
 
   const groupedTemplates = CATEGORIES.map((cat) => ({
     ...cat,
-    templates: filteredTemplates.filter((t) => t.category === cat.id && !t.recommended),
+    templates: filteredTemplates.filter((t) => t.category === cat.id && !t.recommended)
   })).filter((group) => group.templates.length > 0);
 
   return (
@@ -500,7 +500,7 @@ function TemplateGallery({
   selectedTemplate,
   onSelect,
   searchQuery,
-  onSearchChange,
+  onSearchChange
 }: {
   recommendedTemplates: SpaceTemplate[];
   categoryGroups: { id: string; label: string; description: string; icon: LucideIcon; templates: SpaceTemplate[] }[];
@@ -635,7 +635,7 @@ function TemplateCard({
   template,
   isSelected,
   onSelect,
-  isProminent,
+  isProminent
 }: {
   template: SpaceTemplate;
   isSelected: boolean;
@@ -677,7 +677,7 @@ function WizardStepIdentity({
   name, setName,
   url, setUrl,
   tagline, setTagline,
-  description, setDescription,
+  description, setDescription
 }: {
   name: string; setName: (v: string) => void;
   url: string; setUrl: (v: string) => void;
@@ -692,7 +692,7 @@ function WizardStepIdentity({
           <Sparkles className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-foreground">What should we call your space?</h3>
+          <h3 className="text-subsection-title text-foreground">What should we call your space?</h3>
           <p className="text-caption text-muted-foreground mt-1">You can change all of this later in settings.</p>
         </div>
       </div>
@@ -704,7 +704,7 @@ function WizardStepIdentity({
           value={name}
           onChange={(e) => setName(e.target.value)}
           autoFocus
-          className="h-12 text-lg border-2 focus:border-primary"
+          className="h-12 text-subsection-title border-2 focus:border-primary"
         />
         {name.trim() && (
           <p className="text-caption text-emerald-600 flex items-center gap-1 animate-in fade-in slide-in-from-left-1 duration-200">
@@ -753,7 +753,7 @@ function WizardStepIdentity({
           value={description}
           onChange={setDescription}
           placeholder="What is this space about? (optional)"
-          minHeight="100px"
+          className="min-h-[100px]"
         />
       </div>
     </div>
@@ -769,7 +769,7 @@ function WizardStepBranding({
   currentTag, setCurrentTag,
   handleTagKeyDown,
   avatar, setAvatar,
-  banner, setBanner,
+  banner, setBanner
 }: {
   tags: string[]; setTags: (v: string[]) => void;
   currentTag: string; setCurrentTag: (v: string) => void;
@@ -785,7 +785,7 @@ function WizardStepBranding({
           <Palette className="w-6 h-6 text-violet-600 dark:text-violet-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Make it visually yours</h3>
+          <h3 className="text-subsection-title text-foreground">Make it visually yours</h3>
           <p className="text-caption text-muted-foreground mt-1">
             You can change all of this later in settings.
           </p>
@@ -822,7 +822,7 @@ function WizardStepBranding({
               </div>
             )}
           </div>
-          <p className="text-xs text-muted-foreground text-center">Recommended: 200 × 200px</p>
+          <p className="text-caption text-muted-foreground text-center">Recommended: 200 × 200px</p>
         </div>
 
         {/* Banner */}
@@ -853,7 +853,7 @@ function WizardStepBranding({
               </div>
             )}
           </div>
-          <p className="text-xs text-muted-foreground text-center">Recommended: 1920 × 400px</p>
+          <p className="text-caption text-muted-foreground text-center">Recommended: 1920 × 400px</p>
         </div>
       </div>
 
@@ -898,7 +898,7 @@ function WizardStepBranding({
 
 function WizardStepPurpose({
   why, setWhy,
-  who, setWho,
+  who, setWho
 }: {
   why: string; setWhy: (v: string) => void;
   who: string; setWho: (v: string) => void;
@@ -911,7 +911,7 @@ function WizardStepPurpose({
           <Target className="w-6 h-6 text-amber-600 dark:text-amber-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-foreground">What's the purpose of this space?</h3>
+          <h3 className="text-subsection-title text-foreground">What's the purpose of this space?</h3>
           <p className="text-body text-muted-foreground mt-1">
             Help people understand why this space exists and whether it's right for them.
           </p>
@@ -933,7 +933,7 @@ function WizardStepPurpose({
           value={why}
           onChange={setWhy}
           placeholder="e.g. We believe collaboration is key to solving climate challenges..."
-          minHeight="100px"
+          className="min-h-[100px]"
         />
       </div>
 
@@ -952,7 +952,7 @@ function WizardStepPurpose({
           value={who}
           onChange={setWho}
           placeholder="e.g. Engineers, designers, and researchers passionate about sustainability..."
-          minHeight="100px"
+          className="min-h-[100px]"
         />
       </div>
     </div>
@@ -968,7 +968,7 @@ function WizardStepAccess({
   membershipMode, setMembershipMode,
   invitees, setInvitees,
   currentInvitee, setCurrentInvitee,
-  handleInviteeKeyDown,
+  handleInviteeKeyDown
 }: {
   visibility: string; setVisibility: (v: string) => void;
   membershipMode: string; setMembershipMode: (v: string) => void;
@@ -984,7 +984,7 @@ function WizardStepAccess({
           <Users className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Who can see and join?</h3>
+          <h3 className="text-subsection-title text-foreground">Who can see and join?</h3>
           <p className="text-body text-muted-foreground mt-1">
             Control who can discover your space and how they become members. You can always change this later.
           </p>

@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router";
 import { SubspaceApplicationDialog } from "@/app/components/dialogs/SubspaceApplicationDialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
 import type { ApplicationFormConfig } from "@/app/components/dialogs/SubspaceApplicationDialog";
 
 const DUTCH_MUNICIPALITIES = [
@@ -39,7 +39,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       description: "Wat is de naam van de innovatie die u in wilt dienen?",
       required: true,
       order: 1,
-      constraints: { maxLength: 100 },
+      constraints: { maxLength: 100 }
     },
     {
       id: "initiating-municipality",
@@ -50,8 +50,8 @@ const FORM_CONFIG: ApplicationFormConfig = {
       order: 2,
       constraints: {
         maxSelections: 1,
-        items: DUTCH_MUNICIPALITIES,
-      },
+        items: DUTCH_MUNICIPALITIES
+      }
     },
     {
       id: "first-lead",
@@ -60,7 +60,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       description: "Wie is de contactpersoon?",
       required: true,
       order: 3,
-      constraints: { fields: ["name", "email", "organization"] },
+      constraints: { fields: ["name", "email", "organization"] }
     },
     {
       id: "second-lead",
@@ -69,7 +69,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       description: "Optioneel: nog een contactpersoon",
       required: false,
       order: 4,
-      constraints: { maxSelections: 1 },
+      constraints: { maxSelections: 1 }
     },
     {
       id: "supporting-municipalities",
@@ -80,8 +80,8 @@ const FORM_CONFIG: ApplicationFormConfig = {
       order: 5,
       constraints: {
         allowManualEntry: false,
-        items: DUTCH_MUNICIPALITIES,
-      },
+        items: DUTCH_MUNICIPALITIES
+      }
     },
     {
       id: "vision-wie",
@@ -90,7 +90,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       description: "Omschrijf (in maximaal 250 woorden) het doel en de doelgroep van de innovatie, op welke manier de innovatie voor een oplossing of verbetering zorgt, en in welke mate dat doel in uw gemeente al is bereikt.",
       required: true,
       order: 6,
-      constraints: { maxLength: 500, maxWords: 250 },
+      constraints: { maxLength: 500, maxWords: 250 }
     },
     {
       id: "vision-waarvoor",
@@ -99,7 +99,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       description: "Vertel (in maximaal 250 woorden) waar en in hoeverre de casus na de opschaling bijdraagt aan de doelen van de VNG. Dit kan bijvoorbeeld aan de hand van de verenigingsstrategie, de Digitale agenda en/of de omkeringsthema's.",
       required: true,
       order: 6,
-      constraints: { maxLength: 500, maxWords: 250 },
+      constraints: { maxLength: 500, maxWords: 250 }
     },
     {
       id: "vision-waarom",
@@ -108,7 +108,7 @@ const FORM_CONFIG: ApplicationFormConfig = {
       description: "Geef (in maximaal 250 woorden) de aanleiding voor het indienen van dit opschalingsvoorstel. Beschrijf wat de toegevoegde waarde is van de innovatie als die zou zijn opgeschaald. Wat maakt de beoogde opschaling zo belangrijk?",
       required: true,
       order: 6,
-      constraints: { maxLength: 500, maxWords: 250 },
+      constraints: { maxLength: 500, maxWords: 250 }
     },
     {
       id: "vision-hoe",
@@ -117,11 +117,11 @@ const FORM_CONFIG: ApplicationFormConfig = {
       description: "Beschrijf (in maximaal 250 woorden) op hoofdlijnen wat er naar uw mening moet gebeuren om de casus door te ontwikkelen naar gebruik door tenminste 30 gemeenten. Geef een indicatie van de complexiteit, de benodigde partijen, de gewenste rol van VNG, de investering (en hoe deze te financieren) en de te verwachten doorlooptijd.",
       required: true,
       order: 6,
-      constraints: { maxLength: 500, maxWords: 250 },
+      constraints: { maxLength: 500, maxWords: 250 }
     },
   ],
   createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
 };
 
 export function SubspaceApplicationPage() {
@@ -154,7 +154,7 @@ export function SubspaceApplicationPage() {
           id: "user-1",
           name: "Huidige gebruiker",
           email: "user@example.com",
-          organization: "Gemeente",
+          organization: "Gemeente"
         }}
         onSuccess={handleSuccess}
       />
@@ -178,7 +178,7 @@ export function SubspaceApplicationPage() {
         </DialogContent>
       </Dialog>
 
-      <div className="fixed bottom-4 left-4 right-4 mx-auto max-w-md bg-amber-50 border border-amber-200 rounded-lg p-3 text-center text-sm text-amber-800 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200">
+      <div className="fixed bottom-4 left-4 right-4 mx-auto max-w-md bg-amber-50 border border-amber-200 rounded-lg p-3 text-center text-body text-amber-800 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200">
         ⚠️ This is a mock-up demo
       </div>
     </div>

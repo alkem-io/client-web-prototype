@@ -29,12 +29,12 @@ import {
   Smile,
   Table,
   Wifi,
-  X,
+  X
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { Button } from "@/app/components/ui/button";
-import { IconButton } from "@/app/components/ui/icon-button";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { Button } from "@/crd/primitives/button";
+import { IconButton } from "@/crd/primitives/icon-button";
+import { cn } from "@/crd/lib/utils";
 import { SignMemoButton } from "./SignMemoButton";
 import { SignedCopiesTrigger } from "./SignedCopiesTrigger";
 import { SignaturePanel } from "./SignaturePanel";
@@ -70,7 +70,7 @@ export function MemoSurfaceMock({
   withPanel = false,
   onSign,
   onOpenCopies,
-  className,
+  className
 }: MemoSurfaceMockProps) {
   const current = placement === "current";
 

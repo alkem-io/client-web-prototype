@@ -1,9 +1,17 @@
-import { Link, useLocation, useSearchParams } from "react-router";
-import { cn } from "@/lib/utils";
-import { useEffect, useRef } from "react";
-import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { ActivityDot } from "@/app/components/shared/ActivityDot";
-import { tabContainer } from "@/app/data/activity-data";
+/**
+ * Space navigation tabs — production's `@/crd/components/space/SpaceNavigationTabs`.
+ *
+ * The prototype drives tabs by route; CRD drives them by index with an optional
+ * `href` per tab, so this wrapper maps between the two and keeps query params
+ * on navigation.
+ *
+ * PHASE 1 REMOVAL (PHASE-2.md §1): the activity dot that rendered beside a tab
+ * label when that tab had unseen content. CRD's `TabItem` is `{ label, index,
+ * href }` with nowhere to hang one.
+ */
+import { useEffect } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
+import { SpaceNavigationTabs as CrdSpaceNavigationTabs } from '@/crd/components/space/SpaceNavigationTabs';
 
 interface SpaceNavigationTabsProps {
   spaceSlug: string;
@@ -34,98 +42,47 @@ export const SPACE_TABS = [
   },
 ];
 
-export function SpaceNavigationTabs({ spaceSlug, actionButton, onActiveTabChange }: SpaceNavigationTabsProps) {
+export function SpaceNavigationTabs({
+  spaceSlug,
+  actionButton,
+  onActiveTabChange,
+}: SpaceNavigationTabsProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const currentPath = location.pathname;
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const { hasContainerActivity } = useActivityIndicators();
 
-  // Preserve query params when navigating tabs
   const queryString = searchParams.toString();
-  const suffix = queryString ? `?${queryString}` : "";
+  const suffix = queryString ? `?${queryString}` : '';
 
-  const tabs = SPACE_TABS.map(tab => ({
-    ...tab,
-    key: tab.href === "/home" ? "home" : tab.href.replace("/", ""),
-    href: `/space/${spaceSlug}${tab.href === "/home" ? "" : tab.href}${suffix}`
-  }));
+  const hrefFor = (tabHref: string) =>
+    `/space/${spaceSlug}${tabHref === '/home' ? '' : tabHref}${suffix}`;
 
-  const isActive = (href: string) => {
-    // Strip query params for comparison
-    const hrefPath = href.split("?")[0];
-    if (hrefPath.endsWith(`/${spaceSlug}`)) {
-      return currentPath === hrefPath;
-    }
-    return currentPath.startsWith(hrefPath);
-  };
+  // The Home tab's path is the bare space URL, so it only matches exactly —
+  // otherwise every child route would light it up as well.
+  const activeIndex = Math.max(
+    0,
+    SPACE_TABS.findIndex(tab => {
+      const path = hrefFor(tab.href).split('?')[0];
+      return path.endsWith(`/${spaceSlug}`)
+        ? location.pathname === path
+        : location.pathname.startsWith(path);
+    })
+  );
 
   useEffect(() => {
-    if (scrollRef.current) {
-      const activeTab = scrollRef.current.querySelector(
-        '[data-active="true"]'
-      );
-      if (activeTab) {
-        activeTab.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
-      }
-    }
-    // Notify parent of active tab description
-    const activeTabData = tabs.find(tab => isActive(tab.href));
-    if (activeTabData && onActiveTabChange) {
-      onActiveTabChange(activeTabData.description);
-    }
-  }, [currentPath]);
+    onActiveTabChange?.(SPACE_TABS[activeIndex]?.description ?? '');
+  }, [activeIndex, onActiveTabChange]);
 
   return (
-    <nav className="w-full">
-      <div className="flex items-end justify-between gap-4 relative">
-        {/* Bottom border line that runs the full width */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-border" />
-
-        <div
-          ref={scrollRef}
-          className="flex items-end gap-0 overflow-x-auto scrollbar-hide [-ms-overflow-style:none] [scrollbar-width:none] overscroll-x-contain"
-          style={{ WebkitOverflowScrolling: "touch" }}
-        >
-          {tabs.map((tab) => {
-          const active = isActive(tab.href);
-          return (
-            <Link
-              key={tab.href}
-              to={tab.href}
-              data-active={active}
-              className={cn(
-                "relative px-5 py-3 transition-all duration-200 whitespace-nowrap select-none rounded-t-lg",
-                active
-                  ? "bg-background text-foreground font-semibold border border-border border-b-0 z-10 -mb-px"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
-              )}
-              style={{
-                fontSize: 14,
-                fontFamily: "'Inter', sans-serif",
-                lineHeight: "20px",
-              }}
-            >
-              <span className="inline-flex items-center gap-2">
-                {tab.label}
-                {hasContainerActivity(tabContainer(spaceSlug, tab.key)) && (
-                  <ActivityDot label={`${tab.label} has new activity`} />
-                )}
-              </span>
-            </Link>
-          );
-        })}
-        </div>
-        {actionButton && (
-          <div className="shrink-0 pb-3 relative z-10">
-            {actionButton}
-          </div>
-        )}
-      </div>
-    </nav>
+    <CrdSpaceNavigationTabs
+      tabs={SPACE_TABS.map((tab, index) => ({
+        label: tab.label,
+        index,
+        href: hrefFor(tab.href),
+      }))}
+      activeIndex={activeIndex}
+      onTabChange={index => navigate(hrefFor(SPACE_TABS[index].href))}
+      action={actionButton}
+    />
   );
 }

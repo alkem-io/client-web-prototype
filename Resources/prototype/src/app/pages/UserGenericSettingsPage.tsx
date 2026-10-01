@@ -1,7 +1,7 @@
 import { useParams, Link, useLocation } from "react-router";
 import { User, Layout, CreditCard, Users, Bell, Settings } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
+import { cn } from "@/crd/lib/utils";
 
 export default function UserGenericSettingsPage({ title = "Settings" }: { title?: string }) {
   const { userSlug } = useParams<{ userSlug: string }>();

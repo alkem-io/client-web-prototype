@@ -1,0 +1,129 @@
+{
+  "inviteMembers": {
+    "dialog": {
+      "title": "Inviter d'autres personnes à rejoindre \"{{spaceName}}\"",
+      "searchHint": "Recherche des personnes ci-dessous ou ajoute directement leur adresse e-mail",
+      "searchPlaceholder": "Nom d'utilisateur ou e-mail…",
+      "searchAriaLabel": "Rechercher des utilisateurs par nom ou e-mail",
+      "noResultsLabel": "Aucun utilisateur correspondant",
+      "loadingLabel": "Chargement des utilisateurs…",
+      "loadMoreLabel": "Chargement…",
+      "removeAriaLabel": "Retirer {{label}}",
+      "welcomeMessageLabel": "Message d'invitation",
+      "welcomeMessagePlaceholder": "Écris un court message qui sera envoyé avec l'invitation",
+      "defaultWelcomeMessage": "Bonjour, j'aimerais t'inviter à rejoindre {{spaceName}}. Jette un œil au Space ou clique sur le bouton ci-dessous pour accepter ou refuser l'invitation.",
+      "emailVisibilityNote": "Garde à l'esprit que ton adresse e-mail personnelle sera visible par toutes les personnes que tu invites.",
+      "inviteToRoleLabel": "Inviter comme :",
+      "rolePopoverHelper": "Member est toujours accordé à l'acceptation de l'invitation.",
+      "rolePopoverAriaLabel": "Choisir les rôles pour les invités",
+      "suggestedLanguageLabel": "Langue suggérée pour l'invité",
+      "suggestedLanguagePlaceholder": "Pas de préférence",
+      "sendButtonLabel": "Envoyer",
+      "sendingButtonLabel": "Envoi…",
+      "backButtonLabel": "Retour",
+      "closeButtonLabel": "Fermer",
+      "closeAriaLabel": "Fermer la boîte de dialogue d'invitation",
+      "organization": {
+        "title": "Inviter une organisation à rejoindre « {{spaceName}} »",
+        "searchPlaceholder": "Nom de l'organisation…",
+        "searchHint": "Rechercher une organisation à inviter",
+        "defaultWelcomeMessage": "Bonjour, nous aimerions inviter votre organisation à rejoindre {{spaceName}}. Consultez l'espace ou cliquez sur le bouton ci-dessous pour accepter ou refuser l'invitation.",
+        "searchAriaLabel": "Rechercher des organisations par nom",
+        "noResultsLabel": "Aucune organisation correspondante",
+        "loadingLabel": "Chargement des organisations…"
+      },
+      "virtualContributor": {
+        "title": "Inviter un contributeur virtuel",
+        "description": "Ajoutez un contributeur virtuel depuis votre compte ou invitez-en un depuis la bibliothèque Alkemio.",
+        "searchPlaceholder": "Rechercher des contributeurs virtuels…",
+        "onAccount": "Sur votre compte",
+        "onAccountEmpty": "Aucun contributeur virtuel disponible sur votre compte.",
+        "inLibrary": "Dans la bibliothèque",
+        "inLibraryEmpty": "Aucun contributeur virtuel de la bibliothèque ne correspond à votre recherche.",
+        "add": "Ajouter",
+        "invite": "Inviter",
+        "addAriaLabel": "Ajouter {{name}}",
+        "inviteAriaLabel": "Inviter {{name}}",
+        "welcomeMessageLabel": "Message de bienvenue",
+        "welcomeMessagePlaceholder": "Ajoutez un message à l'invitation…",
+        "sendInvite": "Envoyer l'invitation",
+        "defaultWelcomeMessage": "Nous aimerions vous inviter à contribuer à {{space}}.",
+        "addedNotice": "Contributeur virtuel ajouté.",
+        "invitedNotice": "Invitation envoyée.",
+        "error": "Une erreur s'est produite. Veuillez réessayer.",
+        "previewAriaLabel": "Aperçu de {{name}}",
+        "searchAriaLabel": "Rechercher des contributeurs virtuels par nom",
+        "noResultsLabel": "Aucun contributeur virtuel correspondant",
+        "loadingLabel": "Chargement des contributeurs virtuels…"
+      },
+      "resultsSummary_one": "{{count}} invitation traitée pour {{spaceName}}.",
+      "resultsSummary_other": "{{count}} invitations traitées pour {{spaceName}}.",
+      "associates": {
+        "title": "Inviter des associés à « {{organizationName}} »",
+        "searchHint": "Rechercher un utilisateur inscrit à inviter en tant qu’associé",
+        "searchPlaceholder": "Nom d’utilisateur…",
+        "searchAriaLabel": "Rechercher des utilisateurs par nom",
+        "noResultsLabel": "Aucun utilisateur correspondant",
+        "loadingLabel": "Chargement des utilisateurs…",
+        "defaultWelcomeMessage": "Bonjour, nous aimerions vous inviter à vous associer à {{organizationName}}. Cliquez ci-dessous pour accepter ou refuser l’invitation.",
+        "rolePopoverHelper": "Associé est toujours accordé à l'acceptation de l'invitation."
+      }
+    },
+    "roles": {
+      "Member": "Member",
+      "Lead": "Lead",
+      "Admin": "Admin",
+      "Associate": "Associé",
+      "Owner": "Propriétaire"
+    },
+    "errors": {
+      "invalidEmail": "Ce n'est pas une adresse e-mail valide.",
+      "duplicateEmail": "Cet e-mail est déjà dans la liste.",
+      "networkFailure": "Impossible d'envoyer les invitations. Veuillez réessayer."
+    },
+    "results": {
+      "sent": "Invitation envoyée",
+      "alreadyInvited": "Déjà invité",
+      "alreadyMember": "Déjà membre de cet espace",
+      "alreadyHasApplication": "A déjà une candidature en cours pour cet espace",
+      "parentNotAuthorized": "Invitation impossible — la personne devrait aussi rejoindre l'espace parent, et vous n'avez pas la permission d'y inviter.",
+      "error": "Échec de l'invitation.",
+      "notAcceptingInvitations": "Cette organisation n'accepte pas les invitations aux espaces",
+      "leadLimitReached": "La limite du rôle Lead pour les organisations a été atteinte",
+      "sentNoAdministrators": "Invitation envoyée — cette organisation n'a actuellement aucun administrateur à notifier, le support de la plateforme a donc été prévenu à la place",
+      "extraRoleLimitReached": "La limite pour le rôle proposé a été atteinte",
+      "alreadyAssociate": "Déjà associé"
+    },
+    "toast": {
+      "someFailed": "{{count}} invitations n'ont pas pu être envoyées — consultez les résultats pour plus de détails."
+    }
+  },
+  "inviteVc": {
+    "title": "Inviter un contributeur virtuel",
+    "description": "Ajoutez un contributeur virtuel depuis votre compte ou invitez-en un depuis la bibliothèque Alkemio.",
+    "searchPlaceholder": "Rechercher des contributeurs virtuels…",
+    "loading": "Chargement des contributeurs virtuels",
+    "onAccount": "Sur votre compte",
+    "onAccountEmpty": "Aucun contributeur virtuel disponible sur votre compte.",
+    "inLibrary": "Dans la bibliothèque",
+    "inLibraryEmpty": "Aucun contributeur virtuel de la bibliothèque ne correspond à votre recherche.",
+    "add": "Ajouter",
+    "invite": "Inviter",
+    "addAriaLabel": "Ajouter {{name}}",
+    "inviteAriaLabel": "Inviter {{name}}",
+    "back": "Retour",
+    "welcomeMessageLabel": "Message de bienvenue",
+    "welcomeMessagePlaceholder": "Ajoutez un message à l'invitation…",
+    "sendInvite": "Envoyer l'invitation",
+    "defaultWelcomeMessage": "Nous aimerions vous inviter à contribuer à {{space}}.",
+    "addedNotice": "Contributeur virtuel ajouté.",
+    "invitedNotice": "Invitation envoyée.",
+    "error": "Une erreur s'est produite. Veuillez réessayer.",
+    "previewAriaLabel": "Aperçu de {{name}}",
+    "preview": {
+      "tagsLabel": "Étiquettes",
+      "hostedBy": "Hébergé par {{name}}",
+      "noDescription": "Aucune description fournie."
+    }
+  }
+}

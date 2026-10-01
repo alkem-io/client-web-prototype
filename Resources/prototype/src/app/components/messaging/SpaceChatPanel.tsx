@@ -15,7 +15,7 @@ export function SpaceChatPanel({
   open,
   onClose,
   spaceSlug,
-  onViewInHub,
+  onViewInHub
 }: SpaceChatPanelProps) {
   // Find the matching Space channel
   const channel: Conversation | undefined = CONVERSATIONS.find(
@@ -37,7 +37,7 @@ export function SpaceChatPanel({
     unread: 0,
     muted: false,
     memberCount: 0,
-    spaceSlug,
+    spaceSlug
   };
 
   return (
@@ -68,9 +68,8 @@ export function SpaceChatPanel({
               height: "calc(100dvh - 64px)",
               background: "var(--background)",
               borderLeft: "1px solid var(--border)",
-              boxShadow: "var(--elevation-sm)",
-              fontFamily: "'Inter', sans-serif",
-            }}
+              boxShadow: "var(--elevation-sm)"
+              }}
             role="dialog"
             aria-label={`${fallbackChannel.name} chat panel`}
           >

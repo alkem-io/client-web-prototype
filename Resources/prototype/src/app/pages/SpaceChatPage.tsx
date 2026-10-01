@@ -13,7 +13,7 @@ export function SpaceChatPage() {
       className="flex flex-col bg-background overflow-hidden"
       style={{
         /* Constrain to viewport minus the MainLayout header (64px) so chat area stays pinned */
-        height: "calc(100vh - 64px)",
+        height: "calc(100vh - 64px)"
       }}
     >
       <SpaceHeader spaceSlug={slug} />
@@ -38,7 +38,7 @@ export function SpaceChatPage() {
                 className="flex-1 flex flex-col min-h-0 rounded-lg overflow-hidden"
                 style={{
                   border: "1px solid var(--border)",
-                  background: "var(--background)",
+                  background: "var(--background)"
                 }}
               >
                 <SpaceChatTab spaceSlug={slug} />

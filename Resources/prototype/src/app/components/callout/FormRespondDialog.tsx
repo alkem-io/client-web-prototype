@@ -13,26 +13,26 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ClipboardList, Lock, Users } from 'lucide-react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { Button } from '@/app/components/ui/button';
+import { cn } from '@/crd/lib/utils';
+import { Button } from '@/crd/primitives/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from '@/app/components/ui/dialog';
-import { Input } from '@/app/components/ui/input';
-import { Label } from '@/app/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/app/components/ui/radio-group';
-import { Textarea } from '@/app/components/ui/textarea';
+  DialogTitle
+} from '@/crd/primitives/dialog';
+import { Input } from '@/crd/primitives/input';
+import { Label } from '@/crd/primitives/label';
+import { RadioGroup, RadioGroupItem } from '@/crd/primitives/radio-group';
+import { Textarea } from '@/crd/primitives/textarea';
 import {
   type CalloutFormAnswer,
   type CalloutFormData,
   type CalloutFormResponse,
   findAnswer,
-  sortedQuestions,
+  sortedQuestions
 } from './calloutFormTypes';
 
 type FormRespondDialogProps = {
@@ -54,7 +54,7 @@ export function FormRespondDialog({
   form,
   mode,
   response,
-  onSubmit,
+  onSubmit
 }: FormRespondDialogProps) {
   const questions = useMemo(() => sortedQuestions(form), [form]);
   const [values, setValues] = useState<Record<string, string>>({});
@@ -77,14 +77,14 @@ export function FormRespondDialog({
   const handleSubmit = () => {
     const answers: CalloutFormAnswer[] = questions.map(q => ({
       questionId: q.id,
-      value: (values[q.id] ?? '').trim(),
+      value: (values[q.id] ?? '').trim()
     }));
     onSubmit?.(answers);
     toast.success('Response submitted', {
       description:
         form.responseVisibility === 'admins'
           ? 'Only space administrators can see your answers.'
-          : 'Anyone with access to this space can see your answers.',
+          : 'Anyone with access to this space can see your answers.'
     });
     onOpenChange(false);
   };
@@ -94,7 +94,7 @@ export function FormRespondDialog({
       ? new Date(response.submittedAt).toLocaleDateString(undefined, {
           day: 'numeric',
           month: 'long',
-          year: 'numeric',
+          year: 'numeric'
         })
       : null;
 

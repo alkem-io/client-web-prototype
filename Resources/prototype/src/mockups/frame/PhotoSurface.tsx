@@ -12,7 +12,7 @@ import type { MockupTemplate, TemplateSlot } from '../templates/registry';
 
 export function PhotoSlot({
   slot,
-  children,
+  children
 }: {
   slot: TemplateSlot;
   children: ReactNode;
@@ -40,7 +40,7 @@ export function PhotoSlot({
         background: 'var(--background)',
         // A photographed screen is never perfectly flat-lit; a whisper of the
         // plate's own shading keeps the composite from looking pasted on.
-        boxShadow: 'inset 0 0 60px rgba(16,35,50,.10)',
+        boxShadow: 'inset 0 0 60px rgba(16,35,50,.10)'
       }}
     >
       {children}
@@ -50,7 +50,7 @@ export function PhotoSlot({
 
 export function PhotoSurface({
   template,
-  screens,
+  screens
 }: {
   template: MockupTemplate;
   /** Screen node per slot id. */
@@ -62,7 +62,7 @@ export function PhotoSurface({
         position: 'absolute',
         inset: 0,
         width: template.canvas.width,
-        height: template.canvas.height,
+        height: template.canvas.height
       }}
     >
       <img

@@ -7,25 +7,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-} from "@/app/components/ui/dialog";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Label } from "@/app/components/ui/label";
-import { Badge } from "@/app/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { Checkbox } from "@/app/components/ui/checkbox";
-import { Separator } from "@/app/components/ui/separator";
-import { MarkdownEditor } from "@/app/components/ui/markdown-editor";
+  DialogFooter
+} from "@/crd/primitives/dialog";
+import { Button } from "@/crd/primitives/button";
+import { Input } from "@/crd/primitives/input";
+import { Label } from "@/crd/primitives/label";
+import { Badge } from "@/crd/primitives/badge";
+import { RadioGroup, RadioGroupItem } from "@/crd/primitives/radio-group";
+import { Checkbox } from "@/crd/primitives/checkbox";
+import { Separator } from "@/crd/primitives/separator";
+import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import { X, ImageIcon, Brain, Fingerprint, Zap, ChevronLeft } from "lucide-react";
-import { cn } from "@/app/components/ui/utils";
+import { cn } from "@/crd/lib/utils";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/app/components/ui/select";
+  SelectValue
+} from "@/crd/primitives/select";
 
 interface CreateVCDialogV2Props {
   open: boolean;
@@ -41,7 +41,7 @@ const HOSTED_SPACES = [
 
 export function CreateVCDialogV2({
   open,
-  onOpenChange,
+  onOpenChange
 }: CreateVCDialogV2Props) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
@@ -289,7 +289,7 @@ function StepKnowledgeSource({
   sourceType, setSourceType,
   selectedSpace, setSelectedSpace,
   apiEndpoint, setApiEndpoint,
-  apiKey, setApiKey,
+  apiKey, setApiKey
 }: {
   sourceType: string; setSourceType: (v: string) => void;
   selectedSpace: string; setSelectedSpace: (v: string) => void;
@@ -422,7 +422,7 @@ function StepIdentity({
   avatar, setAvatar,
   tags, setTags,
   currentTag, setCurrentTag,
-  handleTagKeyDown,
+  handleTagKeyDown
 }: {
   name: string; setName: (v: string) => void;
   tagline: string; setTagline: (v: string) => void;
@@ -466,7 +466,7 @@ function StepIdentity({
           value={description}
           onChange={setDescription}
           placeholder="Describe what this VC can help with..."
-          minHeight="100px"
+          className="min-h-[100px]"
         />
         <p className="text-caption text-muted-foreground">Detailed explanation of expertise and purpose</p>
       </div>
@@ -540,7 +540,7 @@ function StepCapabilities({
   handleTestVC,
   references, setReferences,
   currentRef, setCurrentRef,
-  handleRefKeyDown,
+  handleRefKeyDown
 }: {
   capAnswer: boolean; setCapAnswer: (v: boolean) => void;
   capPosts: boolean; setCapPosts: (v: boolean) => void;

@@ -1,18 +1,20 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { Button } from "@/app/components/ui/button";
+import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
+import { Button } from "@/crd/primitives/button";
 import { Plus, Pin, ChevronsDownUp, ChevronsUpDown, Lock, Users } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
+import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar";
+import { Card, CardContent } from "@/crd/primitives/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
-import { ContributionWhiteboardCard } from "@/app/components/contribution/ContributionWhiteboardCard";
-import { ContributionPostCard } from "@/app/components/contribution/ContributionPostCard";
-import { ContributionMemoCard } from "@/app/components/contribution/ContributionMemoCard";
+import { ContributionWhiteboardCard } from "@/crd/components/contribution/ContributionWhiteboardCard";
+import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
+import { ContributionMemoCard } from "@/crd/components/contribution/ContributionMemoCard";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
@@ -64,7 +66,7 @@ const SAMPLE_SUBSPACE: RichSubspaceCardData = {
   why:
     "Cities account for over 70% of energy-related emissions, yet most climate targets stop at the level of ambition. There is rarely a concrete, fundable path from a 2030 pledge to delivery on the ground, and that gap is where momentum quietly dies.\n\nThis subspace exists to close it — translating political commitments into the practical engineering, procurement, and finance decisions that determine whether the transition actually happens, and doing it in the open so progress is shared.",
   who:
-    "City energy planners, municipal sustainability officers, utility and grid partners, and researchers working on the practical side of the transition. If you spend your time on the how — not just the why — you'll feel at home here.\n\nNewcomers with a policy, engineering, or community-organising background are especially welcome. A lot of the hardest problems in this space are about people and process, not only technology, so a wide range of experience is genuinely useful.",
+    "City energy planners, municipal sustainability officers, utility and grid partners, and researchers working on the practical side of the transition. If you spend your time on the how — not just the why — you'll feel at home here.\n\nNewcomers with a policy, engineering, or community-organising background are especially welcome. A lot of the hardest problems in this space are about people and process, not only technology, so a wide range of experience is genuinely useful."
 };
 
 const SAMPLE_SUBSPACE_2: RichSubspaceCardData = {
@@ -89,7 +91,7 @@ const SAMPLE_SUBSPACE_2: RichSubspaceCardData = {
   why:
     "Transport is the fastest-growing source of urban emissions and the hardest to shift, because it is bound up in habit, land use, and decades of car-first infrastructure. Cities need evidence that alternatives actually work at street level before they will commit budget.\n\nThis lab exists to produce that evidence — turning contested mobility debates into tested, measurable interventions that make the low-carbon option the easy, obvious one for residents.",
   who:
-    "Urban designers, transport planners, active-travel advocates, and data analysts who want to move from opinion to measured outcomes. If you have run a pilot, mapped a corridor, or fought a parking-removal battle, your experience is gold here.\n\nWe especially welcome people who can bridge community engagement and technical modelling — the projects that succeed are the ones residents helped shape, not just the ones that model well.",
+    "Urban designers, transport planners, active-travel advocates, and data analysts who want to move from opinion to measured outcomes. If you have run a pilot, mapped a corridor, or fought a parking-removal battle, your experience is gold here.\n\nWe especially welcome people who can bridge community engagement and technical modelling — the projects that succeed are the ones residents helped shape, not just the ones that model well."
 };
 
 const SAMPLE_SUBSPACE_3: RichSubspaceCardData = {
@@ -113,7 +115,7 @@ const SAMPLE_SUBSPACE_3: RichSubspaceCardData = {
   why:
     "Cities are heating faster than the surrounding countryside and flooding more often as storms intensify, yet grey infrastructure alone can't keep pace or afford the upgrades. Green infrastructure is often cheaper, cools neighbourhoods, and manages stormwater at the source.\n\nThis subspace exists to make the case bankable — pairing landscape design with hard evidence on avoided flood damage, reduced cooling demand, and health outcomes so finance and planning teams can confidently say yes.",
   who:
-    "Landscape architects, ecologists, drainage engineers, and neighbourhood groups who want greener, cooler, more resilient streets. Whether you plant, design, maintain, or campaign, there's a place for your perspective.\n\nNewcomers who can help translate ecological value into the language of budgets and planning policy are especially welcome — that translation is usually what turns a good idea into a funded project.",
+    "Landscape architects, ecologists, drainage engineers, and neighbourhood groups who want greener, cooler, more resilient streets. Whether you plant, design, maintain, or campaign, there's a place for your perspective.\n\nNewcomers who can help translate ecological value into the language of budgets and planning policy are especially welcome — that translation is usually what turns a good idea into a funded project."
 };
 
 const INITIAL_POSTS: PostWithTags[] = [
@@ -124,15 +126,14 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Community", "Updates"],
       author: {
         name: "David Kim",
-        role: "Lead",
-        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Three subspaces open for new contributors 👇",
       snippet:
         "We're opening up three connected workstreams to new contributors this quarter. If you're working on the practical side of the urban energy and climate transition, here's what each one is about — and who it's for:",
       timestamp: "5 hours ago",
       commentCount: 9,
-      embeddedSubspaces: [SAMPLE_SUBSPACE, SAMPLE_SUBSPACE_2, SAMPLE_SUBSPACE_3],
+      embeddedSubspaces: [SAMPLE_SUBSPACE, SAMPLE_SUBSPACE_2, SAMPLE_SUBSPACE_3]
     },
     // 1. Form — the framing is visible in context on load
     {
@@ -142,8 +143,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Community", "Research"],
       author: {
         name: "Sarah Chen",
-        role: "Lead",
-        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Q4 Planning — Tell Us Where to Focus",
       snippet: "We're setting the agenda for next quarter and the steering group wants input from people doing the work, not just leads. Answer the three questions below — it takes about two minutes, and the programme team reads every response before the planning session on the 20th.",
@@ -163,20 +163,20 @@ const INITIAL_POSTS: PostWithTags[] = [
               { id: "sp7-q1-o2", label: "Grid connection studies" },
               { id: "sp7-q1-o3", label: "Community outreach" },
               { id: "sp7-q1-o4", label: "Financing models" },
-            ],
+            ]
           },
           {
             id: "sp7-q2",
             question: "What is currently blocking you?",
             explanation: "Anything from missing data to a decision nobody has made yet.",
             sortOrder: 1,
-            answerType: "long",
+            answerType: "long"
           },
           {
             id: "sp7-q3",
             question: "Anything else the team should know?",
             sortOrder: 2,
-            answerType: "long",
+            answerType: "long"
           },
         ],
         responses: [
@@ -185,14 +185,14 @@ const INITIAL_POSTS: PostWithTags[] = [
             author: {
               id: "user-psharma",
               name: "Priya Sharma",
-              avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+              avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
             },
             submittedAt: "2026-08-04T09:20:00.000Z",
             answers: [
               { questionId: "sp7-q1", value: "Roof survey backlog" },
               { questionId: "sp7-q2", value: "We're waiting on the municipality to confirm which buildings are listed. Without that we can't schedule surveys for half the list." },
               { questionId: "sp7-q3", value: "Happy to take the listed-buildings question if someone can introduce me to the heritage officer." },
-            ],
+            ]
           },
           {
             id: "sp7-r2",
@@ -202,10 +202,10 @@ const INITIAL_POSTS: PostWithTags[] = [
               { questionId: "sp7-q1", value: "Grid connection studies" },
               { questionId: "sp7-q2", value: "The DNO quote turnaround is eight weeks and we keep starting the clock late. This is a process problem, not a technical one." },
               { questionId: "sp7-q3", value: "" },
-            ],
+            ]
           },
-        ],
-      },
+        ]
+      }
     },
     // 1. Plain post (text, no contributions)
     {
@@ -214,8 +214,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Updates", "Announcements"],
       author: {
         name: "Sarah Chen",
-        role: "Lead",
-        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Kickoff: Municipal Transition Strategy",
       snippet: "We are officially launching the strategy phase for the 2030 renewable transition. Our goal is to outline a clear path for municipalities to reach 100% renewable energy. Please review the initial policy draft in the 'Policy Drafts' channel.\n\nKey milestones for this quarter include completing the stakeholder mapping exercise, finalising the baseline energy consumption analysis, and drafting the first version of the policy framework. We've also scheduled three community workshops in April to gather public input on priority areas.\n\nPlease make sure to review the attached timeline and flag any conflicts with your department's schedule before Friday.",
@@ -223,7 +222,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       commentCount: 5,
       embeddedImages: [
         { url: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80&w=800", alt: "Solar panels on rooftop", position: "after" as const }
-      ],
+      ]
     },
     // 2. Post with a call for links & files
     {
@@ -233,13 +232,12 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "links",
       author: {
         name: "David Miller",
-        role: "Energy Analyst",
-        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Share Resources: Grid Modernisation References",
       snippet: "We're collecting links to relevant research papers, vendor documentation, and regulatory databases. Drop your best resources below — anything related to smart meters, battery storage, or grid balancing.\n\nSpecifically, we need references covering: (1) IEEE standards for smart grid interoperability, (2) comparative analysis of battery storage technologies for municipal-scale deployment, (3) regulatory frameworks from municipalities that have already completed grid modernisation, and (4) cost-benefit analyses from pilot projects in comparable climates.\n\nPlease include a short description with each link so we can categorise them effectively.",
       timestamp: "4 hours ago",
-      commentCount: 7,
+      commentCount: 7
     },
     // 3. Post with a call for posts
     {
@@ -249,13 +247,12 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "posts",
       author: {
         name: "Elena Rodriguez",
-        role: "Lead",
-        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Share Your Success Stories: Community Solar Wins",
       snippet: "We want to hear from communities that have already started their solar journey. Share your experiences — what worked, what didn't, and advice for others just getting started.\n\nYour stories will be compiled into a best-practices guide that we'll distribute to all participating municipalities. We're especially interested in hearing about community engagement strategies, financing models that worked well, and any unexpected challenges you encountered during installation or grid connection.\n\nDon't worry about polish — authentic, practical accounts are exactly what we need.",
       timestamp: "6 hours ago",
-      commentCount: 14,
+      commentCount: 14
     },
     // 4. Post with a call for memos
     {
@@ -265,13 +262,12 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "memos",
       author: {
         name: "Alex Contributor",
-        role: "Member",
-        avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Document Best Practices: Energy Auditing Procedures",
       snippet: "Help us build a comprehensive library of energy auditing procedures. Write up your methodology, checklists, and lessons learned as structured memos.\n\nWe need documentation covering commercial buildings, residential properties, and municipal facilities. Each memo should include the pre-visit preparation steps, on-site assessment procedure, equipment list, and a template for the final report. If you've developed any innovative approaches to thermal imaging analysis or air infiltration testing, those would be particularly valuable.\n\nUse the memo format so we can maintain consistency across the knowledge base.",
       timestamp: "1 day ago",
-      commentCount: 9,
+      commentCount: 9
     },
     // 5. Post with a call for whiteboards
     {
@@ -281,13 +277,12 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "whiteboards",
       author: {
         name: "Michael Chang",
-        role: "Researcher",
-        avatarUrl: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Call for Ideas: Community Solar Projects",
       snippet: "We need innovative concepts for integrating solar into existing municipal infrastructure. Sketch out your ideas for public buildings, parking lots, and open spaces.\n\nThink creatively about dual-use structures — solar canopies over parking lots that also provide EV charging, building-integrated photovoltaics on facades, or floating solar on reservoirs. Consider aesthetic integration with the urban landscape, maintenance access, and how each concept could serve as a visible symbol of the community's commitment to renewable energy.\n\nThe top three concepts will be presented to the city council next month.",
       timestamp: "1 day ago",
-      commentCount: 12,
+      commentCount: 12
     },
     // 6. Sprint board — tasks response type
     {
@@ -297,13 +292,12 @@ const INITIAL_POSTS: PostWithTags[] = [
       contributionType: "tasks",
       author: {
         name: "Sarah Chen",
-        role: "Scrum Master",
-        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Sprint 4 — Grid Modernisation Workstream",
       snippet: "Sprint board for the current two-week cycle. Add tasks, assign yourself, and drag to update status as you work.",
       timestamp: "3 hours ago",
-      commentCount: 6,
+      commentCount: 6
     },
     // 7. Post with a media gallery
     {
@@ -312,8 +306,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       tags: ["Documentation", "Progress"],
       author: {
         name: "Alex Contributor",
-        role: "Member",
-        avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
       },
       title: "Workshop Photos: Community Engagement Session",
       snippet: "Great turnout at last week's community engagement workshop! Here are some highlights from the day. Feel free to share your own photos in the gallery below.",
@@ -324,9 +317,9 @@ const INITIAL_POSTS: PostWithTags[] = [
           { id: "mg-sp2", url: wb2 },
           { id: "mg-sp3", url: wb3 },
         ],
-        totalCount: 12,
+        totalCount: 12
       },
-      commentCount: 8,
+      commentCount: 8
     },
   ];
 
@@ -341,20 +334,20 @@ export function SpaceFeed() {
     const stored = localStorage.getItem('alkemio-collapse-posts');
     return stored !== null ? stored === 'true' : false;
   });
-  const { searchValue, activeTags, viewMode } = useSpaceFilters();
+  const { searchValue, activeTags } = useSpaceFilters();
 
   const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
     posts,
     setPosts,
     currentUser: MOCK_CURRENT_USER,
-    isAdmin: true,
+    isAdmin: true
   });
 
   const forms = useCalloutFormMock({
     posts,
     setPosts: (next) => setPosts(next as PostWithTags[]),
     currentUser: MOCK_CURRENT_USER,
-    isAdmin: DEMO_VIEWER_IS_ADMIN,
+    isAdmin: DEMO_VIEWER_IS_ADMIN
   });
 
   const formDialogPost = forms.dialogTarget
@@ -424,7 +417,7 @@ export function SpaceFeed() {
               title="Battery Storage Regulations EU"
               description="European Commission energy storage regulatory framework"
             />
-          ],
+          ]
         };
       case 'posts':
         return {
@@ -473,7 +466,7 @@ export function SpaceFeed() {
               tags={["finance", "bonds", "PPA"]}
               commentCount={2}
             />
-          ],
+          ]
         };
       case 'memos':
         return {
@@ -485,19 +478,19 @@ export function SpaceFeed() {
             <ContributionMemoCard key="c1"
               title="Commercial Building Audit Checklist"
               author="David Miller"
-              markdownContent="## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"
+              markdownContent={"## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"}
             />,
             <ContributionMemoCard key="c2"
               title="Residential Audit Quick Guide"
               author="Sarah Chen"
-              markdownContent="## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"
+              markdownContent={"## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"}
             />,
             <ContributionMemoCard key="c3"
               title="Post-Audit Reporting Template"
               author="Alex Contributor"
-              markdownContent="## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"
+              markdownContent={"## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"}
             />
-          ],
+          ]
         };
       case 'whiteboards':
         return {
@@ -536,7 +529,7 @@ export function SpaceFeed() {
               author="Lisa Park"
               previewUrl={wb2}
             />
-          ],
+          ]
         };
       default:
         return undefined;
@@ -612,7 +605,7 @@ export function SpaceFeed() {
                   submittedDate={new Date(response.submittedAt).toLocaleDateString(undefined, {
                     day: 'numeric',
                     month: 'short',
-                    year: 'numeric',
+                    year: 'numeric'
                   })}
                   snippet={firstAnswer}
                   answerCount={response.answers.filter((a) => a.value.trim()).length}
@@ -731,16 +724,25 @@ export function SpaceFeed() {
 
   return (
     <div className="w-full">
-      {/* Lead Update — pinned announcement */}
+      {/* Lead Update — pinned announcement. Prototype-only, so it sits above
+          production's feed section rather than inside it. */}
       <LeadUpdate />
 
-      <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "space-y-6"}>
+      {/*
+       * Production's feed section — it owns the empty state, the loading
+       * skeletons and the Show More button. Cards go in as `children` because
+       * each one carries per-post wiring (contribution previews, media-gallery
+       * handlers, form settings) that CRD's own `posts` prop cannot express.
+       */}
+      <CrdSpaceFeed hasMore={true} onShowMore={() => {}}>
         {filteredPosts.map((post) => (
           <PostCard
+            // Comments open inline in the card footer — production's thread.
+            commentsSlot={<CommentsPanel threadId={post.id} />}
             key={post.id}
             post={{
               ...post,
-              descriptionExpanded: !collapseEnabled,
+              descriptionExpanded: !collapseEnabled
             }}
             onClick={() => setSelectedPost(post)}
             onExpandClick={() => setSelectedPost(post)}
@@ -750,13 +752,7 @@ export function SpaceFeed() {
             contributionsPreview={getContributionPreview(post)}
           />
         ))}
-      </div>
-
-      <div className="mt-8 text-center">
-        <Button variant="outline" className="w-full sm:w-auto">
-          Show More
-        </Button>
-      </div>
+      </CrdSpaceFeed>
 
       <input
         ref={fileInputRef}
@@ -855,12 +851,12 @@ function LeadUpdate() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <Pin className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--primary)" }} />
-              <span className="text-xs font-medium" style={{ color: "var(--primary)" }}>
+              <span className="text-caption" style={{ color: "var(--primary)" }}>
                 Pinned by Elena Rodriguez · Lead
               </span>
-              <span className="text-xs text-muted-foreground ml-auto shrink-0">3 days ago</span>
+              <span className="text-caption text-muted-foreground ml-auto shrink-0">3 days ago</span>
             </div>
-            <p className="text-sm text-foreground/90 leading-relaxed">
+            <p className="text-body text-foreground/90 leading-relaxed">
               Welcome to the Q2 sprint! We're focusing on stakeholder alignment and finalizing the policy proposal. Please review the updated timeline in the Knowledge Base and flag any blockers in this week's check-in post.
             </p>
           </div>

@@ -117,7 +117,7 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.privacy": "Privacy",
     "footer.docs": "Docs",
     "footer.support": "Support",
-    "footer.about": "About",
+    "footer.about": "About"
   },
 
   nl: {
@@ -220,7 +220,7 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.privacy": "Privacy",
     "footer.docs": "Documentatie",
     "footer.support": "Ondersteuning",
-    "footer.about": "Over ons",
+    "footer.about": "Over ons"
   },
 
   bg: {
@@ -323,8 +323,8 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.privacy": "Поверителност",
     "footer.docs": "Документация",
     "footer.support": "Поддръжка",
-    "footer.about": "За нас",
-  },
+    "footer.about": "За нас"
+  }
 };
 
 interface LanguageContextType {
@@ -373,7 +373,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       setLanguage,
       t,
       languages: LANGUAGES,
-      currentLanguage,
+      currentLanguage
     }),
     [language, setLanguage, t, currentLanguage]
   );

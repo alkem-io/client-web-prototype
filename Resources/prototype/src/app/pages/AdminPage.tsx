@@ -12,12 +12,12 @@ import {
   Database,
   ChevronRight,
   Lock,
-  Lightbulb,
+  Lightbulb
 } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/app/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Button } from "@/crd/primitives/button";
+import { Badge } from "@/crd/primitives/badge";
+import { Card, CardContent, CardHeader } from "@/crd/primitives/card";
+import { cn } from "@/crd/lib/utils";
 
 const ADMIN_SECTIONS = [
   { id: "overview", label: "Overview", icon: BarChart3 },
@@ -49,14 +49,14 @@ export default function AdminPage() {
   const activeSection = section || "overview";
 
   return (
-    <div className="min-h-[calc(100vh-128px)] px-6 md:px-8" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-[calc(100vh-128px)] px-6 md:px-8" >
       <div className="grid grid-cols-12 gap-6 h-full">
       {/* Sidebar */}
       <aside
         className="hidden md:flex flex-col lg:col-start-2 col-span-2 py-6 px-3"
         style={{
           borderRight: "1px solid var(--border)",
-          background: "var(--card)",
+          background: "var(--card)"
         }}
       >
         <div className="flex items-center gap-2 px-3 mb-6">
@@ -104,7 +104,7 @@ export default function AdminPage() {
                   className="text-body"
                   style={{
                     color: "var(--muted-foreground)",
-                    marginTop: 4,
+                    marginTop: 4
                   }}
                 >
                   Monitor and manage your Alkemio platform
@@ -122,7 +122,7 @@ export default function AdminPage() {
                           style={{
                             background: "var(--primary)",
                             color: "var(--primary-foreground)",
-                            opacity: 0.9,
+                            opacity: 0.9
                           }}
                         >
                           <stat.icon className="w-5 h-5" />
@@ -138,7 +138,7 @@ export default function AdminPage() {
                         className="text-body"
                         style={{
                           color: "var(--muted-foreground)",
-                          marginTop: 2,
+                          marginTop: 2
                         }}
                       >
                         {stat.label}
@@ -173,7 +173,7 @@ export default function AdminPage() {
                         borderBottom:
                           i < RECENT_ACTIVITY.length - 1
                             ? "1px solid var(--border)"
-                            : "none",
+                            : "none"
                       }}
                     >
                       <div
@@ -181,7 +181,7 @@ export default function AdminPage() {
                         style={{
                           background: "var(--primary)",
                           color: "var(--primary-foreground)",
-                          opacity: 0.85,
+                          opacity: 0.85
                         }}
                       >
                         <span className="text-caption font-bold">
@@ -219,14 +219,14 @@ export default function AdminPage() {
                     className="group flex items-start gap-4 p-5 rounded-md text-left transition-colors"
                     style={{
                       border: "1px solid var(--border)",
-                      background: "var(--card)",
+                      background: "var(--card)"
                     }}
                   >
                     <div
                       className="w-10 h-10 rounded-md flex items-center justify-center shrink-0 transition-colors"
                       style={{
                         background: "var(--secondary)",
-                        color: "var(--muted-foreground)",
+                        color: "var(--muted-foreground)"
                       }}
                     >
                       <action.icon className="w-5 h-5" />
@@ -242,7 +242,7 @@ export default function AdminPage() {
                         className="text-caption"
                         style={{
                           color: "var(--muted-foreground)",
-                          marginTop: 2,
+                          marginTop: 2
                         }}
                       >
                         {action.desc}
