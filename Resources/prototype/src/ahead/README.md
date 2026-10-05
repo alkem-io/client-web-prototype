@@ -40,6 +40,7 @@ have it. That comment is what development reads.
 | `VCHoverCard` | The same for virtual contributors |
 | `ActivityDot` | A small animated dot marking what is new since your last visit |
 | `CalloutFormFraming` | Forms as a callout type — a question set people answer in a space |
+| `TruncatedPostDescription` | Collapsed posts cut cleanly at 3 lines — no fade over text or images; a hero image crops to 160px, later images wait for "Read more", an image-only post crops like a hero. Needs a `descriptionSlot` on `PostCard` (or the behaviour in `ExpandableMarkdown`) |
 
 If this list grows past ten or so entries, the process has stopped working.
 Nothing else belongs in this folder: not pages, not mock data, not wrappers

@@ -36,6 +36,101 @@ interface PostWithTags extends PostCardData {
 
 const INITIAL_POSTS: PostWithTags[] = [
     // ═══════════════════════════════════════════════════════════════
+    // TRUNCATION DEMO — images inside the description, one per case of
+    // the "post truncation" ticket. Turn on "collapse posts" to see them clipped.
+    // ═══════════════════════════════════════════════════════════════
+
+    // T1. Image after the text — the image should hide until "Read more"
+    {
+      id: "kb-trunc-1",
+      type: "text",
+      tags: ["Research"],
+      author: {
+        name: "Sarah Chen",
+        avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      },
+      title: "Site Visit: Rooftop Solar at the Town Hall",
+      snippet: "Last Thursday we walked the town hall roof with the installer. The south face has roughly 420 m² of usable space once you account for the ventilation shafts and the maintenance walkway. Shading from the church tower only affects the eastern corner before 10:00.\n\nThe structural report came back positive — no reinforcement needed for a ballasted system. Next step is the grid connection request.\n\n![Solar panels on a flat roof](" + mg1 + ")",
+      timestamp: "1 day ago",
+      commentCount: 4
+    },
+
+    // T2. Image before the text (hero) — should show, cropped to ~160px
+    {
+      id: "kb-trunc-2",
+      type: "text",
+      tags: ["Community", "Events"],
+      author: {
+        name: "James Wilson",
+        avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      },
+      title: "Recap: Community Energy Fair",
+      snippet: "![Wind turbines at sunset](" + mg2 + ")\n\nThanks to everyone who came out on Saturday — over 300 residents stopped by the stands. The heat pump demo drew the longest queue by far, and the cooperative signed up 46 new members on the day.\n\nWe collected about 80 written questions; we'll answer the most common ones in a follow-up post next week.",
+      timestamp: "2 days ago",
+      commentCount: 11
+    },
+
+    // T3. Image only, no text — crops to 160px like a hero, with "Read more"
+    {
+      id: "kb-trunc-3",
+      type: "text",
+      tags: ["Ideas"],
+      author: {
+        name: "Priya Sharma",
+        avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      },
+      title: "Moodboard: What a Green Square Could Feel Like",
+      snippet: "![Green energy landscape](" + mg3 + ")",
+      timestamp: "3 days ago",
+      commentCount: 2
+    },
+
+    // T4. Short text (under 3 lines) followed by an image
+    {
+      id: "kb-trunc-4",
+      type: "text",
+      tags: ["Technical"],
+      author: {
+        name: "David Miller",
+        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      },
+      title: "New Inverter Installed",
+      snippet: "The replacement inverter is in and running. Photo below.\n\n![Electrical equipment](" + mg4 + ")",
+      timestamp: "4 days ago",
+      commentCount: 1
+    },
+
+    // T5. Long text with an image in the middle
+    {
+      id: "kb-trunc-5",
+      type: "text",
+      tags: ["Research", "Data"],
+      author: {
+        name: "Nina Petrova",
+        avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      },
+      title: "Heat Map Findings from the Winter Audit",
+      snippet: "We flew the thermal drone over the Noord district in January. The results are clear: most heat loss comes from pre-1970 terraced housing, mainly through roofs and single-glazed windows.\n\n![Thermal survey of rooftops](" + wb3 + ")\n\nThe second-biggest source is the old school building on Kerkstraat, which loses more heat than the next ten buildings combined. We recommend prioritising it for the first retrofit round.\n\nFull data set and methodology are in the attached report.",
+      timestamp: "5 days ago",
+      commentCount: 7
+    },
+
+    // T6. Exactly-three-lines-or-less text, no image — should NOT collapse
+    {
+      id: "kb-trunc-6",
+      type: "text",
+      tags: ["Community"],
+      author: {
+        name: "Tom Bradley",
+        avatarUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      },
+      title: "Reminder: Workshop Moved to Thursday",
+      snippet: "The retrofit workshop is moving from Wednesday to Thursday, same time and place. Bring your own energy bills if you'd like a personal estimate.",
+      timestamp: "6 days ago",
+      commentCount: 0
+    },
+
+    // ═══════════════════════════════════════════════════════════════
     // BASIC FRAMING TYPES (no contributions)
     // ═══════════════════════════════════════════════════════════════
 
