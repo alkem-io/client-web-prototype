@@ -8,6 +8,28 @@ The full version of this is [`Resources/prototype/CLAUDE.md`](../../Resources/pr
 It is the canonical file despite the name — any AI tool working in this folder
 should read it. If this summary ever disagrees with it, **that file wins.**
 
+## 0. How work runs here — read this first
+
+Jeroen is the **designer**, not a developer. He describes what he wants in words;
+everything else is yours. He does not run git commands.
+
+1. **Start a branch before editing anything.** One per piece of work. Never build
+   on `main`. Say the branch name back in one line.
+2. **Commit as you go**, with messages saying what changed and why. He does not
+   make commits; you do.
+3. **Push only when he wants someone else to see it**, and give him the link.
+4. **Never merge to `main` unless he says it is ready.**
+5. **Tell him where to look** — a link and what to look at. "The build passes" is
+   not something he can check.
+6. Proposing ahead-of-production work? **Name `src/ahead/` out loud.**
+
+**Write for a designer.** No `HEAD`, no "the index", no "upstream", no "rebase".
+Plain words for what actually happened.
+
+**One assistant at a time per folder** — a working copy has one branch and one set
+of files, and two assistants will overwrite each other silently. Use a separate
+git worktree for parallel work.
+
 ## 1. `src/crd/` is production. Never edit it.
 
 It is a byte-identical copy of [client-web](https://github.com/alkem-io/client-web)'s

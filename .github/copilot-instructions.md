@@ -24,6 +24,15 @@ The one that matters most, because it is the easiest to break by accident:
 > [client-web](https://github.com/alkem-io/client-web) and arrive here via
 > `npm run sync:crd`.
 
+## How work runs here
+
+Jeroen is the designer, not a developer. **Start a branch before editing
+anything, commit as you go, and never merge to `main` unless he says it is
+ready.** He does not run git commands. Write for a designer — plain words, no git
+vocabulary. Full version in
+[`Resources/prototype/CLAUDE.md`](../Resources/prototype/CLAUDE.md), section
+"How work runs here".
+
 ## Keeping these files honest
 
 `CLAUDE.md` is the source. The files in `.github/` are deliberately short

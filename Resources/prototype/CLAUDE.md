@@ -86,6 +86,35 @@ production does not (sidebar, command, drawer, form, chart, hover-card,
 placeholder-card, …). They are fair game to edit — and they are also the
 shortlist of what to upstream next.
 
+## How work runs here
+
+Jeroen is the **designer** on this project, not a developer. He describes what he
+wants in words; everything else is yours to do. He does not run git commands and
+should not be asked to. Whichever assistant you are — Copilot, Claude Code, or
+Claude running inside Copilot — these apply.
+
+1. **Start a branch before editing anything.** One per piece of work, named after
+   the work. Never build on `main`. Say the branch name back in one line.
+2. **Commit as you go**, with messages that say what changed and why. He does not
+   make commits; you do.
+3. **Push only when he wants someone else to see it** — then give him the link.
+4. **Never merge to `main` unless he says it is ready.** That call is his.
+5. **Tell him where to look**, with a link and what to look at. "The build passes"
+   is not a result he can check.
+6. When you propose ahead-of-production work, **name `src/ahead/` explicitly**, so
+   it is visible that the rule was applied rather than guessed at.
+
+**Write for a designer.** No `HEAD`, no "the index", no "upstream", no "rebase".
+Say what happened in plain words. If a sentence would need a second sentence to
+explain it, it is the wrong sentence.
+
+**One assistant at a time in a folder.** A working copy has one branch, one set of
+files. Two assistants in the same folder will overwrite each other's work without
+either noticing. For parallel work, use a separate git worktree per assistant.
+
+[`WORKFLOW.excalidraw`](WORKFLOW.excalidraw) is the picture of this, written for
+him rather than for you.
+
 ## When the prototype is ahead
 
 Being ahead is the point of this repo. The failure mode is what happens *after*
