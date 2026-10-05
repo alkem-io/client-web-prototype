@@ -1,8 +1,10 @@
 /**
- * Contribution grid — production's `@/crd/components/contribution/ContributionGrid`
+ * Contribution grid — the three-column grid from `@/ahead/ThreeColumnContributionGrid`
  * with the prototype's "add" placeholder composed in as its last child.
  *
- * CRD owns the grid and its collapse/expand behaviour. The add card is CRD's
+ * The grid is production's `ContributionGrid` with a third column; it lives in
+ * src/ahead/ until production takes a `columns` prop, then this goes back to
+ * importing CRD's directly. The add card is CRD's
  * `ContributionAddCard`, rendered as a child rather than built in — which is
  * how CRD expects composition to work, and means no call site had to change.
  *
@@ -13,7 +15,7 @@
 import { Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { ContributionAddCard } from '@/crd/components/contribution/ContributionAddCard';
-import { ContributionGrid as CrdContributionGrid } from '@/crd/components/contribution/ContributionGrid';
+import { ThreeColumnContributionGrid } from '@/ahead/ThreeColumnContributionGrid';
 
 type ContributionGridProps = {
   children: ReactNode;
@@ -37,7 +39,7 @@ export function ContributionGrid({
   className,
 }: ContributionGridProps) {
   return (
-    <CrdContributionGrid
+    <ThreeColumnContributionGrid
       // The add card occupies a grid slot, so it counts toward the total CRD
       // uses to decide whether the grid needs collapsing.
       totalCount={onAddClick ? totalCount + 1 : totalCount}
@@ -52,6 +54,6 @@ export function ContributionGrid({
           className={addCardClassName}
         />
       )}
-    </CrdContributionGrid>
+    </ThreeColumnContributionGrid>
   );
 }
