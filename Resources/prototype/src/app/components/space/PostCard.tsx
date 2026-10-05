@@ -17,6 +17,14 @@
  *   · the extra fixture fields (`contributionForm`, `reactions`,
  *     `reactionOptions`, `embeddedImages`) ride on an extended `PostCardData`.
  *
+ *   · post truncation → CRD's snippet is withheld and `TruncatedPostDescription`
+ *     (src/ahead) renders in its place, through `contributionsPreview` — the
+ *     only slot inside the card body. Tags and references move with it so the
+ *     order stays title → description → tags → contributions. Skipped for
+ *     framing types, whose preview CRD draws between the tags and that slot;
+ *     the description would land below the preview. Upstream ask: a
+ *     `descriptionSlot`. See the component's header.
+ *
  * PHASE 1 REMOVALS — recorded in PHASE-2.md:
  *   · the activity dot beside the title (§1 — CRD renders the title, no slot)
  *   · `onDeleteMediaGalleryImage` (§4 — CRD's `MediaGalleryFeedGrid` has no
@@ -25,6 +33,7 @@
  */
 import { Settings } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { ReferencesAndTagsStrip } from '@/crd/components/callout/ReferencesAndTagsStrip';
 import {
   PostCard as CrdPostCard,
   type PostCardData as CrdPostCardData,
@@ -32,6 +41,7 @@ import {
 import type { MediaGalleryFeedThumbnail } from '@/crd/components/mediaGallery/MediaGalleryFeedGrid';
 import { Button } from '@/crd/primitives/button';
 import { ReactionBar } from '@/app/components/space/ReactionBar';
+import { TruncatedPostDescription } from '@/ahead/TruncatedPostDescription';
 import type { PostReaction } from '@/app/components/space/post-reactions-data';
 import type { CalloutFormData } from '@/app/components/callout/calloutFormTypes';
 
@@ -88,8 +98,12 @@ type PostCardProps = {
   className?: string;
 };
 
+/** Types whose framing preview CRD draws inside the body — see the header note. */
+const FRAMING_PREVIEW_TYPES = new Set(['whiteboard', 'memo', 'mediaGallery', 'document', 'callToAction']);
+
 export function PostCard({
   post,
+  contributionsPreview,
   settingsSlot,
   onOpenFormSettings,
   reactionsEnabled = true,
@@ -119,10 +133,28 @@ export function PostCard({
       </div>
     ) : undefined;
 
+  const ownsDescription =
+    !FRAMING_PREVIEW_TYPES.has(post.type) && (!!post.snippet || !!post.embeddedImages?.length);
+
   return (
     <CrdPostCard
       {...rest}
-      post={post}
+      post={ownsDescription ? { ...post, snippet: undefined, tags: undefined, references: undefined } : post}
+      contributionsPreview={
+        ownsDescription ? (
+          <>
+            <TruncatedPostDescription
+              content={post.snippet}
+              embeddedImages={post.embeddedImages}
+              collapsible={!post.descriptionExpanded}
+            />
+            <ReferencesAndTagsStrip references={post.references} tags={post.tags} className="mt-2" />
+            {contributionsPreview}
+          </>
+        ) : (
+          contributionsPreview
+        )
+      }
       settingsSlot={settings}
       reactionsSlot={
         reactionsEnabled ? (
