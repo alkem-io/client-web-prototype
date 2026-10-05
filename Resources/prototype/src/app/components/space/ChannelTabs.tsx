@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { cn } from "@/crd/lib/utils";
 import { ChevronsRight } from "lucide-react";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { ActivityDot } from "@/ahead/ActivityDot";
 import { calloutContainer } from "@/app/data/activity-data";
 
 export interface CalloutTab {

@@ -1,9 +1,9 @@
 # Bugs found in client-web while aligning the prototype
 
-Two defects in `src/crd/` surfaced during the prototype migration
-(2026-09-21, against `develop@90ae07ff`). Both affect **production**, not just
-the prototype. Neither is fixed here — `src/crd/` is vendored read-only — so
-both need a client-web PR.
+Defects in `src/crd/` surfaced during the prototype work
+(first batch 2026-09-21, against `develop@90ae07ff`). They affect **production**, not just
+the prototype. None is fixed here — `src/crd/` is vendored read-only — so
+each needs a client-web PR.
 
 ---
 
@@ -161,6 +161,59 @@ Verified in a browser: a CRD `<Button>` computes to `font-size: 12px`,
 correct, drop "Same size as body" from the comment and change the CLAUDE.md
 table row to 12px. If 14px is correct, change the token — but note that will
 resize every button, tab, menu row and select trigger in the product.
+
+---
+
+## 4. Memo and document framing previews are too small in the space feed
+
+**Severity:** UX. On a post with an attached memo or document (the framing,
+not contributions), the feed preview is a thin strip. You can't read a memo,
+and a document shows only a small icon. Whiteboard previews right next to them
+are a full 16:9 box.
+
+All three framings are rendered in `src/crd/components/space/PostCard.tsx`,
+each with a different height:
+
+| Framing | Feed preview | ~height on a 640px-wide card |
+|---|---|---|
+| Whiteboard (l.441) | `aspect-video` | 360px |
+| Memo (l.473) | `h-32` | **128px** |
+| Document (l.550) | `CalloutCollaboraPreview size="compact"` → `h-28` | **112px** |
+
+The memo is the worst case: `CroppedMarkdown` gets about 100px of text, and the
+centred "Open Memo" overlay covers most of that.
+
+**Fix:** give all three the whiteboard's size, so every framing preview is the
+same 16:9 box:
+
+```diff
+ // PostCard.tsx — memo framing
+-  className="relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 h-32 text-left …"
++  className="relative block w-full cursor-pointer overflow-hidden rounded-lg border border-border bg-muted/30 aspect-video text-left …"
+ …
+-    <div className="p-3 h-full">
++    <div className="p-4 h-full">
+       <CroppedMarkdown content={post.framingMemoMarkdown} maxHeight="100%" />
+
+ // PostCard.tsx — document framing
+   <CalloutCollaboraPreview
+     documentType={post.framingDocumentType}
+     onOpen={onOpenFramingDocument ?? onClick ?? (() => {})}
+     previewImageUrl={post.framingDocumentPreviewUrl}
+-    size="compact"
+   />
+```
+
+After this change nothing in `src/crd` uses `size="compact"` on
+`CalloutCollaboraPreview`. Either remove the variant, or keep it and leave its
+render test in `CalloutCollaboraPreview.test.tsx`. Its doc comment ("shorter
+fixed height for the space feed card") should be updated either way.
+
+**Optional follow-up for consistency:** in the callout detail dialog,
+`CalloutMemoPreview` is capped at `maxHeight="16rem"` while whiteboard and
+document previews there are `aspect-video`. Making the memo box `aspect-video`
+as well (or raising the cap) would give all three framings the same size in
+the dialog too.
 
 ---
 

@@ -19,7 +19,7 @@ import AlkemioLogo from "@/imports/AlkemioLogo";
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
 import { useLanguage } from "@/app/contexts/LanguageContext";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { ActivityDot } from "@/ahead/ActivityDot";
 import { spaceContainer } from "@/app/data/activity-data";
 
 export function Sidebar({ className }: { className?: string }) {

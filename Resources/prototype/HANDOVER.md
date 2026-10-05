@@ -10,7 +10,9 @@ components, so what we design is what gets built.
 
 ## What changed
 
-The prototype now uses **82 of production's components**, up from 13.
+The prototype now uses **111 of production's components**, up from 13. (That is
+the number of distinct components imported from `src/crd/` — reproducible, not
+an estimate.)
 
 These screens are now built from production's components rather than our own
 copies:
@@ -32,18 +34,47 @@ copies:
 
 These are places the prototype is **ahead** of production. They stay.
 
-- The settings redesign (space, subspace, user, organisation)
+- Hover cards on people, organisations and virtual contributors
 - Activity dots showing what's new
 - Emoji reactions on individual contributions
-- Richer subspace cards and contributor cards
+- Forms as a callout type
 - Memo signing
 - The template detail page — production shows a pop-up, we show a full page
-- The subspace application wizard — ours is multi-step with an admin-editable
-  form builder; production's is a single fixed form
 - The mobile layout studies
+
+Two things dropped off this list because production built them: the richer
+subspace cards (now CRD's `ExpandedSpaceCard`) and the richer contributor cards
+(CRD's `ContributorCard` gained tagline, tags, associates count, website, join
+month and messaging). That is the process working — see below.
 
 Everything we removed to make room is written down in `PHASE-2.md`, with what
 it would take to bring each one back. Nothing was thrown away.
+
+## How we stop drifting again
+
+Being ahead of production is the prototype's job. Quietly staying ahead after
+production catches up is the problem — two versions of the same screen, both
+being maintained, neither known to be a duplicate.
+
+So everything we are ahead on is now tracked in one place, `src/ahead/`:
+
+- Single components live in that folder, each with a comment saying what it is
+  and why production should have it. **That folder is the agenda** — it is meant
+  to be read as a list of things to decide on.
+- Bigger pieces — whole pages and flows — stay where they are and are listed in
+  `src/ahead/watchlist.json`.
+
+Every `npm run sync:crd` ends by reporting on both: a component whose name now
+exists upstream, and for each larger surface, how many of its parts production
+has built. No one has to remember.
+
+**The first thing it found: settings.** Production has built every settings tab
+the prototype has — space 9/9, subspace 5/5, user 6/6, organisation 4/4, packs
+and templates 2/2. So settings are not "ahead" any more; they are two complete
+designs of the same screens that have never been put side by side. We have
+deliberately not converted them, because that comparison is a design decision,
+not a mechanical swap. It is the main thing we would like to go through
+together.
 
 ## What we need from the dev team
 
@@ -55,9 +86,11 @@ had to remove:
    the contribution cards need the same.
 2. **A slot for a badge next to a name**, on space cards, sidebar rows and tabs.
    This is what the "new activity" dot needs.
-3. **A way to supply your own card** to the contributor collection. Ours shows
-   skills, join date and a hover card; production's shows name and role only.
-   Right now it's one or the other.
+3. **A way to hang a hover card on the contributor collection** — either "let us
+   supply the card" or just an "on hover" callback. Production's card has caught
+   up on content (skills, join date, website, messaging); the one thing it can't
+   do is show a profile preview on hover, and the collection draws its own cards,
+   so there is nowhere to put it.
 
 **Three bugs we found in production.** Written up with measurements in
 `UPSTREAM-BUGS.md`:
@@ -85,8 +118,5 @@ has a helper for this that isn't being used everywhere. Worth a look.
 
 ## Not done yet
 
-- The classification picker dialog. Only reachable from Space settings, which
-  we are leaving alone for now, so it waits for that work.
-- Three small join-flow dialogs production has that we do not: "join the parent
-  space first", and the confirmation after applying. They would sit around our
-  application wizard rather than replace it.
+- One dialog: the classification picker. It is only reachable from Space
+  settings, which we are leaving alone for now, so it waits for that work.

@@ -15,7 +15,7 @@ export function ContributionGrid({ children, totalCount, collapsedRows = 2, clas
   const { t } = useTranslation('crd-space');
   const [expanded, setExpanded] = useState(false);
 
-  const itemsPerRow = 3;
+  const itemsPerRow = 2;
   const collapsedCount = collapsedRows * itemsPerRow;
   const shouldCollapse = totalCount > collapsedCount;
 
@@ -23,7 +23,7 @@ export function ContributionGrid({ children, totalCount, collapsedRows = 2, clas
     <div className={cn('space-y-3', className)}>
       <div
         className={cn(
-          'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4',
+          'grid grid-cols-1 sm:grid-cols-2 gap-4',
           !expanded && shouldCollapse && 'max-h-[220px] overflow-hidden'
         )}
       >

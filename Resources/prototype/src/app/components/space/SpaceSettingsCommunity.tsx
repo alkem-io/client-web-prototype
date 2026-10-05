@@ -63,7 +63,7 @@ import { Separator } from "@/crd/primitives/separator";
 import { cn } from "@/crd/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { SettingsSection } from "@/app/components/shared/SettingsSection";
-import { VCHoverCard } from "@/app/components/user/VCHoverCard";
+import { VCHoverCard } from "@/ahead/VCHoverCard";
 import { Link } from "react-router";
 
 // --- Mock Data ---

@@ -5,6 +5,11 @@ import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
+  // 5173 is Vite's default, and another project on this machine takes it — so
+  // which app answered `localhost:5173` was a coin flip, and a stale tab there
+  // got read as a regression here twice. Fixed port, and fail rather than
+  // silently pick another.
+  server: { port: 5180, strictPort: true },
   plugins: [
     react(),
     tailwindcss(),

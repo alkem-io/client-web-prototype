@@ -24,7 +24,8 @@ import { FormResponsesDialog } from "@/app/components/callout/FormResponsesDialo
 import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog";
 import { useCalloutFormMock } from "@/app/components/callout/useCalloutFormMock";
 import { responsesAreRestricted, canSubmitResponse } from "@/app/components/callout/calloutFormTypes";
-import { RichSubspaceCard, type RichSubspaceCardData } from "@/app/components/space/RichSubspaceCard";
+import { ExpandedSpaceCard } from "@/crd/components/space/ExpandedSpaceCard";
+import { richSubspaceToSpaceCard, type MockRichSubspace } from "@/app/mappers/spaceCard";
 
 /** Prototype viewer role — see the same constant in SpaceKnowledgeFeed. */
 const DEMO_VIEWER_IS_ADMIN = true;
@@ -40,11 +41,11 @@ interface PostWithTags extends PostCardData {
   tags: string[];
   contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'form' | 'tasks';
   /** When set, the post body embeds one or more rich subspace cards (What / Why / Who). */
-  embeddedSubspaces?: RichSubspaceCardData[];
+  embeddedSubspaces?: MockRichSubspace[];
 }
 
 /** Sample subspace embedded in the "come join us" post — mirrors the Figma design. */
-const SAMPLE_SUBSPACE: RichSubspaceCardData = {
+const SAMPLE_SUBSPACE: MockRichSubspace = {
   slug: "renewable-energy-transition",
   name: "Renewable Energy Transition",
   parentName: "Sustainable Cities Initiative",
@@ -69,7 +70,7 @@ const SAMPLE_SUBSPACE: RichSubspaceCardData = {
     "City energy planners, municipal sustainability officers, utility and grid partners, and researchers working on the practical side of the transition. If you spend your time on the how — not just the why — you'll feel at home here.\n\nNewcomers with a policy, engineering, or community-organising background are especially welcome. A lot of the hardest problems in this space are about people and process, not only technology, so a wide range of experience is genuinely useful."
 };
 
-const SAMPLE_SUBSPACE_2: RichSubspaceCardData = {
+const SAMPLE_SUBSPACE_2: MockRichSubspace = {
   slug: "urban-mobility-lab",
   name: "Urban Mobility Lab",
   parentName: "Sustainable Cities Initiative",
@@ -94,7 +95,7 @@ const SAMPLE_SUBSPACE_2: RichSubspaceCardData = {
     "Urban designers, transport planners, active-travel advocates, and data analysts who want to move from opinion to measured outcomes. If you have run a pilot, mapped a corridor, or fought a parking-removal battle, your experience is gold here.\n\nWe especially welcome people who can bridge community engagement and technical modelling — the projects that succeed are the ones residents helped shape, not just the ones that model well."
 };
 
-const SAMPLE_SUBSPACE_3: RichSubspaceCardData = {
+const SAMPLE_SUBSPACE_3: MockRichSubspace = {
   slug: "green-infrastructure",
   name: "Green Infrastructure",
   parentName: "Sustainable Cities Initiative",
@@ -545,10 +546,10 @@ export function SpaceFeed() {
         <div className="mt-4">
           {post.embeddedSubspaces.flatMap((subspace, i) =>
             i === 0
-              ? [<RichSubspaceCard key={subspace.slug} subspace={subspace} />]
+              ? [<ExpandedSpaceCard key={subspace.slug} space={richSubspaceToSpaceCard(subspace)} />]
               : [
                   <div key={subspace.slug + "-div"} role="separator" className="mx-1 my-[18px] h-px bg-border" />,
-                  <RichSubspaceCard key={subspace.slug} subspace={subspace} />,
+                  <ExpandedSpaceCard key={subspace.slug} space={richSubspaceToSpaceCard(subspace)} />,
                 ]
           )}
         </div>

@@ -22,7 +22,7 @@ import { InviteButton } from "@/crd/components/space/sidebar/InviteButton";
 import { PostIndexButton } from "@/crd/components/space/sidebar/PostIndexButton";
 import { SearchField } from "@/crd/forms/SearchField";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { ActivityDot } from "@/app/components/shared/ActivityDot";
+import { ActivityDot } from "@/ahead/ActivityDot";
 import { spaceOrSubspaceIds } from "@/app/data/activity-data";
 import { SubspaceApplicationDialog } from "@/app/components/dialogs/SubspaceApplicationDialog";
 import type { ApplicationFormConfig } from "@/app/components/dialogs/SubspaceApplicationDialog";

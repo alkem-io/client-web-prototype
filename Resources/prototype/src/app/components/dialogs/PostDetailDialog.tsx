@@ -42,7 +42,7 @@ import { MemoDialog } from '@/app/components/memo/MemoDialog';
 import { SignedCopiesTrigger } from '@/app/components/memo/SignedCopiesTrigger';
 import { useSignedCopies } from '@/app/components/memo/memoSigningStore';
 import { uniqueSigners } from '@/app/components/memo/signingData';
-import { CalloutFormFraming } from '@/app/components/callout/CalloutFormFraming';
+import { CalloutFormFraming } from '@/ahead/CalloutFormFraming';
 import { CommentsPanel } from '@/app/components/comment/CommentsPanel';
 
 interface PostDetailDialogProps {
