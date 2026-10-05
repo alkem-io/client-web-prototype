@@ -25,6 +25,9 @@ const BRANCH = process.env.CRD_BRANCH ?? 'develop';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CRD_DIR = resolve(HERE, '..', 'src', 'crd');
 const AHEAD_DIR = resolve(HERE, '..', 'src', 'ahead');
+// `src/app/components/ui/` is ahead-of-production too: the primitives the
+// prototype has and production does not. Same graduation risk, so same check.
+const OUR_PRIMITIVES_DIR = resolve(HERE, '..', 'src', 'app', 'components', 'ui');
 const PROVENANCE = join(CRD_DIR, 'PROVENANCE.md');
 
 const checkOnly = process.argv.includes('--check');
@@ -129,9 +132,9 @@ try {
  * look, and a false positive costs ten seconds; a miss costs months.
  */
 function reportAhead(upstreamCrdDir) {
-  if (!existsSync(AHEAD_DIR)) return;
   const upstream = upstreamComponentNames(upstreamCrdDir);
-  reportGraduations(upstream);
+  reportGraduations(AHEAD_DIR, 'src/ahead/', 'component', upstream);
+  reportGraduations(OUR_PRIMITIVES_DIR, 'src/app/components/ui/', 'primitive', upstream);
   reportWatchlist(upstream);
 }
 
@@ -146,8 +149,10 @@ function upstreamComponentNames(dir, into = new Set()) {
   return into;
 }
 
-function reportGraduations(upstream) {
-  const ours = readdirSync(AHEAD_DIR)
+function reportGraduations(dir, label, noun, upstream) {
+  if (!existsSync(dir)) return;
+
+  const ours = readdirSync(dir)
     .filter(f => extname(f) === '.tsx')
     .map(f => basename(f, '.tsx'));
 
@@ -155,7 +160,7 @@ function reportGraduations(upstream) {
 
   const graduated = ours.filter(name => upstream.has(name));
 
-  console.log(`\nAhead-of-production check — ${ours.length} component(s) in src/ahead/`);
+  console.log(`\nAhead-of-production check — ${ours.length} ${noun}(s) in ${label}`);
   if (graduated.length === 0) {
     console.log('  None have landed upstream yet.');
     return;
@@ -165,8 +170,8 @@ function reportGraduations(upstream) {
   for (const name of graduated) {
     console.log(`    • ${name}`);
   }
-  console.log('\n  Next: delete src/ahead/<name>.tsx, repoint its imports to @/crd/…,');
-  console.log('  and move it to the "Recently graduated" table in src/ahead/README.md.');
+  console.log(`\n  Next: delete ${label}<name>.tsx, repoint its imports to @/crd/…,`);
+  console.log('  and record it in the "Recently graduated" table in src/ahead/README.md.');
 }
 
 /**

@@ -17,6 +17,7 @@ prototype↔production drift this setup exists to remove.
 ```
 src/crd/     ← production, read-only, synced        (the design system)
 src/app/     ← prototype explorations, yours to edit (the design work)
+src/ahead/   ← what we have and production does not  (the dev agenda)
 src/mockups/ ← Figma Make mockup pipeline
 ```
 
@@ -31,6 +32,11 @@ npm run sync:crd         # pull it in, then `npm run build`
 
 A build failure after a sync is the *point*: it tells you a CRD API changed and
 prototype code needs updating. Fix the prototype, not the vendored layer.
+
+**A green build is not the end of a sync.** Both commands print an
+*ahead-of-production* report at the end. Read it — see the next section. A sync
+that pulls in a component we already built ourselves and leaves both in place is
+a sync that made the drift worse, and the build will not tell you.
 
 ## Which component do I use?
 
@@ -80,6 +86,54 @@ production does not (sidebar, command, drawer, form, chart, hover-card,
 placeholder-card, …). They are fair game to edit — and they are also the
 shortlist of what to upstream next.
 
+## When the prototype is ahead
+
+Being ahead is the point of this repo. The failure mode is what happens *after*
+production catches up: two versions of the same screen, both maintained, neither
+known to be a duplicate. Nobody notices, because noticing depends on remembering
+— so it is not remembered here, it is reported.
+
+**Where ahead-of-production work goes:**
+
+| It is… | It lives in… |
+|---|---|
+| A new reusable component production should eventually own | `src/ahead/`, with a header comment saying what and why |
+| A primitive production has no equivalent of | `src/app/components/ui/` |
+| A whole page, flow or tab set — too big to move | wherever it already lives, listed in [`src/ahead/watchlist.json`](src/ahead/watchlist.json) |
+| An exploration that is not meant to be upstreamed | `src/app/`, as normal |
+
+`src/ahead/` is read by the dev team as an agenda, so keep it to that: no pages,
+no mock data, no wrappers around things production already has. Past ten or so
+entries it has stopped being a list of decisions and become a parking lot.
+
+**The duty on every sync.** `npm run sync:crd` ends with the ahead-of-production
+report: a name match upstream for anything in `src/ahead/` or
+`src/app/components/ui/`, and for each watchlist surface, how many of its parts
+now exist upstream — `[ ]` still ours, `[~]` production started it, `[!]`
+production has it. If anything is flagged, say so and work it through; do not
+report a sync as clean because the build passed.
+
+**Graduating one.** Delete ours, repoint the imports to `@/crd/…`, verify in the
+browser (a green build does not mean it renders), and record it in the "Recently
+graduated" table in [`src/ahead/README.md`](src/ahead/README.md).
+
+Two things this does *not* mean:
+
+- **Graduation is not automatic.** Rule 2 above still applies: check what ours
+  does that production's does not. Adopting CRD's `ContributorCollection` today
+  would cost the hover cards, so it is deliberately on hold — recorded as a
+  decision, with the upstream ask that would unblock it. "Noticed and held" is a
+  valid outcome. "Not noticed" is the one to prevent.
+- **Graduation usually costs something**, and that cost is the next thing to ask
+  production for. `ExpandedSpaceCard` has nowhere to put an `ActivityDot`. Write
+  the ask down in `src/ahead/README.md` rather than quietly accepting the loss.
+
+Measured at `cc126d7a`: production has built **every settings tab the prototype
+has** — space 9/9, subspace 5/5, user 6/6, organisation 4/4, packs 2/2. Settings
+are no longer ahead; they are two complete designs of the same screens that have
+never been compared. **Do not convert them** — that comparison is a design
+decision for the dev session, not a mechanical swap.
+
 ## Typography
 
 Use the semantic tokens, never raw Tailwind size+weight combos. The full table
@@ -125,7 +179,16 @@ removed to match production and must not come back.
 
 ```bash
 npm install
-npm run dev        # prototype
+npm run dev        # prototype, on http://localhost:5180
 npm run build      # must stay green
 npm run typecheck
 ```
+
+The port is pinned (`strictPort`) because another project on this machine takes
+Vite's default 5173, and a stale tab there has been read as a regression here
+twice. If `npm run dev` fails on the port, something else is using 5180 — find
+it rather than switching ports.
+
+**Verify in the browser, not just in the build.** A green build has repeatedly
+hidden broken rendering here: a missing slot, a component that throws on mount,
+a page that reads "Page Not Found". Screenshot the screen you changed.
