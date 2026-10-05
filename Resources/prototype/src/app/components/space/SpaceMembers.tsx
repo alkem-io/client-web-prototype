@@ -40,8 +40,8 @@ import {
 } from "@/crd/primitives/dropdown-menu";
 import { Tabs, TabsList, TabsTrigger } from "@/crd/primitives/tabs";
 import { PostCard } from "@/app/components/space/PostCard";
-import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
-import { OrgHoverCard } from "@/app/components/user/OrgHoverCard";
+import { ProfileHoverCard } from "@/ahead/ProfileHoverCard";
+import { OrgHoverCard } from "@/ahead/OrgHoverCard";
 
 // ── Types ──
 interface MemberEntry {

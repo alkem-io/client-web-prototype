@@ -127,3 +127,57 @@ export function membershipToSpaceCard(item: MembershipLike, parentSlug?: string)
     href: parentSlug ? `/space/${parentSlug}/subspaces/${item.slug}` : `/space/${item.slug}`,
   };
 }
+
+/**
+ * Rich subspace fixture → `SpaceCardData` for CRD's `ExpandedSpaceCard`.
+ *
+ * GRADUATED 2026-10-02 (upstream `cc126d7a`): the prototype's own
+ * `RichSubspaceCard` is now `crd/components/space/ExpandedSpaceCard`, and
+ * `SpaceCardData` gained `what` / `why` / `who` — the three fields that card
+ * was built around. So ours was deleted and this mapper feeds production's.
+ */
+export type MockRichSubspace = {
+  slug: string;
+  name: string;
+  parentName: string;
+  parentSlug: string;
+  tagline: string;
+  bannerImage?: string;
+  avatarInitials: string;
+  avatarColor: string;
+  isPrivate: boolean;
+  isMember?: boolean;
+  tags: string[];
+  extraTagCount?: number;
+  leads: { name: string; initials: string; color: string; type: 'person' | 'org' }[];
+  what: string;
+  why: string;
+  who: string;
+};
+
+export function richSubspaceToSpaceCard(subspace: MockRichSubspace): SpaceCardData {
+  return {
+    id: subspace.slug,
+    name: subspace.name,
+    description: subspace.tagline,
+    bannerImageUrl: subspace.bannerImage,
+    initials: subspace.avatarInitials,
+    avatarColor: subspace.avatarColor,
+    isPrivate: subspace.isPrivate,
+    isMember: subspace.isMember,
+    tags: subspace.tags,
+    // `avatarUrl` is required on SpaceLead; the rich fixtures only carry
+    // initials and a colour, so the card falls back to its own avatar.
+    leads: subspace.leads.map(lead => ({ name: lead.name, avatarUrl: '', type: lead.type })),
+    href: `/space/${subspace.parentSlug}/subspaces/${subspace.slug}`,
+    parent: {
+      name: subspace.parentName,
+      href: `/space/${subspace.parentSlug}`,
+      initials: subspace.parentName.slice(0, 2).toUpperCase(),
+      avatarColor: subspace.avatarColor,
+    },
+    what: subspace.what,
+    why: subspace.why,
+    who: subspace.who,
+  };
+}

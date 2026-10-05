@@ -1,0 +1,103 @@
+{
+  "_comment": [
+    "Surfaces the prototype designed ahead of production that are too big to live",
+    "in src/ahead/ as a single component — whole pages, flows and tab sets.",
+    "They stay where they are; this file is what makes them show up in the",
+    "graduation check anyway, so nobody has to remember them.",
+    "",
+    "`watchFor` lists the component names production would build if it took the",
+    "surface on. Every sync counts how many of them exist upstream: 0 means",
+    "still ours alone, all of them means our version is now a duplicate."
+  ],
+  "surfaces": [
+    {
+      "name": "Space settings",
+      "ours": "src/app/components/space/SpaceSettings*.tsx (10 tabs)",
+      "gain": "The full space admin surface: about, community, layout, subspaces, templates, storage, updates, account",
+      "watchFor": [
+        "SpaceSettingsAboutView",
+        "SpaceSettingsCommunityView",
+        "SpaceSettingsLayoutView",
+        "SpaceSettingsSubspacesView",
+        "SpaceSettingsStorageView",
+        "SpaceSettingsUpdatesView",
+        "SpaceSettingsAccountView",
+        "SpaceSettingsSettingsView",
+        "SpaceSettingsTabStrip"
+      ]
+    },
+    {
+      "name": "Subspace settings",
+      "ours": "src/app/components/space/SubspaceSettings*.tsx (6 tabs)",
+      "gain": "The same surface one level down, where production currently reuses the space one",
+      "watchFor": [
+        "SpaceSettingsAboutView",
+        "SpaceSettingsCommunityView",
+        "SpaceSettingsLayoutView",
+        "SpaceSettingsSubspacesView",
+        "SpaceSettingsUpdatesView"
+      ]
+    },
+    {
+      "name": "User profile settings",
+      "ours": "src/app/pages/UserProfileSettingsPage.tsx, UserSettingsPage.tsx, UserGenericSettingsPage.tsx",
+      "gain": "A person's own account surface: profile, notifications, security, organisations, memberships",
+      "watchFor": [
+        "UserProfileTabView",
+        "UserNotificationsTabView",
+        "UserSecurityTabView",
+        "UserOrganizationsTabView",
+        "UserMembershipTabView",
+        "UserSettingsTabView"
+      ]
+    },
+    {
+      "name": "Organisation settings",
+      "ours": "src/app/pages/OrgSettingsPage.tsx",
+      "gain": "Organisation admin: profile, associates, invitations",
+      "watchFor": [
+        "OrgProfileTabView",
+        "OrgAssociatesTabView",
+        "OrgInvitationsTabView",
+        "OrgSettingsTabView"
+      ]
+    },
+    {
+      "name": "Innovation pack and template settings",
+      "ours": "src/app/pages/PackSettingsPage.tsx, TemplateSettingsPage.tsx",
+      "gain": "Editing a pack and the templates inside it",
+      "watchFor": [
+        "InnovationPackAdminView",
+        "InnovationPackForm"
+      ]
+    },
+    {
+      "name": "Subspace application wizard",
+      "ours": "src/app/components/space/dialogs (join flow) + the form builder",
+      "gain": "Asking applicants questions, and building that question set without a developer",
+      "watchFor": [
+        "ApplicationFormEditor",
+        "ApplicationWizard",
+        "CalloutFormFraming"
+      ]
+    },
+    {
+      "name": "Memo signing",
+      "ours": "src/app/components/callout (memo framing)",
+      "gain": "A callout people sign rather than comment on",
+      "watchFor": [
+        "MemoSignaturePanel",
+        "MemoSigningDialog"
+      ]
+    },
+    {
+      "name": "Template detail as a full page",
+      "ours": "src/app/pages/TemplateDetailPage.tsx",
+      "gain": "A template gets a page of its own instead of a dialog — room to show what the resulting space looks like",
+      "watchFor": [
+        "TemplateProfilePage",
+        "TemplateProfileView"
+      ]
+    }
+  ]
+}

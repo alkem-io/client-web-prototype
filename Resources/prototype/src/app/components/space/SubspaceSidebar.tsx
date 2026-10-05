@@ -111,10 +111,10 @@ const SUB_SUBSPACES: (MockSpaceCard & { status: string })[] = [
  * dropped when `SubspaceHeader` adopted CRD's, on the note that production shows
  * ancestry in the sidebar instead. This is that sidebar.
  *
- * The prototype's own richer sub-subspace cards (`RichSubspaceCard`) are NOT
- * used by the widget: CRD's nested-subspaces list takes name/initials/href rows.
- * The rich cards remain on the Subspaces tab, which is where they were designed
- * to live.
+ * The rich sub-subspace cards are NOT used by the widget: CRD's nested-subspaces
+ * list takes name/initials/href rows. The rich cards remain on the Subspaces tab,
+ * which is where they were designed to live — and they are now CRD's own
+ * `ExpandedSpaceCard`, which graduated upstream and replaced the prototype's copy.
  */
 export function SubspaceSidebar({
   isCollapsed,

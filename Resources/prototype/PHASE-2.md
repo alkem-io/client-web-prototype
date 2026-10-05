@@ -144,6 +144,13 @@ CRD has its own complete settings suite (`space/settings/*View.tsx`,
 `contributor/settings/*`). Reconciling the two designs is a phase-2 decision,
 not a mechanical swap.
 
+Measured against upstream `cc126d7a`: production has **every** tab we have —
+space 9/9, subspace 5/5, user 6/6, organisation 4/4, pack and template 2/2. So
+this is no longer "we are ahead"; it is two complete designs of the same screens
+that have never been compared. Tracked as a surface in
+[`src/ahead/watchlist.json`](src/ahead/watchlist.json), so each sync re-reports
+it rather than leaving it to memory.
+
 ---
 
 ## 5. Space banner configuration + layout variants
@@ -285,19 +292,26 @@ and `spaces`; `CalloutDetailDialog` has the matching framing slots), so the
 collection is a post's body rather than a bare grid on a tab.
 
 **Why it does not use `ContributorCollection` itself:** CRD's collection renders
-its own `ContributorCard` — avatar, name, role, location — and exposes **no card
-slot**. The prototype's cards are richer: skills/tags, join date, a kebab menu,
-and a hover card (`ProfileHoverCard` / `OrgHoverCard`) carrying bio, tags and
-location. The two cannot be combined today.
+its own `ContributorCard` and exposes **no card slot**.
+
+**Mostly resolved upstream.** As of `cc126d7a`, `ContributorCardData` carries
+`tagline`, `tags`, `associatesCount`, `websiteUrl`, `joinedMonthLabel` and
+`canMessage` with a "…" menu — i.e. everything the prototype's card shows except
+one thing: the **hover card** (`ProfileHoverCard` / `OrgHoverCard`, now in
+`src/ahead/`) with bio, tags and location. The richness ask is satisfied; only
+the hover behaviour is still ours.
 
 So the collection's chrome is reproduced from CRD primitives (`Tabs`,
 `SearchField`, `Button`, `Card`, `Avatar`), matching `ContributorCollection`'s
 behaviour exactly — including when each control appears: the type switch at ≥2
 types, the role filter only when the active set mixes leads and members.
 
-**Needs upstream:** a `renderCard` / `cardSlot` prop on `ContributorCollection`.
-With it this file collapses back to CRD's collection and keeps the rich cards.
-Same class of blocker as `reactionsSlot` on the contribution cards (§2).
+**Needs upstream (narrowed):** somewhere to hang hover behaviour — a
+`cardSlot`/`renderCard` prop, or simply `onContributorHover`. With either, this
+file collapses onto CRD's collection with nothing lost. Without it, the swap is
+still worth making and costs the hover cards; see the note at the end of
+[`src/ahead/README.md`](src/ahead/README.md). Same class of blocker as
+`reactionsSlot` on the contribution cards (§2).
 
 Fixed in passing: the rich card hard-coded "Member" for every person regardless
 of role, so a Host or Admin read as Member. It now shows Lead / Member, which

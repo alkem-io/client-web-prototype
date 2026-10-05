@@ -15,7 +15,7 @@ import {
 import { Button } from "@/crd/primitives/button";
 import { Badge } from "@/crd/primitives/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
-import { ProfileHoverCard } from "@/app/components/user/ProfileHoverCard";
+import { ProfileHoverCard } from "@/ahead/ProfileHoverCard";
 import {
   DropdownMenu,
   DropdownMenuContent,
