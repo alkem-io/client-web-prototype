@@ -26,10 +26,19 @@ The one that matters most, because it is the easiest to break by accident:
 
 ## How work runs here
 
-Jeroen is the designer, not a developer. **Start a branch before editing
-anything, commit as you go, and never merge to `main` unless he says it is
-ready.** He does not run git commands. Write for a designer — plain words, no git
-vocabulary. Full version in
+Jeroen is the designer, not a developer. **Catch up with production
+(`npm run sync:crd`) when a piece of work starts, start a branch before editing
+anything — exploratory work included — commit as you go, and never merge to
+`main` unless he says it is ready.** He does not run git commands. Write for a
+designer — plain words, no git vocabulary.
+
+Exploratory work makes a **visual artifact** first and iterates on that before
+anything real is built. An artifact is a real committed file under
+`Resources/prototype/src/mockups/`, not an image rendered into the chat — say
+which of the two he is getting. An exploration that is not going ahead goes to
+the icebox: branch left unmerged, nothing deleted.
+
+Full version in
 [`Resources/prototype/CLAUDE.md`](../Resources/prototype/CLAUDE.md), section
 "How work runs here".
 

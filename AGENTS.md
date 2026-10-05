@@ -26,10 +26,15 @@ The three that are easiest to break by accident:
    ahead-of-production report at the end, listing anything production has now
    built that we still maintain our own copy of. Read it and act on it.
 
-**How work runs here:** Jeroen is the designer, not a developer. Start a branch
-before editing anything, commit as you go, push only when he wants someone to see
-it, and never merge to `main` unless he says it is ready. He does not run git
-commands, and jargon in anything he reads is a defect.
+**How work runs here:** Jeroen is the designer, not a developer. Catch up with
+production (`npm run sync:crd`) when a piece of work starts, start a branch before
+editing anything — exploratory work included — commit as you go, push only when he
+wants someone to see it, and never merge to `main` unless he says it is ready. He
+does not run git commands, and jargon in anything he reads is a defect.
+
+Exploratory work makes a **visual artifact** first — a real committed file under
+`Resources/prototype/src/mockups/`, not an image rendered into the chat — and
+iterates on that before anything real is built.
 
 Full detail, including where ahead-of-production work lives and how it graduates:
 `Resources/prototype/CLAUDE.md`.

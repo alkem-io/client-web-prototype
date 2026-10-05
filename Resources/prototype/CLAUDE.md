@@ -18,7 +18,7 @@ prototype↔production drift this setup exists to remove.
 src/crd/     ← production, read-only, synced        (the design system)
 src/app/     ← prototype explorations, yours to edit (the design work)
 src/ahead/   ← what we have and production does not  (the dev agenda)
-src/mockups/ ← Figma Make mockup pipeline
+src/mockups/ ← visual artifacts, committed           (a picture of the idea)
 ```
 
 `src/app/` imports from `@/crd/*`. Never the reverse.
@@ -93,16 +93,32 @@ wants in words; everything else is yours to do. He does not run git commands and
 should not be asked to. Whichever assistant you are — Copilot, Claude Code, or
 Claude running inside Copilot — these apply.
 
-1. **Start a branch before editing anything.** One per piece of work, named after
-   the work. Never build on `main`. Say the branch name back in one line.
-2. **Commit as you go**, with messages that say what changed and why. He does not
-   make commits; you do.
-3. **Push only when he wants someone else to see it** — then give him the link.
-4. **Never merge to `main` unless he says it is ready.** That call is his.
-5. **Tell him where to look**, with a link and what to look at. "The build passes"
+1. **Catch up with production first.** Run `npm run sync:crd` when a new piece of
+   work starts, before building anything, and read the report it prints. This is
+   the one step here that happens without being asked — he should not have to
+   remember it. Designing against a month-old copy of the design system is how
+   the same component gets built twice.
+2. **Start a branch before editing anything.** One per piece of work, named after
+   the work. Never build on `main`. **Exploratory work gets a branch too** — a
+   visual artifact is a real file, so there is no version of "just looking" that
+   leaves the repo untouched. Say the branch name back in one line.
+3. **Commit as you go**, with messages that say what changed and why. He does not
+   make commits; you do. Commit each adjustment rather than batching them up —
+   that history is what makes "the one before you changed the card layout"
+   something he can actually ask for.
+4. **Push only when he wants someone else to see it** — then give him the link.
+5. **Never merge to `main` unless he says it is ready.** That call is his. Merging
+   means the design is ready for a developer to build in client-web — not that a
+   developer has built it.
+6. **Tell him where to look**, with a link and what to look at. "The build passes"
    is not a result he can check.
-6. When you propose ahead-of-production work, **name `src/ahead/` explicitly**, so
+7. When you propose ahead-of-production work, **name `src/ahead/` explicitly**, so
    it is visible that the rule was applied rather than guessed at.
+
+**Expect to go round several times.** Most of his time on a piece of work goes on
+looking at it and saying what is wrong. That loop is the process working, not
+evidence the brief was poor — do not try to shortcut it by building further ahead
+than he asked for.
 
 **Write for a designer.** No `HEAD`, no "the index", no "upstream", no "rebase".
 Say what happened in plain words. If a sentence would need a second sentence to
@@ -112,8 +128,47 @@ explain it, it is the wrong sentence.
 files. Two assistants in the same folder will overwrite each other's work without
 either noticing. For parallel work, use a separate git worktree per assistant.
 
-[`WORKFLOW.excalidraw`](WORKFLOW.excalidraw) is the picture of this, written for
-him rather than for you.
+### Two kinds of work
+
+Work arrives as one of two kinds, and they do not start the same way. Ask which
+it is, or infer it and say which you assumed.
+
+**Concrete** — *"we need this feature, and this is how it works."* Build it.
+
+**Exploratory** — *"let's see what this could even be."* Do not start building the
+real thing. Make a **visual artifact** first, iterate on that, and build only once
+the scope has stopped moving. Work of this kind here: the invitation flow, the
+create-space flow — built as `CreateSpaceDialogV2` and `V3`, so the iteration is
+still visible in the names.
+
+A visual artifact is **a real file in this repo**, not an image rendered into the
+conversation:
+
+```bash
+npm run mockup:new     # scaffold one
+npm run mockup:dev     # look at it
+npm run mockup:check   # check it
+npm run mockup:build   # export an image to send someone
+```
+
+They live in [`src/mockups/`](src/mockups/) as compositions, and they are
+committed on the branch like any other work — which is the reason exploratory work
+needs a branch at all.
+
+**Say which kind of thing you are handing him.** A keepable artifact and a
+throwaway screenshot for this conversation only are both reasonable answers to
+"show me"; which one he got should never be left implied. He has had to ask.
+
+**Once the artifact settles, the artifact and the conversation around it are the
+brief.** Do not make him re-describe in words what the artifact already shows.
+
+**Not in scope is a finished outcome.** An exploration that is not going ahead
+goes to the *icebox*: leave the branch unmerged and leave it alone. Do not delete
+the branch, and do not fold the artifact into `main` to tidy up. Some sit for
+months, some are never picked up again, and both are fine.
+
+[`WORKFLOW.excalidraw`](WORKFLOW.excalidraw) is the picture of all of this,
+written for him rather than for you.
 
 ## When the prototype is ahead
 

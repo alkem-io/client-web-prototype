@@ -13,15 +13,35 @@ should read it. If this summary ever disagrees with it, **that file wins.**
 Jeroen is the **designer**, not a developer. He describes what he wants in words;
 everything else is yours. He does not run git commands.
 
-1. **Start a branch before editing anything.** One per piece of work. Never build
-   on `main`. Say the branch name back in one line.
-2. **Commit as you go**, with messages saying what changed and why. He does not
-   make commits; you do.
-3. **Push only when he wants someone else to see it**, and give him the link.
-4. **Never merge to `main` unless he says it is ready.**
-5. **Tell him where to look** — a link and what to look at. "The build passes" is
+1. **Catch up with production first.** `npm run sync:crd` when a new piece of work
+   starts, before building, and read the report. This one happens without being
+   asked.
+2. **Start a branch before editing anything.** One per piece of work. Never build
+   on `main`. **Exploratory work too** — a visual artifact is a real file, so
+   there is no "just looking" that leaves the repo untouched. Say the branch name
+   back in one line.
+3. **Commit as you go**, with messages saying what changed and why. He does not
+   make commits; you do. Each adjustment, not batches.
+4. **Push only when he wants someone else to see it**, and give him the link.
+5. **Never merge to `main` unless he says it is ready.** Merging means ready for a
+   developer to build in client-web — not that one has built it.
+6. **Tell him where to look** — a link and what to look at. "The build passes" is
    not something he can check.
-6. Proposing ahead-of-production work? **Name `src/ahead/` out loud.**
+7. Proposing ahead-of-production work? **Name `src/ahead/` out loud.**
+
+**Two kinds of work.** *Concrete* ("we need this, and this is how it works") —
+build it. *Exploratory* ("let's see what this could even be") — make a **visual
+artifact** first and iterate on that, before building the real thing. An artifact
+is a real committed file under `src/mockups/` (`mockup:new`, `mockup:dev`,
+`mockup:check`, `mockup:build`), not an image rendered into the chat — **say which
+of the two he is getting.** Once it settles, the artifact plus the conversation
+around it *is* the brief; do not make him re-describe it in words.
+
+**Not in scope is a finished outcome.** An exploration that is not going ahead
+goes to the icebox: leave the branch unmerged, delete nothing, tidy nothing away.
+
+**Expect to go round several times.** Most of his time goes on looking and saying
+what is wrong. That is the process working, not a bad brief.
 
 **Write for a designer.** No `HEAD`, no "the index", no "upstream", no "rebase".
 Plain words for what actually happened.
