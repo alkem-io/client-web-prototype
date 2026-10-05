@@ -40,6 +40,7 @@ have it. That comment is what development reads.
 | `VCHoverCard` | The same for virtual contributors |
 | `ActivityDot` | A small animated dot marking what is new since your last visit |
 | `CalloutFormFraming` | Forms as a callout type — a question set people answer in a space |
+| `ThreeColumnContributionGrid` | A callout's contributions three across on wide screens instead of two — six visible while collapsed, cards closer to thumbnail size. Needs a `columns` prop on `ContributionGrid` (and `ContributionsPreviewSkeleton`) |
 
 If this list grows past ten or so entries, the process has stopped working.
 Nothing else belongs in this folder: not pages, not mock data, not wrappers
