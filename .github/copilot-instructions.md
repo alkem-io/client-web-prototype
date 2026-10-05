@@ -7,7 +7,6 @@ following any convention you find here.
 |---|---|
 | `Resources/prototype/` | **The Alkemio design prototype.** Almost all active work. Has its own rules — see below. |
 | `Resources/` (rest) | Design briefs, analyses and mockups supporting that work |
-| `ecosystem-analytics/` | A separate project with its own `.github/` |
 | `specs/`, `.specify/` | Spec Kit feature specs |
 
 ## Working in `Resources/prototype/`
