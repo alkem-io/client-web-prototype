@@ -73,7 +73,7 @@ Kept as a record, so it is clear the process works:
 | Was | Became | Status |
 |---|---|---|
 | `RichSubspaceCard` | `crd/components/space/ExpandedSpaceCard` | **Done.** Deleted; `SpaceFeed` renders CRD's card through `richSubspaceToSpaceCard()`. |
-| Our rich contributor cards | `crd/components/callout/ContributorCollection/ContributorCard` — gained tagline, tags, associates count, website, join month and messaging | **Pending.** `SpaceMembers` still renders our own; see PHASE-2 §12. |
+| Our rich contributor cards | `crd/components/callout/ContributorCollection/ContributorCard` — gained tagline, tags, associates count, website, join month and messaging | **Noticed, waiting on one thing.** Adopting it today costs the hover cards, because the collection draws its own. Held until there is a slot or an `onContributorHover` — not forgotten. PHASE-2 §12. |
 
 Graduating costs something each time, and that cost is the next upstream ask:
 
