@@ -71,6 +71,7 @@ import {
   hiddenCount,
   SUBSPACE_WIDGET_DEFS,
   SUBSPACE_WIDGETS_DESCRIPTION,
+  SUBSPACE_WIDGETS_SCOPE_NOTE,
   type SidebarWidgetConfig
 } from "./SidebarWidgets";
 
