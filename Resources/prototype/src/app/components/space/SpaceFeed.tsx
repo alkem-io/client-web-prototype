@@ -25,6 +25,9 @@ import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog"
 import { useCalloutFormMock } from "@/app/components/callout/useCalloutFormMock";
 import { responsesAreRestricted, canSubmitResponse } from "@/app/components/callout/calloutFormTypes";
 import { ExpandedSpaceCard } from "@/crd/components/space/ExpandedSpaceCard";
+import { ActivityDotSlots, cardNameSlot } from "@/app/components/shared/ActivityDotSlots";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { subspaceContainer } from "@/app/data/activity-data";
 import { richSubspaceToSpaceCard, type MockRichSubspace } from "@/app/mappers/spaceCard";
 
 /** Prototype viewer role — see the same constant in SpaceKnowledgeFeed. */
@@ -546,10 +549,10 @@ export function SpaceFeed() {
         <div className="mt-4">
           {post.embeddedSubspaces.flatMap((subspace, i) =>
             i === 0
-              ? [<ExpandedSpaceCard key={subspace.slug} space={richSubspaceToSpaceCard(subspace)} />]
+              ? [<FeedSubspaceCard key={subspace.slug} subspace={subspace} />]
               : [
                   <div key={subspace.slug + "-div"} role="separator" className="mx-1 my-[18px] h-px bg-border" />,
-                  <ExpandedSpaceCard key={subspace.slug} space={richSubspaceToSpaceCard(subspace)} />,
+                  <FeedSubspaceCard key={subspace.slug} subspace={subspace} />,
                 ]
           )}
         </div>
@@ -867,3 +870,14 @@ function LeadUpdate() {
   );
 }
 
+/** A subspace card in the feed, with the new-activity pulse at the end of its name. */
+function FeedSubspaceCard({ subspace }: { subspace: Parameters<typeof richSubspaceToSpaceCard>[0] }) {
+  const { hasContainerActivity } = useActivityIndicators();
+  const space = richSubspaceToSpaceCard(subspace);
+  const slots = hasContainerActivity(subspaceContainer(subspace.slug)) ? [cardNameSlot(subspace.slug, space.name)] : [];
+  return (
+    <ActivityDotSlots slots={slots}>
+      <ExpandedSpaceCard space={space} />
+    </ActivityDotSlots>
+  );
+}

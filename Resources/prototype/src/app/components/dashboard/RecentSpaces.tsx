@@ -5,14 +5,17 @@
  * mock spaces, maps them to CRD's exported `CompactSpaceCardData`, and keeps
  * the MyMemberships panel the prototype opens from here.
  *
- * PHASE 1 REMOVAL — the activity dot that used to render beside each space name
- * is gone. CRD renders the name itself and has no slot for it. Recorded in
- * PHASE-2.md §1; restore once `CompactSpaceCard` gains a name-suffix slot.
+ * The activity dot beside each space name: CRD renders the name itself and has
+ * no slot for it (PHASE-2.md §1), so `@/app/components/shared/ActivityDotSlots` puts it there
+ * until `CompactSpaceCard` gains a name-suffix slot.
  */
 import { useState } from 'react';
 import { RecentSpaces as CrdRecentSpaces } from '@/crd/components/dashboard/RecentSpaces';
 import type { CompactSpaceCardData } from '@/crd/components/dashboard/CompactSpaceCard';
 import { MyMembershipsPanel } from '@/app/components/memberships/MyMembershipsPanel';
+import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
+import { spaceContainer } from '@/app/data/activity-data';
+import { type ActivityDotSlot, ActivityDotSlots } from '@/app/components/shared/ActivityDotSlots';
 
 const RECENT_SPACES: CompactSpaceCardData[] = [
   {
@@ -59,17 +62,35 @@ const RECENT_SPACES: CompactSpaceCardData[] = [
 
 export function RecentSpaces() {
   const [membershipsOpen, setMembershipsOpen] = useState(false);
+  const { hasContainerActivity } = useActivityIndicators();
+
+  // The pulse sits right after the space name on its card. It goes in the
+  // name's row rather than inside the name, which cuts long names off with
+  // "…" and would cut the pulse off with them.
+  const activitySlots: ActivityDotSlot[] = RECENT_SPACES.filter(space =>
+    hasContainerActivity(spaceContainer(space.href.replace('/space/', '')))
+  ).map(space => ({
+    key: space.id,
+    find: root =>
+      [...root.querySelectorAll(`a[href="${space.href}"] p.text-card-title`)].flatMap(name =>
+        name.parentElement ? [name.parentElement] : []
+      ),
+    label: `${space.name} has new activity`,
+    className: '-ml-1',
+  }));
 
   return (
     <div className="space-y-4">
-      <CrdRecentSpaces
-        spaces={RECENT_SPACES}
-        hasHomeSpace={true}
-        // "Explore all *your* Spaces" is the membership set, which is what the
-        // panel lists. On main this panel had no trigger at all and was dead
-        // code; CRD's link is the one production puts it behind.
-        onExploreAllClick={() => setMembershipsOpen(true)}
-      />
+      <ActivityDotSlots slots={activitySlots}>
+        <CrdRecentSpaces
+          spaces={RECENT_SPACES}
+          hasHomeSpace={true}
+          // "Explore all *your* Spaces" is the membership set, which is what the
+          // panel lists. On main this panel had no trigger at all and was dead
+          // code; CRD's link is the one production puts it behind.
+          onExploreAllClick={() => setMembershipsOpen(true)}
+        />
+      </ActivityDotSlots>
       <MyMembershipsPanel open={membershipsOpen} onOpenChange={setMembershipsOpen} />
     </div>
   );

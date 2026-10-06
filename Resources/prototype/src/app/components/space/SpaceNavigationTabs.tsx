@@ -5,13 +5,16 @@
  * `href` per tab, so this wrapper maps between the two and keeps query params
  * on navigation.
  *
- * PHASE 1 REMOVAL (PHASE-2.md §1): the activity dot that rendered beside a tab
- * label when that tab had unseen content. CRD's `TabItem` is `{ label, index,
- * href }` with nowhere to hang one.
+ * The activity dot beside a tab label when that tab has unseen content: CRD's
+ * `TabItem` is `{ label, index, href }` with nowhere to hang one (PHASE-2.md
+ * §1), so `@/app/components/shared/ActivityDotSlots` puts it after the label instead.
  */
 import { useEffect } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { SpaceNavigationTabs as CrdSpaceNavigationTabs } from '@/crd/components/space/SpaceNavigationTabs';
+import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
+import { tabContainer } from '@/app/data/activity-data';
+import { type ActivityDotSlot, ActivityDotSlots } from '@/app/components/shared/ActivityDotSlots';
 
 interface SpaceNavigationTabsProps {
   spaceSlug: string;
@@ -51,6 +54,7 @@ export function SpaceNavigationTabs({
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  const { hasContainerActivity } = useActivityIndicators();
   const queryString = searchParams.toString();
   const suffix = queryString ? `?${queryString}` : '';
 
@@ -73,16 +77,30 @@ export function SpaceNavigationTabs({
     onActiveTabChange?.(SPACE_TABS[activeIndex]?.description ?? '');
   }, [activeIndex, onActiveTabChange]);
 
+  // Desktop tabs and the mobile tab bar both carry role="tab"; match on the
+  // label text so the pulse lands in both.
+  const activitySlots: ActivityDotSlot[] = SPACE_TABS.filter(tab =>
+    hasContainerActivity(tabContainer(spaceSlug, tab.href.slice(1)))
+  ).map(tab => ({
+    key: tab.href,
+    find: root =>
+      [...root.querySelectorAll('[role="tab"]')].filter(el => el.firstChild?.textContent === tab.label),
+    label: `${tab.label} has new activity`,
+    className: 'ml-2 align-middle',
+  }));
+
   return (
-    <CrdSpaceNavigationTabs
-      tabs={SPACE_TABS.map((tab, index) => ({
-        label: tab.label,
-        index,
-        href: hrefFor(tab.href),
-      }))}
-      activeIndex={activeIndex}
-      onTabChange={index => navigate(hrefFor(SPACE_TABS[index].href))}
-      action={actionButton}
-    />
+    <ActivityDotSlots slots={activitySlots}>
+      <CrdSpaceNavigationTabs
+        tabs={SPACE_TABS.map((tab, index) => ({
+          label: tab.label,
+          index,
+          href: hrefFor(tab.href),
+        }))}
+        activeIndex={activeIndex}
+        onTabChange={index => navigate(hrefFor(SPACE_TABS[index].href))}
+        action={actionButton}
+      />
+    </ActivityDotSlots>
   );
 }

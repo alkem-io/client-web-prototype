@@ -1,12 +1,28 @@
 import { cn } from "@/crd/lib/utils";
 
 /**
- * Ambient "new activity" marker (spec 014). Deliberately unlike the notification
- * bell: primary colour, no count, inline with content. The count, where known,
- * goes to assistive tech through `label` instead.
+ * ActivityDot — a small pulse marking what is new since your last visit.
  *
- * The expanding halo is what carries attention — the resting dot stays 6px, so
- * the indicator gains presence without gaining weight.
+ * WHAT PRODUCTION WOULD GAIN
+ * An ambient "new activity" marker (spec 014). Deliberately unlike the
+ * notification bell: primary colour, no count, inline with content, right
+ * after the name of whatever changed. The count, where known, goes to
+ * assistive tech through `label` instead. The expanding halo is what carries
+ * attention — the resting dot stays 6px, so the indicator gains presence
+ * without gaining weight.
+ *
+ * It appears on My Spaces rows, Recent Spaces cards, space tabs, space and
+ * subspace cards, and post cards.
+ *
+ * WHAT PRODUCTION NEEDS TO ADD
+ * Production draws those names itself and leaves nothing beside them. The
+ * upstream ask: an optional `nameSuffix` slot (anything shown right after the
+ * name) on `SidebarResourceItem`, `CompactSpaceCard`, `SpaceNavigationTabs`'
+ * `TabItem`, `SpaceCard`, `ExpandedSpaceCard` and `PostCard`.
+ *
+ * Until then the prototype places the dot with a temporary stand-in,
+ * `app/components/shared/ActivityDotSlots`, which is not part of this ask and
+ * is deleted once the slots exist.
  */
 export function ActivityDot({ label, className }: { label: string; className?: string }) {
   return (

@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router";
 import { InnovationHubHome } from "@/crd/components/innovationHub/InnovationHubHome";
 import { toSpaceCard, type MockSpaceCard } from "@/app/mappers/spaceCard";
+import { ActivityDotSlots, cardNameSlot } from "@/app/components/shared/ActivityDotSlots";
+import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
+import { spaceOrSubspaceIds } from "@/app/data/activity-data";
 import { toPackCard, toVirtualContributorCard } from "@/app/mappers/innovationHub";
 
 const hubData = {
@@ -524,22 +527,32 @@ const hubVCs = [
 export default function InnovationHubPage() {
   const navigate = useNavigate();
 
+  const { hasContainerActivity } = useActivityIndicators();
+  const activitySlots = hubSpaces
+    .filter(space => spaceOrSubspaceIds(space.slug).some(hasContainerActivity))
+    .map(space => {
+      const card = toSpaceCard(space);
+      return cardNameSlot(space.id, card.name, card.href);
+    });
+
   return (
-    <InnovationHubHome
-      data={{
-        name: hubData.name,
-        tagline: hubData.tagline,
-        description: hubData.description,
-        bannerImageUrl: hubData.bannerImage,
-        bannerColor: "#1d384a",
-        bannerAlt: `${hubData.name} banner`,
-        settingsUrl: `/innovation-hub/${hubData.slug}/settings`,
-        allSpacesUrl: "/spaces",
-      }}
-      spaces={hubSpaces.map(space => toSpaceCard(space))}
-      packs={hubPacks.map(toPackCard)}
-      virtualContributors={hubVCs.map(toVirtualContributorCard)}
-      onSettingsClick={() => navigate(`/innovation-hub/${hubData.slug}/settings`)}
-    />
+    <ActivityDotSlots slots={activitySlots}>
+      <InnovationHubHome
+        data={{
+          name: hubData.name,
+          tagline: hubData.tagline,
+          description: hubData.description,
+          bannerImageUrl: hubData.bannerImage,
+          bannerColor: "#1d384a",
+          bannerAlt: `${hubData.name} banner`,
+          settingsUrl: `/innovation-hub/${hubData.slug}/settings`,
+          allSpacesUrl: "/spaces",
+        }}
+        spaces={hubSpaces.map(space => toSpaceCard(space))}
+        packs={hubPacks.map(toPackCard)}
+        virtualContributors={hubVCs.map(toVirtualContributorCard)}
+        onSettingsClick={() => navigate(`/innovation-hub/${hubData.slug}/settings`)}
+      />
+    </ActivityDotSlots>
   );
 }
