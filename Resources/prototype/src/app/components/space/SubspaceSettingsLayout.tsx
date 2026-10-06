@@ -1047,6 +1047,7 @@ export function SubspaceSettingsLayout() {
         onOpenChange={setShowSidebarWidgets}
         title="Sidebar"
         description={SUBSPACE_WIDGETS_DESCRIPTION}
+        scopeNote={SUBSPACE_WIDGETS_SCOPE_NOTE}
         defs={SUBSPACE_WIDGET_DEFS}
         config={sidebarWidgets}
         onSave={setSidebarWidgets}

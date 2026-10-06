@@ -92,6 +92,7 @@ import {
   saveSpaceSidebarWidgets,
   spaceTabDefaults,
   spaceWidgetsDescription,
+  spaceWidgetsScopeNote,
   hiddenCount,
   SPACE_WIDGET_DEFS,
   type SidebarWidgetConfig
@@ -1096,6 +1097,9 @@ export function SpaceSettingsLayout() {
         onOpenChange={(open) => !open && setLayoutDialogTab(null)}
         title={tabs.find((t) => t.id === layoutDialogTab)?.label ?? "Sidebar"}
         description={spaceWidgetsDescription(
+          tabs.find((t) => t.id === layoutDialogTab)?.label ?? "this"
+        )}
+        scopeNote={spaceWidgetsScopeNote(
           tabs.find((t) => t.id === layoutDialogTab)?.label ?? "this"
         )}
         defs={SPACE_WIDGET_DEFS}
