@@ -56,41 +56,53 @@ const sameFound = (a: Found, b: Found) => {
   return keys.every(k => a[k]?.length === b[k].length && b[k].every((el, i) => a[k][i] === el));
 };
 
+/** A heading whose link fills its own line (`display: block`). */
+const blockLinkIn = (heading: Element) => {
+  const link = heading.querySelector(':scope > a');
+  return link?.classList.contains('block') ? link : null;
+};
+
 /**
- * The name on production's `SpaceCard` and `ExpandedSpaceCard`. Both draw it as
- * an `h3.text-card-title` that cuts off with "…", in two shapes:
+ * A pulse right after a name that cuts off with "…". Production draws such
+ * names in two shapes:
  *
- *  - `SpaceCard`: the name is text in the h3, and the whole card is a link.
- *    The h3 shrinks to the name's width (never wider than the card) with room
- *    on the right, and the pulse sits in that room.
- *  - `ExpandedSpaceCard`: the h3 holds a link whose invisible overlay makes the
- *    whole card clickable. That overlay needs the h3 to stay unpositioned, so
- *    the h3 becomes a row instead: the link (allowed to shrink and cut off),
- *    then the pulse.
- *
- * Pass the card's `href` when the wrapper holds a whole list of cards; it picks
- * out the one card.
+ *  - The name is text (or an inline link) in the heading, e.g. `SpaceCard`.
+ *    The heading shrinks to the name's width (never wider than its box) with
+ *    room on the right, and the pulse sits in that room.
+ *  - The heading holds a link that fills the whole line, e.g. `ExpandedSpaceCard`
+ *    and the post title on `PostCard`. A pulse added after it would drop to
+ *    the next line. The heading becomes a row instead: the link (allowed to
+ *    shrink and cut off), then the pulse. This leaves the heading unpositioned,
+ *    which `ExpandedSpaceCard` needs: its link's invisible overlay is what
+ *    makes the whole card clickable.
  */
-export const cardNameSlot = (key: string, name: string, href?: string): ActivityDotSlot => ({
+export const afterNameSlot = (key: string, label: string, find: ActivityDotSlot['find']): ActivityDotSlot => ({
   key,
-  find: root => [
+  find,
+  label,
+  prepare: heading => {
+    const link = blockLinkIn(heading);
+    if (link) {
+      heading.classList.add('flex', 'items-center', 'gap-2');
+      link.classList.add('min-w-0');
+    } else {
+      heading.classList.add('relative', 'w-fit', 'max-w-full', 'pr-4');
+    }
+  },
+  className: heading => (blockLinkIn(heading) ? 'shrink-0' : 'absolute right-0 top-1/2 -translate-y-1/2'),
+});
+
+/**
+ * The name on production's `SpaceCard` and `ExpandedSpaceCard` (an
+ * `h3.text-card-title`). Pass the card's `href` when the wrapper holds a whole
+ * list of cards; it picks out the one card.
+ */
+export const cardNameSlot = (key: string, name: string, href?: string): ActivityDotSlot =>
+  afterNameSlot(key, `${name} has new activity`, root => [
     ...root.querySelectorAll(
       href ? `a[href="${href}"] h3.text-card-title, h3.text-card-title:has(a[href="${href}"])` : 'h3.text-card-title'
     ),
-  ],
-  label: `${name} has new activity`,
-  prepare: element => {
-    const link = element.querySelector(':scope > a');
-    if (link) {
-      element.classList.add('flex', 'items-center', 'gap-2');
-      link.classList.add('min-w-0');
-    } else {
-      element.classList.add('relative', 'w-fit', 'max-w-full', 'pr-4');
-    }
-  },
-  className: element =>
-    element.querySelector(':scope > a') ? 'shrink-0' : 'absolute right-0 top-1/2 -translate-y-1/2',
-});
+  ]);
 
 type ActivityDotSlotsProps = {
   slots: ActivityDotSlot[];
