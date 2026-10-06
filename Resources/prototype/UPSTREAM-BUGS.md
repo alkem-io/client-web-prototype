@@ -217,6 +217,27 @@ the dialog too.
 
 ---
 
+## 5. Chat bubbles wrap short messages word by word
+
+**Severity:** visible in every chat with short messages. Found 2026-10-06
+against `develop@36872753`, on live production and in the prototype.
+
+In `src/crd/components/chat/ChatMessageBubble.tsx` the text bubble carries
+`max-w-[85%]`, but its parent (`flex items-center gap-1`) sits in a column with
+`items-start` / `items-end`, so the parent shrinks to fit its content. The 85%
+is then taken of a width the bubble itself decided, and the text wraps inside
+it: "part 1" renders as "part / 1", "Thursday works for me." as "Thursday
+works for / me.", even with most of the panel empty.
+
+**Fix:** put the cap on something that has the thread's width, for example
+`w-full` on the bubble's row with `max-w-[85%]` kept on the bubble, or the
+cap on the column instead of the bubble.
+
+The prototype works around it in `src/ahead/TimeGroupedChatThreadView.tsx`
+by capping bubbles at 80% of the thread (`80cqw`).
+
+---
+
 ## Impact on this prototype
 
 The prototype uses production's `cn()` unmodified, so it inherits bug #2 until

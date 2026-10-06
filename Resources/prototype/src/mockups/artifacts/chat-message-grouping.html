@@ -1,0 +1,603 @@
+<title>Chat Message Grouping</title>
+<!-- Published as a Claude artifact: https://claude.ai/artifact/7Xyw1UxneaJE8bYPAPXHQP (client-web#10377). Edit here and republish to the same link. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a review board, same as the earlier concept pages. Each option is a row:
+   the note on the left, the same conversation on desktop and phone on the right.
+   The chat fragments use Alkemio's own tokens (navy primary, slate neutrals, Inter). */
+:root {
+  /* board */
+  --board: #eef1f4;
+  --ink: #1d384a;
+  --ink-soft: #5b6b7c;
+  --rule: #d6dde4;
+  --note-tag: #1d384a;
+  --note-tag-fg: #ffffff;
+  --highlight: #2563eb;
+  --highlight-soft: rgba(37, 99, 235, 0.10);
+  --rec: #0f7a52;
+  --rec-soft: rgba(15, 122, 82, 0.10);
+  --warn: #9a5b00;
+  --warn-soft: rgba(154, 91, 0, 0.10);
+  /* product (CRD) */
+  --background: #fcfdfe;
+  --foreground: #1d384a;
+  --card: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --primary: #1d384a;
+  --bubble-in: #eef2f6;
+  --bubble-own: #dde3e8;
+  --tooltip: #1d384a;
+  --tooltip-fg: #ffffff;
+  --bezel: #1b2630;
+  --av-sanne: #2c7a6f;
+  --av-tomasz: #7a5c99;
+  --av-group: #3b6e8f;
+  --shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.22), 0 2px 6px rgba(15, 23, 42, 0.07);
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+    --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+    --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+    --rec: #5fd0a2; --rec-soft: rgba(95, 208, 162, 0.12); --warn: #f0b45a; --warn-soft: rgba(240, 180, 90, 0.12);
+    --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+    --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0;
+    --bubble-in: #22303c; --bubble-own: #2c4152;
+    --tooltip: #e3eaf0; --tooltip-fg: #131d26; --bezel: #05090c;
+    --shadow: 0 10px 30px -8px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+  --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+  --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+  --rec: #5fd0a2; --rec-soft: rgba(95, 208, 162, 0.12); --warn: #f0b45a; --warn-soft: rgba(240, 180, 90, 0.12);
+  --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0;
+  --bubble-in: #22303c; --bubble-own: #2c4152;
+  --tooltip: #e3eaf0; --tooltip-fg: #131d26; --bezel: #05090c;
+  --shadow: 0 10px 30px -8px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- intro ---------- */
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.intro { display: grid; gap: 14px; max-width: 72ch; }
+.intro h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
+.intro p { color: var(--ink-soft); font-size: 16px; }
+.intro b { color: var(--ink); font-weight: 600; }
+
+/* ---------- switcher ---------- */
+.switcher { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin-top: 28px; padding-block: 12px; background: var(--board); border-bottom: 1px solid var(--rule); }
+.switcher-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.switcher-label { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); margin-right: 4px; }
+.sw-btn { font: inherit; font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
+.sw-btn:hover { border-color: var(--ink-soft); }
+.sw-btn[aria-pressed="true"] { background: var(--ink); color: var(--board); border-color: var(--ink); }
+.sw-gap { width: 1px; height: 22px; background: var(--rule); margin-inline: 6px; }
+button:focus-visible, .b:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+.switch-note { flex-basis: 100%; font-size: 13.5px; color: var(--ink-soft); }
+
+/* ---------- option rows ---------- */
+.row { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: 40px; padding-block: 44px; border-bottom: 1px solid var(--rule); }
+.note { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.when { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--note-tag); color: var(--note-tag-fg); }
+.note h2 { font-size: 20px; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
+.note p { color: var(--ink-soft); font-size: 14.5px; }
+.note ul { margin: 0; padding-left: 18px; color: var(--ink-soft); font-size: 14px; display: grid; gap: 5px; }
+.note ul b { color: var(--ink); font-weight: 600; }
+.verdict { justify-self: start; font-size: 12.5px; font-weight: 500; border-radius: 4px; padding: 3px 8px; border: 1px dashed var(--rule); color: var(--ink-soft); }
+.verdict.rec { border: 0; background: var(--rec-soft); color: var(--rec); }
+.verdict.warn { border: 0; background: var(--warn-soft); color: var(--warn); }
+.count { display: flex; align-items: baseline; gap: 8px; padding-top: 6px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-soft); }
+.count b { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.devices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 28px; align-items: start; justify-items: center; min-width: 0; }
+.dev { display: grid; gap: 10px; justify-items: center; width: 100%; min-width: 0; }
+.dev-label { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+.dev-label em { font-style: normal; text-transform: none; letter-spacing: 0; }
+
+/* ---------- desktop chat window (production ChatPanel) ---------- */
+.panel { width: 100%; max-width: 380px; background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; font-size: 13.5px; }
+.ch { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--card); }
+.ch .back { color: var(--muted-foreground); font-size: 16px; }
+.ch-text { display: grid; min-width: 0; flex: 1; line-height: 1.3; }
+.ch-title { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ch-sub { font-size: 11.5px; color: var(--muted-foreground); }
+.ch-icons { display: flex; gap: 12px; color: var(--muted-foreground); font-size: 15px; }
+.composer { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-top: 1px solid var(--border); background: var(--card); }
+.composer .field { flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: 999px; padding: 7px 12px; color: var(--muted-foreground); font-size: 13px; background: var(--background); }
+.composer .send { color: var(--muted-foreground); font-size: 16px; }
+
+/* ---------- phone ---------- */
+.phone { width: 100%; max-width: 300px; border: 9px solid var(--bezel); border-radius: 38px; background: var(--background); color: var(--foreground); overflow: hidden; box-shadow: var(--shadow); font-size: 13.5px; display: flex; flex-direction: column; }
+.status { display: flex; justify-content: space-between; padding: 8px 20px 2px; font-size: 11.5px; font-weight: 600; }
+.status span:last-child { letter-spacing: 1px; }
+.phone .ch { border-radius: 0; }
+.phone .composer { padding-bottom: 14px; }
+
+/* ---------- messages ---------- */
+.msgs { display: flex; flex-direction: column; padding: 4px 12px 14px; }
+.sep { align-self: center; margin: 14px 0 4px; padding: 2px 10px; border-radius: 999px; background: var(--muted); color: var(--muted-foreground); font-size: 11.5px; font-weight: 500; }
+.pause { align-self: center; margin: 14px 0 0; color: var(--muted-foreground); font-size: 11.5px; font-weight: 500; }
+.grp { display: flex; gap: 8px; margin-top: 12px; align-items: flex-start; }
+.grp.own { justify-content: flex-end; }
+.av { width: 28px; height: 28px; border-radius: 999px; flex-shrink: 0; display: grid; place-items: center; color: #ffffff; font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em; }
+.av.lg { width: 32px; height: 32px; font-size: 11.5px; }
+.col { display: flex; flex-direction: column; gap: 2px; min-width: 0; max-width: 84%; align-items: flex-start; }
+.own .col { align-items: flex-end; }
+.who { font-size: 11.5px; color: var(--muted-foreground); padding: 0 4px 1px; }
+.m { display: flex; flex-direction: column; align-items: inherit; max-width: 100%; }
+.b { position: relative; padding: 6px 11px; border-radius: 16px; background: var(--bubble-in); line-height: 1.42; max-width: 100%; overflow-wrap: anywhere; cursor: default; }
+.own .b { background: var(--bubble-own); }
+/* corners tighten where bubbles in one group meet */
+.grp:not(.own) .b.first  { border-bottom-left-radius: 5px; }
+.grp:not(.own) .b.mid    { border-top-left-radius: 5px; border-bottom-left-radius: 5px; }
+.grp:not(.own) .b.last   { border-top-left-radius: 5px; }
+.grp:not(.own) .b.single { border-bottom-left-radius: 5px; }
+.own .b.first  { border-bottom-right-radius: 5px; }
+.own .b.mid    { border-top-right-radius: 5px; border-bottom-right-radius: 5px; }
+.own .b.last   { border-top-right-radius: 5px; }
+.own .b.single { border-bottom-right-radius: 5px; }
+/* production today: every bubble the same shape, a time line under each */
+.prod .grp { margin-top: 8px; }
+.prod .col { gap: 3px; }
+.prod .m + .m { margin-top: 5px; }
+.prod .grp:not(.own) .b { border-radius: 16px 16px 16px 4px; }
+.prod .own .b { border-radius: 16px 16px 4px 16px; }
+.rel { padding: 0 4px; font-size: 12px; color: var(--muted-foreground); }
+.rx-prod { display: inline-flex; gap: 4px; align-items: center; padding: 1px 8px; border: 1px solid var(--border); border-radius: 999px; font-size: 12px; background: var(--card); }
+
+/* option A: time inside the bubble */
+.intime { float: right; margin: 5px 0 -3px 10px; font-size: 10.5px; line-height: 1.4; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+/* option B: one time per group */
+.gtime { padding: 1px 4px 0; font-size: 11px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+
+/* reactions sit on the bubble's bottom edge */
+.b.has-rx { margin-bottom: 13px; }
+.rx { position: absolute; bottom: -12px; left: 10px; display: inline-flex; align-items: center; gap: 3px; padding: 0 6px; height: 20px; border-radius: 999px; background: var(--card); border: 1px solid var(--border); font-size: 11px; color: var(--foreground); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08); white-space: nowrap; }
+.own .rx { left: auto; right: 10px; }
+
+/* exact time: tooltip on desktop, tap to reveal on phone */
+.tip { position: absolute; bottom: calc(100% + 6px); left: 0; display: none; padding: 4px 8px; border-radius: 6px; background: var(--tooltip); color: var(--tooltip-fg); font-size: 11.5px; font-weight: 500; white-space: nowrap; z-index: 3; box-shadow: var(--shadow); pointer-events: none; }
+.own .tip { left: auto; right: 0; }
+.panel .b:hover .tip, .panel .b:focus-visible .tip, .panel .m.demo .tip { display: block; }
+.panel .b:hover { filter: brightness(0.97); }
+.cursor { position: absolute; right: -6px; bottom: -14px; width: 16px; height: 20px; z-index: 4; pointer-events: none; }
+.m:not(.demo) .cursor { display: none; }
+.cursor path { fill: var(--card); stroke: var(--foreground); stroke-width: 1.4; stroke-linejoin: round; }
+.reveal { display: none; padding: 2px 4px 0; font-size: 11px; color: var(--muted-foreground); }
+.phone .m.revealed .reveal { display: block; }
+.phone .reveals .b { cursor: pointer; }
+.phone .m.demo .b::after { content: ""; position: absolute; right: 18%; top: 50%; width: 30px; height: 30px; margin-top: -15px; border-radius: 999px; background: var(--highlight-soft); border: 2px solid var(--highlight); pointer-events: none; }
+
+/* screen-reader text, made visible on request */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+body.show-sr .sr { position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal; display: block; margin: 1px 0 4px; padding: 1px 5px; border: 1px dashed var(--highlight); border-radius: 4px; font-family: var(--mono); font-size: 10.5px; line-height: 1.4; color: var(--highlight); }
+
+/* ---------- sections ---------- */
+.section { padding-block: 52px 8px; display: grid; gap: 18px; }
+.section > h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.015em; }
+.section > p { color: var(--ink-soft); max-width: 70ch; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 14px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td .muted { color: var(--ink-soft); }
+tr:last-child td { border-bottom: 0; }
+.tag { display: inline-block; font-size: 12px; font-weight: 500; padding: 1px 7px; border-radius: 4px; white-space: nowrap; }
+.tag.live { background: var(--rec-soft); color: var(--rec); }
+.tag.new { background: var(--highlight-soft); color: var(--highlight); }
+.tag.change { background: var(--warn-soft); color: var(--warn); }
+.decisions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 16px; }
+.decision { display: grid; gap: 8px; align-content: start; padding: 18px; border: 1px solid var(--rule); border-radius: 8px; background: color-mix(in srgb, var(--board) 55%, var(--card)); }
+.decision .q { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); }
+.decision h3 { font-size: 16px; font-weight: 600; line-height: 1.35; }
+.decision p { font-size: 14px; color: var(--ink-soft); }
+.outscope { display: grid; gap: 6px; padding-left: 18px; margin: 0; color: var(--ink-soft); font-size: 14.5px; max-width: 70ch; }
+.foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.foot a { color: var(--ink); }
+.also { display: grid; gap: 6px; padding-block: 48px 0; }
+.also h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.015em; }
+.also p { color: var(--ink-soft); max-width: 70ch; }
+
+@media (max-width: 820px) {
+  .row { grid-template-columns: minmax(0, 1fr); gap: 22px; padding-block: 32px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal, .tip { animation: fade 140ms ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-min" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+</svg>
+
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">Design concept · client-web #10377</span>
+    <h1>Calmer chats: group messages, show fewer times</h1>
+    <p>Today every chat message carries its own "3 hours ago" line, so a few short messages in a row take twice the room they need. The chosen direction: no time next to the messages, only a day separator with the time the conversation started, and a small time after an hour of quiet. Below it, the two other options we looked at, for comparison.</p>
+    <p>Production already does part of this. In group chats the avatar and name only show on the first of several messages in a row from one person. What is missing is everything to do with time. <b>Hover a message on desktop, or tap it on the phone,</b> to see its exact time.</p>
+  </header>
+
+  <nav class="switcher" aria-label="Choose a conversation">
+    <div class="switcher-inner">
+      <span class="switcher-label">Show</span>
+      <button class="sw-btn" type="button" id="conv-group" data-conv="group" aria-pressed="true">Group chat</button>
+      <button class="sw-btn" type="button" id="conv-direct" data-conv="direct" aria-pressed="false">1-to-1 chat</button>
+      <span class="sw-gap" aria-hidden="true"></span>
+      <button class="sw-btn" type="button" id="toggle-sr" aria-pressed="false">Show screen-reader text</button>
+      <p class="switch-note" id="switch-note"></p>
+    </div>
+  </nav>
+
+  <div class="rows">
+    <section class="row" aria-labelledby="t-today">
+      <div class="note">
+        <span class="when">Now</span>
+        <h2 id="t-today">How it looks in production today</h2>
+        <p>A time line under every message, written as "2 hours ago". There are no day separators, so the only way to tell Friday from today is to read those lines.</p>
+        <p>Messages from one person are already joined up in group chats, but only by sender. Time is never looked at, so a message from Friday and one from today can end up in the same group.</p>
+        <span class="verdict">The starting point</span>
+        <div class="count"><b data-count="today">0</b> times on screen</div>
+      </div>
+      <div class="devices" data-variant="today"></div>
+    </section>
+
+    <section class="row" aria-labelledby="t-c">
+      <div class="note">
+        <span class="when">Chosen · like iMessage</span>
+        <h2 id="t-c">Times only after a pause</h2>
+        <p>No time next to the messages at all. Each day opens with its separator and the time the conversation started ("Today 09:12"). After an hour of quiet, a small time marks where it picked up again.</p>
+        <p>For the time of any single message, hover it on desktop or tap it on the phone.</p>
+        <ul>
+          <li><b>The calmest</b> of the three: the conversation reads like a conversation.</li>
+          <li><b>The trade-off:</b> within an hour you can't tell 09:13 from 09:55 without hovering or tapping.</li>
+        </ul>
+        <span class="verdict rec">Chosen direction</span>
+        <div class="count"><b data-count="C">0</b> times on screen</div>
+      </div>
+      <div class="devices" data-variant="C"></div>
+    </section>
+
+    <div class="also">
+      <h2 id="t-also">Also considered</h2>
+      <p>Kept here for comparison. Same conversation, same rules, only the time moves.</p>
+    </div>
+
+    <section class="row" aria-labelledby="t-a">
+      <div class="note">
+        <span class="when">Option A · like WhatsApp</span>
+        <h2 id="t-a">A small time inside every bubble</h2>
+        <p>The time sits in the bottom corner of each bubble, on the line it already uses. It costs no extra room, and every message shows its time without hovering or tapping.</p>
+        <ul>
+          <li><b>Works the same</b> on desktop and phone.</li>
+          <li><b>Still a time on every message</b>, just smaller. The ticket asks for one time per group, so this one does not meet it.</li>
+        </ul>
+        <span class="verdict">Not chosen</span>
+        <div class="count"><b data-count="A">0</b> times on screen</div>
+      </div>
+      <div class="devices" data-variant="A"></div>
+    </section>
+
+    <section class="row" aria-labelledby="t-b">
+      <div class="note">
+        <span class="when">Option B · like Teams and Messenger</span>
+        <h2 id="t-b">One time under each group</h2>
+        <p>A group is closed by a single time. Within a group the messages are minutes apart, so one time covers all of them. For the exact time of one message, hover it on desktop or tap it on the phone.</p>
+        <ul>
+          <li><b>Meets every acceptance criterion</b> on its own, with no extra dividers needed.</li>
+          <li><b>Never hides when someone spoke</b>, which matters in a work chat ("did she say that before or after the meeting?").</li>
+        </ul>
+        <span class="verdict">Not chosen</span>
+        <div class="count"><b data-count="B">0</b> times on screen</div>
+      </div>
+      <div class="devices" data-variant="B"></div>
+    </section>
+  </div>
+
+  <section class="section" aria-labelledby="t-shared">
+    <h2 id="t-shared">The rules behind it</h2>
+    <p>These apply in all three options, so they hold whichever way the time goes.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>What</th><th>Proposal</th><th>Compared with today</th></tr></thead>
+        <tbody>
+          <tr><td>What makes a group</td><td>Same person, each message within <b>5 minutes</b> of the one before, nobody else in between, same day. Sanne's 11:05 and 11:31 messages in the example are two groups for that reason.</td><td><span class="tag change">Changes</span> <span class="muted">Today only the sender counts.</span></td></tr>
+          <tr><td>Avatar and name</td><td>On the first message of a group, in group chats. Never in 1-to-1 chats, because the header already says who you're talking to.</td><td><span class="tag live">Already live</span></td></tr>
+          <tr><td>Group shape</td><td>Bubbles in a group sit 2px apart, groups 12px apart. Corners tighten where two bubbles in a group meet, so a group reads as one block.</td><td><span class="tag new">New</span></td></tr>
+          <tr><td>Time after a pause</td><td>After <b>1 hour</b> without messages, a small time between the messages, with no pill around it: "11:05". Only within a day. A new day gets its separator instead.</td><td><span class="tag new">New</span></td></tr>
+          <tr><td>Day separators</td><td>With the time the day's conversation started: <b>Today 09:12</b> · <b>Yesterday 16:40</b> · <b>Friday 2 October 15:02</b>. The year is added only when it isn't this year: Friday 2 October 2025.</td><td><span class="tag new">New</span></td></tr>
+          <tr><td>How a time is written</td><td>Clock time, in the format that goes with the person's language: 09:12 in Dutch, 9:12 AM in American English.</td><td><span class="tag change">Changes</span> <span class="muted">Replaces "2 hours ago".</span></td></tr>
+          <tr><td>Exact time of one message</td><td>Desktop: hover or keyboard focus shows "Today at 09:12" above the bubble. Phone: tap the bubble and the same line opens under it. Tap again to close.</td><td><span class="tag new">New</span></td></tr>
+          <tr><td>Reactions</td><td>A small pill overlapping the bubble's bottom edge, on the side the bubble lines up with. It adds a few pixels to the group, not a whole row.</td><td><span class="tag change">Changes</span> <span class="muted">Today they take their own row.</span></td></tr>
+          <tr><td>Screen readers</td><td>Every message starts with hidden text: "Tomasz Kowalski, today at 09:12". It's there even when the name and time are not shown on screen. Use "Show screen-reader text" above to see it.</td><td><span class="tag change">Extends</span> <span class="muted">Today only the name is read.</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-decide">
+    <h2 id="t-decide">The ticket's open questions, answered</h2>
+    <div class="decisions">
+      <div class="decision">
+        <span class="q">Where the time sits</span>
+        <h3>Only at the start of a day and after a pause</h3>
+        <p>The calmest of the three options. The exact time of any message is one hover or tap away.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Grouping rule</span>
+        <h3>5 minutes, counted from the previous message</h3>
+        <p>Counting from the previous message rather than the first one keeps a quick back-and-forth from being split in the middle. A new day always starts a new group.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Time divider after a pause</span>
+        <h3>Yes, after 1 hour of quiet</h3>
+        <p>With no time next to messages, this is what tells you a conversation stopped and started again. The ticket's suggestion of an hour works in the example: 09:24 to 11:05 gets a time, 11:05 to 11:31 does not.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Avatar and name in 1-to-1</span>
+        <h3>Not at all</h3>
+        <p>The header names the person and there is only one other sender, so this is what production does already. Switch to "1-to-1 chat" above to see it.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Reactions</span>
+        <h3>On the bubble's bottom edge</h3>
+        <p>Overlapping the edge keeps a group together. The add-reaction button stays where it is now, appearing on hover next to the bubble.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Ticket wording</span>
+        <h3>Updated on 6 October</h3>
+        <p>The time of a group is now covered by hover and tap, so the ticket reads: no time under individual messages, a time at the start of each day and after an hour of quiet, and the exact time of any message on hover or tap.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-out">
+    <h2 id="t-out">Not part of this</h2>
+    <ul class="outscope">
+      <li>Space chat. It's a prototype-only screen that already groups messages its own way.</li>
+      <li>Read receipts and "seen" markers. They don't exist on the platform.</li>
+      <li>The conversation list. Its "last message" times stay as they are.</li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    <span>Ticket: <a href="https://github.com/alkem-io/client-web/issues/10377">client-web #10377</a></span>
+    <span>Example conversation set on Tuesday 6 October, 11:40</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const NOW = new Date(2026, 9, 6, 11, 40);
+  const at = (d, h, m) => new Date(2026, 9, d, h, m);
+  const PEOPLE = {
+    me: { name: 'You' },
+    sanne: { name: 'Sanne Vermeer', ini: 'SV', av: '--av-sanne' },
+    tomasz: { name: 'Tomasz Kowalski', ini: 'TK', av: '--av-tomasz' },
+  };
+  const CONVS = {
+    group: {
+      kind: 'group', title: 'Kerkstraat traffic group', sub: '3 members', demo: 'g6',
+      note: 'A group chat with Sanne and Tomasz. Avatar and name show on the first message of each group.',
+      msgs: [
+        { id: 'g1', from: 'sanne', at: at(2, 15, 2), text: 'Kick-off notes are in the space. Thanks for coming, everyone.' },
+        { id: 'g2', from: 'sanne', at: at(2, 15, 4), text: 'Next step: traffic counts from the council.' },
+        { id: 'g3', from: 'sanne', at: at(5, 16, 40), text: 'Did anyone hear back from the council about the counts?' },
+        { id: 'g4', from: 'tomasz', at: at(5, 16, 52), text: "Not yet. I'll call them first thing tomorrow." },
+        { id: 'g5', from: 'tomasz', at: at(6, 9, 12), text: 'Called them.' },
+        { id: 'g6', from: 'tomasz', at: at(6, 9, 12), text: 'They counted 1,840 cars last Thursday between 7 and 9.' },
+        { id: 'g7', from: 'tomasz', at: at(6, 9, 13), text: 'About a third were going faster than 30.', rx: '😮 2' },
+        { id: 'g8', from: 'me', at: at(6, 9, 20), text: "That's a lot more than I expected." },
+        { id: 'g9', from: 'me', at: at(6, 9, 21), text: 'Can you add the numbers to the speed bumps post?' },
+        { id: 'g10', from: 'sanne', at: at(6, 9, 24), text: "On it. I'll add them to the poll as well.", rx: '👍 1' },
+        { id: 'g11', from: 'sanne', at: at(6, 11, 5), text: "Done. Have a look before Thursday's meeting?" },
+        { id: 'g12', from: 'sanne', at: at(6, 11, 31), text: 'Also added the photo from this morning.' },
+        { id: 'g13', from: 'me', at: at(6, 11, 33), text: "Looks good. I'll share it with the school." },
+      ],
+    },
+    direct: {
+      kind: 'direct', title: 'Sanne Vermeer', sub: 'Kerkstraat traffic group', demo: 'd7',
+      note: 'A 1-to-1 chat with Sanne. No avatars or names next to the messages: the header already says who it is.',
+      msgs: [
+        { id: 'd1', from: 'sanne', at: at(2, 15, 10), text: 'Thanks for joining the kick-off!' },
+        { id: 'd2', from: 'me', at: at(2, 15, 11), text: 'Thanks for organising. Good turnout.' },
+        { id: 'd3', from: 'sanne', at: at(5, 16, 41), text: 'Quick one: are you free Thursday evening?' },
+        { id: 'd4', from: 'sanne', at: at(5, 16, 41), text: 'The school wants to join the meeting.' },
+        { id: 'd5', from: 'me', at: at(5, 16, 58), text: 'Yes, from 19:00.' },
+        { id: 'd6', from: 'sanne', at: at(6, 9, 30), text: "Great, I'll let them know." },
+        { id: 'd7', from: 'sanne', at: at(6, 9, 31), text: 'Can you bring the photos?', rx: '👍 1' },
+        { id: 'd8', from: 'me', at: at(6, 9, 40), text: 'Will do.' },
+        { id: 'd9', from: 'me', at: at(6, 9, 40), text: 'Printed or on a laptop?' },
+        { id: 'd10', from: 'sanne', at: at(6, 11, 12), text: "Laptop is fine. There's a screen in the room." },
+      ],
+    },
+  };
+
+  const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const pad = n => String(n).padStart(2, '0');
+  const hm = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+  const sameDay = (a, b) => a.toDateString() === b.toDateString();
+  const dayLabel = d => {
+    if (sameDay(d, NOW)) return 'Today';
+    const y = new Date(NOW); y.setDate(y.getDate() - 1);
+    if (sameDay(d, y)) return 'Yesterday';
+    return DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + (d.getFullYear() !== NOW.getFullYear() ? ' ' + d.getFullYear() : '');
+  };
+  const exact = d => dayLabel(d) + ' at ' + hm(d);
+  const relative = d => {
+    const min = Math.round((NOW - d) / 60000);
+    if (min < 60) return min + ' minutes ago';
+    const h = Math.floor(min / 60);
+    if (h < 24) return h === 1 ? 'an hour ago' : h + ' hours ago';
+    const days = Math.floor(h / 24);
+    return days === 1 ? 'a day ago' : days + ' days ago';
+  };
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+  // Proposed rule: same sender, ≤5 min after the previous message, same day.
+  function groupsProposed(msgs) {
+    const out = [];
+    msgs.forEach((m, i) => {
+      const prev = msgs[i - 1];
+      const newDay = !prev || !sameDay(prev.at, m.at);
+      const gap = prev ? (m.at - prev.at) / 60000 : Infinity;
+      if (newDay || prev.from !== m.from || gap > 5) {
+        out.push({ from: m.from, at: m.at, newDay, pause: !newDay && gap >= 60, msgs: [] });
+      }
+      out[out.length - 1].msgs.push(m);
+    });
+    return out;
+  }
+  // Production today: sender only, time never consulted.
+  function groupsProduction(msgs) {
+    const out = [];
+    msgs.forEach((m, i) => {
+      if (i === 0 || msgs[i - 1].from !== m.from) out.push({ from: m.from, at: m.at, msgs: [] });
+      out[out.length - 1].msgs.push(m);
+    });
+    return out;
+  }
+
+  const CURSOR = '<svg class="cursor" viewBox="0 0 16 20" aria-hidden="true"><path d="M1 1v15l4-3.6 2.6 6 2.6-1.1-2.5-5.8H13z"/></svg>';
+
+  function renderMessages(conv, variant, device) {
+    const isToday = variant === 'today';
+    const groups = isToday ? groupsProduction(conv.msgs) : groupsProposed(conv.msgs);
+    let html = '';
+    let times = 0;
+    groups.forEach(g => {
+      if (!isToday && g.newDay) {
+        html += '<div class="sep">' + dayLabel(g.at) + (variant === 'C' ? ' ' + hm(g.at) : '') + '</div>';
+        if (variant === 'C') times++;
+      } else if (variant === 'C' && g.pause) {
+        html += '<div class="pause">' + hm(g.at) + '</div>';
+        times++;
+      }
+      const own = g.from === 'me';
+      const p = PEOPLE[g.from];
+      const showAv = conv.kind === 'group' && !own;
+      html += '<div class="grp' + (own ? ' own' : '') + '">';
+      if (showAv) html += '<span class="av" style="background: var(' + p.av + ')" aria-hidden="true">' + p.ini + '</span>';
+      html += '<div class="col">';
+      if (showAv) html += '<span class="who" aria-hidden="true">' + p.name + '</span>';
+      const n = g.msgs.length;
+      g.msgs.forEach((m, i) => {
+        const pos = n === 1 ? 'single' : i === 0 ? 'first' : i === n - 1 ? 'last' : 'mid';
+        const demo = !isToday && m.id === conv.demo && (device === 'desk' || variant !== 'A');
+        let inner = '';
+        if (!isToday) inner += '<span class="sr">' + p.name + ', ' + dayLabel(m.at).replace(/^(Today|Yesterday)/, s => s.toLowerCase()) + ' at ' + hm(m.at) + ':</span>';
+        inner += esc(m.text);
+        if (variant === 'A') { inner += '<span class="intime" aria-hidden="true">' + hm(m.at) + '</span>'; times++; }
+        if (!isToday && device === 'desk') inner += '<span class="tip" aria-hidden="true">' + exact(m.at) + '</span>';
+        if (!isToday && m.rx) inner += '<span class="rx">' + m.rx + '</span>';
+        if (demo && device === 'desk') inner += CURSOR;
+        const focusable = !isToday && (device === 'desk' || variant !== 'A');
+        html += '<div class="m' + (demo ? ' demo' + (device === 'phone' ? ' revealed' : '') : '') + '">';
+        html += '<div class="b ' + pos + (m.rx && !isToday ? ' has-rx' : '') + '"' + (focusable ? ' tabindex="0"' : '') + '>' + inner + '</div>';
+        if (isToday) {
+          if (m.rx) html += '<span class="rx-prod">' + m.rx + '</span>';
+          html += '<span class="rel">' + relative(m.at) + '</span>';
+          times++;
+        }
+        if (device === 'phone' && (variant === 'B' || variant === 'C')) html += '<span class="reveal" aria-hidden="true">' + exact(m.at) + '</span>';
+        html += '</div>';
+      });
+      if (variant === 'B') { html += '<span class="gtime" aria-hidden="true">' + hm(g.msgs[n - 1].at) + '</span>'; times++; }
+      html += '</div></div>';
+    });
+    return { html, times };
+  }
+
+  function header(conv, phone) {
+    const avatar = conv.kind === 'group'
+      ? '<span class="av lg" style="background: var(--av-group)"><svg class="i"><use href="#i-users"/></svg></span>'
+      : '<span class="av lg" style="background: var(--av-sanne)">SV</span>';
+    return '<div class="ch">' + (phone ? '<svg class="i back"><use href="#i-back"/></svg>' : '') + avatar +
+      '<span class="ch-text"><span class="ch-title">' + conv.title + '</span><span class="ch-sub">' + conv.sub + '</span></span>' +
+      (phone ? '' : '<span class="ch-icons"><svg class="i"><use href="#i-min"/></svg><svg class="i"><use href="#i-x"/></svg></span>') + '</div>';
+  }
+  const composer = '<div class="composer"><span class="field">Write a message…</span><svg class="i send"><use href="#i-send"/></svg></div>';
+
+  const HINT = {
+    today: { desk: 'Desktop · chat window', phone: 'Phone' },
+    A: { desk: 'Desktop · <em>hover for the date too</em>', phone: 'Phone · <em>nothing to tap</em>' },
+    B: { desk: 'Desktop · <em>hover a message</em>', phone: 'Phone · <em>tap a message</em>' },
+    C: { desk: 'Desktop · <em>hover a message</em>', phone: 'Phone · <em>tap a message</em>' },
+  };
+
+  let current = 'group';
+  function renderAll() {
+    const conv = CONVS[current];
+    document.getElementById('switch-note').textContent = conv.note;
+    document.querySelectorAll('.devices').forEach(el => {
+      const v = el.dataset.variant;
+      const desk = renderMessages(conv, v, 'desk');
+      const phone = renderMessages(conv, v, 'phone');
+      const cls = 'msgs' + (v === 'today' ? ' prod' : '');
+      el.innerHTML =
+        '<div class="dev"><span class="dev-label">' + HINT[v].desk + '</span><div class="panel">' + header(conv, false) +
+        '<div class="' + cls + '">' + desk.html + '</div>' + composer + '</div></div>' +
+        '<div class="dev"><span class="dev-label">' + HINT[v].phone + '</span><div class="phone"><div class="status"><span>11:40</span><span>●●●</span></div>' +
+        header(conv, true) + '<div class="' + cls + (v === 'B' || v === 'C' ? ' reveals' : '') + '">' + phone.html + '</div>' + composer + '</div></div>';
+      document.querySelector('[data-count="' + v + '"]').textContent = desk.times;
+    });
+  }
+
+  document.querySelectorAll('[data-conv]').forEach(btn => btn.addEventListener('click', () => {
+    current = btn.dataset.conv;
+    document.querySelectorAll('[data-conv]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    renderAll();
+  }));
+  const srBtn = document.getElementById('toggle-sr');
+  srBtn.addEventListener('click', () => {
+    const on = document.body.classList.toggle('show-sr');
+    srBtn.setAttribute('aria-pressed', String(on));
+  });
+
+  // Phone: tap a bubble to show its exact time; tap again to hide it.
+  function toggleReveal(target) {
+    const b = target.closest('.phone .reveals .b');
+    if (!b) return;
+    b.parentElement.classList.toggle('revealed');
+    b.parentElement.classList.remove('demo');
+  }
+  document.addEventListener('click', e => toggleReveal(e.target));
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('b')) {
+      e.preventDefault();
+      toggleReveal(e.target);
+    }
+  });
+  // The first real hover or tap retires the staged demo state.
+  document.addEventListener('pointerover', e => {
+    if (e.target.closest && e.target.closest('.panel .b')) document.querySelectorAll('.panel .m.demo').forEach(m => m.classList.remove('demo'));
+  });
+
+  renderAll();
+})();
+</script>

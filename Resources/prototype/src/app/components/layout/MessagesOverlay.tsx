@@ -14,6 +14,11 @@
  * of `messagingData`, which the rest of the messaging surfaces already use, so
  * the panel now reads the same conversations they do.
  *
+ * The thread itself is `TimeGroupedChatThreadView` from `src/ahead/` rather
+ * than CRD's `ChatThreadView`: it groups messages by time and shows a time only
+ * at the start of a day and after a pause (client-web#10377). It still renders
+ * CRD's own bubbles and composer.
+ *
  * NOT converted, deliberately: the prototype's space channels
  * (`SpaceChannelView`, `SpaceChatTab`, `SpaceChannelComposer`). Production has
  * no channel concept — those are prototype-ahead. See PHASE-2.md §12.
@@ -23,14 +28,24 @@ import { useTranslation } from 'react-i18next';
 import { ChatConversationList } from '@/crd/components/chat/ChatConversationList';
 import { FloatingChatLauncher } from '@/crd/components/chat/FloatingChatLauncher';
 import { ChatPanel } from '@/crd/components/chat/ChatPanel';
-import { ChatThreadView } from '@/crd/components/chat/ChatThreadView';
 import type { ChatMessage } from '@/crd/components/chat/types';
 import { CONVERSATIONS, MESSAGES } from '@/app/components/messaging/messagingData';
 import { toChatListItem, toChatMessage, toChatThreadHeader } from '@/app/mappers/chat';
 import { useScreenSize } from '@/crd/hooks/useMediaQuery';
 import { useMessages } from '@/app/contexts/MessagesContext';
+import { TimeGroupedChatThreadView } from '@/ahead/TimeGroupedChatThreadView';
 
 const CURRENT_USER = { id: 'me', name: 'You' };
+
+/**
+ * The fixtures are written as if "today" were 12 February 2026. Move them by
+ * whole days so that day lands on the real today, keeping each message's time
+ * of day — otherwise every separator would read "Thursday 12 February".
+ */
+const FIXTURE_TODAY = new Date(2026, 1, 12);
+const startOfToday = new Date();
+startOfToday.setHours(0, 0, 0, 0);
+const FIXTURE_DAY_SHIFT = startOfToday.getTime() - FIXTURE_TODAY.getTime();
 
 export function MessagesOverlay() {
   const { isOpen, openMessages, closeMessages } = useMessages();
@@ -50,7 +65,9 @@ export function MessagesOverlay() {
 
   const messages = useMemo<ChatMessage[]>(() => {
     if (!selectedId) return [];
-    const base = (MESSAGES[selectedId] ?? []).map(toChatMessage);
+    const base = (MESSAGES[selectedId] ?? [])
+      .map(toChatMessage)
+      .map(m => ({ ...m, timestampMs: m.timestampMs + FIXTURE_DAY_SHIFT }));
     return [...base, ...(sent[selectedId] ?? [])].sort((a, b) => a.timestampMs - b.timestampMs);
   }, [selectedId, sent]);
 
@@ -107,7 +124,7 @@ export function MessagesOverlay() {
         settingsLabel={t('panel.settings')}
       >
         {selected ? (
-          <ChatThreadView
+          <TimeGroupedChatThreadView
             conversation={toChatThreadHeader(selected)}
             messages={messages}
             messagesLoading={false}
