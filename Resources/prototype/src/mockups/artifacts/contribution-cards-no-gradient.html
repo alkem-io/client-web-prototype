@@ -1,0 +1,311 @@
+<title>Response Cards Without Gradient</title>
+<!-- product#2207. Review board in the same shape as chat-message-grouping.html:
+     one row per response type, the card as production draws it today next to the proposal.
+     Card markup mirrors src/crd/components/contribution/Contribution{Memo,Whiteboard,Document}Card.tsx. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: review board. Note on the left, "now / proposed / proposed on hover" cards on the right. */
+:root {
+  /* board */
+  --board: #eef1f4;
+  --ink: #1d384a;
+  --ink-soft: #5b6b7c;
+  --rule: #d6dde4;
+  --note-tag: #1d384a;
+  --note-tag-fg: #ffffff;
+  --rec: #0f7a52;
+  --rec-soft: rgba(15, 122, 82, 0.10);
+  --old: #9a3b2e;
+  --old-soft: rgba(154, 59, 46, 0.09);
+  --focus: #2563eb;
+  /* product (CRD) */
+  --background: #fcfdfe;
+  --foreground: #1d384a;
+  --card: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --primary-rgb: 29, 56, 74;
+  --secondary: #e8eef3;
+  --secondary-foreground: #1d384a;
+  --sketch: #1d384a;
+  --sticky-a: #fde68a;
+  --sticky-b: #bfdbfe;
+  --sticky-c: #bbf7d0;
+  --doc-accent: #2563eb;
+  --shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.06);
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+    --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+    --rec: #5fd0a2; --rec-soft: rgba(95, 208, 162, 0.12);
+    --old: #f08a7a; --old-soft: rgba(240, 138, 122, 0.12); --focus: #7aa7ff;
+    --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+    --muted-foreground: #94a3b8; --border: #2b3a48; --primary-rgb: 29, 56, 74;
+    --secondary: #2b3a48; --secondary-foreground: #e3eaf0; --sketch: #cbd5e1;
+    --sticky-a: #a68a2c; --sticky-b: #3b6091; --sticky-c: #2f7a50; --doc-accent: #7aa7ff;
+    --shadow: 0 10px 30px -10px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+  --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+  --rec: #5fd0a2; --rec-soft: rgba(95, 208, 162, 0.12);
+  --old: #f08a7a; --old-soft: rgba(240, 138, 122, 0.12); --focus: #7aa7ff;
+  --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+  --muted-foreground: #94a3b8; --border: #2b3a48; --primary-rgb: 29, 56, 74;
+  --secondary: #2b3a48; --secondary-foreground: #e3eaf0; --sketch: #cbd5e1;
+  --sticky-a: #a68a2c; --sticky-b: #3b6091; --sticky-c: #2f7a50; --doc-accent: #7aa7ff;
+  --shadow: 0 10px 30px -10px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- intro ---------- */
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.intro { display: grid; gap: 14px; max-width: 72ch; }
+.intro h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
+.intro p { color: var(--ink-soft); font-size: 16px; }
+.intro b { color: var(--ink); font-weight: 600; }
+.intro a { color: inherit; }
+
+/* ---------- rows ---------- */
+.rows { margin-top: 28px; border-top: 1px solid var(--rule); }
+.row { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 40px; padding-block: 44px; border-bottom: 1px solid var(--rule); }
+.note { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.tag { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--note-tag); color: var(--note-tag-fg); }
+.note h2 { font-size: 20px; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
+.note p, .note li { color: var(--ink-soft); font-size: 14.5px; }
+.note ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; }
+.note b { color: var(--ink); font-weight: 600; }
+
+.states { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 24px; align-items: start; min-width: 0; }
+.state { display: grid; gap: 10px; min-width: 0; }
+.state-label { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; }
+.state-label.now { background: var(--old-soft); color: var(--old); }
+.state-label.new { background: var(--rec-soft); color: var(--rec); }
+.state-label.hov { border: 1px dashed var(--rule); color: var(--ink-soft); }
+
+/* ---------- the card (mirrors CRD) ---------- */
+.card { position: relative; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: var(--card); color: var(--foreground); box-shadow: var(--shadow); cursor: pointer; transition: box-shadow 0.15s; font-size: 13px; }
+.card.min180 { min-height: 180px; }
+.card.min200 { min-height: 200px; background: var(--muted); }
+.card:hover { box-shadow: var(--shadow), 0 0 0 2px rgba(var(--primary-rgb), 0.5); }
+.card:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* previews */
+.memo-body { padding: 16px; height: 180px; overflow: hidden; display: grid; gap: 6px; align-content: start; }
+.memo-body h4 { margin: 0; font-size: 14px; font-weight: 600; }
+.memo-body p { font-size: 12.5px; color: var(--foreground); }
+.memo-body ul { margin: 0; padding-left: 16px; font-size: 12.5px; display: grid; gap: 2px; }
+.fill { position: absolute; inset: 0; }
+.fill svg { width: 100%; height: 100%; display: block; }
+
+/* hover wash: kept as is */
+.wash { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-rgb), 0.4); opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 1; }
+.card:hover .wash, .card.is-hover .wash { opacity: 1; }
+.card.is-hover { box-shadow: var(--shadow), 0 0 0 2px rgba(var(--primary-rgb), 0.5); }
+.open-btn { display: inline-flex; align-items: center; height: 32px; padding-inline: 12px; border-radius: 6px; background: var(--secondary); color: var(--secondary-foreground); font-size: 12px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+/* NOW: gradient footer */
+.grad { position: absolute; inset-inline: 0; bottom: 0; top: 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; padding: 12px; background: linear-gradient(to top, rgba(var(--primary-rgb), 0.8), rgba(var(--primary-rgb), 0.2) 50%, transparent); pointer-events: none; z-index: 2; }
+.grad .t { color: #ffffff; font-size: 12px; font-weight: 600; }
+.grad .a { color: rgba(255,255,255,0.7); font-size: 11px; }
+.grad .sig { color: #ffffff; }
+
+/* PROPOSED: solid band */
+.band { position: absolute; inset-inline: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: var(--card); border-top: 1px solid var(--border); z-index: 2; pointer-events: none; }
+.band .t { color: var(--foreground); font-size: 12px; font-weight: 600; }
+.band .a { color: var(--muted-foreground); font-size: 11px; }
+.band .sig { color: var(--muted-foreground); }
+.meta { min-width: 0; display: grid; }
+.meta .t, .meta .a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sig { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; font-size: 12px; font-weight: 500; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; pointer-events: auto; }
+.band .sig:hover { background: var(--muted); color: var(--foreground); }
+
+/* ---------- closing ---------- */
+.after { margin-top: 36px; display: grid; gap: 10px; max-width: 72ch; }
+.after h2 { font-size: 18px; font-weight: 600; }
+.after p, .after li { color: var(--ink-soft); font-size: 14.5px; }
+.after ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; }
+.after b { color: var(--ink); font-weight: 600; }
+
+@media (max-width: 760px) {
+  .row { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wash, .card { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">product #2207 · response cards</span>
+    <h1>Response cards without the gradient</h1>
+    <p>Memo, Whiteboard and Document responses still put their title on a blue fade over the preview. It's one of the last gradients left on the platform. <b>The proposal swaps the fade for a solid band</b> in the card colour, with the title and author in normal text, the same way a Post response reads.</p>
+    <p>The blue wash on hover stays. It now covers only the preview, so the title stays readable while you hover. Hover over any card on this page to try it.</p>
+  </header>
+
+  <div class="rows">
+    <!-- MEMO -->
+    <section class="row" aria-labelledby="t-memo">
+      <div class="note">
+        <span class="tag">Memo</span>
+        <h2 id="t-memo">Memo response</h2>
+        <p>The memo text sits on a white card, so the fade was laid over real writing. The last lines were tinted blue and hard to read.</p>
+        <ul>
+          <li>The <b>signed copies</b> button moves into the band and becomes a quiet grey button.</li>
+          <li>The band covers the bottom of the memo text, just like the fade did. The preview already cuts off there.</li>
+        </ul>
+      </div>
+      <div class="states">
+        <div class="state">
+          <span class="state-label now">Now</span>
+          <div class="card min180" tabindex="0" role="button" aria-label="Open memo: Workshop agreements (current design)">
+            <div class="memo-body">
+              <h4>Workshop agreements</h4>
+              <p>What we agreed during the kick-off session on 2 October:</p>
+              <ul><li>Weekly check-in on Tuesdays</li><li>Shared folder for all drafts</li><li>Decisions logged in this space</li></ul>
+              <p>Everyone signs below to confirm.</p>
+            </div>
+            <div class="wash"><span class="open-btn">Open memo</span></div>
+            <div class="grad">
+              <div class="meta"><span class="t">Workshop agreements</span><span class="a">Sanne de Vries</span></div>
+              <span class="sig"><svg class="i" viewBox="0 0 24 24"><path d="M20 19.5v.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8.5L18 5.5"/><path d="M8 18h1"/><path d="M18.42 9.61a2.1 2.1 0 1 1 2.97 2.97L16.95 17 13 18l.99-3.95 4.43-4.44Z"/></svg>4 signed</span>
+            </div>
+          </div>
+        </div>
+        <div class="state">
+          <span class="state-label new">Proposed</span>
+          <div class="card min180" tabindex="0" role="button" aria-label="Open memo: Workshop agreements (proposed design)">
+            <div class="memo-body">
+              <h4>Workshop agreements</h4>
+              <p>What we agreed during the kick-off session on 2 October:</p>
+              <ul><li>Weekly check-in on Tuesdays</li><li>Shared folder for all drafts</li><li>Decisions logged in this space</li></ul>
+              <p>Everyone signs below to confirm.</p>
+            </div>
+            <div class="wash"><span class="open-btn">Open memo</span></div>
+            <div class="band">
+              <div class="meta"><span class="t">Workshop agreements</span><span class="a">Sanne de Vries</span></div>
+              <span class="sig"><svg class="i" viewBox="0 0 24 24"><path d="M20 19.5v.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8.5L18 5.5"/><path d="M8 18h1"/><path d="M18.42 9.61a2.1 2.1 0 1 1 2.97 2.97L16.95 17 13 18l.99-3.95 4.43-4.44Z"/></svg>4 signed</span>
+            </div>
+          </div>
+        </div>
+        <div class="state">
+          <span class="state-label hov">Proposed · on hover</span>
+          <div class="card min180 is-hover" aria-hidden="true">
+            <div class="memo-body">
+              <h4>Workshop agreements</h4>
+              <p>What we agreed during the kick-off session on 2 October:</p>
+              <ul><li>Weekly check-in on Tuesdays</li><li>Shared folder for all drafts</li><li>Decisions logged in this space</li></ul>
+              <p>Everyone signs below to confirm.</p>
+            </div>
+            <div class="wash"><span class="open-btn">Open memo</span></div>
+            <div class="band">
+              <div class="meta"><span class="t">Workshop agreements</span><span class="a">Sanne de Vries</span></div>
+              <span class="sig"><svg class="i" viewBox="0 0 24 24"><path d="M20 19.5v.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8.5L18 5.5"/><path d="M8 18h1"/><path d="M18.42 9.61a2.1 2.1 0 1 1 2.97 2.97L16.95 17 13 18l.99-3.95 4.43-4.44Z"/></svg>4 signed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHITEBOARD -->
+    <section class="row" aria-labelledby="t-wb">
+      <div class="note">
+        <span class="tag">Whiteboard</span>
+        <h2 id="t-wb">Whiteboard response</h2>
+        <p>The whiteboard preview image fills the card. Today the fade tints the bottom half of the drawing blue, so the sketch reads as two colours.</p>
+        <ul>
+          <li>With the band, the drawing keeps its real colours right down to the title.</li>
+        </ul>
+      </div>
+      <div class="states">
+        <div class="state">
+          <span class="state-label now">Now</span>
+          <div class="card min200" tabindex="0" role="button" aria-label="Open whiteboard: User journey map (current design)">
+            <div class="fill"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="wb"><rect x="22" y="24" width="58" height="44" rx="3" fill="var(--sticky-a)"/><rect x="118" y="34" width="58" height="44" rx="3" fill="var(--sticky-b)"/><rect x="214" y="22" width="58" height="44" rx="3" fill="var(--sticky-c)"/><path d="M82 46 C 98 46, 102 56, 116 56" fill="none" stroke="var(--sketch)" stroke-width="2"/><path d="M178 56 C 194 56, 198 44, 212 44" fill="none" stroke="var(--sketch)" stroke-width="2"/><rect x="60" y="104" width="76" height="50" rx="3" fill="var(--sticky-b)"/><rect x="170" y="112" width="76" height="50" rx="3" fill="var(--sticky-a)"/><circle cx="150" cy="96" r="14" fill="none" stroke="var(--sketch)" stroke-width="2"/><path d="M30 178 Q 150 150 270 180" fill="none" stroke="var(--sketch)" stroke-width="2" stroke-dasharray="5 5"/></g></svg></div>
+            <div class="wash"><span class="open-btn">Open whiteboard</span></div>
+            <div class="grad"><div class="meta"><span class="t">User journey map</span><span class="a">Tomasz Nowak</span></div></div>
+          </div>
+        </div>
+        <div class="state">
+          <span class="state-label new">Proposed</span>
+          <div class="card min200" tabindex="0" role="button" aria-label="Open whiteboard: User journey map (proposed design)">
+            <div class="fill"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="wb"><rect x="22" y="24" width="58" height="44" rx="3" fill="var(--sticky-a)"/><rect x="118" y="34" width="58" height="44" rx="3" fill="var(--sticky-b)"/><rect x="214" y="22" width="58" height="44" rx="3" fill="var(--sticky-c)"/><path d="M82 46 C 98 46, 102 56, 116 56" fill="none" stroke="var(--sketch)" stroke-width="2"/><path d="M178 56 C 194 56, 198 44, 212 44" fill="none" stroke="var(--sketch)" stroke-width="2"/><rect x="60" y="104" width="76" height="50" rx="3" fill="var(--sticky-b)"/><rect x="170" y="112" width="76" height="50" rx="3" fill="var(--sticky-a)"/><circle cx="150" cy="96" r="14" fill="none" stroke="var(--sketch)" stroke-width="2"/><path d="M30 178 Q 150 150 270 180" fill="none" stroke="var(--sketch)" stroke-width="2" stroke-dasharray="5 5"/></g></svg></div>
+            <div class="wash"><span class="open-btn">Open whiteboard</span></div>
+            <div class="band"><div class="meta"><span class="t">User journey map</span><span class="a">Tomasz Nowak</span></div></div>
+          </div>
+        </div>
+        <div class="state">
+          <span class="state-label hov">Proposed · on hover</span>
+          <div class="card min200 is-hover" aria-hidden="true">
+            <div class="fill"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="wb"><rect x="22" y="24" width="58" height="44" rx="3" fill="var(--sticky-a)"/><rect x="118" y="34" width="58" height="44" rx="3" fill="var(--sticky-b)"/><rect x="214" y="22" width="58" height="44" rx="3" fill="var(--sticky-c)"/><path d="M82 46 C 98 46, 102 56, 116 56" fill="none" stroke="var(--sketch)" stroke-width="2"/><path d="M178 56 C 194 56, 198 44, 212 44" fill="none" stroke="var(--sketch)" stroke-width="2"/><rect x="60" y="104" width="76" height="50" rx="3" fill="var(--sticky-b)"/><rect x="170" y="112" width="76" height="50" rx="3" fill="var(--sticky-a)"/><circle cx="150" cy="96" r="14" fill="none" stroke="var(--sketch)" stroke-width="2"/><path d="M30 178 Q 150 150 270 180" fill="none" stroke="var(--sketch)" stroke-width="2" stroke-dasharray="5 5"/></g></svg></div>
+            <div class="wash"><span class="open-btn">Open whiteboard</span></div>
+            <div class="band"><div class="meta"><span class="t">User journey map</span><span class="a">Tomasz Nowak</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCUMENT -->
+    <section class="row" aria-labelledby="t-doc">
+      <div class="note">
+        <span class="tag">Document</span>
+        <h2 id="t-doc">Document response</h2>
+        <p>Documents show a preview of the first page. The fade covered most of it, because this card stretches the fade over its full height.</p>
+        <ul>
+          <li>Same band as the other two, so all three response types line up in a grid.</li>
+          <li>When there's no preview yet, the coloured file-type icon still sits in the middle.</li>
+        </ul>
+      </div>
+      <div class="states">
+        <div class="state">
+          <span class="state-label now">Now</span>
+          <div class="card min200" tabindex="0" role="button" aria-label="Open document: Pilot budget 2027 (current design)">
+            <div class="fill"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><rect width="300" height="200" fill="var(--card)"/><rect x="24" y="20" width="150" height="10" rx="2" fill="var(--foreground)"/><rect x="24" y="40" width="252" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="52" width="236" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="64" width="190" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="84" width="252" height="70" fill="none" stroke="var(--border)" stroke-width="1.5"/><path d="M24 101 H276 M24 118 H276 M24 135 H276 M110 84 V154 M193 84 V154" stroke="var(--border)" stroke-width="1.5"/><rect x="24" y="84" width="252" height="17" fill="var(--doc-accent)" opacity="0.18"/><rect x="24" y="168" width="220" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/></svg></div>
+            <div class="wash"><span class="open-btn">Open document</span></div>
+            <div class="grad"><div class="meta"><span class="t">Pilot budget 2027</span><span class="a">Amira Haddad</span></div></div>
+          </div>
+        </div>
+        <div class="state">
+          <span class="state-label new">Proposed</span>
+          <div class="card min200" tabindex="0" role="button" aria-label="Open document: Pilot budget 2027 (proposed design)">
+            <div class="fill"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><rect width="300" height="200" fill="var(--card)"/><rect x="24" y="20" width="150" height="10" rx="2" fill="var(--foreground)"/><rect x="24" y="40" width="252" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="52" width="236" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="64" width="190" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="84" width="252" height="70" fill="none" stroke="var(--border)" stroke-width="1.5"/><path d="M24 101 H276 M24 118 H276 M24 135 H276 M110 84 V154 M193 84 V154" stroke="var(--border)" stroke-width="1.5"/><rect x="24" y="84" width="252" height="17" fill="var(--doc-accent)" opacity="0.18"/><rect x="24" y="168" width="220" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/></svg></div>
+            <div class="wash"><span class="open-btn">Open document</span></div>
+            <div class="band"><div class="meta"><span class="t">Pilot budget 2027</span><span class="a">Amira Haddad</span></div></div>
+          </div>
+        </div>
+        <div class="state">
+          <span class="state-label hov">Proposed · on hover</span>
+          <div class="card min200 is-hover" aria-hidden="true">
+            <div class="fill"><svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><rect width="300" height="200" fill="var(--card)"/><rect x="24" y="20" width="150" height="10" rx="2" fill="var(--foreground)"/><rect x="24" y="40" width="252" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="52" width="236" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="64" width="190" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/><rect x="24" y="84" width="252" height="70" fill="none" stroke="var(--border)" stroke-width="1.5"/><path d="M24 101 H276 M24 118 H276 M24 135 H276 M110 84 V154 M193 84 V154" stroke="var(--border)" stroke-width="1.5"/><rect x="24" y="84" width="252" height="17" fill="var(--doc-accent)" opacity="0.18"/><rect x="24" y="168" width="220" height="5" rx="2" fill="var(--muted-foreground)" opacity="0.5"/></svg></div>
+            <div class="wash"><span class="open-btn">Open document</span></div>
+            <div class="band"><div class="meta"><span class="t">Pilot budget 2027</span><span class="a">Amira Haddad</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="after" aria-labelledby="t-after">
+    <h2 id="t-after">What stays the same</h2>
+    <ul>
+      <li><b>Post responses</b> already have no gradient and don't change.</li>
+      <li><b>Card sizes</b> stay the same, so grids of responses keep their rhythm.</li>
+      <li><b>The hover wash and "Open" button</b> stay exactly as they are today.</li>
+    </ul>
+  </section>
+</div>
