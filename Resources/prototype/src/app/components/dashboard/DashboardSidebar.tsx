@@ -19,6 +19,7 @@
  *
  * PHASE 1 REMOVALS — recorded in PHASE-2.md §1:
  *   · the activity dot beside each space name (CRD renders the name; no slot)
+ *     — back since 2026-10-06 through `@/ahead/ActivityDotSlots`
  *   · the Bot glyph on virtual contributors (`SidebarResourceItem` takes
  *     `initials` or an image, not an icon)
  *   · the active-route highlight on menu rows (CRD's rows have no active state)
@@ -33,6 +34,9 @@ import { Switch } from '@/crd/primitives/switch';
 import { InvitationsDialog } from '@/app/components/dialogs/InvitationsDialog';
 import { CreateSpaceDialogV3 } from '@/app/components/dialogs/CreateSpaceDialogV3';
 import { useLanguage } from '@/app/contexts/LanguageContext';
+import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
+import { spaceContainer } from '@/app/data/activity-data';
+import { type ActivityDotSlot, ActivityDotSlots } from '@/ahead/ActivityDotSlots';
 
 interface DashboardSidebarProps {
   activityView: boolean;
@@ -100,6 +104,17 @@ export function DashboardSidebar({
   const [showInvitations, setShowInvitations] = useState(false);
   const [showCreateSpace, setShowCreateSpace] = useState(false);
   const { t } = useLanguage();
+  const { hasContainerActivity } = useActivityIndicators();
+
+  // The pulse goes at the end of a My Spaces row, as it did before the switch.
+  const activitySlots: ActivityDotSlot[] = MY_SPACES.items
+    .filter(item => item.href && hasContainerActivity(spaceContainer(item.id)))
+    .map(item => ({
+      key: item.id,
+      find: root => [...root.querySelectorAll(`a[href="${item.href}"]`)],
+      label: `${item.name} has new activity`,
+      className: 'ml-auto mr-1',
+    }));
 
   // `iconName` is a key into CRD's own icon map — the design system decides
   // which glyph each row gets, so the prototype cannot pass an arbitrary icon.
@@ -124,12 +139,14 @@ export function DashboardSidebar({
 
   return (
     <>
-      <CrdDashboardSidebar
-        menuItems={menuItems}
-        resourceSections={[MY_SPACES, VIRTUAL_CONTRIBUTORS]}
-        activityEnabled={activityView}
-        onActivityToggle={onToggleView}
-      />
+      <ActivityDotSlots slots={activitySlots}>
+        <CrdDashboardSidebar
+          menuItems={menuItems}
+          resourceSections={[MY_SPACES, VIRTUAL_CONTRIBUTORS]}
+          activityEnabled={activityView}
+          onActivityToggle={onToggleView}
+        />
+      </ActivityDotSlots>
 
       {/* Prototype demo controls — no production equivalent. */}
       <div className="mt-6 space-y-3 border-t border-border pt-4">

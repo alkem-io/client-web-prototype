@@ -47,6 +47,13 @@ content (`hasContainerActivity(tabContainer(...))`). CRD's `TabItem` is
 My Spaces row, gated on `hasContainerActivity(spaceContainer(slug))`. CRD's
 `SidebarResourceItem` renders avatar + name and nothing else.
 
+**Restored 2026-10-06** on the dashboard sidebar, Recent Spaces and the space
+tabs, through `src/ahead/ActivityDotSlots.tsx`: it renders the dot into
+production's component after the name, without changing or copying it. The
+upstream ask above still stands; when the slots land, that file goes. The
+messages icon is not restored: it never had a pulse, only the red dot that
+production's header already has.
+
 Still intact (not yet converted): `layout/Sidebar`, `space/SpaceSidebar`,
 `space/ChannelTabs`, `space/PostCard`, `space/RichSubspaceCard`.
 
