@@ -33,9 +33,14 @@
  * timestamp) and `CommentInput`, so what remains is exactly that list. When it
  * lands, delete this file and point `MessagesOverlay` back at `ChatThreadView`.
  *
+ * Corners tighten where bubbles in a group meet, so a group reads as one
+ * block: production's bubble has one fixed shape, so the corners are set from
+ * out here by reaching into it (`GROUP_CORNERS`). That is a stand-in. The
+ * upstream ask is a `groupPosition` prop on `ChatMessageBubble`
+ * ('single' | 'first' | 'middle' | 'last').
+ *
  * Not built here, though the design has it: reactions overlapping the bubble's
- * bottom edge, and corners that tighten where bubbles in a group meet. Both
- * live inside `ChatMessageBubble`. See the review page linked from
+ * bottom edge. That lives inside `ChatMessageBubble`. See the review page linked from
  * `src/mockups/artifacts/chat-message-grouping.html`.
  */
 import { Loader2 } from 'lucide-react';
@@ -80,7 +85,34 @@ type Row = {
   afterPause: boolean;
   /** First message of a group: more space above, avatar and name in group chats. */
   firstOfGroup: boolean;
+  lastOfGroup: boolean;
 };
+
+type GroupPosition = 'single' | 'first' | 'middle' | 'last';
+
+/**
+ * Production's bubble is `rounded-2xl` with one small "tail" corner at the
+ * bottom on the sender's side. Within a group, the corners on the sender's side
+ * go small wherever the bubble touches another one; the last bubble gets its
+ * round bottom corner back. `first` and `single` already match production.
+ */
+const GROUP_CORNERS: Record<'own' | 'other', Record<GroupPosition, string>> = {
+  other: {
+    single: '',
+    first: '',
+    middle: '[&_.rounded-2xl]:rounded-tl-sm',
+    last: '[&_.rounded-2xl]:rounded-tl-sm [&_.rounded-2xl]:rounded-bl-2xl',
+  },
+  own: {
+    single: '',
+    first: '',
+    middle: '[&_.rounded-2xl]:rounded-tr-sm',
+    last: '[&_.rounded-2xl]:rounded-tr-sm [&_.rounded-2xl]:rounded-br-2xl',
+  },
+};
+
+const groupPosition = (first: boolean, last: boolean): GroupPosition =>
+  first && last ? 'single' : first ? 'first' : last ? 'last' : 'middle';
 
 const startOfDay = (ms: number) => {
   const d = new Date(ms);
@@ -91,7 +123,7 @@ const startOfDay = (ms: number) => {
 const senderKey = (m: ChatMessage) => (m.isOwn ? 'own' : m.author?.id);
 
 function toRows(messages: ChatMessage[]): Row[] {
-  return messages.map((message, index) => {
+  const rows = messages.map((message, index) => {
     const previous = messages[index - 1];
     const dayStart = !previous || startOfDay(previous.timestampMs) !== startOfDay(message.timestampMs);
     const gap = previous ? message.timestampMs - previous.timestampMs : Number.POSITIVE_INFINITY;
@@ -101,8 +133,13 @@ function toRows(messages: ChatMessage[]): Row[] {
       dayStart,
       afterPause: !dayStart && gap >= PAUSE_MS,
       firstOfGroup: dayStart || !sameSender || gap > GROUP_GAP_MS,
+      lastOfGroup: true,
     };
   });
+  rows.forEach((row, index) => {
+    row.lastOfGroup = index === rows.length - 1 || rows[index + 1].firstOfGroup;
+  });
+  return rows;
 }
 
 function useTimeFormat() {
@@ -178,13 +215,17 @@ export function TimeGroupedChatThreadView({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pt-1 pb-3">
+      {/* `@container` + `80cqw`: works around UPSTREAM-BUGS.md §5. Production's
+          bubble is capped at 85% of a box that shrinks to fit the text, so short
+          messages wrap word by word. Capping it at 80% of the thread instead (leaving room for the avatar column)
+          gives the bubble its full width. Drop this when §5 is fixed. */}
+      <div className="@container flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pt-1 pb-3 [&_.rounded-2xl]:max-w-[80cqw]">
         {messagesLoading && messages.length === 0 ? (
           <output className="m-auto text-caption text-muted-foreground" aria-label={t('thread.loading')}>
             {t('thread.loading')}
           </output>
         ) : (
-          rows.map(({ message, dayStart, afterPause, firstOfGroup }) => {
+          rows.map(({ message, dayStart, afterPause, firstOfGroup, lastOfGroup }) => {
             const ms = message.timestampMs;
             const hasTime = ms > 0;
             const isOpen = revealed.has(message.id);
@@ -206,7 +247,8 @@ export function TimeGroupedChatThreadView({
                       onPointerUp={hasTime ? onTap(message.id) : undefined}
                       className={cn(
                         'flex flex-col rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                        firstOfGroup ? 'mt-3' : 'mt-0.5'
+                        firstOfGroup ? 'mt-3' : 'mt-0.5',
+                        GROUP_CORNERS[message.isOwn ? 'own' : 'other'][groupPosition(firstOfGroup, lastOfGroup)]
                       )}
                     >
                       {hasTime && <span className="sr-only">{format.exact(ms)}</span>}
