@@ -110,9 +110,21 @@ type ActivityDotSlotsProps = {
   /** For "seen on hover": the pointer entering / leaving the wrapped component. */
   onPointerEnter?: () => void;
   onPointerLeave?: () => void;
+  /**
+   * The wrapper takes no box of its own by default (`contents`). Pass `block`
+   * when it wraps one item in a list spaced by its parent (`space-y-*`): that
+   * spacing is a margin, and a `contents` box drops it.
+   */
+  wrapperClassName?: string;
 };
 
-export function ActivityDotSlots({ slots, children, onPointerEnter, onPointerLeave }: ActivityDotSlotsProps) {
+export function ActivityDotSlots({
+  slots,
+  children,
+  onPointerEnter,
+  onPointerLeave,
+  wrapperClassName = 'contents',
+}: ActivityDotSlotsProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [found, setFound] = useState<Found>({});
   const slotsRef = useRef(slots);
@@ -159,7 +171,7 @@ export function ActivityDotSlots({ slots, children, onPointerEnter, onPointerLea
   }, [slotKeys]);
 
   return (
-    <div ref={rootRef} className="contents" onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave}>
+    <div ref={rootRef} className={wrapperClassName} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave}>
       {children}
       {slots.flatMap(slot =>
         (found[slot.key] ?? []).map((element, i) => {

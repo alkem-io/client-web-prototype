@@ -166,7 +166,13 @@ export function PostCard({
     !FRAMING_PREVIEW_TYPES.has(post.type) && (!!post.snippet || !!post.embeddedImages?.length);
 
   return (
-    <ActivityDotSlots slots={activitySlots} onPointerEnter={startHover} onPointerLeave={cancelHover}>
+    <ActivityDotSlots
+      slots={activitySlots}
+      onPointerEnter={startHover}
+      onPointerLeave={cancelHover}
+      // A block, so the feed's gap between cards (a margin) still applies.
+      wrapperClassName="block"
+    >
       <CrdPostCard
         {...rest}
         post={ownsDescription ? { ...post, snippet: undefined, tags: undefined, references: undefined } : post}
