@@ -129,6 +129,11 @@ export const CONTAINER_ACTIVITY: Record<ContainerId, string> = {
 
   // Dashboard cards for spaces without their own wired-up interior.
   [spaceContainer("future-strategy")]: daysAgo(6),
+  // Spaces gallery (dashboard with Activity View off): a few per section.
+  [spaceContainer("community-events")]: daysAgo(1),
+  [spaceContainer("research-development")]: daysAgo(2),
+  [spaceContainer("operations-hub")]: daysAgo(0.5),
+  [spaceContainer("data-analytics")]: daysAgo(3),
 };
 
 /** Items created after the viewer's baseline show a dot until seen. */
