@@ -1,0 +1,639 @@
+<title>Who Can Read My Post</title>
+<!-- Published as a Claude artifact: https://claude.ai/artifact/HXCCeZxYHFKAkKzuNhFhMb (client-web#7730). Edit here and republish to the same link. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a review board. Each touchpoint is a row: the note on the left, the
+   screen fragment on the right, in the order a member meets them. The screen
+   fragments use Alkemio's own tokens (navy primary, slate neutrals, 6px radius, Inter). */
+:root {
+  /* board */
+  --board: #eef1f4;
+  --ink: #1d384a;
+  --ink-soft: #5b6b7c;
+  --rule: #d6dde4;
+  --note-tag: #1d384a;
+  --note-tag-fg: #ffffff;
+  --highlight: #2563eb;
+  --highlight-soft: rgba(37, 99, 235, 0.10);
+  /* product (CRD) */
+  --background: #fcfdfe;
+  --foreground: #1d384a;
+  --card: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --primary: #1d384a;
+  --primary-foreground: #ffffff;
+  --tooltip: #1d384a;
+  --tooltip-fg: #ffffff;
+  --public-tint: #eff6ff;
+  --public-ink: #1e40af;
+  --scrim: rgba(15, 23, 42, 0.38);
+  --shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.25), 0 2px 6px rgba(15, 23, 42, 0.08);
+  --radius: 6px;
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+    --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+    --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+    --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+    --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-foreground: #131d26;
+    --tooltip: #e3eaf0; --tooltip-fg: #131d26; --public-tint: #172a4a; --public-ink: #b9d0ff;
+    --scrim: rgba(0, 0, 0, 0.5); --shadow: 0 10px 30px -8px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+  --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+  --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+  --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-foreground: #131d26;
+  --tooltip: #e3eaf0; --tooltip-fg: #131d26; --public-tint: #172a4a; --public-ink: #b9d0ff;
+  --scrim: rgba(0, 0, 0, 0.5); --shadow: 0 10px 30px -8px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- intro ---------- */
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.intro { display: grid; gap: 14px; max-width: 70ch; }
+.intro h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
+.intro p { color: var(--ink-soft); font-size: 16px; }
+.intro a { color: var(--ink); }
+
+/* ---------- case switcher ---------- */
+.switcher { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin-top: 28px; padding-block: 12px; background: var(--board); border-bottom: 1px solid var(--rule); }
+.switcher-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.switcher-label { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); margin-right: 4px; }
+.case-btn { font: inherit; font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
+.case-btn:hover { border-color: var(--ink-soft); }
+.case-btn[aria-pressed="true"] { background: var(--ink); color: var(--board); border-color: var(--ink); }
+.case-btn:focus-visible, button:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+.case-note { flex-basis: 100%; font-size: 13.5px; color: var(--ink-soft); }
+
+/* ---------- touchpoint rows ---------- */
+.rows { display: grid; gap: 0; margin-top: 8px; }
+.row { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 40px; padding-block: 44px; border-bottom: 1px solid var(--rule); }
+.note { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.when { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--note-tag); color: var(--note-tag-fg); }
+.note h2 { font-size: 20px; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
+.note p { color: var(--ink-soft); font-size: 14.5px; }
+.note ul { margin: 0; padding-left: 18px; color: var(--ink-soft); font-size: 14px; display: grid; gap: 4px; }
+.status { justify-self: start; font-size: 12.5px; color: var(--ink-soft); border: 1px dashed var(--rule); border-radius: 4px; padding: 3px 8px; }
+.status b { color: var(--ink); font-weight: 600; }
+.stage { min-width: 0; display: grid; align-content: start; }
+
+/* ---------- product fragments ---------- */
+.screen { background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(15,23,42,0.05); font-size: 14px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 500; line-height: 1.4; white-space: nowrap; border: 1px solid var(--border); background: transparent; color: var(--muted-foreground); }
+.badge .i { font-size: 11.5px; }
+.badge.focus-ring { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--highlight); }
+.tooltip { background: var(--tooltip); color: var(--tooltip-fg); border-radius: var(--radius); padding: 10px 12px; font-size: 13px; line-height: 1.45; box-shadow: var(--shadow); max-width: 320px; }
+.tooltip .more { display: block; margin-top: 6px; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.btn { font: inherit; font-size: 13.5px; font-weight: 500; padding: 7px 14px; border-radius: var(--radius); border: 1px solid transparent; background: transparent; color: var(--foreground); white-space: nowrap; }
+.btn-primary { background: var(--primary); color: var(--primary-foreground); padding-inline: 22px; }
+.btn-outline { border-color: var(--border); background: var(--card); }
+.mark { outline: 2px dashed var(--highlight); outline-offset: 4px; border-radius: 8px; }
+
+/* header */
+.banner { height: 92px; background: linear-gradient(120deg, #3b6e8f 0%, #2c8a7e 55%, #9cc58a 100%); }
+.hdr { padding: 14px 20px 0; display: grid; gap: 4px; }
+.crumbs { font-size: 12.5px; color: var(--muted-foreground); }
+.title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.title-row h3 { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.2; }
+.badge-anchor { position: relative; display: inline-flex; }
+.badge-anchor .tooltip { position: absolute; left: 0; top: calc(100% + 10px); width: min(320px, 70vw); z-index: 2; }
+.badge-anchor .tooltip::before { content: ""; position: absolute; left: 18px; top: -5px; width: 10px; height: 10px; background: var(--tooltip); transform: rotate(45deg); }
+.tagline { color: var(--muted-foreground); font-size: 14px; }
+.tabs { display: flex; align-items: center; gap: 18px; margin-top: 108px; padding: 0 20px; border-bottom: 1px solid var(--border); font-size: 13.5px; overflow-x: auto; }
+.tabs span { padding: 10px 0; color: var(--muted-foreground); white-space: nowrap; }
+.tabs span.on { color: var(--foreground); font-weight: 600; box-shadow: inset 0 -2px 0 var(--foreground); }
+.tabs .icons { margin-left: auto; display: flex; gap: 14px; color: var(--muted-foreground); font-size: 16px; }
+.feed-ghost { padding: 16px 20px 20px; display: grid; gap: 10px; }
+.ghost-line { height: 10px; border-radius: 4px; background: var(--muted); }
+
+/* dialogs */
+.dialog-stage { position: relative; padding: 28px 16px; border-radius: 10px; background: var(--scrim); display: grid; place-items: center; }
+.dialog { width: 100%; max-width: 560px; background: var(--card); color: var(--foreground); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; font-size: 14px; }
+.dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.dlg-head h4 { margin: 0; font-size: 17px; font-weight: 600; }
+.dlg-head .x { color: var(--muted-foreground); font-size: 18px; }
+.dlg-body { padding: 18px 20px; display: grid; gap: 12px; }
+.field-title { font-size: 20px; font-weight: 600; }
+.field-body { color: var(--muted-foreground); line-height: 1.5; }
+.field-chip { justify-self: start; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 5px 10px; border: 1px solid var(--border); border-radius: var(--radius); color: var(--muted-foreground); }
+.dlg-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 14px 20px; border-top: 1px solid var(--border); background: color-mix(in srgb, var(--muted) 35%, transparent); }
+.dlg-foot .buttons { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+.audience { display: inline-flex; align-items: flex-start; gap: 8px; font-size: 13px; line-height: 1.4; color: var(--muted-foreground); min-width: 0; flex: 1 1 240px; }
+.audience .i { font-size: 15px; margin-top: 1px; color: var(--foreground); }
+.audience b { color: var(--foreground); font-weight: 600; }
+.audience.is-public { background: var(--public-tint); color: var(--public-ink); padding: 7px 10px; border-radius: var(--radius); }
+.audience.is-public .i, .audience.is-public b { color: var(--public-ink); }
+
+
+/* production Create Post dialog */
+.dialog.pd { max-width: 680px; }
+.pd .dlg-head h4 { font-size: 16px; font-weight: 700; }
+.pd-head-actions { display: inline-flex; align-items: center; gap: 14px; }
+.pd-btn { font-size: 11.5px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; padding: 9px 14px; border-radius: 4px; color: var(--muted-foreground); white-space: nowrap; }
+.pd-outline { border: 1px solid var(--border); color: var(--foreground); }
+.pd-primary { background: var(--primary); color: var(--primary-foreground); padding-inline: 30px; }
+.pd .dlg-body { gap: 14px; }
+.pd-editor { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.pd-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--muted-foreground); font-size: 12px; }
+.pd-toolbar i { width: 1px; height: 14px; background: var(--border); }
+.pd-toolbar b, .pd-toolbar em { font-size: 13px; color: var(--muted-foreground); }
+.pd-text { padding: 12px; min-height: 64px; color: var(--foreground); line-height: 1.5; }
+.pd-group { display: grid; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.pd-label { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--foreground); }
+.pd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pd-chip { font-size: 10.5px; letter-spacing: 0.03em; text-transform: uppercase; padding: 5px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted-foreground); white-space: nowrap; }
+.pd-chip b.on { font-weight: 600; color: var(--foreground); }
+.pd-more { display: flex; justify-content: space-between; color: var(--muted-foreground); font-size: 13px; }
+.pd .dlg-foot { background: transparent; }
+
+/* response (contribution) dialog: a compact variant */
+.dialog.narrow { max-width: 460px; }
+.upload { display: grid; place-items: center; gap: 4px; height: 96px; border: 1.5px dashed var(--border); border-radius: var(--radius); color: var(--muted-foreground); font-size: 13px; background: var(--muted); }
+.context { font-size: 12.5px; color: var(--muted-foreground); }
+.context b { color: var(--foreground); font-weight: 500; }
+
+/* welcome dialog */
+.welcome .dlg-body { gap: 4px; }
+.welcome .lead { color: var(--muted-foreground); margin-bottom: 8px; }
+.facts { display: grid; border-top: 1px solid var(--border); }
+.fact { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 2px 10px; padding-block: 12px; border-bottom: 1px solid var(--border); }
+.fact .ico { grid-row: span 2; width: 28px; height: 28px; border-radius: 999px; background: var(--muted); display: grid; place-items: center; font-size: 14px; }
+.fact .q { font-size: 12.5px; color: var(--muted-foreground); }
+.fact .a { font-weight: 500; line-height: 1.4; }
+.footnote { font-size: 12.5px; color: var(--muted-foreground); padding-top: 10px; line-height: 1.45; }
+.welcome .dlg-foot { justify-content: space-between; }
+.findagain { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted-foreground); }
+
+/* about dialog */
+.about .dlg-body { gap: 18px; }
+.about-sec { display: grid; gap: 6px; }
+.about-sec h5 { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted-foreground); }
+.about-sec.faded { opacity: 0.45; }
+.about-sec.new { padding: 14px; border-radius: 8px; background: var(--highlight-soft); outline: 2px dashed var(--highlight); outline-offset: 0; }
+.about-sec.new .facts { border-top-color: transparent; }
+.about-sec.new .fact:last-child { border-bottom: 0; }
+
+/* subspace list */
+.side { max-width: 340px; padding: 16px; }
+.side h5 { margin: 0 0 10px 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted-foreground); }
+.sub-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius); position: relative; }
+.sub-row.hover { background: var(--muted); }
+.sub-av { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; }
+.sub-name { flex: 1; min-width: 0; font-weight: 500; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sub-ico { color: var(--muted-foreground); font-size: 14px; display: inline-flex; }
+.sub-row .tooltip { position: absolute; right: -8px; top: calc(100% + 6px); width: 260px; z-index: 2; font-size: 12.5px; }
+
+/* rules table */
+.section { padding-block: 48px 8px; display: grid; gap: 18px; }
+.section > h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.015em; }
+.section > p { color: var(--ink-soft); max-width: 70ch; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+tr:last-child td { border-bottom: 0; }
+tr.current td { background: var(--highlight-soft); }
+td .badge { font-size: 11.5px; }
+
+/* decisions */
+.decisions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.decision { display: grid; gap: 8px; align-content: start; padding: 18px; border: 1px solid var(--rule); border-radius: 8px; background: color-mix(in srgb, var(--board) 60%, var(--card)); }
+.decision h3 { font-size: 16px; font-weight: 600; }
+.decision p { font-size: 14px; color: var(--ink-soft); }
+.decision .rec { color: var(--ink); }
+.decision .rec b { font-weight: 600; }
+
+.outscope { display: grid; gap: 6px; padding-left: 18px; margin: 0; color: var(--ink-soft); font-size: 14.5px; max-width: 70ch; }
+.foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.foot a { color: var(--ink); }
+
+@media (max-width: 760px) {
+  .row { grid-template-columns: minmax(0, 1fr); gap: 20px; padding-block: 32px; }
+  .tabs { margin-top: 124px; }
+  .title-row h3 { font-size: 22px; }
+  .dialog-stage { padding: 16px 10px; }
+  .sub-row .tooltip { right: 0; width: min(260px, 72vw); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-swap] { transition: opacity 160ms ease; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+</svg>
+
+<div class="wrap">
+
+  <header class="intro">
+    <span class="eyebrow">Design concept · client-web #7730</span>
+    <h1>Who can read what I post?</h1>
+    <p>Inside a space, nothing tells people whether what they write is open to the whole internet or stays among members. This page shows every place we answer that question, in the order a member runs into them. The same sentence appears everywhere, so people learn it once.</p>
+    <p>Use the switch below to see how the wording changes for each kind of space. The hardest case is a public subspace inside a private space. It is neither public nor private, so it gets its own label: <b>Members only</b>.</p>
+  </header>
+
+  <nav class="switcher" aria-label="Choose a space setting">
+    <div class="switcher-inner">
+      <span class="switcher-label">Show as</span>
+      <button class="case-btn" type="button" id="case-public" data-case="public" aria-pressed="false"><svg class="i"><use href="#i-globe"/></svg>Public space</button>
+      <button class="case-btn" type="button" id="case-private" data-case="private" aria-pressed="false"><svg class="i"><use href="#i-lock"/></svg>Private space</button>
+      <button class="case-btn" type="button" id="case-membersOnly" data-case="membersOnly" aria-pressed="true"><svg class="i"><use href="#i-users"/></svg>Public subspace, private space above</button>
+      <button class="case-btn" type="button" id="case-subPrivate" data-case="subPrivate" aria-pressed="false"><svg class="i"><use href="#i-lock"/></svg>Private subspace, public space above</button>
+      <p class="case-note" data-bind="caseNote" data-swap></p>
+    </div>
+  </nav>
+
+  <div class="rows">
+
+    <!-- 1 · header badge -->
+    <section class="row" aria-labelledby="t-header">
+      <div class="note">
+        <span class="when">Always there</span>
+        <h2 id="t-header">A badge next to the space name</h2>
+        <p>Shown on every tab of every space and subspace. Hovering, focusing or tapping it opens one sentence naming who can read what's posted here.</p>
+        <p>"What does this mean?" opens the About dialog at the new <i>Who can see what</i> section. That way the badge and About lead to each other.</p>
+        <span class="status"><b>In the ticket</b> · required</span>
+      </div>
+      <div class="stage">
+        <div class="screen">
+          <div class="banner" aria-hidden="true"></div>
+          <div class="hdr">
+            <span class="crumbs" data-bind="crumbs"></span>
+            <div class="title-row">
+              <h3 data-bind="name"></h3>
+              <span class="badge-anchor">
+                <span class="badge focus-ring" data-bind="badge"></span>
+                <span class="tooltip" role="tooltip">
+                  <span data-bind="sentence"></span>
+                  <span class="more">What does this mean?</span>
+                </span>
+              </span>
+            </div>
+            <p class="tagline" data-bind="tagline"></p>
+          </div>
+          <div class="tabs">
+            <span class="on">Intake</span><span>Deliberation</span><span>Vote</span><span>Decision</span>
+            <span class="icons" aria-hidden="true"><svg class="i"><use href="#i-info"/></svg><svg class="i"><use href="#i-activity"/></svg><svg class="i"><use href="#i-share"/></svg></span>
+          </div>
+          <div class="feed-ghost" aria-hidden="true">
+            <div class="ghost-line" style="width: 62%"></div>
+            <div class="ghost-line" style="width: 88%"></div>
+            <div class="ghost-line" style="width: 74%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · welcome dialog -->
+    <section class="row" aria-labelledby="t-welcome">
+      <div class="note">
+        <span class="when">Once, on joining</span>
+        <h2 id="t-welcome">A welcome dialog the first time you visit as a member</h2>
+        <p>It appears however you became a member: by joining, by an approved application, by accepting an invitation, or by being added by an admin. You need to be a member to post, so this is the last moment before your first post.</p>
+        <p>It never comes back after "Got it". The footer tells you the badge is where to find it again.</p>
+        <span class="status"><b>In the ticket</b> · required</span>
+      </div>
+      <div class="stage">
+        <div class="dialog-stage">
+          <div class="dialog welcome" role="presentation">
+            <div class="dlg-head">
+              <h4>Welcome to <span data-bind="name"></span></h4>
+              <svg class="i x" aria-hidden="true"><use href="#i-x"/></svg>
+            </div>
+            <div class="dlg-body">
+              <p class="lead">You're now a member. Before you post, here's who will see it.</p>
+              <div class="facts">
+                <div class="fact">
+                  <span class="ico" data-bind="factIcon"></span>
+                  <span class="q">Who can read what you post</span>
+                  <span class="a" data-bind="audienceShort"></span>
+                </div>
+                <div class="fact">
+                  <span class="ico"><svg class="i"><use href="#i-user"/></svg></span>
+                  <span class="q">Who can see your profile</span>
+                  <span class="a">Other members of this space</span>
+                </div>
+              </div>
+              <p class="footnote" data-bind="hidden"></p>
+            </div>
+            <div class="dlg-foot">
+              <span class="findagain">Find this again under <span class="badge" data-bind="badge"></span></span>
+              <span class="btn btn-primary">Got it</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · create post -->
+    <section class="row" aria-labelledby="t-post">
+      <div class="note">
+        <span class="when">Every time you post</span>
+        <h2 id="t-post">One line next to the Post button</h2>
+        <p>In the normal Create Post dialog, in the empty space to the left of Save draft and Post, where your eyes go just before you commit. It only informs. You can't change who reads it from here, because that is a space setting.</p>
+        <p>In a public space the line gets a light blue tint. Posting to the open internet is the one case where a surprise does real harm.</p>
+        <span class="status"><b>Added by us</b> · the ticket rules this out, so it needs updating</span>
+      </div>
+      <div class="stage">
+        <div class="dialog-stage">
+          <div class="dialog pd" role="presentation">
+            <div class="dlg-head">
+              <h4>Create Post</h4>
+              <span class="pd-head-actions"><span class="pd-btn pd-outline">Find template</span><svg class="i x" aria-hidden="true"><use href="#i-x"/></svg></span>
+            </div>
+            <div class="dlg-body">
+              <div class="field-title">Speed bumps on Kerkstraat?</div>
+              <div class="pd-editor">
+                <div class="pd-toolbar" aria-hidden="true"><span>↶</span><span>↷</span><i></i><b>B</b><em>I</em><i></i><span>H1</span><span>H2</span><span>H3</span><i></i><span>☰</span><span>“</span><span>&lt;&gt;</span><i></i><svg class="i"><use href="#i-image"/></svg><svg class="i"><use href="#i-share"/></svg></div>
+                <p class="pd-text">Three near-misses outside the school this month. Should we ask the council for a 30 km/h zone, or start with speed bumps between the bakery and the bridge?</p>
+              </div>
+              <div class="pd-group"><span class="pd-label">Add to post</span><div class="pd-chips"><span class="pd-chip">Whiteboard</span><span class="pd-chip">Memo</span><span class="pd-chip">Document</span><span class="pd-chip">Call to action</span><span class="pd-chip">Media gallery</span><span class="pd-chip"><b class="on">Poll ✓</b></span><span class="pd-chip">Contributors</span><span class="pd-chip">Subspaces</span></div></div>
+              <div class="pd-group"><span class="pd-label">Responses</span><div class="pd-chips"><span class="pd-chip">Links &amp; files</span><span class="pd-chip">Posts</span><span class="pd-chip">Memos</span><span class="pd-chip">Whiteboards</span><span class="pd-chip">Documents</span><span class="pd-chip">Tasks board</span></div></div>
+              <div class="pd-more">More options <span aria-hidden="true">›</span></div>
+            </div>
+            <div class="dlg-foot">
+              <span class="audience" data-bind="postLine"></span>
+              <span class="buttons"><span class="pd-btn">Save draft</span><span class="pd-btn pd-primary">Post</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · contribute -->
+    <section class="row" aria-labelledby="t-respond">
+      <div class="note">
+        <span class="when">Every time you contribute</span>
+        <h2 id="t-respond">The same line when responding to a post</h2>
+        <p>Shown in the dialog you get when a post asks for responses, here a post as a response. It works the same for whiteboards, memos, documents and links. Only one word changes: "response" instead of "post".</p>
+        <p>Comments are left out for now.</p>
+        <span class="status"><b>Added by us</b> · the ticket rules this out, so it needs updating</span>
+      </div>
+      <div class="stage">
+        <div class="dialog-stage">
+          <div class="dialog pd" role="presentation">
+            <div class="dlg-head">
+              <h4>Create Post</h4>
+              <svg class="i x" aria-hidden="true"><use href="#i-x"/></svg>
+            </div>
+            <div class="dlg-body">
+              <p class="context">Responding to <b>Where do cars park on the pavement?</b></p>
+              <div class="field-title">Photo: school entrance at 8:15</div>
+              <div class="pd-editor">
+                <div class="pd-toolbar" aria-hidden="true"><span>↶</span><span>↷</span><i></i><b>B</b><em>I</em><i></i><span>H1</span><span>H2</span><span>H3</span><i></i><span>☰</span><span>“</span><span>&lt;&gt;</span><i></i><svg class="i"><use href="#i-image"/></svg><svg class="i"><use href="#i-share"/></svg></div>
+                <p class="pd-text">Taken this morning. Cars parked on both sides, kids walking in the road.</p>
+              </div>
+            </div>
+            <div class="dlg-foot">
+              <span class="audience" data-bind="respondLine"></span>
+              <span class="buttons"><span class="pd-btn">Cancel</span><span class="pd-btn pd-primary">Post</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · about -->
+    <section class="row" aria-labelledby="t-about">
+      <div class="note">
+        <span class="when">When you go looking</span>
+        <h2 id="t-about">A "Who can see what" section in About</h2>
+        <p>Same rows as the welcome dialog. This is the full explanation behind the badge, but not the only place people find it. Few people open About on their own.</p>
+        <span class="status"><b>In the ticket</b> · no longer the main place</span>
+      </div>
+      <div class="stage">
+        <div class="dialog-stage">
+          <div class="dialog about" role="presentation">
+            <div class="dlg-head">
+              <h4>About <span data-bind="name"></span></h4>
+              <svg class="i x" aria-hidden="true"><use href="#i-x"/></svg>
+            </div>
+            <div class="dlg-body">
+              <div class="about-sec faded">
+                <h5>What</h5>
+                <p data-bind="tagline"></p>
+              </div>
+              <div class="about-sec new">
+                <h5>Who can see what</h5>
+                <div class="facts">
+                  <div class="fact">
+                    <span class="ico" data-bind="factIcon"></span>
+                    <span class="q">Who can read what's posted here</span>
+                    <span class="a" data-bind="audienceShort"></span>
+                  </div>
+                  <div class="fact">
+                    <span class="ico"><svg class="i"><use href="#i-user"/></svg></span>
+                    <span class="q">Who can see members' profiles</span>
+                    <span class="a">Other members of this space</span>
+                  </div>
+                </div>
+                <p class="footnote" data-bind="hidden"></p>
+              </div>
+              <div class="about-sec faded">
+                <h5>Leads</h5>
+                <p>Sanne Vermeer · Tomasz Kowalski</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · subspace list -->
+    <section class="row" aria-labelledby="t-list">
+      <div class="note">
+        <span class="when">While browsing</span>
+        <h2 id="t-list">The same icon in the subspace list</h2>
+        <p>The sidebar already shows a lock on private subspaces. With this change it uses the same three icons and the same hover sentence as the badge, so the list and the header never disagree.</p>
+        <span class="status"><b>In the ticket</b> · nice to have</span>
+      </div>
+      <div class="stage">
+        <div class="screen side">
+          <h5>Subspaces</h5>
+          <div class="sub-row"><span class="sub-av" style="background:#2c8a7e"></span><span class="sub-name">Green roofs</span><span class="sub-ico"><svg class="i"><use href="#i-globe"/></svg></span></div>
+          <div class="sub-row hover">
+            <span class="sub-av" style="background:#3b6e8f"></span><span class="sub-name">Mobility &amp; Streets</span>
+            <span class="sub-ico" data-bind="listIcon"></span>
+            <span class="tooltip" role="tooltip" data-bind="listSentence"></span>
+          </div>
+          <div class="sub-row" style="margin-top: 92px"><span class="sub-av" style="background:#b7791f"></span><span class="sub-name">Market square</span><span class="sub-ico"><svg class="i"><use href="#i-lock"/></svg></span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="section" aria-labelledby="t-rules">
+    <h2 id="t-rules">The rules behind the words</h2>
+    <p>A subspace's audience depends on the space above it, not only on its own setting. That is why the badge shows who can <i>actually</i> read, not just the setting's name. The row you're viewing is highlighted.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Space above</th><th>This subspace</th><th>Label</th><th>Who can read what's posted</th></tr></thead>
+        <tbody>
+          <tr data-row="public"><td>None, it's a space</td><td>Public</td><td><span class="badge"><svg class="i"><use href="#i-globe"/></svg>Public</span></td><td>Anyone, including people who aren't signed in</td></tr>
+          <tr data-row="private"><td>None, it's a space</td><td>Private</td><td><span class="badge is-private"><svg class="i"><use href="#i-lock"/></svg>Private</span></td><td>Only members of the space</td></tr>
+          <tr><td>Public</td><td>Public</td><td><span class="badge"><svg class="i"><use href="#i-globe"/></svg>Public</span></td><td>Anyone, as long as every level above is public too</td></tr>
+          <tr data-row="membersOnly"><td>Private</td><td>Public</td><td><span class="badge"><svg class="i"><use href="#i-users"/></svg>Members only</span></td><td>Members of this subspace and of the private space above</td></tr>
+          <tr data-row="subPrivate"><td>Public</td><td>Private</td><td><span class="badge is-private"><svg class="i"><use href="#i-lock"/></svg>Private</span></td><td>Only members of this subspace</td></tr>
+          <tr><td>Private</td><td>Private</td><td><span class="badge is-private"><svg class="i"><use href="#i-lock"/></svg>Private</span></td><td>Only members of this subspace</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-decide">
+    <h2 id="t-decide">Decisions</h2>
+    <div class="decisions">
+      <article class="decision">
+        <h3>Do we mention people who can see in without being members?</h3>
+        <p>Admins of the space above can open a private subspace, and so can the organisation that hosts the space. Members don't know this today.</p>
+        <p class="rec"><b>Agreed:</b> yes, in one small line, only in the welcome dialog and About. Leave it out of the badge and the post line. Saying "only members" when that isn't quite true would cost trust if someone finds out later. The developers need to confirm exactly who this covers.</p>
+      </article>
+      <article class="decision">
+        <h3>Where does "who can see your profile" go?</h3>
+        <p>Joining a space puts you on its member list. Whether non-members can see that list depends on a space setting.</p>
+        <p class="rec"><b>Agreed:</b> only in the welcome dialog and About. That's when it matters, because it's the moment you show up on the list. Writing a post doesn't change who can see your profile, so it stays off the post line.</p>
+      </article>
+      <article class="decision">
+        <h3>Should people see this before they join?</h3>
+        <p>The ticket is written for "members and prospective members", but every place it lists is for people who already joined.</p>
+        <p class="rec"><b>Agreed:</b> keep it out of this round. The badge is visible to anyone who can open the space, which covers most of it.</p>
+      </article>
+      <article class="decision">
+        <h3>Which words do we use?</h3>
+        <p>"Visibility" already means something else in Alkemio: archived, demo or inactive spaces, and draft versus published posts.</p>
+        <p class="rec"><b>Agreed:</b> only "Public", "Private" and "Members only", and full sentences that start with who can read. Never "visibility".</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-out">
+    <h2 id="t-out">Not in this round</h2>
+    <ul class="outscope">
+      <li>Comments. The line only appears when creating a post or adding a response.</li>
+      <li>Telling members when a space changes from private to public. That has its own ticket (#8716).</li>
+      <li>The rest of the old design: who can post, who can create subspaces, how to join, licences.</li>
+      <li>Whiteboards shared through a guest link, which can be reached outside these rules.</li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    <span>Example content: Zuidplein 2030 and its subspace Mobility &amp; Streets.</span>
+    <a href="https://github.com/alkem-io/client-web/issues/7730" target="_blank" rel="noopener">client-web #7730</a>
+    <a href="https://github.com/alkem-io/product/issues/1644" target="_blank" rel="noopener">product #1644 (original design)</a>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var SPACE = 'Zuidplein 2030', SUB = 'Mobility & Streets';
+  var icon = function (n) { return '<svg class="i"><use href="#i-' + n + '"/></svg>'; };
+  var esc = function (s) { return s.replace(/&/g, '&amp;'); };
+
+  var CASES = {
+    public: {
+      note: 'A space that anyone can read, even without an account.',
+      name: SPACE, crumbs: 'Spaces', tagline: 'Rebuilding a district with the people who live in it.',
+      icon: 'globe', label: 'Public', privateStyle: false, publicLine: true,
+      sentence: "Public. Anyone, including people who aren't signed in, can read what's posted here.",
+      short: "Anyone, including people who aren't signed in",
+      post: '<b>Anyone on the internet</b> can read this post, including people who aren\'t signed in.',
+      respond: '<b>Anyone on the internet</b> can read your response.',
+      hidden: ''
+    },
+    private: {
+      note: 'A space only its members can read.',
+      name: SPACE, crumbs: 'Spaces', tagline: 'Rebuilding a district with the people who live in it.',
+      icon: 'lock', label: 'Private', privateStyle: true,
+      sentence: 'Private. Only members of ' + SPACE + " can read what's posted here.",
+      short: 'Only members of ' + SPACE,
+      post: 'Only <b>members of ' + SPACE + '</b> can read this post.',
+      respond: 'Only <b>members of ' + SPACE + '</b> can read your response.',
+      hidden: 'The organisation that hosts ' + SPACE + ' can also see everything here.'
+    },
+    membersOnly: {
+      note: 'The tricky one. The subspace is set to public, but the space above is private, so only members of either can read it.',
+      name: SUB, crumbs: SPACE + '  ›  ' + SUB, tagline: 'Redesigning street use in the Zuidplein district, with the people who live on it.',
+      icon: 'users', label: 'Members only', privateStyle: false,
+      sentence: 'Members only. Members of ' + SUB + ' and of ' + SPACE + " can read what's posted here.",
+      short: 'Members of ' + SUB + ' and of ' + SPACE,
+      post: '<b>Members of ' + SUB + '</b> and of <b>' + SPACE + '</b> can read this post.',
+      respond: '<b>Members of ' + SUB + '</b> and of <b>' + SPACE + '</b> can read your response.',
+      hidden: 'Admins of ' + SPACE + ', and the organisation that hosts it, can also see everything here.'
+    },
+    subPrivate: {
+      note: 'A closed subspace inside an open space. The space above is public, but this part is not.',
+      name: SUB, crumbs: SPACE + '  ›  ' + SUB, tagline: 'Redesigning street use in the Zuidplein district, with the people who live on it.',
+      icon: 'lock', label: 'Private', privateStyle: true,
+      sentence: 'Private. Only members of ' + SUB + " can read what's posted here, even though " + SPACE + ' is public.',
+      short: 'Only members of ' + SUB,
+      post: 'Only <b>members of ' + SUB + '</b> can read this post.',
+      respond: 'Only <b>members of ' + SUB + '</b> can read your response.',
+      hidden: 'Admins of ' + SPACE + ', and the organisation that hosts it, can also see everything here.'
+    }
+  };
+
+  function badgeHTML(c) { return icon(c.icon) + esc(c.label); }
+
+  function render(key) {
+    var c = CASES[key];
+    var set = function (bind, html) {
+      document.querySelectorAll('[data-bind="' + bind + '"]').forEach(function (el) { el.innerHTML = html; });
+    };
+    set('caseNote', esc(c.note));
+    set('name', esc(c.name));
+    set('crumbs', esc(c.crumbs));
+    set('tagline', esc(c.tagline));
+    set('sentence', esc(c.sentence));
+    set('listSentence', esc(c.sentence));
+    set('badge', badgeHTML(c));
+    set('factIcon', icon(c.icon));
+    set('listIcon', icon(c.icon));
+    set('audienceShort', esc(c.short));
+    set('hidden', esc(c.hidden));
+    set('postLine', icon(c.icon) + '<span>' + esc(c.post) + '</span>');
+    set('respondLine', icon(c.icon) + '<span>' + esc(c.respond) + '</span>');
+
+    document.querySelectorAll('[data-bind="badge"]').forEach(function (el) { el.classList.toggle('is-private', c.privateStyle); });
+    document.querySelectorAll('[data-bind="postLine"], [data-bind="respondLine"]').forEach(function (el) { el.classList.toggle('is-public', !!c.publicLine); });
+    document.querySelectorAll('[data-bind="hidden"]').forEach(function (el) { el.hidden = !c.hidden; });
+    document.querySelectorAll('.case-btn').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.case === key)); });
+    document.querySelectorAll('tr[data-row]').forEach(function (r) { r.classList.toggle('current', r.dataset.row === key); });
+    try { localStorage.setItem('wcr-case', key); } catch (e) {}
+  }
+
+  document.querySelectorAll('.case-btn').forEach(function (b) {
+    b.addEventListener('click', function () { render(b.dataset.case); });
+  });
+
+  var start = 'membersOnly';
+  try { var saved = localStorage.getItem('wcr-case'); if (saved && CASES[saved]) start = saved; } catch (e) {}
+  render(start);
+})();
+</script>

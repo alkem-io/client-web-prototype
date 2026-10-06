@@ -4,6 +4,5 @@
  * to keep in sync.
  */
 import './01-deliberation';
-import './02-who-can-read';
 
 export { allCompositions, compositionById } from '../core/defineComposition';
