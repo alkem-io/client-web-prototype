@@ -25,7 +25,7 @@ import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog"
 import { useCalloutFormMock } from "@/app/components/callout/useCalloutFormMock";
 import { responsesAreRestricted, canSubmitResponse } from "@/app/components/callout/calloutFormTypes";
 import { ExpandedSpaceCard } from "@/crd/components/space/ExpandedSpaceCard";
-import { ActivityDotSlots, cardNameSlot } from "@/ahead/ActivityDotSlots";
+import { ActivityDotSlots, cardNameSlot } from "@/app/components/shared/ActivityDotSlots";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { subspaceContainer } from "@/app/data/activity-data";
 import { richSubspaceToSpaceCard, type MockRichSubspace } from "@/app/mappers/spaceCard";

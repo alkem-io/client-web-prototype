@@ -19,7 +19,7 @@
  *
  * PHASE 1 REMOVALS — recorded in PHASE-2.md §1:
  *   · the activity dot beside each space name (CRD renders the name; no slot)
- *     — back since 2026-10-06 through `@/ahead/ActivityDotSlots`
+ *     — back since 2026-10-06 through `@/app/components/shared/ActivityDotSlots`
  *   · the Bot glyph on virtual contributors (`SidebarResourceItem` takes
  *     `initials` or an image, not an icon)
  *   · the active-route highlight on menu rows (CRD's rows have no active state)
@@ -36,7 +36,7 @@ import { CreateSpaceDialogV3 } from '@/app/components/dialogs/CreateSpaceDialogV
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
 import { spaceContainer } from '@/app/data/activity-data';
-import { type ActivityDotSlot, ActivityDotSlots } from '@/ahead/ActivityDotSlots';
+import { type ActivityDotSlot, ActivityDotSlots } from '@/app/components/shared/ActivityDotSlots';
 
 interface DashboardSidebarProps {
   activityView: boolean;

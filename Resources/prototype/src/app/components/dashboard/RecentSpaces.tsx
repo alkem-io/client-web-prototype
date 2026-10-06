@@ -6,7 +6,7 @@
  * the MyMemberships panel the prototype opens from here.
  *
  * The activity dot beside each space name: CRD renders the name itself and has
- * no slot for it (PHASE-2.md §1), so `@/ahead/ActivityDotSlots` puts it there
+ * no slot for it (PHASE-2.md §1), so `@/app/components/shared/ActivityDotSlots` puts it there
  * until `CompactSpaceCard` gains a name-suffix slot.
  */
 import { useState } from 'react';
@@ -15,7 +15,7 @@ import type { CompactSpaceCardData } from '@/crd/components/dashboard/CompactSpa
 import { MyMembershipsPanel } from '@/app/components/memberships/MyMembershipsPanel';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
 import { spaceContainer } from '@/app/data/activity-data';
-import { type ActivityDotSlot, ActivityDotSlots } from '@/ahead/ActivityDotSlots';
+import { type ActivityDotSlot, ActivityDotSlots } from '@/app/components/shared/ActivityDotSlots';
 
 const RECENT_SPACES: CompactSpaceCardData[] = [
   {

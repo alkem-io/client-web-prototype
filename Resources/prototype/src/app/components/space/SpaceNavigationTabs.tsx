@@ -7,14 +7,14 @@
  *
  * The activity dot beside a tab label when that tab has unseen content: CRD's
  * `TabItem` is `{ label, index, href }` with nowhere to hang one (PHASE-2.md
- * §1), so `@/ahead/ActivityDotSlots` puts it after the label instead.
+ * §1), so `@/app/components/shared/ActivityDotSlots` puts it after the label instead.
  */
 import { useEffect } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { SpaceNavigationTabs as CrdSpaceNavigationTabs } from '@/crd/components/space/SpaceNavigationTabs';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
 import { tabContainer } from '@/app/data/activity-data';
-import { type ActivityDotSlot, ActivityDotSlots } from '@/ahead/ActivityDotSlots';
+import { type ActivityDotSlot, ActivityDotSlots } from '@/app/components/shared/ActivityDotSlots';
 
 interface SpaceNavigationTabsProps {
   spaceSlug: string;

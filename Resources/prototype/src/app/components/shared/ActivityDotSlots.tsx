@@ -1,8 +1,9 @@
 /**
  * ActivityDotSlots — puts `ActivityDot` back on production components that
- * have no place for it.
+ * have no place for it. A temporary stand-in, not a proposal: the proposal is
+ * `@/ahead/ActivityDot` and the slots its header asks production for.
  *
- * WHAT PRODUCTION WOULD GAIN
+ * WHAT IT DOES
  * The new-activity pulse (spec 014, `ActivityDot`) beside the things that
  * changed since your last visit: a space under My Spaces, a Recent Spaces card,
  * a tab inside a space, a space or subspace card, a post. The prototype had all
@@ -22,17 +23,17 @@
  * the name still cuts off but leaves room for the pulse right after it. See
  * `cardNameSlot`.
  *
- * WHY IT IS HERE AND NOT IN CRD
- * This is a stand-in for one small upstream ask: an optional `nameSuffix`
- * (a slot for anything after the name) on `SidebarResourceItem`,
- * `CompactSpaceCard`, `SpaceNavigationTabs`' `TabItem`, `SpaceCard`,
- * `ExpandedSpaceCard` (its `nameSlot` is internal today) and `PostCard`. When
- * those land, pass `<ActivityDot />` into them, delete this file, and drop the
- * wrappers: search for `ActivityDotSlots` in `src/app`.
+ * WHEN IT GOES
+ * When production adds the `nameSuffix` slots listed in `ActivityDot`'s header
+ * (`ExpandedSpaceCard` has a `nameSlot`, but only internally), pass
+ * `<ActivityDot />` into them, delete this file, and drop the wrappers: search
+ * for `ActivityDotSlots` in `src/app`. It lives outside `src/ahead/` because
+ * that folder is the developers' agenda, and this is not something for them
+ * to take over.
  */
 import { type ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ActivityDot } from './ActivityDot';
+import { ActivityDot } from '@/ahead/ActivityDot';
 
 export type ActivityDotSlot = {
   /** Stable key for this spot. */

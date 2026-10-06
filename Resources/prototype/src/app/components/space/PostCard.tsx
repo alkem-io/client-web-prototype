@@ -27,7 +27,7 @@
  *
  * PHASE 1 REMOVALS — recorded in PHASE-2.md:
  *   · the activity dot beside the title (§1 — CRD renders the title, no slot)
- *     — back since 2026-10-06 through `@/ahead/ActivityDotSlots`; hovering the
+ *     — back since 2026-10-06 through `@/app/components/shared/ActivityDotSlots`; hovering the
  *     card for a moment marks the post as seen, as before
  *   · `onDeleteMediaGalleryImage` (§4 — CRD's `MediaGalleryFeedGrid` has no
  *     per-thumbnail delete). The prop is still accepted so the five callers
@@ -35,7 +35,7 @@
  */
 import { Settings } from 'lucide-react';
 import { type ReactNode, useEffect, useRef } from 'react';
-import { type ActivityDotSlot, ActivityDotSlots } from '@/ahead/ActivityDotSlots';
+import { type ActivityDotSlot, ActivityDotSlots } from '@/app/components/shared/ActivityDotSlots';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
 import { postItem } from '@/app/data/activity-data';
 import { ReferencesAndTagsStrip } from '@/crd/components/callout/ReferencesAndTagsStrip';

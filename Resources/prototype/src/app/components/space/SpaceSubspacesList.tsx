@@ -26,7 +26,7 @@ import { useNavigate, useParams } from 'react-router';
 import { SpaceCollection } from '@/crd/components/callout/SpaceCollection/SpaceCollection';
 import { PostCard } from '@/app/components/space/PostCard';
 import { toSpaceCard, type MockSpaceCard } from '@/app/mappers/spaceCard';
-import { ActivityDotSlots, cardNameSlot } from '@/ahead/ActivityDotSlots';
+import { ActivityDotSlots, cardNameSlot } from '@/app/components/shared/ActivityDotSlots';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
 import { spaceOrSubspaceIds } from '@/app/data/activity-data';
 

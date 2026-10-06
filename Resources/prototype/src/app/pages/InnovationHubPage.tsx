@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import { InnovationHubHome } from "@/crd/components/innovationHub/InnovationHubHome";
 import { toSpaceCard, type MockSpaceCard } from "@/app/mappers/spaceCard";
-import { ActivityDotSlots, cardNameSlot } from "@/ahead/ActivityDotSlots";
+import { ActivityDotSlots, cardNameSlot } from "@/app/components/shared/ActivityDotSlots";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { spaceOrSubspaceIds } from "@/app/data/activity-data";
 import { toPackCard, toVirtualContributorCard } from "@/app/mappers/innovationHub";

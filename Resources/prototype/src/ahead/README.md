@@ -38,12 +38,11 @@ have it. That comment is what development reads.
 | `ProfileHoverCard` | Hovering a person shows bio, skills and location without leaving the page |
 | `OrgHoverCard` | The same for organisations |
 | `VCHoverCard` | The same for virtual contributors |
-| `ActivityDot` | A small animated dot marking what is new since your last visit |
+| `ActivityDot` | A small animated dot marking what is new since your last visit, right after the name: My Spaces rows, Recent Spaces cards, space tabs, space and subspace cards, post cards. Needs an optional `nameSuffix` slot on `SidebarResourceItem`, `CompactSpaceCard`, `SpaceNavigationTabs`' `TabItem`, `SpaceCard`, `ExpandedSpaceCard` and `PostCard`. Until then a stand-in places it (`app/components/shared/ActivityDotSlots`, not part of the ask) |
 | `CalloutFormFraming` | Forms as a callout type — a question set people answer in a space |
 | `TruncatedPostDescription` | Collapsed posts cut cleanly at 3 lines — no fade over text or images; a hero image crops to 160px, later images wait for "Read more", an image-only post crops like a hero. Needs a `descriptionSlot` on `PostCard` (or the behaviour in `ExpandableMarkdown`) |
 | `ThreeColumnContributionGrid` | A callout's contributions three across on wide screens instead of two — six visible while collapsed, cards closer to thumbnail size. Needs a `columns` prop on `ContributionGrid` (and `ContributionsPreviewSkeleton`) |
 | `TimeGroupedChatThreadView` | Calmer chats (client-web#10377): messages grouped by sender and time, a time only at the start of each day and after an hour of quiet, the exact time of any message on hover or tap. Needs a time-aware `computeMessageRunFlags`, a way to leave out `ChatMessageBubble`'s timestamp line, and separators in `ChatThreadView` |
-| `ActivityDotSlots` | The new-activity pulse back on production's components, right after the name: My Spaces rows, Recent Spaces cards, space tabs, space and subspace cards, post cards. Needs an optional `nameSuffix` slot on `SidebarResourceItem`, `CompactSpaceCard`, `SpaceNavigationTabs`' `TabItem`, `SpaceCard`, `ExpandedSpaceCard` and `PostCard`; then pass `ActivityDot` into it and delete this |
 
 If this list grows past ten or so entries, the process has stopped working.
 Nothing else belongs in this folder: not pages, not mock data, not wrappers
@@ -82,7 +81,8 @@ Kept as a record, so it is clear the process works:
 Graduating costs something each time, and that cost is the next upstream ask:
 
 - `ExpandedSpaceCard` has no activity indicator, so subspace cards lost their
-  `ActivityDot`. Back since 2026-10-06 through `ActivityDotSlots`; what it
+  `ActivityDot`. Back since 2026-10-06 through a stand-in
+  (`app/components/shared/ActivityDotSlots`); what it
   still needs upstream is somewhere to go on CRD's cards.
 - `ContributorCollection` renders its own cards with no slot, so adopting it
   costs the hover cards. Same shape of ask: a slot, or an `onContributorHover`.
