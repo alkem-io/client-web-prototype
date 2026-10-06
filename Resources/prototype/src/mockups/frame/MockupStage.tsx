@@ -8,7 +8,8 @@
  * produces occlusion findings that vanish on reload.
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, useInRouterContext } from 'react-router';
+import type { ReactNode } from 'react';
 import { TooltipProvider } from '@/crd/primitives/tooltip';
 import type { Composition, Finding } from '../core/types';
 import { placeCard, toStyle } from '../core/layout';
@@ -19,6 +20,14 @@ import { SpillCard } from './SpillCard';
 import { Cursor } from './Cursor';
 import { PhotoSurface } from './PhotoSurface';
 import { templateById } from '../templates/registry';
+
+/** Cards link to app routes, so they need a router — but the gallery is itself
+ *  an app route, and React Router refuses to nest a second one. */
+function EnsureRouter({ children }: { children: ReactNode }) {
+  return useInRouterContext() ? <>{children}</> : (
+    <MemoryRouter initialEntries={['/space/zuidplein-2030']}>{children}</MemoryRouter>
+  );
+}
 
 declare global {
   interface Window {
@@ -96,7 +105,7 @@ export function MockupStage({
       }}
     >
       <TooltipProvider delayDuration={0}>
-        <MemoryRouter initialEntries={['/space/zuidplein-2030']}>
+        <EnsureRouter>
           <div
             ref={stageRef}
             data-mockup-stage={composition.id}
@@ -171,7 +180,7 @@ export function MockupStage({
                   />
                 ))}
           </div>
-        </MemoryRouter>
+        </EnsureRouter>
       </TooltipProvider>
     </div>
   );
