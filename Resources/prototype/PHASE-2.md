@@ -47,8 +47,10 @@ content (`hasContainerActivity(tabContainer(...))`). CRD's `TabItem` is
 My Spaces row, gated on `hasContainerActivity(spaceContainer(slug))`. CRD's
 `SidebarResourceItem` renders avatar + name and nothing else.
 
-**Restored 2026-10-06** on the dashboard sidebar, Recent Spaces and the space
-tabs, through `src/ahead/ActivityDotSlots.tsx`: it renders the dot into
+**Restored 2026-10-06** on the dashboard sidebar, Recent Spaces, the space
+tabs, space cards (Explore Spaces, a space's Subspaces tab, innovation hubs),
+subspace cards in the feed and post cards, through
+`src/ahead/ActivityDotSlots.tsx`: it renders the dot into
 production's component after the name, without changing or copying it. The
 upstream ask above still stands; when the slots land, that file goes. The
 messages icon is not restored: it never had a pulse, only the red dot that

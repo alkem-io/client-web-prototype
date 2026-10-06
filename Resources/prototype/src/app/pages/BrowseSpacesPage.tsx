@@ -33,6 +33,9 @@ import {
 } from "@/crd/primitives/popover";
 import { SpaceCard, SpaceCardSkeleton } from '@/crd/components/space/SpaceCard';
 import { toSpaceCard, type MockSpaceCard } from '@/app/mappers/spaceCard';
+import { ActivityDotSlots, cardNameSlot } from '@/ahead/ActivityDotSlots';
+import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
+import { spaceOrSubspaceIds } from '@/app/data/activity-data';
 import { useLanguage } from "@/app/contexts/LanguageContext";
 
 // ─── Mock Data ───────────────────────────────────────────────────────────────
@@ -792,6 +795,13 @@ export default function BrowseSpacesPage() {
   }, [searchQuery, sortBy, privacyFilter, typeFilter, selectedSDGs, selectedSectors]);
 
   const displayedSpaces = filteredSpaces.slice(0, visibleCount);
+  const { hasContainerActivity } = useActivityIndicators();
+  const spaceActivitySlots = displayedSpaces
+    .filter(space => spaceOrSubspaceIds(space.slug).some(hasContainerActivity))
+    .map(space => {
+      const card = toSpaceCard(space);
+      return cardNameSlot(space.id, card.name, card.href);
+    });
   const hasMore = visibleCount < filteredSpaces.length;
   const activeFilterCount =
     (privacyFilter !== "all" ? 1 : 0) + (typeFilter !== "all" ? 1 : 0) + (selectedSDGs.length > 0 ? 1 : 0) + (selectedSectors.length > 0 ? 1 : 0);
@@ -1178,9 +1188,11 @@ export default function BrowseSpacesPage() {
                 "repeat(auto-fill, minmax(280px, 1fr))"
             }}
           >
-            {displayedSpaces.map((space) => (
-              <SpaceCard key={space.id} space={toSpaceCard(space)} />
-            ))}
+            <ActivityDotSlots slots={spaceActivitySlots}>
+              {displayedSpaces.map((space) => (
+                <SpaceCard key={space.id} space={toSpaceCard(space)} />
+              ))}
+            </ActivityDotSlots>
 
             {/* Skeleton cards while loading more */}
             {isLoadingMore &&

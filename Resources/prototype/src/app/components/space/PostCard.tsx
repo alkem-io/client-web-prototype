@@ -27,12 +27,17 @@
  *
  * PHASE 1 REMOVALS — recorded in PHASE-2.md:
  *   · the activity dot beside the title (§1 — CRD renders the title, no slot)
+ *     — back since 2026-10-06 through `@/ahead/ActivityDotSlots`; hovering the
+ *     card for a moment marks the post as seen, as before
  *   · `onDeleteMediaGalleryImage` (§4 — CRD's `MediaGalleryFeedGrid` has no
  *     per-thumbnail delete). The prop is still accepted so the five callers
  *     compile; it is simply not forwarded.
  */
 import { Settings } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
+import { type ActivityDotSlot, ActivityDotSlots } from '@/ahead/ActivityDotSlots';
+import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
+import { postItem } from '@/app/data/activity-data';
 import { ReferencesAndTagsStrip } from '@/crd/components/callout/ReferencesAndTagsStrip';
 import {
   PostCard as CrdPostCard,
@@ -133,39 +138,72 @@ export function PostCard({
       </div>
     ) : undefined;
 
+  const { hasItemActivity, markItemSeen } = useActivityIndicators();
+  const activityId = postItem(post.id);
+  const hasActivity = hasItemActivity(activityId);
+  const activitySlots: ActivityDotSlot[] = hasActivity
+    ? [
+        {
+          key: 'title',
+          find: root => [...root.querySelectorAll('h3.text-subsection-title')],
+          label: 'New',
+          className: 'ml-2 align-middle',
+        },
+      ]
+    : [];
+
+  // Hovering is deliberate attention; scrolling past is not. The short delay
+  // stops a cursor sweeping across the feed from clearing everything it crosses.
+  const hoverTimer = useRef<number | null>(null);
+  const cancelHover = () => {
+    if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = null;
+  };
+  const startHover = () => {
+    if (!hasActivity || hoverTimer.current !== null) return;
+    hoverTimer.current = window.setTimeout(() => {
+      hoverTimer.current = null;
+      markItemSeen(activityId);
+    }, 400);
+  };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: clear the timer on unmount only
+  useEffect(() => cancelHover, []);
+
   const ownsDescription =
     !FRAMING_PREVIEW_TYPES.has(post.type) && (!!post.snippet || !!post.embeddedImages?.length);
 
   return (
-    <CrdPostCard
-      {...rest}
-      post={ownsDescription ? { ...post, snippet: undefined, tags: undefined, references: undefined } : post}
-      contributionsPreview={
-        ownsDescription ? (
-          <>
-            <TruncatedPostDescription
-              content={post.snippet}
-              embeddedImages={post.embeddedImages}
-              collapsible={!post.descriptionExpanded}
+    <ActivityDotSlots slots={activitySlots} onPointerEnter={startHover} onPointerLeave={cancelHover}>
+      <CrdPostCard
+        {...rest}
+        post={ownsDescription ? { ...post, snippet: undefined, tags: undefined, references: undefined } : post}
+        contributionsPreview={
+          ownsDescription ? (
+            <>
+              <TruncatedPostDescription
+                content={post.snippet}
+                embeddedImages={post.embeddedImages}
+                collapsible={!post.descriptionExpanded}
+              />
+              <ReferencesAndTagsStrip references={post.references} tags={post.tags} className="mt-2" />
+              {contributionsPreview}
+            </>
+          ) : (
+            contributionsPreview
+          )
+        }
+        settingsSlot={settings}
+        reactionsSlot={
+          reactionsEnabled ? (
+            <ReactionBar
+              id={post.id}
+              options={post.reactionOptions}
+              canReact={canReact}
+              onChange={onReactionsChange}
             />
-            <ReferencesAndTagsStrip references={post.references} tags={post.tags} className="mt-2" />
-            {contributionsPreview}
-          </>
-        ) : (
-          contributionsPreview
-        )
-      }
-      settingsSlot={settings}
-      reactionsSlot={
-        reactionsEnabled ? (
-          <ReactionBar
-            id={post.id}
-            options={post.reactionOptions}
-            canReact={canReact}
-            onChange={onReactionsChange}
-          />
-        ) : undefined
-      }
-    />
+          ) : undefined
+        }
+      />
+    </ActivityDotSlots>
   );
 }
