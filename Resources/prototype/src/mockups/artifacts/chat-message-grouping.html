@@ -213,6 +213,9 @@ tr:last-child td { border-bottom: 0; }
 .outscope { display: grid; gap: 6px; padding-left: 18px; margin: 0; color: var(--ink-soft); font-size: 14.5px; max-width: 70ch; }
 .foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 6px 18px; }
 .foot a { color: var(--ink); }
+.also { display: grid; gap: 6px; padding-block: 48px 0; }
+.also h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.015em; }
+.also p { color: var(--ink-soft); max-width: 70ch; }
 
 @media (max-width: 820px) {
   .row { grid-template-columns: minmax(0, 1fr); gap: 22px; padding-block: 32px; }
@@ -233,9 +236,9 @@ tr:last-child td { border-bottom: 0; }
 
 <div class="wrap">
   <header class="intro">
-    <span class="eyebrow">Design options · client-web #10377</span>
+    <span class="eyebrow">Design concept · client-web #10377</span>
     <h1>Calmer chats: group messages, show fewer times</h1>
-    <p>Today every chat message carries its own "3 hours ago" line, so a few short messages in a row take twice the room they need. This page shows one conversation four ways: as it looks now, and with the time in three different places. Everything else (grouping, day separators, reactions) is the same in all three, so you can judge the time on its own.</p>
+    <p>Today every chat message carries its own "3 hours ago" line, so a few short messages in a row take twice the room they need. The chosen direction: no time next to the messages, only a day separator with the time the conversation started, and a small time after an hour of quiet. Below it, the two other options we looked at, for comparison.</p>
     <p>Production already does part of this. In group chats the avatar and name only show on the first of several messages in a row from one person. What is missing is everything to do with time. <b>Hover a message on desktop, or tap it on the phone,</b> to see its exact time.</p>
   </header>
 
@@ -263,6 +266,27 @@ tr:last-child td { border-bottom: 0; }
       <div class="devices" data-variant="today"></div>
     </section>
 
+    <section class="row" aria-labelledby="t-c">
+      <div class="note">
+        <span class="when">Chosen · like iMessage</span>
+        <h2 id="t-c">Times only after a pause</h2>
+        <p>No time next to the messages at all. Each day opens with its separator and the time the conversation started ("Today 09:12"). After an hour of quiet, a small time marks where it picked up again.</p>
+        <p>For the time of any single message, hover it on desktop or tap it on the phone.</p>
+        <ul>
+          <li><b>The calmest</b> of the three: the conversation reads like a conversation.</li>
+          <li><b>The trade-off:</b> within an hour you can't tell 09:13 from 09:55 without hovering or tapping.</li>
+        </ul>
+        <span class="verdict rec">Chosen direction</span>
+        <div class="count"><b data-count="C">0</b> times on screen</div>
+      </div>
+      <div class="devices" data-variant="C"></div>
+    </section>
+
+    <div class="also">
+      <h2 id="t-also">Also considered</h2>
+      <p>Kept here for comparison. Same conversation, same rules, only the time moves.</p>
+    </div>
+
     <section class="row" aria-labelledby="t-a">
       <div class="note">
         <span class="when">Option A · like WhatsApp</span>
@@ -272,7 +296,7 @@ tr:last-child td { border-bottom: 0; }
           <li><b>Works the same</b> on desktop and phone.</li>
           <li><b>Still a time on every message</b>, just smaller. The ticket asks for one time per group, so this one does not meet it.</li>
         </ul>
-        <span class="verdict warn">Misses "one time per group"</span>
+        <span class="verdict">Not chosen</span>
         <div class="count"><b data-count="A">0</b> times on screen</div>
       </div>
       <div class="devices" data-variant="A"></div>
@@ -287,31 +311,16 @@ tr:last-child td { border-bottom: 0; }
           <li><b>Meets every acceptance criterion</b> on its own, with no extra dividers needed.</li>
           <li><b>Never hides when someone spoke</b>, which matters in a work chat ("did she say that before or after the meeting?").</li>
         </ul>
-        <span class="verdict rec">Recommended</span>
+        <span class="verdict">Not chosen</span>
         <div class="count"><b data-count="B">0</b> times on screen</div>
       </div>
       <div class="devices" data-variant="B"></div>
     </section>
-
-    <section class="row" aria-labelledby="t-c">
-      <div class="note">
-        <span class="when">Option C · like iMessage</span>
-        <h2 id="t-c">Times only after a pause</h2>
-        <p>No time near the messages at all. Each day starts with its separator and the first time ("Today 09:12"). After an hour of quiet, a small time divider marks where the conversation picked up again. Everything else is hover or tap.</p>
-        <ul>
-          <li><b>The calmest</b> of the three.</li>
-          <li><b>Hides too much for a work tool.</b> In a busy hour you can't tell 09:13 from 10:55 without tapping.</li>
-        </ul>
-        <span class="verdict">Calmest, but times are hidden</span>
-        <div class="count"><b data-count="C">0</b> times on screen</div>
-      </div>
-      <div class="devices" data-variant="C"></div>
-    </section>
   </div>
 
   <section class="section" aria-labelledby="t-shared">
-    <h2 id="t-shared">The same in all three options</h2>
-    <p>These rules don't depend on where the time goes, so they can be settled now.</p>
+    <h2 id="t-shared">The rules behind it</h2>
+    <p>These apply in all three options, so they hold whichever way the time goes.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>What</th><th>Proposal</th><th>Compared with today</th></tr></thead>
@@ -319,7 +328,8 @@ tr:last-child td { border-bottom: 0; }
           <tr><td>What makes a group</td><td>Same person, each message within <b>5 minutes</b> of the one before, nobody else in between, same day. Sanne's 11:05 and 11:31 messages in the example are two groups for that reason.</td><td><span class="tag change">Changes</span> <span class="muted">Today only the sender counts.</span></td></tr>
           <tr><td>Avatar and name</td><td>On the first message of a group, in group chats. Never in 1-to-1 chats, because the header already says who you're talking to.</td><td><span class="tag live">Already live</span></td></tr>
           <tr><td>Group shape</td><td>Bubbles in a group sit 2px apart, groups 12px apart. Corners tighten where two bubbles in a group meet, so a group reads as one block.</td><td><span class="tag new">New</span></td></tr>
-          <tr><td>Day separators</td><td><b>Today</b> · <b>Yesterday</b> · <b>Friday 2 October</b>. The year is added only when it isn't this year: Friday 2 October 2025.</td><td><span class="tag new">New</span></td></tr>
+          <tr><td>Time after a pause</td><td>After <b>1 hour</b> without messages, a small time between the messages, with no pill around it: "11:05". Only within a day. A new day gets its separator instead.</td><td><span class="tag new">New</span></td></tr>
+          <tr><td>Day separators</td><td>With the time the day's conversation started: <b>Today 09:12</b> · <b>Yesterday 16:40</b> · <b>Friday 2 October 15:02</b>. The year is added only when it isn't this year: Friday 2 October 2025.</td><td><span class="tag new">New</span></td></tr>
           <tr><td>How a time is written</td><td>Clock time, in the format that goes with the person's language: 09:12 in Dutch, 9:12 AM in American English.</td><td><span class="tag change">Changes</span> <span class="muted">Replaces "2 hours ago".</span></td></tr>
           <tr><td>Exact time of one message</td><td>Desktop: hover or keyboard focus shows "Today at 09:12" above the bubble. Phone: tap the bubble and the same line opens under it. Tap again to close.</td><td><span class="tag new">New</span></td></tr>
           <tr><td>Reactions</td><td>A small pill overlapping the bubble's bottom edge, on the side the bubble lines up with. It adds a few pixels to the group, not a whole row.</td><td><span class="tag change">Changes</span> <span class="muted">Today they take their own row.</span></td></tr>
@@ -330,12 +340,12 @@ tr:last-child td { border-bottom: 0; }
   </section>
 
   <section class="section" aria-labelledby="t-decide">
-    <h2 id="t-decide">The ticket's open questions, with a suggested answer</h2>
+    <h2 id="t-decide">The ticket's open questions, answered</h2>
     <div class="decisions">
       <div class="decision">
         <span class="q">Where the time sits</span>
-        <h3>Option B: one time under each group</h3>
-        <p>It's the only one that meets "one time per group" without hiding time. A shows too many times and C shows too few.</p>
+        <h3>Only at the start of a day and after a pause</h3>
+        <p>The calmest of the three options. The exact time of any message is one hover or tap away.</p>
       </div>
       <div class="decision">
         <span class="q">Grouping rule</span>
@@ -344,8 +354,8 @@ tr:last-child td { border-bottom: 0; }
       </div>
       <div class="decision">
         <span class="q">Time divider after a pause</span>
-        <h3>Only with option C</h3>
-        <p>With B, every group already carries its time, so a divider after an hour would show the same time twice. Day separators are enough.</p>
+        <h3>Yes, after 1 hour of quiet</h3>
+        <p>With no time next to messages, this is what tells you a conversation stopped and started again. The ticket's suggestion of an hour works in the example: 09:24 to 11:05 gets a time, 11:05 to 11:31 does not.</p>
       </div>
       <div class="decision">
         <span class="q">Avatar and name in 1-to-1</span>
@@ -356,6 +366,11 @@ tr:last-child td { border-bottom: 0; }
         <span class="q">Reactions</span>
         <h3>On the bubble's bottom edge</h3>
         <p>Overlapping the edge keeps a group together. The add-reaction button stays where it is now, appearing on hover next to the bubble.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Ticket wording to update</span>
+        <h3>"One time per group" no longer fits</h3>
+        <p>That acceptance criterion assumed a time on every group. It should now read: times are shown at the start of each day and after a pause of an hour or more.</p>
       </div>
     </div>
   </section>
