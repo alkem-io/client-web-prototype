@@ -26,6 +26,9 @@ interface ProfileHoverCardProps {
   openDelay?: number;
   /** Close delay in ms (default 0) */
   closeDelay?: number;
+  /** Controlled open state — used by the app-wide hover layer, which anchors the card itself. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const MAX_VISIBLE_TAGS = 4;
@@ -36,15 +39,17 @@ export function ProfileHoverCard({
   sideOffset = 8,
   align = "center",
   openDelay = 200,
-  closeDelay = 0
+  closeDelay = 0,
+  open,
+  onOpenChange
 }: ProfileHoverCardProps) {
   const profileUrl = user.profileUrl || `/user/${user.name.toLowerCase().replace(/\s+/g, "-")}`;
   const visibleTags = user.tags?.slice(0, MAX_VISIBLE_TAGS) ?? [];
   const overflowCount = (user.tags?.length ?? 0) - MAX_VISIBLE_TAGS;
 
   return (
-    <HoverCard openDelay={openDelay} closeDelay={closeDelay}>
-      <HoverCardTrigger asChild>
+    <HoverCard openDelay={openDelay} closeDelay={closeDelay} open={open} onOpenChange={onOpenChange}>
+      <HoverCardTrigger asChild data-contributor-card="">
         {children}
       </HoverCardTrigger>
       <HoverCardContent

@@ -8,6 +8,7 @@ import { MessagesProvider } from "@/app/contexts/MessagesContext";
 import { MessagesOverlay } from "@/app/components/layout/MessagesOverlay";
 import { ActivityIndicatorsProvider } from "@/app/contexts/ActivityIndicatorsContext";
 import { ActivityVisitTracker } from "@/app/components/shared/ActivityVisitTracker";
+import { ContributorHoverLayer } from "@/app/components/shared/ContributorHoverLayer";
 
 /**
  * Root wrapper rendered inside RouterProvider.
@@ -20,6 +21,7 @@ export function RootWrapper() {
         <MessagesProvider>
           <ActivityIndicatorsProvider>
             <ActivityVisitTracker />
+            <ContributorHoverLayer />
             <SearchOverlay />
             <NotificationsOverlay />
             <MessagesOverlay />

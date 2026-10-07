@@ -35,7 +35,7 @@ have it. That comment is what development reads.
 
 | Component | What production would gain |
 |---|---|
-| `ProfileHoverCard` | Hovering a person shows bio, skills and location without leaving the page |
+| `ProfileHoverCard` | Hovering a person shows bio, skills and location without leaving the page — wherever a person appears: avatars, names, comment and post authors, chat, lists, sentences like "Simone Rietmeijer on Thu". Needs a way to give a hover card to the components that show a contributor (`CommentItem`, `ChatMessageBubble`, `ContributorCard`, `PostCard`, `ActivityItem`, …), e.g. a `renderContributor` slot. Until then a stand-in shows them across the whole app (`app/components/shared/ContributorHoverLayer`, not part of the ask) |
 | `OrgHoverCard` | The same for organisations |
 | `VCHoverCard` | The same for virtual contributors |
 | `ActivityDot` | A small animated dot marking what is new since your last visit, right after the name: My Spaces rows, Recent Spaces cards, space tabs, space and subspace cards, post cards. Needs an optional `nameSuffix` slot on `SidebarResourceItem`, `CompactSpaceCard`, `SpaceNavigationTabs`' `TabItem`, `SpaceCard`, `ExpandedSpaceCard` and `PostCard`. Until then a stand-in places it (`app/components/shared/ActivityDotSlots`, not part of the ask) |

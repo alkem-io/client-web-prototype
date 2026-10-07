@@ -226,6 +226,8 @@ const RAW_ORGS: Omit<OrgEntry, "kind">[] = [
   },
 ];
 
+export const SPACE_ORGS = RAW_ORGS; // the hover-card directory reads it
+
 // ── Merged list ──
 const ALL_ENTRIES: CommunityEntry[] = [
   ...RAW_ORGS.map((o): OrgEntry => ({ ...o, kind: "org" })),
