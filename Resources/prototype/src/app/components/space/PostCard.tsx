@@ -35,7 +35,7 @@
  */
 import { Settings } from 'lucide-react';
 import { type ReactNode, useEffect, useRef } from 'react';
-import { type ActivityDotSlot, ActivityDotSlots } from '@/app/components/shared/ActivityDotSlots';
+import { type ActivityDotSlot, ActivityDotSlots, afterNameSlot } from '@/app/components/shared/ActivityDotSlots';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
 import { postItem } from '@/app/data/activity-data';
 import { ReferencesAndTagsStrip } from '@/crd/components/callout/ReferencesAndTagsStrip';
@@ -142,14 +142,7 @@ export function PostCard({
   const activityId = postItem(post.id);
   const hasActivity = hasItemActivity(activityId);
   const activitySlots: ActivityDotSlot[] = hasActivity
-    ? [
-        {
-          key: 'title',
-          find: root => [...root.querySelectorAll('h3.text-subsection-title')],
-          label: 'New',
-          className: 'ml-2 align-middle',
-        },
-      ]
+    ? [afterNameSlot('title', 'New', root => [...root.querySelectorAll('h3.text-subsection-title')])]
     : [];
 
   // Hovering is deliberate attention; scrolling past is not. The short delay
@@ -173,7 +166,13 @@ export function PostCard({
     !FRAMING_PREVIEW_TYPES.has(post.type) && (!!post.snippet || !!post.embeddedImages?.length);
 
   return (
-    <ActivityDotSlots slots={activitySlots} onPointerEnter={startHover} onPointerLeave={cancelHover}>
+    <ActivityDotSlots
+      slots={activitySlots}
+      onPointerEnter={startHover}
+      onPointerLeave={cancelHover}
+      // A block, so the feed's gap between cards (a margin) still applies.
+      wrapperClassName="block"
+    >
       <CrdPostCard
         {...rest}
         post={ownsDescription ? { ...post, snippet: undefined, tags: undefined, references: undefined } : post}
