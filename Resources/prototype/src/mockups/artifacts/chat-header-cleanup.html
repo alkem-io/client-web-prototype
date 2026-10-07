@@ -1,0 +1,486 @@
+<title>Chat Header Cleanup</title>
+<!-- Published as a Claude artifact: https://claude.ai/artifact/8QnVqd23ZsJzyBdZUPu4vd (client-web#10378). Edit here and republish to the same link. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the same review board as chat-message-grouping.html. Each topic is a row:
+   the note on the left, the chat window fragments on the right.
+   The fragments use Alkemio's own tokens (navy primary, slate neutrals, Inter). */
+:root {
+  --board: #eef1f4;
+  --ink: #1d384a;
+  --ink-soft: #5b6b7c;
+  --rule: #d6dde4;
+  --note-tag: #1d384a;
+  --note-tag-fg: #ffffff;
+  --highlight: #2563eb;
+  --highlight-soft: rgba(37, 99, 235, 0.10);
+  --rec: #0f7a52;
+  --rec-soft: rgba(15, 122, 82, 0.10);
+  --bad: #b42318;
+  --bad-soft: rgba(180, 35, 24, 0.09);
+  --background: #fcfdfe;
+  --foreground: #1d384a;
+  --card: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --accent: #eef2f6;
+  --tooltip: #1d384a;
+  --tooltip-fg: #ffffff;
+  --empty: #e6ebf0;
+  --av-fg: #ffffff;
+  --av1: #2c7a6f; --av2: #7a5c99; --av3: #b0623a; --av4: #3b6e8f; --av5: #8a7a2e;
+  --shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.22), 0 2px 6px rgba(15, 23, 42, 0.07);
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+    --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+    --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+    --rec: #5fd0a2; --rec-soft: rgba(95, 208, 162, 0.12);
+    --bad: #ff8a7a; --bad-soft: rgba(255, 138, 122, 0.12);
+    --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+    --muted-foreground: #94a3b8; --border: #2b3a48; --accent: #22303c;
+    --tooltip: #e3eaf0; --tooltip-fg: #131d26; --empty: #2b3a48;
+    --shadow: 0 10px 30px -8px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+  --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+  --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+  --rec: #5fd0a2; --rec-soft: rgba(95, 208, 162, 0.12);
+  --bad: #ff8a7a; --bad-soft: rgba(255, 138, 122, 0.12);
+  --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+  --muted-foreground: #94a3b8; --border: #2b3a48; --accent: #22303c;
+  --tooltip: #e3eaf0; --tooltip-fg: #131d26; --empty: #2b3a48;
+  --shadow: 0 10px 30px -8px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.intro { display: grid; gap: 14px; max-width: 72ch; }
+.intro h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
+.intro p { color: var(--ink-soft); font-size: 16px; }
+.intro b { color: var(--ink); font-weight: 600; }
+.intro ol { margin: 0; padding-left: 20px; color: var(--ink-soft); display: grid; gap: 4px; }
+.intro ol b { color: var(--ink); }
+
+.row { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: 40px; padding-block: 44px; border-bottom: 1px solid var(--rule); }
+.note { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.when { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--note-tag); color: var(--note-tag-fg); }
+.note h2 { font-size: 20px; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
+.note p { color: var(--ink-soft); font-size: 14.5px; }
+.note ul { margin: 0; padding-left: 18px; color: var(--ink-soft); font-size: 14px; display: grid; gap: 5px; }
+.note ul b { color: var(--ink); font-weight: 600; }
+.verdict { justify-self: start; font-size: 12.5px; font-weight: 500; border-radius: 4px; padding: 3px 8px; border: 1px dashed var(--rule); color: var(--ink-soft); }
+.verdict.rec { border: 0; background: var(--rec-soft); color: var(--rec); }
+.verdict.bad { border: 0; background: var(--bad-soft); color: var(--bad); }
+
+.stack { display: grid; gap: 22px; min-width: 0; }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 22px 28px; align-items: start; }
+.cap { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; }
+.cap em { font-style: normal; text-transform: none; letter-spacing: 0; }
+
+/* production ChatPanel header */
+.panel { width: 100%; max-width: 380px; background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: visible; font-size: 13.5px; }
+.hd { position: relative; display: flex; align-items: center; gap: 4px; padding: 8px; border-bottom: 1px solid var(--border); background: var(--card); border-radius: 12px 12px 0 0; }
+.panel.solo .hd { border-bottom: 0; border-radius: 12px; }
+.ib { width: 32px; height: 32px; border-radius: 6px; display: grid; place-items: center; color: var(--muted-foreground); font-size: 18px; flex-shrink: 0; position: relative; }
+.ib.sm { font-size: 16px; }
+.ib.on { background: var(--accent); color: var(--foreground); }
+.ib.gone { color: var(--bad); background: var(--bad-soft); }
+.ib.gone::after { content: ""; position: absolute; left: 5px; right: 5px; top: 50%; height: 2px; background: var(--bad); transform: rotate(-40deg); border-radius: 2px; }
+.ttl { flex: 1; min-width: 0; padding-inline: 4px; font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ttl.tap { border-radius: 6px; }
+.hd .avwrap { flex-shrink: 0; display: flex; }
+.tip { position: absolute; top: calc(100% + 8px); right: -4px; padding: 4px 8px; border-radius: 6px; background: var(--tooltip); color: var(--tooltip-fg); font-size: 12px; font-weight: 500; white-space: nowrap; z-index: 3; box-shadow: var(--shadow); pointer-events: none; }
+.tip::before { content: ""; position: absolute; top: -4px; right: 14px; width: 8px; height: 8px; background: var(--tooltip); transform: rotate(45deg); }
+.flag { position: absolute; bottom: calc(100% + 6px); font-family: var(--mono); font-size: 10.5px; color: var(--bad); white-space: nowrap; }
+.menu { position: absolute; top: calc(100% + 6px); right: 36px; min-width: 170px; padding: 4px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow); z-index: 3; font-size: 13px; display: grid; }
+.menu span { padding: 6px 8px; border-radius: 4px; display: flex; gap: 8px; align-items: center; }
+.menu span:first-child { background: var(--accent); }
+.menu span.danger { color: var(--bad); }
+.body { height: 46px; background: var(--background); border-radius: 0 0 12px 12px; display: grid; place-items: center; color: var(--muted-foreground); font-size: 12px; }
+
+/* list rows */
+.lrow { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.lrow:last-child { border-bottom: 0; border-radius: 0 0 12px 12px; }
+.lrow .t { display: grid; min-width: 0; flex: 1; line-height: 1.35; }
+.lrow .n { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow .p { font-size: 12.5px; color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow .d { font-size: 11.5px; color: var(--muted-foreground); align-self: flex-start; }
+
+/* icon options */
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 40px 28px; }
+.opt { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.opt h3 { font-size: 16px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.opt h3 .k { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+.opt p { font-size: 14px; color: var(--ink-soft); }
+.opt .panel { margin-bottom: 34px; }
+.opt .panel.has-menu { margin-bottom: 104px; }
+
+/* avatar matrix */
+.mx-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); }
+.mx { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.5px; color: var(--foreground); }
+.mx th, .mx td { padding: 14px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+.mx tr:last-child td { border-bottom: 0; }
+.mx th { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted-foreground); vertical-align: bottom; }
+.mx td:first-child { white-space: nowrap; font-weight: 600; }
+.mx td:first-child small { display: block; font-weight: 400; color: var(--muted-foreground); font-size: 12px; }
+.mx .cell { display: flex; align-items: center; gap: 10px; }
+.mx .cell .lbl { font-size: 12px; color: var(--muted-foreground); line-height: 1.35; }
+.mx td.today { background: color-mix(in srgb, var(--bad-soft) 60%, transparent); }
+.mx td.pick { background: color-mix(in srgb, var(--rec-soft) 70%, transparent); }
+.mx th.pick { color: var(--rec); }
+svg.ga { display: block; flex-shrink: 0; }
+svg.ga text { font-family: var(--font); font-weight: 600; fill: var(--av-fg); }
+svg.ga text.more { fill: var(--muted-foreground); }
+
+/* decisions */
+.section { padding-block: 52px 8px; display: grid; gap: 18px; }
+.section > h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.015em; }
+.section > p { color: var(--ink-soft); max-width: 70ch; }
+.decisions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 16px; }
+.decision { display: grid; gap: 8px; align-content: start; padding: 18px; border: 1px solid var(--rule); border-radius: 8px; background: color-mix(in srgb, var(--board) 55%, var(--card)); }
+.decision .q { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); }
+.decision h3 { font-size: 16px; font-weight: 600; line-height: 1.35; }
+.decision p { font-size: 14px; color: var(--ink-soft); }
+.foot { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.foot a { color: var(--ink); }
+
+@media (max-width: 820px) {
+  .row { grid-template-columns: minmax(0, 1fr); gap: 22px; padding-block: 32px; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M9.67 4.14a2 2 0 0 1 4.66 0 2 2 0 0 0 2.91 1.2 2 2 0 0 1 3.3 3.3 2 2 0 0 0 1.2 2.91 2 2 0 0 1 0 4.66 2 2 0 0 0-1.2 2.91 2 2 0 0 1-3.3 3.3 2 2 0 0 0-2.91 1.2 2 2 0 0 1-4.66 0 2 2 0 0 0-2.91-1.2 2 2 0 0 1-3.3-3.3 2 2 0 0 0-1.2-2.91 2 2 0 0 1 0-4.66 2 2 0 0 0 1.2-2.91 2 2 0 0 1 3.3-3.3 2 2 0 0 0 2.91-1.2"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.38 2.63a2.12 2.12 0 1 1 3 3L12.36 14.64a2 2 0 0 1-.85.5l-2.87.84.84-2.87a2 2 0 0 1 .5-.85z"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+</svg>
+
+<main class="wrap">
+
+  <header class="intro">
+    <span class="eyebrow">client-web#10378 · chat header</span>
+    <h1>A chat header that stays in the chat</h1>
+    <p>Three things are wrong with the top of a chat window today. This board shows each one as it is now and as it could be, with options where the issue leaves a decision open. <b>Two calls are yours</b>: the icon for the chat's settings, and how the group avatar looks with three or more people.</p>
+    <ol>
+      <li><b>The gear sends you away.</b> It opens your notification settings page and closes the chat.</li>
+      <li><b>The people icon is the real settings</b>, but it looks like a member list.</li>
+      <li><b>The group avatar is half empty.</b> It is a 2 × 2 grid, so two people fill only the top row.</li>
+    </ol>
+  </header>
+
+  <!-- ===== 1. header ===== -->
+  <section class="row" aria-labelledby="h-header">
+    <div class="note">
+      <span class="when">Fix · no decision needed</span>
+      <h2 id="h-header">The gear leaves the chat header</h2>
+      <p>Inside a chat, the gear goes. In the chat list it stays, because there it means your chat settings in general, which is what it opens.</p>
+      <ul>
+        <li><b>One-to-one chats</b> end up with only back, the person and close. Production has no settings for a one-to-one chat, so there is nothing to point to.</li>
+        <li><b>Group chats</b> keep one button for the group's settings. Which icon is the next row.</li>
+        <li>The <b>Guidance chat</b> is not touched. Its info and clear buttons already belong to that chat.</li>
+      </ul>
+    </div>
+    <div class="stack">
+      <div class="pair">
+        <div>
+          <div class="cap">Today · <em>group chat</em></div>
+          <div class="panel solo"><div class="hd">
+            <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+            <span class="avwrap" data-ga="3" data-size="32" data-layout="today"></span>
+            <span class="ttl">Climate Lab core team</span>
+            <span class="ib sm"><svg class="i"><use href="#i-users"/></svg></span>
+            <span class="ib gone"><svg class="i"><use href="#i-gear"/></svg></span>
+            <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+          </div></div>
+        </div>
+        <div>
+          <div class="cap">After · <em>group chat</em></div>
+          <div class="panel solo"><div class="hd">
+            <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+            <span class="avwrap" data-ga="3" data-size="32" data-layout="pick"></span>
+            <span class="ttl">Climate Lab core team</span>
+            <span class="ib sm" style="color:var(--highlight)" title="The chosen icon goes here"><svg class="i"><use href="#i-info"/></svg></span>
+            <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+          </div></div>
+        </div>
+        <div>
+          <div class="cap">Today · <em>one-to-one</em></div>
+          <div class="panel solo"><div class="hd">
+            <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+            <span class="avwrap" data-ga="1" data-size="32"></span>
+            <span class="ttl">Sanne de Vries</span>
+            <span class="ib gone"><svg class="i"><use href="#i-gear"/></svg></span>
+            <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+          </div></div>
+        </div>
+        <div>
+          <div class="cap">After · <em>one-to-one</em></div>
+          <div class="panel solo"><div class="hd">
+            <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+            <span class="avwrap" data-ga="1" data-size="32"></span>
+            <span class="ttl">Sanne de Vries</span>
+            <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+          </div></div>
+        </div>
+      </div>
+      <div>
+        <div class="cap">Unchanged · <em>the chat list keeps its gear</em></div>
+        <div class="panel solo"><div class="hd">
+          <span class="ttl" style="padding-left:8px">Messages</span>
+          <span class="ib"><svg class="i"><use href="#i-gear"/></svg></span>
+          <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2. icon ===== -->
+  <section class="row" aria-labelledby="h-icon">
+    <div class="note">
+      <span class="when">Decision 1 · the icon</span>
+      <h2 id="h-icon">Which icon opens the group's settings</h2>
+      <p>The button opens production's existing dialog: rename the group, change its picture, add or remove people, leave. Each option shows the tooltip you get on hover. The button's spoken name is the same text.</p>
+      <p>Whichever icon wins, tapping the group's picture or name could open the same dialog. That is where most chat apps put it, so people who never notice the icon still find it.</p>
+      <span class="verdict rec">Recommended: C, plus tap the name</span>
+    </div>
+    <div class="opts">
+      <div class="opt">
+        <h3><span class="k">A</span> Keep the people icon</h3>
+        <div class="panel solo"><div class="hd">
+          <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+          <span class="avwrap" data-ga="3" data-size="32" data-layout="pick"></span>
+          <span class="ttl">Climate Lab core team</span>
+          <span class="ib sm on"><svg class="i"><use href="#i-users"/></svg><span class="tip">Group settings</span></span>
+          <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+        </div></div>
+        <p>Nothing changes except the tooltip. It is still a picture of people, so it still says "members" before it says "settings". The issue was opened because of that.</p>
+      </div>
+      <div class="opt">
+        <h3><span class="k">B</span> The gear, now for this group</h3>
+        <div class="panel solo"><div class="hd">
+          <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+          <span class="avwrap" data-ga="3" data-size="32" data-layout="pick"></span>
+          <span class="ttl">Climate Lab core team</span>
+          <span class="ib on"><svg class="i"><use href="#i-gear"/></svg><span class="tip">Group settings</span></span>
+          <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+        </div></div>
+        <p>The gear means settings for whatever you are looking at: all chats in the list, this group inside it. The dialog is already called "Group settings". The catch: until now the same gear opened your notifications, so people who learned that get something else.</p>
+      </div>
+      <div class="opt">
+        <h3><span class="k">C</span> Info, as in the Guidance chat</h3>
+        <div class="panel solo"><div class="hd">
+          <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+          <span class="avwrap" data-ga="3" data-size="32" data-layout="pick"></span>
+          <span class="ttl">Climate Lab core team</span>
+          <span class="ib sm on"><svg class="i"><use href="#i-info"/></svg><span class="tip">Group details and settings</span></span>
+          <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+        </div></div>
+        <p>The Guidance chat already has an info button in this exact spot for "about this chat". Using it for groups makes it one rule: <b>the button after the name tells you about this chat</b>. No icon is reused with a new meaning. It undersells a little that you can edit there, which the tooltip covers.</p>
+      </div>
+      <div class="opt">
+        <h3><span class="k">D</span> A "more" menu</h3>
+        <div class="panel solo has-menu"><div class="hd">
+          <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+          <span class="avwrap" data-ga="3" data-size="32" data-layout="pick"></span>
+          <span class="ttl">Climate Lab core team</span>
+          <span class="ib on"><svg class="i"><use href="#i-more"/></svg>
+            <span class="menu" style="right:-4px">
+              <span><svg class="i"><use href="#i-pen"/></svg>Group settings</span>
+              <span class="danger"><svg class="i"><use href="#i-logout"/></svg>Leave group</span>
+            </span>
+          </span>
+          <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+        </div></div>
+        <p>Room for more later (mute, pin). Today it would hold two items, one of which is already inside the settings dialog, so it adds a click and hides the main thing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 3. avatar ===== -->
+  <section class="row" aria-labelledby="h-av">
+    <div class="note">
+      <span class="when">Decision 2 · the avatar</span>
+      <h2 id="h-av">A group avatar that fills the circle</h2>
+      <p>The avatar shows the <b>other</b> people in the group, not you. So a group of three is two faces. Production already uses one component for the list and the header; the only difference is size (40 and 32 pixels). Fixing the component fixes both.</p>
+      <ul>
+        <li><b>Two faces:</b> halves. No decision.</li>
+        <li><b>Three faces:</b> a half and two quarters, or three slices.</li>
+        <li><b>Four or more:</b> the four quarters, or three faces and a count.</li>
+      </ul>
+      <p>A group with its own picture keeps showing that picture, as today.</p>
+      <span class="verdict rec">Recommended: half + quarters, count from five</span>
+    </div>
+    <div class="stack">
+      <div class="mx-wrap">
+        <table class="mx">
+          <thead>
+            <tr>
+              <th>Other people</th>
+              <th>Today</th>
+              <th class="pick">Option 1 · tiles<br>(recommended)</th>
+              <th>Option 2 · slices<br>and four faces</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2<small>group of 3</small></td>
+              <td class="today"><div class="cell"><span data-ga="2" data-size="40" data-layout="today"></span><span data-ga="2" data-size="32" data-layout="today"></span><span class="lbl">top half only</span></div></td>
+              <td class="pick" colspan="2"><div class="cell"><span data-ga="2" data-size="40" data-layout="pick"></span><span data-ga="2" data-size="32" data-layout="pick"></span><span class="lbl">halves, both options</span></div></td>
+            </tr>
+            <tr>
+              <td>3<small>group of 4</small></td>
+              <td class="today"><div class="cell"><span data-ga="3" data-size="40" data-layout="today"></span><span data-ga="3" data-size="32" data-layout="today"></span><span class="lbl">one quarter empty</span></div></td>
+              <td class="pick"><div class="cell"><span data-ga="3" data-size="40" data-layout="pick"></span><span data-ga="3" data-size="32" data-layout="pick"></span><span class="lbl">half + two quarters</span></div></td>
+              <td><div class="cell"><span data-ga="3" data-size="40" data-layout="pie"></span><span data-ga="3" data-size="32" data-layout="pie"></span><span class="lbl">three slices; faces get cut at an angle</span></div></td>
+            </tr>
+            <tr>
+              <td>4<small>group of 5</small></td>
+              <td><div class="cell"><span data-ga="4" data-size="40" data-layout="today"></span><span data-ga="4" data-size="32" data-layout="today"></span><span class="lbl">already right</span></div></td>
+              <td class="pick" colspan="2"><div class="cell"><span data-ga="4" data-size="40" data-layout="pick"></span><span data-ga="4" data-size="32" data-layout="pick"></span><span class="lbl">four quarters, both options</span></div></td>
+            </tr>
+            <tr>
+              <td>8<small>group of 9</small></td>
+              <td><div class="cell"><span data-ga="8" data-size="40" data-layout="today"></span><span data-ga="8" data-size="32" data-layout="today"></span><span class="lbl">first four; size not shown</span></div></td>
+              <td class="pick"><div class="cell"><span data-ga="8" data-size="40" data-layout="pick"></span><span data-ga="8" data-size="32" data-layout="pick"></span><span class="lbl">three faces + count</span></div></td>
+              <td><div class="cell"><span data-ga="8" data-size="40" data-layout="four"></span><span data-ga="8" data-size="32" data-layout="four"></span><span class="lbl">first four, as today</span></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pair">
+        <div>
+          <div class="cap">The list · <em>40 px</em></div>
+          <div class="panel">
+            <div class="hd"><span class="ttl" style="padding-left:8px">Messages</span><span class="ib"><svg class="i"><use href="#i-gear"/></svg></span><span class="ib"><svg class="i"><use href="#i-x"/></svg></span></div>
+            <div class="lrow"><span data-ga="1" data-size="40"></span><span class="t"><span class="n">Sanne de Vries</span><span class="p">Sounds good, see you Thursday</span></span><span class="d">10:42</span></div>
+            <div class="lrow"><span data-ga="2" data-size="40" data-layout="pick"></span><span class="t"><span class="n">Tomasz, Aisha</span><span class="p">Aisha: I'll bring the printouts</span></span><span class="d">09:15</span></div>
+            <div class="lrow"><span data-ga="3" data-size="40" data-layout="pick"></span><span class="t"><span class="n">Climate Lab core team</span><span class="p">You: Draft is in the space</span></span><span class="d">Mon</span></div>
+            <div class="lrow"><span data-ga="8" data-size="40" data-layout="pick"></span><span class="t"><span class="n">Hackathon jury</span><span class="p">Marco: Scores are in</span></span><span class="d">Sun</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="cap">The header · <em>32 px, same chat</em></div>
+          <div class="panel solo"><div class="hd">
+            <span class="ib"><svg class="i"><use href="#i-back"/></svg></span>
+            <span class="avwrap" data-ga="8" data-size="32" data-layout="pick"></span>
+            <span class="ttl">Hackathon jury</span>
+            <span class="ib sm"><svg class="i"><use href="#i-info"/></svg></span>
+            <span class="ib"><svg class="i"><use href="#i-x"/></svg></span>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="h-dec">
+    <h2 id="h-dec">What I need from you</h2>
+    <div class="decisions">
+      <div class="decision">
+        <span class="q">Decision 1</span>
+        <h3>Icon for the group's settings: A, B, C or D?</h3>
+        <p>I would go with C, the info icon, because the Guidance chat already uses it in that spot for the same idea.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Decision 1b</span>
+        <h3>Also open settings by tapping the group's picture or name?</h3>
+        <p>An extra way in, not a replacement. I would add it.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Decision 2</span>
+        <h3>Three faces: half and quarters, or slices?</h3>
+        <p>I would go with half and quarters. Faces stay upright, and it moves to four quarters without changing shape.</p>
+      </div>
+      <div class="decision">
+        <span class="q">Decision 3</span>
+        <h3>Five or more faces: a count, or the first four?</h3>
+        <p>I would show the count. It tells you how big the group is, which four faces do not.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Issue: <a href="https://github.com/alkem-io/client-web/issues/10378">client-web#10378</a></span>
+    <span>Production parts: ChatPanel, ConversationAvatar, GroupAvatar, GroupSettingsDialog</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var PEOPLE = [
+    ['Sanne de Vries', 1], ['Tomasz Nowak', 2], ['Aisha Bello', 3], ['Marco Rossi', 4],
+    ['Lena Vogel', 5], ['Pieter Bakker', 1], ['Yuki Tanaka', 2], ['Omar Haddad', 3]
+  ];
+  var initials = function (n) { var w = n.split(' '); return w[0][0] + (w.length > 1 ? w[w.length - 1][0] : ''); };
+  var uid = 0;
+
+  function tile(x, y, w, h, p, fs) {
+    return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="var(--av' + p[1] + ')"/>' +
+      '<text x="' + (x + w / 2) + '" y="' + (y + h / 2) + '" font-size="' + fs + '" text-anchor="middle" dominant-baseline="central">' + initials(p[0]) + '</text>';
+  }
+  function wedge(s, a0, a1, p, fs) {
+    var r = s / 2, c = r, rad = Math.PI / 180;
+    var x0 = c + r * 1.5 * Math.cos(a0 * rad), y0 = c + r * 1.5 * Math.sin(a0 * rad);
+    var x1 = c + r * 1.5 * Math.cos(a1 * rad), y1 = c + r * 1.5 * Math.sin(a1 * rad);
+    var am = (a0 + a1) / 2 * rad, tx = c + r * 0.5 * Math.cos(am), ty = c + r * 0.5 * Math.sin(am);
+    return '<path d="M' + c + ' ' + c + 'L' + x0 + ' ' + y0 + 'A' + r * 1.5 + ' ' + r * 1.5 + ' 0 0 1 ' + x1 + ' ' + y1 + 'Z" fill="var(--av' + p[1] + ')"/>' +
+      '<text x="' + tx + '" y="' + ty + '" font-size="' + fs + '" text-anchor="middle" dominant-baseline="central">' + initials(p[0]) + '</text>';
+  }
+  function more(x, y, w, h, n, fs) {
+    return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="var(--empty)"/>' +
+      '<text class="more" x="' + (x + w / 2) + '" y="' + (y + h / 2) + '" font-size="' + fs + '" text-anchor="middle" dominant-baseline="central">+' + n + '</text>';
+  }
+
+  function render(n, s, layout) {
+    var h = s / 2, people = PEOPLE.slice(0, n), body = '';
+    var big = Math.round(s * 0.34), mid = Math.round(s * 0.27), small = Math.max(8, Math.round(s * 0.24));
+    if (n === 1) {
+      body = tile(0, 0, s, s, people[0], big);
+    } else if (layout === 'today' || (layout === 'four' && n >= 4)) {
+      var cells = [[0, 0], [h, 0], [0, h], [h, h]];
+      for (var i = 0; i < 4; i++) {
+        body += people[i] ? tile(cells[i][0], cells[i][1], h, h, people[i], small) : '<rect x="' + cells[i][0] + '" y="' + cells[i][1] + '" width="' + h + '" height="' + h + '" fill="var(--empty)"/>';
+      }
+    } else if (n === 2) {
+      body = tile(0, 0, h, s, people[0], mid) + tile(h, 0, h, s, people[1], mid);
+    } else if (n === 3 && layout === 'pie') {
+      body = wedge(s, -90, 30, people[0], small) + wedge(s, 30, 150, people[1], small) + wedge(s, 150, 270, people[2], small);
+    } else if (n === 3) {
+      body = tile(0, 0, h, s, people[0], mid) + tile(h, 0, h, h, people[1], small) + tile(h, h, h, h, people[2], small);
+    } else if (n === 4) {
+      body = tile(0, 0, h, h, people[0], small) + tile(h, 0, h, h, people[1], small) + tile(0, h, h, h, people[2], small) + tile(h, h, h, h, people[3], small);
+    } else {
+      body = tile(0, 0, h, h, people[0], small) + tile(h, 0, h, h, people[1], small) + tile(0, h, h, h, people[2], small) + more(h, h, h, h, n - 3, small);
+    }
+    var id = 'c' + (uid++);
+    return '<svg class="ga" width="' + s + '" height="' + s + '" viewBox="0 0 ' + s + ' ' + s + '" aria-hidden="true">' +
+      '<defs><clipPath id="' + id + '"><circle cx="' + h + '" cy="' + h + '" r="' + h + '"/></clipPath></defs>' +
+      '<g clip-path="url(#' + id + ')">' + body + '</g></svg>';
+  }
+
+  document.querySelectorAll('[data-ga]').forEach(function (el) {
+    el.innerHTML = render(+el.dataset.ga, +el.dataset.size, el.dataset.layout || 'pick');
+  });
+})();
+</script>
