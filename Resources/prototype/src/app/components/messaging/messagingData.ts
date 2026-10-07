@@ -201,6 +201,20 @@ export const CONVERSATIONS: Conversation[] = [
     members: [USERS.nina, USERS.david],
   },
   {
+    id: "group-jury",
+    type: "group",
+    name: "Hackathon Jury",
+    avatar: "",
+    initials: "HJ",
+    lastMessage: "Tom: Scores are in, see you at 4",
+    lastMessageSender: "Tom de Vries",
+    timeLabel: "5h",
+    unread: 0,
+    muted: false,
+    memberCount: 7,
+    members: [USERS.sarah, USERS.marc, USERS.emily, USERS.nina, USERS.david, USERS.tom],
+  },
+  {
     id: "dm-david",
     type: "dm",
     name: "David Smith",
@@ -231,6 +245,44 @@ export const CONVERSATIONS: Conversation[] = [
 // ─── Messages per conversation ───────────────────────────────────────────────
 
 export const MESSAGES: Record<string, Message[]> = {
+  "group-jury": [
+    {
+      id: "hj1",
+      senderId: "nina",
+      senderName: "Nina Patel",
+      senderAvatar: USERS.nina.avatar,
+      senderInitials: "NP",
+      content: "Six teams made it to the final round. Scoring sheets are in the shared folder.",
+      timestamp: "2026-02-12T09:05:00",
+      timeLabel: "9:05 AM",
+      dateLabel: "February 12",
+      isOwn: false,
+    },
+    {
+      id: "hj2",
+      senderId: "emily",
+      senderName: "Emily Rodriguez",
+      senderAvatar: USERS.emily.avatar,
+      senderInitials: "ER",
+      content: "I'll take teams 1 to 3.",
+      timestamp: "2026-02-12T09:12:00",
+      timeLabel: "9:12 AM",
+      dateLabel: "February 12",
+      isOwn: false,
+    },
+    {
+      id: "hj3",
+      senderId: "tom",
+      senderName: "Tom de Vries",
+      senderAvatar: USERS.tom.avatar,
+      senderInitials: "TV",
+      content: "Scores are in, see you at 4",
+      timestamp: "2026-02-12T11:40:00",
+      timeLabel: "11:40 AM",
+      dateLabel: "February 12",
+      isOwn: false,
+    },
+  ],
   "dm-sarah": [
     {
       id: "s0a",
