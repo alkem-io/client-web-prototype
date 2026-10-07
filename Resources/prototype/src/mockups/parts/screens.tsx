@@ -105,7 +105,8 @@ export function SubspaceScreen({
   tabs,
   activeTab,
   rail,
-  posts
+  posts,
+  titleAdornment
 }: {
   name: string;
   tagline: string;
@@ -115,6 +116,8 @@ export function SubspaceScreen({
   activeTab: string;
   rail: ReactNode;
   posts: PostCardData[];
+  /** Sits on the title line, after the name — a badge, say. */
+  titleAdornment?: ReactNode;
 }) {
   return (
     <div className="relative size-full">
@@ -123,7 +126,10 @@ export function SubspaceScreen({
 
       <div className="absolute inset-x-0" style={{ top: 150 }}>
         <div className="px-8">
-          <h1 className="text-[24px] font-bold leading-tight tracking-[-0.015em]">{name}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-[24px] font-bold leading-tight tracking-[-0.015em]">{name}</h1>
+            {titleAdornment}
+          </div>
           <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">{tagline}</p>
         </div>
 
