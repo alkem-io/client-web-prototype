@@ -140,7 +140,7 @@ export function PostDetailDialog({
         memoFramingSlot={
           post.type === 'memo' ? (
             <div className="space-y-2">
-              <FramingOpenButton onClick={() => setMemoOpen(true)} label="Open Memo" heightClass="h-40">
+              <FramingOpenButton onClick={() => setMemoOpen(true)} label="Open Memo" heightClass="aspect-video">
                 {post.framingMemoMarkdown ? (
                   <div className="line-clamp-5 h-full overflow-hidden p-4 text-body whitespace-pre-wrap text-foreground">
                     {post.framingMemoMarkdown}
@@ -190,7 +190,11 @@ export function PostDetailDialog({
         }
         collaboraFramingSlot={
           post.type === 'document' && post.framingDocumentType ? (
-            <CalloutCollaboraPreview documentType={post.framingDocumentType} onOpen={() => {}} />
+            <CalloutCollaboraPreview
+              documentType={post.framingDocumentType}
+              onOpen={() => {}}
+              previewImageUrl={post.framingDocumentPreviewUrl}
+            />
           ) : undefined
         }
         callToActionFramingSlot={
