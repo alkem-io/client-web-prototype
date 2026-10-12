@@ -25,12 +25,6 @@
  *     the description would land below the preview. Upstream ask: a
  *     `descriptionSlot`. See the component's header.
  *
- *   · memo and document previews at whiteboard size → CRD draws them as short
- *     fixed strips (128px / 112px), too low to read. The wrapper withholds
- *     them and renders 16:9 versions at the top of `contributionsPreview`,
- *     which is the exact spot CRD would have drawn them: `MemoFramingPreview`
- *     (src/ahead) and CRD's own `CalloutCollaboraPreview` at its default size.
- *
  * PHASE 1 REMOVALS — recorded in PHASE-2.md:
  *   · the activity dot beside the title (§1 — CRD renders the title, no slot)
  *     — back since 2026-10-06 through `@/app/components/shared/ActivityDotSlots`; hovering the
@@ -53,8 +47,6 @@ import type { MediaGalleryFeedThumbnail } from '@/crd/components/mediaGallery/Me
 import { Button } from '@/crd/primitives/button';
 import { ReactionBar } from '@/app/components/space/ReactionBar';
 import { TruncatedPostDescription } from '@/ahead/TruncatedPostDescription';
-import { MemoFramingPreview } from '@/ahead/MemoFramingPreview';
-import { CalloutCollaboraPreview } from '@/crd/components/callout/CalloutCollaboraPreview';
 import type { PostReaction } from '@/app/components/space/post-reactions-data';
 import type { CalloutFormData } from '@/app/components/callout/calloutFormTypes';
 
@@ -69,7 +61,7 @@ export type PostCardData = CrdPostCardData & {
   /**
    * Contribution-level form (`contributionType: 'form'` only) — the ordered
    * question list defining a response's shape, plus the responses collected so
-   * far. Prototype-only: production has no form callout type.
+   * far. Production's forms are a framing instead — see `src/ahead/README.md`.
    */
   contributionForm?: CalloutFormData;
   /** Emoji reactions. Omit and `ReactionBar` seeds a deterministic demo set from the id. */
@@ -126,7 +118,6 @@ export function PostCard({
   onDeleteMediaGalleryImage: _onDeleteMediaGalleryImage,
   ...rest
 }: PostCardProps) {
-  const { onOpenFraming, onOpenFramingDocument, onOpenMemoSignedCopies, onClick } = rest;
   // CRD renders one settings area; the form gear joins whatever menu the caller
   // passes rather than replacing it.
   const settings =
@@ -174,31 +165,9 @@ export function PostCard({
   const ownsDescription =
     !FRAMING_PREVIEW_TYPES.has(post.type) && (!!post.snippet || !!post.embeddedImages?.length);
 
-  // Memo and document previews, drawn here at whiteboard size — see the header.
-  // CRD only reads `type` to pick which preview to draw, so handing it 'text'
-  // (or no document type) leaves that spot empty for ours.
-  const largeFraming =
-    post.type === 'memo' ? (
-      <MemoFramingPreview
-        markdown={post.framingMemoMarkdown}
-        onOpen={onOpenFraming ?? onClick}
-        signedCopiesCount={post.memoSignedCopiesCount}
-        onOpenSignedCopies={onOpenMemoSignedCopies}
-      />
-    ) : post.type === 'document' && post.framingDocumentType ? (
-      <CalloutCollaboraPreview
-        documentType={post.framingDocumentType}
-        onOpen={onOpenFramingDocument ?? onClick ?? (() => {})}
-        previewImageUrl={post.framingDocumentPreviewUrl}
-      />
-    ) : null;
   const crdPost: PostCardData = ownsDescription
     ? { ...post, snippet: undefined, tags: undefined, references: undefined }
-    : post.type === 'memo'
-      ? { ...post, type: 'text' }
-      : largeFraming
-        ? { ...post, framingDocumentType: undefined }
-        : post;
+    : post;
 
   return (
     <ActivityDotSlots
@@ -220,11 +189,6 @@ export function PostCard({
                 collapsible={!post.descriptionExpanded}
               />
               <ReferencesAndTagsStrip references={post.references} tags={post.tags} className="mt-2" />
-              {contributionsPreview}
-            </>
-          ) : largeFraming ? (
-            <>
-              {largeFraming}
               {contributionsPreview}
             </>
           ) : (

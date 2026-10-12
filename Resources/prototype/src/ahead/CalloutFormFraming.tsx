@@ -2,8 +2,9 @@
  * Form contributions — the question set read-only, plus the responses the
  * viewer is allowed to see.
  *
- * PROTOTYPE-ONLY. Production has no form callout type, so there is no CRD
- * component and no framing slot for this. It renders through CRD's
+ * Production has had forms since 2026-10-06 (`CalloutFormBox` and friends), but
+ * as a *framing* — something added to the post. Ours is a *response type*. The
+ * two are not yet compared; see "Forms on posts" in `watchlist.json`. It renders through CRD's
  * `contributionsSlot` because that is what it is: the questions are the schema
  * for what contributors submit, and the responses are the contributions.
  *
