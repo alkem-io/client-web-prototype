@@ -4,8 +4,9 @@
  *
  * Production has had forms since 2026-10-06 (`CalloutFormBox` and friends), but
  * as a *framing* — something added to the post. Ours is a *response type*. The
- * two are not yet compared; see "Forms on posts" in `watchlist.json`. It renders through CRD's
- * `contributionsSlot` because that is what it is: the questions are the schema
+ * two are not yet compared; see "Forms on posts" in `watchlist.json`.
+ *
+ * It renders through CRD's `contributionsSlot` because that is what it is: the questions are the schema
  * for what contributors submit, and the responses are the contributions.
  *
  * Extracted from `PostDetailDialog` during the CRD conversion so the dialog

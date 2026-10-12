@@ -40,6 +40,7 @@ import {
 import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import { Textarea } from "@/crd/primitives/textarea";
 import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog";
+import { FramingChipStrip, type FramingChipId } from "@/crd/forms/callout/FramingChipStrip";
 import {
   ANSWER_TYPE_DESCRIPTORS,
   ANSWER_TYPE_ORDER,
@@ -54,6 +55,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/crd/primitives/select";
+
+const FRAMING_CHIPS_WITHOUT_FORM: FramingChipId[] = [
+  'whiteboard', 'memo', 'document', 'cta', 'image', 'poll', 'contributors', 'spaces',
+];
 
 /** A question row while it's being authored — `sortOrder` is the array index. */
 interface DraftFormQuestion {
@@ -319,46 +324,16 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
             />
           </div>
 
-          {/* ADD TO POST chip strip */}
+          {/* ADD TO POST — production's chip row: the three most-used types on the
+              row, the rest behind "More", each type in its own colour. `form` is
+              left out: the prototype offers forms as a response type instead —
+              see "Forms on posts" in src/ahead/watchlist.json. */}
           <div className="space-y-3">
-             <Label className="text-label uppercase text-muted-foreground">Add to post</Label>
-             <div className="flex flex-wrap gap-2">
-                <TooltipProvider>
-                  {[
-                    { id: 'whiteboard', label: 'Whiteboard', icon: Presentation },
-                    { id: 'memo', label: 'Memo', icon: StickyNote },
-                    { id: 'document', label: 'Document', icon: FileSpreadsheet },
-                    { id: 'cta', label: 'Call to Action', icon: Megaphone },
-                    { id: 'image', label: 'Media Gallery', icon: Image },
-                    { id: 'poll', label: 'Poll', icon: BarChart3 },
-                    { id: 'contributors', label: 'Contributors', icon: Users },
-                    { id: 'subspaces', label: 'Subspaces', icon: LayoutGrid },
-                  ].map((item) => (
-                    <Tooltip key={item.id}>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => setActiveAttachment(activeAttachment === item.id ? 'none' : item.id as any)}
-                          className={cn(
-                            "flex items-center gap-2 px-3 py-2 rounded-full border text-control transition-all",
-                            activeAttachment === item.id 
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-background border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          <item.icon className="w-4 h-4" />
-                          <span>{item.label}</span>
-                          {activeAttachment === item.id && (
-                            <X className="w-3 h-3 ml-0.5 opacity-70" />
-                          )}
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{activeAttachment === item.id ? `Remove ${item.label}` : `Add ${item.label}`}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </TooltipProvider>
-             </div>
+             <FramingChipStrip
+               value={activeAttachment === 'subspaces' ? 'spaces' : activeAttachment}
+               onChange={next => setActiveAttachment(next === 'spaces' ? 'subspaces' : (next as typeof activeAttachment))}
+               allowedChips={FRAMING_CHIPS_WITHOUT_FORM}
+             />
 
              {/* Active Attachment Editors */}
              {activeAttachment === 'whiteboard' && (
