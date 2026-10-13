@@ -1,8 +1,7 @@
 import { PostCard, type PostCardData } from '@/app/components/space/PostCard';
 import { ContributionGrid } from '@/app/components/contribution/ContributionGrid';
-import { BandedMemoCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
+import { BandedMemoCard, BandedPostCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
 import { demoAuthorAvatar } from '@/app/data/demoAuthorAvatars';
-import { ContributionPostCard } from '@/crd/components/contribution/ContributionPostCard';
 import { ContributionAddCard } from '@/crd/components/contribution/ContributionAddCard';
 
 import wb1 from '@/app/assets/wb1.png';
@@ -307,12 +306,12 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
               </div>
 
               <ContributionGrid totalCount={2} onAddClick={() => {}} addLabel="+ Add Post">
-                <ContributionPostCard
+                <BandedPostCard
                   title="My Journey: From Doubt to Confidence"
                   author={{ name: 'Maria Garcia' }}
                   onClick={() => console.log('Post clicked')}
                 />
-                <ContributionPostCard
+                <BandedPostCard
                   title="How Our Team Shipped 3x Faster"
                   author={{ name: 'Thomas Mueller' }}
                   onClick={() => console.log('Post clicked')}

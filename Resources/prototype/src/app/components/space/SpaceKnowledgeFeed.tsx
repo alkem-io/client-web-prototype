@@ -10,9 +10,8 @@ import { MemoDialog } from "@/app/components/memo/MemoDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
-import { BandedMemoCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
+import { BandedMemoCard, BandedPostCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
 import { demoAuthorAvatar } from '@/app/data/demoAuthorAvatars';
-import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
@@ -891,41 +890,41 @@ export function SpaceKnowledgeFeed() {
           layout: 'grid',
           total: 5,
           cards: [
-            <ContributionPostCard key="c1"
+            <BandedPostCard key="c1"
               title="Our District's Solar Journey: Year One"
-              author={{ name: "James Wilson" }}
+              author={{ name: "James Wilson", avatarUrl: demoAuthorAvatar("James Wilson") }}
               createdDate="04/10/2026"
               description="How we went from scepticism to 40% solar adoption in our neighbourhood through peer education and community financing."
               tags={["community", "solar", "adoption"]}
               commentCount={8}
             />,
-            <ContributionPostCard key="c2"
+            <BandedPostCard key="c2"
               title="Lessons from the Nordic Model"
-              author={{ name: "Priya Sharma" }}
+              author={{ name: "Priya Sharma", avatarUrl: demoAuthorAvatar("Priya Sharma") }}
               createdDate="03/22/2026"
               description="What we can learn from Denmark and Norway about community ownership and distributed generation."
               tags={["nordic", "ownership", "research"]}
               commentCount={5}
             />,
-            <ContributionPostCard key="c3"
+            <BandedPostCard key="c3"
               title="The Business Case for Municipal Solar"
-              author={{ name: "Nina Petrova" }}
+              author={{ name: "Nina Petrova", avatarUrl: demoAuthorAvatar("Nina Petrova") }}
               createdDate="03/05/2026"
               description="Financial analysis showing 7-year payback on municipal solar installations with current incentive structures."
               tags={["finance", "ROI", "municipal"]}
               commentCount={3}
             />,
-            <ContributionPostCard key="c4"
+            <BandedPostCard key="c4"
               title="Grid Integration Challenges We Faced"
-              author={{ name: "David Miller" }}
+              author={{ name: "David Miller", avatarUrl: demoAuthorAvatar("David Miller") }}
               createdDate="02/18/2026"
               description="Technical hurdles we encountered connecting our 2MW community array to the municipal distribution grid."
               tags={["grid", "technical"]}
               commentCount={7}
             />,
-            <ContributionPostCard key="c5"
+            <BandedPostCard key="c5"
               title="Financing Models That Work"
-              author={{ name: "Tom Bradley" }}
+              author={{ name: "Tom Bradley", avatarUrl: demoAuthorAvatar("Tom Bradley") }}
               createdDate="02/01/2026"
               description="Comparing PPAs, community bonds, and municipal green bonds for funding distributed solar projects."
               tags={["finance", "bonds", "PPA"]}

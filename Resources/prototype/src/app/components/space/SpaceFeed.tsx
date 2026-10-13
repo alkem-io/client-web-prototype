@@ -12,9 +12,8 @@ import { Card, CardContent } from "@/crd/primitives/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
-import { BandedDocumentCard, BandedMemoCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
+import { BandedDocumentCard, BandedMemoCard, BandedPostCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
 import { demoAuthorAvatar } from '@/app/data/demoAuthorAvatars';
-import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
@@ -410,41 +409,41 @@ export function SpaceFeed() {
           layout: 'grid',
           total: 5,
           cards: [
-            <ContributionPostCard key="c1"
+            <BandedPostCard key="c1"
               title="How Our Community Powered 200 Homes with Solar"
-              author={{ name: "James Wilson" }}
+              author={{ name: "James Wilson", avatarUrl: demoAuthorAvatar("James Wilson") }}
               createdDate="03/12/2026"
               description="A practical story of how we navigated permits, funding, and installation to bring solar to a low-income housing estate."
               tags={["community", "solar", "case-study"]}
               commentCount={6}
             />,
-            <ContributionPostCard key="c2"
+            <BandedPostCard key="c2"
               title="Lessons Learned: Our First Municipal Solar Farm"
-              author={{ name: "Priya Sharma" }}
+              author={{ name: "Priya Sharma", avatarUrl: demoAuthorAvatar("Priya Sharma") }}
               createdDate="02/28/2026"
               description="Three years in, here's what we'd do differently — from vendor selection to community engagement."
               tags={["lessons", "solar-farm"]}
               commentCount={4}
             />,
-            <ContributionPostCard key="c3"
+            <BandedPostCard key="c3"
               title="The Case for Community Ownership"
-              author={{ name: "Elena Rodriguez" }}
+              author={{ name: "Elena Rodriguez", avatarUrl: demoAuthorAvatar("Elena Rodriguez") }}
               createdDate="02/15/2026"
               description="Why community-owned solar cooperatives outperform developer-led models in long-term community value."
               tags={["ownership", "cooperatives"]}
               commentCount={3}
             />,
-            <ContributionPostCard key="c4"
+            <BandedPostCard key="c4"
               title="Grid Integration Challenges We Faced"
-              author={{ name: "David Miller" }}
+              author={{ name: "David Miller", avatarUrl: demoAuthorAvatar("David Miller") }}
               createdDate="02/01/2026"
               description="Technical hurdles we encountered connecting our 2MW community array to the municipal distribution grid."
               tags={["grid", "technical", "integration"]}
               commentCount={7}
             />,
-            <ContributionPostCard key="c5"
+            <BandedPostCard key="c5"
               title="Financing Models That Work"
-              author={{ name: "Nina Petrova" }}
+              author={{ name: "Nina Petrova", avatarUrl: demoAuthorAvatar("Nina Petrova") }}
               createdDate="01/20/2026"
               description="Comparing PPAs, community bonds, and municipal green bonds for funding distributed solar projects."
               tags={["finance", "bonds", "PPA"]}
