@@ -22,6 +22,9 @@ interface OrgHoverCardProps {
   align?: "start" | "center" | "end";
   openDelay?: number;
   closeDelay?: number;
+  /** Controlled open state — used by the app-wide hover layer, which anchors the card itself. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const MAX_VISIBLE_TAGS = 4;
@@ -32,15 +35,17 @@ export function OrgHoverCard({
   sideOffset = 8,
   align = "center",
   openDelay = 200,
-  closeDelay = 0
+  closeDelay = 0,
+  open,
+  onOpenChange
 }: OrgHoverCardProps) {
   const profileUrl = org.profileUrl || `/organization/${org.name.toLowerCase().replace(/\s+/g, "-")}`;
   const visibleTags = org.tags?.slice(0, MAX_VISIBLE_TAGS) ?? [];
   const overflowCount = (org.tags?.length ?? 0) - MAX_VISIBLE_TAGS;
 
   return (
-    <HoverCard openDelay={openDelay} closeDelay={closeDelay}>
-      <HoverCardTrigger asChild>
+    <HoverCard openDelay={openDelay} closeDelay={closeDelay} open={open} onOpenChange={onOpenChange}>
+      <HoverCardTrigger asChild data-contributor-card="">
         {children}
       </HoverCardTrigger>
       <HoverCardContent

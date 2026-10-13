@@ -77,8 +77,7 @@
       "gain": "Asking applicants questions, and building that question set without a developer",
       "watchFor": [
         "ApplicationFormEditor",
-        "ApplicationWizard",
-        "CalloutFormFraming"
+        "ApplicationWizard"
       ]
     },
     {

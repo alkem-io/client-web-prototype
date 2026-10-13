@@ -199,7 +199,7 @@ function AuthCard({
               color: "var(--muted-foreground)"
             }}
           >
-            Safe Spaces for Collaboration
+            Collaboration in the spaces between organisations
           </p>
         </div>
         {showSignUp && (

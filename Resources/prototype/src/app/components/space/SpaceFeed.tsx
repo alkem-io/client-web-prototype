@@ -1,7 +1,7 @@
 import { useState, useEffect, type ReactNode } from "react";
 import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
 import { Button } from "@/crd/primitives/button";
-import { Plus, Pin, ChevronsDownUp, ChevronsUpDown, Lock, Users } from "lucide-react";
+import { Plus, Pin, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
 import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { AddPostModal } from "@/app/components/space/AddPostModal";
@@ -18,21 +18,12 @@ import { ContributionMemoCard } from "@/crd/components/contribution/Contribution
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
-import { ContributionFormResponseCard } from "@/app/components/contribution/ContributionFormResponseCard";
-import { FormRespondDialog } from "@/app/components/callout/FormRespondDialog";
-import { FormResponsesDialog } from "@/app/components/callout/FormResponsesDialog";
-import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog";
-import { useCalloutFormMock } from "@/app/components/callout/useCalloutFormMock";
-import { responsesAreRestricted, canSubmitResponse } from "@/app/components/callout/calloutFormTypes";
 import { ExpandedSpaceCard } from "@/crd/components/space/ExpandedSpaceCard";
 import { ActivityDotSlots, cardNameSlot } from "@/app/components/shared/ActivityDotSlots";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { subspaceContainer } from "@/app/data/activity-data";
 import { richSubspaceToSpaceCard, type MockRichSubspace } from "@/app/mappers/spaceCard";
 
-/** Prototype viewer role — see the same constant in SpaceKnowledgeFeed. */
-const DEMO_VIEWER_IS_ADMIN = true;
-const DEMO_VIEWER_CAN_CONTRIBUTE = true;
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
@@ -42,7 +33,7 @@ const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=f
 
 interface PostWithTags extends PostCardData {
   tags: string[];
-  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'form' | 'tasks';
+  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'tasks';
   /** When set, the post body embeds one or more rich subspace cards (What / Why / Who). */
   embeddedSubspaces?: MockRichSubspace[];
 }
@@ -139,11 +130,10 @@ const INITIAL_POSTS: PostWithTags[] = [
       commentCount: 9,
       embeddedSubspaces: [SAMPLE_SUBSPACE, SAMPLE_SUBSPACE_2, SAMPLE_SUBSPACE_3]
     },
-    // 1. Form — the framing is visible in context on load
+    // 1. Form — added to the post, so it shows in context on load
     {
       id: "space-7",
-      type: "text",
-      contributionType: "form",
+      type: "form",
       tags: ["Community", "Research"],
       author: {
         name: "Sarah Chen",
@@ -153,59 +143,56 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "We're setting the agenda for next quarter and the steering group wants input from people doing the work, not just leads. Answer the three questions below — it takes about two minutes, and the programme team reads every response before the planning session on the 20th.",
       timestamp: "6 hours ago",
       commentCount: 3,
-      contributionForm: {
-        responseVisibility: "admins",
-        allowMultipleResponses: false,
+      framingForm: {
+        title: "Q4 priorities",
+        settings: { visibility: "ADMINS", responseMode: "SINGLE", state: "OPEN", defaultCollapsed: false },
         questions: [
           {
             id: "sp7-q1",
-            question: "Which area should we prioritise next quarter?",
-            sortOrder: 0,
-            answerType: "choice",
-            options: [
-              { id: "sp7-q1-o1", label: "Roof survey backlog" },
-              { id: "sp7-q1-o2", label: "Grid connection studies" },
-              { id: "sp7-q1-o3", label: "Community outreach" },
-              { id: "sp7-q1-o4", label: "Financing models" },
-            ]
+            prompt: "Which areas should we prioritise next quarter?",
+            explanation: "Pick up to all that apply.",
+            type: "MULTIPLE_CHOICE",
+            required: true,
+            options: [{ id: "sp7-q1-o1", label: "Roof survey backlog" }, { id: "sp7-q1-o2", label: "Grid connection studies" }, { id: "sp7-q1-o3", label: "Community outreach" }, { id: "sp7-q1-o4", label: "Financing models" }]
           },
           {
             id: "sp7-q2",
-            question: "What is currently blocking you?",
+            prompt: "What is currently blocking you?",
             explanation: "Anything from missing data to a decision nobody has made yet.",
-            sortOrder: 1,
-            answerType: "long"
+            type: "LONG_TEXT",
+            required: true,
+            options: []
           },
           {
             id: "sp7-q3",
-            question: "Anything else the team should know?",
-            sortOrder: 2,
-            answerType: "long"
+            prompt: "Anything else the team should know?",
+            type: "LONG_TEXT",
+            required: false,
+            options: []
           },
         ],
         responses: [
           {
             id: "sp7-r1",
-            author: {
+            respondent: {
               id: "user-psharma",
               name: "Priya Sharma",
               avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
             },
-            submittedAt: "2026-08-04T09:20:00.000Z",
+            createdDate: "2026-08-04T09:20:00.000Z",
             answers: [
-              { questionId: "sp7-q1", value: "Roof survey backlog" },
-              { questionId: "sp7-q2", value: "We're waiting on the municipality to confirm which buildings are listed. Without that we can't schedule surveys for half the list." },
-              { questionId: "sp7-q3", value: "Happy to take the listed-buildings question if someone can introduce me to the heritage officer." },
+              { questionID: "sp7-q1", prompt: "Which areas should we prioritise next quarter?", type: "MULTIPLE_CHOICE", selectedLabels: ["Roof survey backlog", "Community outreach"] },
+              { questionID: "sp7-q2", prompt: "What is currently blocking you?", type: "LONG_TEXT", text: "We're waiting on the municipality to confirm which buildings are listed. Without that we can't schedule surveys for half the list.", selectedLabels: [] },
+              { questionID: "sp7-q3", prompt: "Anything else the team should know?", type: "LONG_TEXT", text: "Happy to take the listed-buildings question if someone can introduce me to the heritage officer.", selectedLabels: [] },
             ]
           },
           {
             id: "sp7-r2",
-            author: { id: "user-dmiller", name: "David Miller" },
-            submittedAt: "2026-08-04T15:45:00.000Z",
+            respondent: { id: "user-dmiller", name: "David Miller" },
+            createdDate: "2026-08-04T15:45:00.000Z",
             answers: [
-              { questionId: "sp7-q1", value: "Grid connection studies" },
-              { questionId: "sp7-q2", value: "The DNO quote turnaround is eight weeks and we keep starting the clock late. This is a process problem, not a technical one." },
-              { questionId: "sp7-q3", value: "" },
+              { questionID: "sp7-q1", prompt: "Which areas should we prioritise next quarter?", type: "MULTIPLE_CHOICE", selectedLabels: ["Grid connection studies"] },
+              { questionID: "sp7-q2", prompt: "What is currently blocking you?", type: "LONG_TEXT", text: "The DNO quote turnaround is eight weeks and we keep starting the clock late. This is a process problem, not a technical one.", selectedLabels: [] },
             ]
           },
         ]
@@ -347,28 +334,6 @@ export function SpaceFeed() {
     isAdmin: true
   });
 
-  const forms = useCalloutFormMock({
-    posts,
-    setPosts: (next) => setPosts(next as PostWithTags[]),
-    currentUser: MOCK_CURRENT_USER,
-    isAdmin: DEMO_VIEWER_IS_ADMIN
-  });
-
-  const formDialogPost = forms.dialogTarget
-    ? posts.find((p) => p.id === forms.dialogTarget?.postId)
-    : undefined;
-  const formDialogResponse =
-    formDialogPost?.contributionForm && forms.dialogTarget?.responseId
-      ? formDialogPost.contributionForm.responses.find((r) => r.id === forms.dialogTarget?.responseId)
-      : undefined;
-
-  const responsesDialogPost = forms.responsesDialogPostId
-    ? posts.find((p) => p.id === forms.responsesDialogPostId)
-    : undefined;
-
-  const settingsDialogPost = forms.settingsDialogPostId
-    ? posts.find((p) => p.id === forms.settingsDialogPostId)
-    : undefined;
 
   // Persist collapse preference
   useEffect(() => {
@@ -559,81 +524,6 @@ export function SpaceFeed() {
       );
     }
 
-    // The `form` response type. Rendered with exactly the same furniture as a
-    // call for posts — CONTRIBUTIONS header, ContributionGrid, and the standard
-    // "+ Add" placeholder card — so contributing to a form feels like
-    // contributing anything else. The card opens FormRespondDialog instead of a
-    // post composer; that is the only difference.
-    if (post.contributionForm) {
-      const form = post.contributionForm;
-      const visible = forms.visibleResponsesFor(form);
-      const restricted = responsesAreRestricted(form, forms.isAdmin);
-      const questionCount = form.questions.length;
-      // No add affordance when the viewer can't act — a single-response form
-      // they've already answered, or someone without contribution rights.
-      const canAdd = canSubmitResponse(form, forms.currentUser.id, DEMO_VIEWER_CAN_CONTRIBUTE);
-
-      return (
-        <div className="mt-6 space-y-3 pt-6 border-t">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-label font-semibold text-muted-foreground">
-              {restricted ? `YOUR RESPONSE (${visible.length})` : `CONTRIBUTIONS (${visible.length})`}
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-caption text-muted-foreground">
-              {form.responseVisibility === 'admins' ? (
-                <>
-                  <Lock className="w-3 h-3" aria-hidden="true" />
-                  Admins only
-                </>
-              ) : (
-                <>
-                  <Users className="w-3 h-3" aria-hidden="true" />
-                  Space members
-                </>
-              )}
-            </span>
-          </div>
-
-          <ContributionGrid
-            totalCount={visible.length}
-            onAddClick={canAdd ? () => forms.openRespond(post.id) : undefined}
-            addLabel="Add Form Response"
-            addDescription={`${questionCount} ${questionCount === 1 ? 'question' : 'questions'}`}
-          >
-            {visible.map((response) => {
-              const firstAnswer = response.answers.find((a) => a.value.trim())?.value;
-              return (
-                <ContributionFormResponseCard
-                  key={response.id}
-                  author={response.author}
-                  submittedDate={new Date(response.submittedAt).toLocaleDateString(undefined, {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
-                  })}
-                  snippet={firstAnswer}
-                  answerCount={response.answers.filter((a) => a.value.trim()).length}
-                  isOwn={response.author.id === forms.currentUser.id}
-                  onClick={() => forms.openResponse(post.id, response.id)}
-                />
-              );
-            })}
-          </ContributionGrid>
-
-          {visible.length > 0 && (
-            <Button
-              variant="link"
-              size="sm"
-              className="h-auto p-0 text-muted-foreground hover:text-foreground"
-              onClick={() => forms.openResponsesDialog(post.id)}
-            >
-              View all responses
-            </Button>
-          )}
-        </div>
-      );
-    }
-
     if (!post.contributionType) return undefined;
 
     const contributions = contributionCardsFor(post);
@@ -752,7 +642,6 @@ export function SpaceFeed() {
             onExpandClick={() => setSelectedPost(post)}
             onAddMediaGalleryImages={() => openAddDialog(post.id)}
             onDeleteMediaGalleryImage={(t) => deleteImage(post.id, t.id)}
-            onOpenFormSettings={forms.isAdmin ? () => forms.openSettingsDialog(post.id) : undefined}
             contributionsPreview={getContributionPreview(post)}
           />
         ))}
@@ -792,7 +681,6 @@ export function SpaceFeed() {
         post={selectedPost}
         onAddMediaGalleryImages={selectedPost ? () => openAddDialog(selectedPost.id) : undefined}
         onDeleteMediaGalleryImage={selectedPost ? (t) => deleteImage(selectedPost.id, t.id) : undefined}
-        formViewer={{ userId: forms.currentUser.id, isAdmin: forms.isAdmin }}
         contributionsPreview={selectedPost ? getContributionPreview(selectedPost) : undefined}
       />
       <DocumentDetailDialog
@@ -802,38 +690,6 @@ export function SpaceFeed() {
         author={selectedDocAuthor}
       />
 
-      {formDialogPost?.contributionForm && forms.dialogTarget && (
-        <FormRespondDialog
-          open={true}
-          onOpenChange={(open) => !open && forms.closeDialog()}
-          calloutTitle={formDialogPost.title}
-          form={formDialogPost.contributionForm}
-          mode={forms.dialogTarget.mode}
-          response={formDialogResponse}
-          onSubmit={(answers) => forms.submitResponse(formDialogPost.id, answers)}
-        />
-      )}
-
-      {responsesDialogPost?.contributionForm && (
-        <FormResponsesDialog
-          open={true}
-          onOpenChange={(open) => !open && forms.closeResponsesDialog()}
-          calloutTitle={responsesDialogPost.title}
-          form={responsesDialogPost.contributionForm}
-          responses={forms.visibleResponsesFor(responsesDialogPost.contributionForm)}
-          currentUserId={forms.currentUser.id}
-          isRestricted={responsesAreRestricted(responsesDialogPost.contributionForm, forms.isAdmin)}
-        />
-      )}
-
-      {settingsDialogPost?.contributionForm && (
-        <FormSettingsDialog
-          open={true}
-          onOpenChange={(open) => !open && forms.closeSettingsDialog()}
-          form={settingsDialogPost.contributionForm}
-          onChange={(settings) => forms.updateFormSettings(settingsDialogPost.id, settings)}
-        />
-      )}
     </div>
   );
 }

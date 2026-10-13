@@ -12,9 +12,9 @@
  *   · emoji reactions  → `reactionsSlot`, via the `ReactionBar` adapter. This is
  *     the slot the dev described; in the client a `<CalloutReactionsConnector>`
  *     goes here.
- *   · form settings gear → folded into `settingsSlot` beside any menu the
- *     caller passes, since CRD has no `onOpenFormSettings`.
- *   · the extra fixture fields (`contributionForm`, `reactions`,
+ *   · a form added to the post → production's form box, through the framing
+ *     slot (`children`), drawn by `PostFormBox`.
+ *   · the extra fixture fields (`framingForm`, `reactions`,
  *     `reactionOptions`, `embeddedImages`) ride on an extended `PostCardData`.
  *
  *   · post truncation → CRD's snippet is withheld and `TruncatedPostDescription`
@@ -33,9 +33,8 @@
  *     per-thumbnail delete). The prop is still accepted so the five callers
  *     compile; it is simply not forwarded.
  */
-import { Settings } from 'lucide-react';
 import { type ReactNode, useEffect, useRef } from 'react';
-import { type ActivityDotSlot, ActivityDotSlots } from '@/app/components/shared/ActivityDotSlots';
+import { type ActivityDotSlot, ActivityDotSlots, afterNameSlot } from '@/app/components/shared/ActivityDotSlots';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
 import { postItem } from '@/app/data/activity-data';
 import { ReferencesAndTagsStrip } from '@/crd/components/callout/ReferencesAndTagsStrip';
@@ -44,11 +43,10 @@ import {
   type PostCardData as CrdPostCardData,
 } from '@/crd/components/space/PostCard';
 import type { MediaGalleryFeedThumbnail } from '@/crd/components/mediaGallery/MediaGalleryFeedGrid';
-import { Button } from '@/crd/primitives/button';
 import { ReactionBar } from '@/app/components/space/ReactionBar';
 import { TruncatedPostDescription } from '@/ahead/TruncatedPostDescription';
 import type { PostReaction } from '@/app/components/space/post-reactions-data';
-import type { CalloutFormData } from '@/app/components/callout/calloutFormTypes';
+import { PostFormBox, type PostFormData } from '@/app/components/callout/PostFormBox';
 
 export type { MediaGalleryFeedThumbnail };
 export { POST_TYPE_DESCRIPTORS, type PostType } from '@/crd/components/space/PostCard';
@@ -58,12 +56,8 @@ export { POST_TYPE_DESCRIPTORS, type PostType } from '@/crd/components/space/Pos
  * Nothing here overrides a CRD field — these are additions only.
  */
 export type PostCardData = CrdPostCardData & {
-  /**
-   * Contribution-level form (`contributionType: 'form'` only) — the ordered
-   * question list defining a response's shape, plus the responses collected so
-   * far. Prototype-only: production has no form callout type.
-   */
-  contributionForm?: CalloutFormData;
+  /** The form added to the post (`type: 'form'`), in production's shape. */
+  framingForm?: PostFormData;
   /** Emoji reactions. Omit and `ReactionBar` seeds a deterministic demo set from the id. */
   reactions?: PostReaction[];
   /** The emoji this space offers; omit for the platform default set. */
@@ -85,8 +79,6 @@ type PostCardProps = {
   onDeleteMediaGalleryImage?: (thumbnail: MediaGalleryFeedThumbnail) => void;
   onCommentsClick?: () => void;
   settingsSlot?: ReactNode;
-  /** Opens the form settings dialog. Its presence is the permission check. */
-  onOpenFormSettings?: () => void;
   onExpandClick?: () => void;
   expandIcon?: 'expand' | 'fullscreen';
   onOpenFramingDocument?: () => void;
@@ -104,13 +96,13 @@ type PostCardProps = {
 };
 
 /** Types whose framing preview CRD draws inside the body — see the header note. */
-const FRAMING_PREVIEW_TYPES = new Set(['whiteboard', 'memo', 'mediaGallery', 'document', 'callToAction']);
+const FRAMING_PREVIEW_TYPES = new Set(['whiteboard', 'memo', 'mediaGallery', 'document', 'callToAction', 'form']);
 
 export function PostCard({
   post,
   contributionsPreview,
   settingsSlot,
-  onOpenFormSettings,
+  children,
   reactionsEnabled = true,
   canReact = true,
   onReactionsChange,
@@ -118,38 +110,12 @@ export function PostCard({
   onDeleteMediaGalleryImage: _onDeleteMediaGalleryImage,
   ...rest
 }: PostCardProps) {
-  // CRD renders one settings area; the form gear joins whatever menu the caller
-  // passes rather than replacing it.
-  const settings =
-    onOpenFormSettings || settingsSlot ? (
-      <div className="flex items-center gap-1">
-        {onOpenFormSettings && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onOpenFormSettings}
-            aria-label="Form settings"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Settings className="size-4" aria-hidden="true" />
-          </Button>
-        )}
-        {settingsSlot}
-      </div>
-    ) : undefined;
-
   const { hasItemActivity, markItemSeen } = useActivityIndicators();
   const activityId = postItem(post.id);
   const hasActivity = hasItemActivity(activityId);
   const activitySlots: ActivityDotSlot[] = hasActivity
-    ? [
-        {
-          key: 'title',
-          find: root => [...root.querySelectorAll('h3.text-subsection-title')],
-          label: 'New',
-          className: 'ml-2 align-middle',
-        },
-      ]
+    ? // The post title only — a form box inside the card has a heading of the same style.
+      [afterNameSlot('title', 'New', root => [...root.querySelectorAll('h3.text-subsection-title')].slice(0, 1))]
     : [];
 
   // Hovering is deliberate attention; scrolling past is not. The short delay
@@ -172,11 +138,31 @@ export function PostCard({
   const ownsDescription =
     !FRAMING_PREVIEW_TYPES.has(post.type) && (!!post.snippet || !!post.embeddedImages?.length);
 
+  const crdPost: PostCardData = ownsDescription
+    ? { ...post, snippet: undefined, tags: undefined, references: undefined }
+    : post;
+
   return (
-    <ActivityDotSlots slots={activitySlots} onPointerEnter={startHover} onPointerLeave={cancelHover}>
+    <ActivityDotSlots
+      slots={activitySlots}
+      onPointerEnter={startHover}
+      onPointerLeave={cancelHover}
+      // A block, so the feed's gap between cards (a margin) still applies.
+      wrapperClassName="block"
+    >
       <CrdPostCard
         {...rest}
-        post={ownsDescription ? { ...post, snippet: undefined, tags: undefined, references: undefined } : post}
+        post={crdPost}
+        children={
+          post.framingForm ? (
+            <>
+              <PostFormBox form={post.framingForm} />
+              {children}
+            </>
+          ) : (
+            children
+          )
+        }
         contributionsPreview={
           ownsDescription ? (
             <>
@@ -192,7 +178,7 @@ export function PostCard({
             contributionsPreview
           )
         }
-        settingsSlot={settings}
+        settingsSlot={settingsSlot}
         reactionsSlot={
           reactionsEnabled ? (
             <ReactionBar

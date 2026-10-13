@@ -17,10 +17,8 @@
  *   mediaGallery → mediaGalleryFramingSlot    document    → collaboraFramingSlot
  *   callToAction → callToActionFramingSlot    reactions   → reactionsSlot
  *
- * The form framing goes in `contributionsSlot`, not a framing slot: its
- * questions are the schema for what contributors submit and the responses are
- * the contributions, which is what that slot is for. Production has no form
- * callout type at all — see PHASE-2.md §9.
+ * A form added to the post goes in `formFramingSlot`, drawn by `PostFormBox`
+ * with production's form components.
  *
  * REMOVED, with its data: the old `contentPreview` blocks (whiteboard grid,
  * collection items, inline document previews) and `stats`. Those fields no
@@ -42,7 +40,7 @@ import { MemoDialog } from '@/app/components/memo/MemoDialog';
 import { SignedCopiesTrigger } from '@/app/components/memo/SignedCopiesTrigger';
 import { useSignedCopies } from '@/app/components/memo/memoSigningStore';
 import { uniqueSigners } from '@/app/components/memo/signingData';
-import { CalloutFormFraming } from '@/ahead/CalloutFormFraming';
+import { PostFormBox } from '@/app/components/callout/PostFormBox';
 import { CommentsPanel } from '@/app/components/comment/CommentsPanel';
 
 interface PostDetailDialogProps {
@@ -51,8 +49,6 @@ interface PostDetailDialogProps {
   post: PostCardData | null;
   onAddMediaGalleryImages?: () => void;
   onDeleteMediaGalleryImage?: (thumbnail: MediaGalleryFeedThumbnail) => void;
-  /** Viewer context for the form framing — drives response visibility. */
-  formViewer?: { userId: string; isAdmin: boolean };
   /** Contribution cards rendered under the callout body. */
   contributionsPreview?: React.ReactNode;
 }
@@ -91,7 +87,6 @@ export function PostDetailDialog({
   post,
   onAddMediaGalleryImages,
   onDeleteMediaGalleryImage,
-  formViewer,
   contributionsPreview,
 }: PostDetailDialogProps) {
   const [commentText, setCommentText] = useState('');
@@ -101,16 +96,7 @@ export function PostDetailDialog({
 
   if (!post) return null;
 
-  const hasForm = Boolean(post.contributionForm);
-  const contributions =
-    hasForm || contributionsPreview ? (
-      <div className="space-y-6">
-        {post.contributionForm && (
-          <CalloutFormFraming form={post.contributionForm} viewer={formViewer} />
-        )}
-        {contributionsPreview}
-      </div>
-    ) : undefined;
+  const contributions = contributionsPreview ? <div className="space-y-6">{contributionsPreview}</div> : undefined;
 
   return (
     <>
@@ -124,6 +110,7 @@ export function PostDetailDialog({
         // store onto CRD's `CalloutReactionsBar`. This is the slot the dev
         // pointed at: the client passes a `<CalloutReactionsConnector>` here.
         reactionsSlot={<ReactionBar id={post.id} options={post.reactionOptions} />}
+        formFramingSlot={post.framingForm ? <PostFormBox form={post.framingForm} /> : undefined}
         whiteboardFramingSlot={
           post.type === 'whiteboard' ? (
             <FramingOpenButton onClick={() => {}} label="Open Whiteboard" heightClass="aspect-video">
@@ -140,7 +127,7 @@ export function PostDetailDialog({
         memoFramingSlot={
           post.type === 'memo' ? (
             <div className="space-y-2">
-              <FramingOpenButton onClick={() => setMemoOpen(true)} label="Open Memo" heightClass="h-40">
+              <FramingOpenButton onClick={() => setMemoOpen(true)} label="Open Memo" heightClass="aspect-video">
                 {post.framingMemoMarkdown ? (
                   <div className="line-clamp-5 h-full overflow-hidden p-4 text-body whitespace-pre-wrap text-foreground">
                     {post.framingMemoMarkdown}
@@ -190,7 +177,11 @@ export function PostDetailDialog({
         }
         collaboraFramingSlot={
           post.type === 'document' && post.framingDocumentType ? (
-            <CalloutCollaboraPreview documentType={post.framingDocumentType} onOpen={() => {}} />
+            <CalloutCollaboraPreview
+              documentType={post.framingDocumentType}
+              onOpen={() => {}}
+              previewImageUrl={post.framingDocumentPreviewUrl}
+            />
           ) : undefined
         }
         callToActionFramingSlot={

@@ -22,6 +22,9 @@ interface VCHoverCardProps {
   align?: "start" | "center" | "end";
   openDelay?: number;
   closeDelay?: number;
+  /** Controlled open state — used by the app-wide hover layer, which anchors the card itself. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const MAX_VISIBLE_TAGS = 4;
@@ -32,15 +35,17 @@ export function VCHoverCard({
   sideOffset = 8,
   align = "center",
   openDelay = 200,
-  closeDelay = 0
+  closeDelay = 0,
+  open,
+  onOpenChange
 }: VCHoverCardProps) {
   const profileUrl = vc.profileUrl || `/vc/${vc.name.toLowerCase().replace(/\s+/g, "-")}`;
   const visibleTags = vc.tags?.slice(0, MAX_VISIBLE_TAGS) ?? [];
   const overflowCount = (vc.tags?.length ?? 0) - MAX_VISIBLE_TAGS;
 
   return (
-    <HoverCard openDelay={openDelay} closeDelay={closeDelay}>
-      <HoverCardTrigger asChild>
+    <HoverCard openDelay={openDelay} closeDelay={closeDelay} open={open} onOpenChange={onOpenChange}>
+      <HoverCardTrigger asChild data-contributor-card="">
         {children}
       </HoverCardTrigger>
       <HoverCardContent

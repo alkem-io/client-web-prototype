@@ -194,6 +194,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The comprehensive policy proposal covering grid modernization, community solar, building electrification, and fleet conversion — with updated budget projections.",
       timestamp: "1 month ago",
       framingDocumentType: "text",
+      framingDocumentPreviewUrl: "/document-previews/renewable-transition-policy.svg",
       commentCount: 11
     },
 
@@ -482,6 +483,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The procurement guidelines document is ready for review. Please share links to example PPAs, legal precedents, and template contracts from other municipalities.",
       timestamp: "4.5 months ago",
       framingDocumentType: "text",
+      framingDocumentPreviewUrl: "/document-previews/procurement-guidelines.svg",
       commentCount: 8
     },
 
@@ -499,6 +501,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The Q2 budget report is attached. Each department lead should submit a post with their spending highlights, variances, and projections for Q3.",
       timestamp: "4.5 months ago",
       framingDocumentType: "spreadsheet",
+      framingDocumentPreviewUrl: "/document-previews/q2-budget-report.svg",
       commentCount: 12
     },
 
@@ -516,6 +519,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The updated technical specification is attached. We need structured memos documenting the implementation procedure for each section.",
       timestamp: "5 months ago",
       framingDocumentType: "text",
+      framingDocumentPreviewUrl: "/document-previews/technical-specification.svg",
       commentCount: 6
     },
 
@@ -533,6 +537,7 @@ const INITIAL_POSTS: PostWithTags[] = [
       snippet: "The site assessment document identifies 8 candidate locations for solar installations. Sketch your proposed panel layouts for any of the sites.",
       timestamp: "5 months ago",
       framingDocumentType: "presentation",
+      framingDocumentPreviewUrl: "/document-previews/site-assessment.svg",
       commentCount: 10
     },
 

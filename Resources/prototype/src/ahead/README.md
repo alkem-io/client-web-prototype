@@ -35,14 +35,15 @@ have it. That comment is what development reads.
 
 | Component | What production would gain |
 |---|---|
-| `ProfileHoverCard` | Hovering a person shows bio, skills and location without leaving the page |
+| `ProfileHoverCard` | Hovering a person shows bio, skills and location without leaving the page — wherever a person appears: avatars, names, comment and post authors, chat, lists, sentences like "Simone Rietmeijer on Thu". Needs a way to give a hover card to the components that show a contributor (`CommentItem`, `ChatMessageBubble`, `ContributorCard`, `PostCard`, `ActivityItem`, …), e.g. a `renderContributor` slot. Until then a stand-in shows them across the whole app (`app/components/shared/ContributorHoverLayer`, not part of the ask) |
 | `OrgHoverCard` | The same for organisations |
 | `VCHoverCard` | The same for virtual contributors |
 | `ActivityDot` | A small animated dot marking what is new since your last visit, right after the name: My Spaces rows, Recent Spaces cards, space tabs, space and subspace cards, post cards. Needs an optional `nameSuffix` slot on `SidebarResourceItem`, `CompactSpaceCard`, `SpaceNavigationTabs`' `TabItem`, `SpaceCard`, `ExpandedSpaceCard` and `PostCard`. Until then a stand-in places it (`app/components/shared/ActivityDotSlots`, not part of the ask) |
-| `CalloutFormFraming` | Forms as a callout type — a question set people answer in a space |
 | `TruncatedPostDescription` | Collapsed posts cut cleanly at 3 lines — no fade over text or images; a hero image crops to 160px, later images wait for "Read more", an image-only post crops like a hero. Needs a `descriptionSlot` on `PostCard` (or the behaviour in `ExpandableMarkdown`) |
 | `ThreeColumnContributionGrid` | A callout's contributions three across on wide screens instead of two — six visible while collapsed, cards closer to thumbnail size. Needs a `columns` prop on `ContributionGrid` (and `ContributionsPreviewSkeleton`) |
 | `TimeGroupedChatThreadView` | Calmer chats (client-web#10377): messages grouped by sender and time, a time only at the start of each day and after an hour of quiet, the exact time of any message on hover or tap. Needs a time-aware `computeMessageRunFlags`, a way to leave out `ChatMessageBubble`'s timestamp line, and separators in `ChatThreadView` |
+| `ChatOptionsMenu` | A tidier chat header (client-web#10378): the gear stays in the chat list only, so it no longer pulls you out of a chat; group chats get a "more" menu with Group settings and Leave group, with room for mute and pin later; tapping the group's picture or name opens its settings. The menu fits `ChatPanel`'s `headerActions`; the tap needs an `onTitleClick` on `ChatPanel`. Until then a stand-in in `MessagesOverlay` listens for it (not part of the ask) |
+| `FilledGroupAvatar` | Group avatars that fill the circle (client-web#10378): halves for two faces, a half and two quarters for three, quarters for four, three faces and "+N" from five. The ask is for `GroupAvatar` itself to change to this, which fixes the chat list and header at once. Until then a stand-in draws it over the list's avatars (`app/components/shared/ChatGroupAvatarSlots`, not part of the ask) |
 
 If this list grows past ten or so entries, the process has stopped working.
 Nothing else belongs in this folder: not pages, not mock data, not wrappers
@@ -50,7 +51,7 @@ around components production already has.
 
 ## Surfaces on the watchlist
 
-Status as of upstream `cc126d7a` (2026-10-02). Run the check for current numbers.
+Status as of upstream `13cd741a` (2026-10-09). Run the check for current numbers.
 
 | Surface | Upstream | Note |
 |---|---|---|
@@ -59,7 +60,7 @@ Status as of upstream `cc126d7a` (2026-10-02). Run the check for current numbers
 | User profile settings | `[!]` 6/6 | Profile, notifications, security, organisations, memberships. |
 | Organisation settings | `[!]` 4/4 | Profile, associates, invitations. |
 | Pack and template settings | `[!]` 2/2 | `InnovationPackAdminView`, `InnovationPackForm`. |
-| Subspace application wizard | `[~]` 1/3 | `ApplicationFormEditor` landed; the wizard and form-as-callout have not. |
+| Subspace application wizard | `[~]` 1/2 | `ApplicationFormEditor` landed; the wizard has not. |
 | Memo signing | `[~]` 1/2 | `MemoSigningDialog` landed; the signature panel has not. |
 | Template detail as a full page | `[ ]` 0/2 | Still a dialog upstream. |
 
@@ -75,6 +76,8 @@ Kept as a record, so it is clear the process works:
 
 | Was | Became | Status |
 |---|---|---|
+| `CalloutFormFraming` and the prototype's form flow | Production's forms: `CalloutFormBox`, `CalloutFormFillIn`, `CalloutFormOwnResponses`, `CalloutFormResponsesTable`, `CalloutFormResponseDialog`, `FormQuestionsEditor`, `FormSettingsDialog` | **Done** on 2026-10-13, by design decision: follow production. A form is now added to a post ("Add to post"), not a response type. Ours is deleted; `app/components/callout/PostFormBox` only holds demo state. Production's version also brought multiple-choice, one-or-many responses and open/closed. The compact post dialog exploration still shows the old model. |
+| `MemoFramingPreview` | `crd/components/space/PostCard` (memo framing now `aspect-video`) and `CalloutCollaboraPreview` (one 16:9 size, `compact` removed) | **Done** at `13cd741a`. Deleted; the prototype's `PostCard` lets CRD draw both previews again. Production's memo box is ours with 12px padding instead of 16px. |
 | `RichSubspaceCard` | `crd/components/space/ExpandedSpaceCard` | **Done.** Deleted; `SpaceFeed` renders CRD's card through `richSubspaceToSpaceCard()`. |
 | Our rich contributor cards | `crd/components/callout/ContributorCollection/ContributorCard` — gained tagline, tags, associates count, website, join month and messaging | **Noticed, waiting on one thing.** Adopting it today costs the hover cards, because the collection draws its own. Held until there is a slot or an `onContributorHover` — not forgotten. PHASE-2 §12. |
 

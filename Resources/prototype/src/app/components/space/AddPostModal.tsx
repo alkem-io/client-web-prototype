@@ -39,14 +39,12 @@ import {
 } from "@/crd/primitives/popover";
 import { MarkdownEditor } from "@/crd/forms/markdown/MarkdownEditor";
 import { Textarea } from "@/crd/primitives/textarea";
-import { FormSettingsDialog } from "@/app/components/callout/FormSettingsDialog";
-import {
-  ANSWER_TYPE_DESCRIPTORS,
-  ANSWER_TYPE_ORDER,
-  type CalloutFormAnswerType,
-  type CalloutFormChoiceOption,
-  type CalloutFormResponseVisibility
-} from "@/app/components/callout/calloutFormTypes";
+import { FramingChipStrip, type FramingChipId } from "@/crd/forms/callout/FramingChipStrip";
+import { ResponseTypeChipStrip, type ResponseTypeChipId } from "@/crd/forms/callout/ResponseTypeChipStrip";
+import { FormQuestionsEditor } from "@/crd/forms/callout/FormQuestionsEditor";
+import { FormSettingsDialog } from "@/crd/forms/callout/FormSettingsDialog";
+import { createFormQuestion, DEFAULT_FORM_SETTINGS } from "@/crd/forms/callout/formValues";
+import type { FormQuestionValue, FormSettingsValue } from "@/crd/forms/callout/types";
 import {
   Select,
   SelectContent,
@@ -55,34 +53,13 @@ import {
   SelectValue
 } from "@/crd/primitives/select";
 
-/** A question row while it's being authored — `sortOrder` is the array index. */
-interface DraftFormQuestion {
-  id: string;
-  question: string;
-  explanation: string;
-  answerType: CalloutFormAnswerType;
-  /** Always present while authoring so the choice editor never has to null-check. */
-  options: CalloutFormChoiceOption[];
-}
-
-const uid = (prefix: string) =>
-  `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-
-function createDraftOption(): CalloutFormChoiceOption {
-  return { id: uid("opt"), label: "" };
-}
-
-function createDraftQuestion(): DraftFormQuestion {
-  return {
-    id: uid("q"),
-    question: "",
-    explanation: "",
-    // Short answer is the cheapest thing to answer, so it's the default —
-    // the author opts into more effort rather than out of it.
-    answerType: "short",
-    options: []
-  };
-}
+/** Our response-type ids ↔ production's chip ids. */
+const RESPONSE_TO_CHIP: Record<string, ResponseTypeChipId> = {
+  links: "link", posts: "post", memos: "memo", whiteboards: "whiteboard", documents: "document",
+};
+const CHIP_TO_RESPONSE: Record<ResponseTypeChipId, "links" | "posts" | "memos" | "whiteboards" | "documents"> = {
+  link: "links", post: "posts", memo: "memos", whiteboard: "whiteboards", document: "documents",
+};
 
 interface AddPostModalProps {
   open: boolean;
@@ -99,62 +76,18 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
   ]);
   
   // Attachments
-  const [activeAttachment, setActiveAttachment] = useState<"none" | "whiteboard" | "memo" | "cta" | "image" | "poll" | "document" | "contributors" | "subspaces">("none");
+  const [activeAttachment, setActiveAttachment] = useState<"none" | "whiteboard" | "memo" | "cta" | "image" | "poll" | "document" | "contributors" | "subspaces" | "form">("none");
   const [ctaText, setCtaText] = useState("");
   const [ctaLink, setCtaLink] = useState("");
   const [ctaPickerOpen, setCtaPickerOpen] = useState(false);
 
-  // Form contribution type — controlled, unlike the neighbouring Poll panel whose inputs
-  // are uncontrolled and discard whatever the author types.
-  const [formQuestions, setFormQuestions] = useState<DraftFormQuestion[]>([createDraftQuestion()]);
-  const [formVisibility, setFormVisibility] = useState<CalloutFormResponseVisibility>("admins");
-  const [formAllowMultiple, setFormAllowMultiple] = useState(false);
+  // Form added to the post — production's question editor and settings.
+  const [formTitle, setFormTitle] = useState("");
+  const [formDescription, setFormDescription] = useState("");
+  const [formQuestions, setFormQuestions] = useState<FormQuestionValue[]>(() => [createFormQuestion()]);
+  const [formSettings, setFormSettings] = useState<FormSettingsValue>(DEFAULT_FORM_SETTINGS);
   const [formSettingsOpen, setFormSettingsOpen] = useState(false);
 
-  const updateFormQuestion = (id: string, patch: Partial<DraftFormQuestion>) => {
-    setFormQuestions(prev => prev.map(q => (q.id === id ? { ...q, ...patch } : q)));
-  };
-
-  const removeFormQuestion = (id: string) => {
-    setFormQuestions(prev => prev.filter(q => q.id !== id));
-  };
-
-  const addFormOption = (questionId: string) => {
-    setFormQuestions(prev =>
-      prev.map(q => (q.id === questionId ? { ...q, options: [...q.options, createDraftOption()] } : q))
-    );
-  };
-
-  const updateFormOption = (questionId: string, optionId: string, label: string) => {
-    setFormQuestions(prev =>
-      prev.map(q =>
-        q.id === questionId
-          ? { ...q, options: q.options.map(o => (o.id === optionId ? { ...o, label } : o)) }
-          : q
-      )
-    );
-  };
-
-  const removeFormOption = (questionId: string, optionId: string) => {
-    setFormQuestions(prev =>
-      prev.map(q =>
-        q.id === questionId ? { ...q, options: q.options.filter(o => o.id !== optionId) } : q
-      )
-    );
-  };
-
-  /** Swaps a question with its neighbour; no-ops at the ends. */
-  const moveFormQuestion = (index: number, direction: -1 | 1) => {
-    setFormQuestions(prev => {
-      const target = index + direction;
-      if (target < 0 || target >= prev.length) return prev;
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
-  };
-
-  // Simulated space settings (in production, these come from space config)
   const spaceSettings = {
     membershipPolicy: "application" as "open" | "application" | "invitation",
     memberCreatePosts: false,
@@ -254,7 +187,7 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
   const [subspaceSearch, setSubspaceSearch] = useState("");
 
   // Collection type — always visible
-  const [collectionType, setCollectionType] = useState<"none" | "links" | "posts" | "memos" | "whiteboards" | "documents" | "form" | "tasks">("none");
+  const [collectionType, setCollectionType] = useState<"none" | "links" | "posts" | "memos" | "whiteboards" | "documents" | "tasks">("none");
   const [membersCanAdd, setMembersCanAdd] = useState(true);
   const [adminsCanAdd, setAdminsCanAdd] = useState(true);
   const [collectionDefaultTitle, setCollectionDefaultTitle] = useState("");
@@ -319,48 +252,33 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
             />
           </div>
 
-          {/* ADD TO POST chip strip */}
+          {/* ADD TO POST — production's chip row: the three most-used types on the
+              row, the rest behind "More", each type in its own colour. */}
           <div className="space-y-3">
-             <Label className="text-label uppercase text-muted-foreground">Add to post</Label>
-             <div className="flex flex-wrap gap-2">
-                <TooltipProvider>
-                  {[
-                    { id: 'whiteboard', label: 'Whiteboard', icon: Presentation },
-                    { id: 'memo', label: 'Memo', icon: StickyNote },
-                    { id: 'document', label: 'Document', icon: FileSpreadsheet },
-                    { id: 'cta', label: 'Call to Action', icon: Megaphone },
-                    { id: 'image', label: 'Media Gallery', icon: Image },
-                    { id: 'poll', label: 'Poll', icon: BarChart3 },
-                    { id: 'contributors', label: 'Contributors', icon: Users },
-                    { id: 'subspaces', label: 'Subspaces', icon: LayoutGrid },
-                  ].map((item) => (
-                    <Tooltip key={item.id}>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => setActiveAttachment(activeAttachment === item.id ? 'none' : item.id as any)}
-                          className={cn(
-                            "flex items-center gap-2 px-3 py-2 rounded-full border text-control transition-all",
-                            activeAttachment === item.id 
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-background border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-                          )}
-                        >
-                          <item.icon className="w-4 h-4" />
-                          <span>{item.label}</span>
-                          {activeAttachment === item.id && (
-                            <X className="w-3 h-3 ml-0.5 opacity-70" />
-                          )}
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{activeAttachment === item.id ? `Remove ${item.label}` : `Add ${item.label}`}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </TooltipProvider>
-             </div>
+             <FramingChipStrip
+               value={activeAttachment === 'subspaces' ? 'spaces' : activeAttachment}
+               onChange={next => setActiveAttachment(next === 'spaces' ? 'subspaces' : (next as typeof activeAttachment))}
+             />
 
              {/* Active Attachment Editors */}
+             {activeAttachment === 'form' && (
+                <FormQuestionsEditor
+                  className="mt-2"
+                  questions={formQuestions}
+                  onChange={setFormQuestions}
+                  title={formTitle}
+                  onTitleChange={setFormTitle}
+                  description={formDescription}
+                  onDescriptionChange={setFormDescription}
+                  settingsSlot={
+                    <Button variant="outline" size="sm" onClick={() => setFormSettingsOpen(true)}>
+                      <Settings className="w-4 h-4" aria-hidden="true" />
+                      Settings
+                    </Button>
+                  }
+                />
+             )}
+
              {activeAttachment === 'whiteboard' && (
                 <div className="mt-2 p-4 border rounded-xl bg-muted/30 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
                   <div className="flex items-center gap-3">
@@ -728,207 +646,16 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
 
           <Separator />
           <div className="space-y-3">
-            <Label className="text-label uppercase text-muted-foreground">Responses</Label>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { id: 'links', label: 'Links & Files', icon: Link2 },
-                { id: 'form', label: 'Form', icon: ClipboardList },
-                { id: 'posts', label: 'Posts', icon: FileText },
-                { id: 'tasks', label: 'Tasks', icon: CheckSquare },
-                { id: 'memos', label: 'Memos', icon: PenLine },
-                { id: 'whiteboards', label: 'Whiteboards', icon: Presentation },
-              ].map((type) => (
-                <button
-                  key={type.id}
-                  onClick={() => setCollectionType(collectionType === type.id ? 'none' : type.id as any)}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-full border text-control transition-all",
-                    collectionType === type.id
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <type.icon className="w-4 h-4" />
-                  <span>{type.label}</span>
-                  {collectionType === type.id && (
-                    <X className="w-3 h-3 ml-0.5 opacity-70" />
-                  )}
-                </button>
-              ))}
-            </div>
+            <ResponseTypeChipStrip
+              value={collectionType === "none" || collectionType === "tasks" ? "none" : RESPONSE_TO_CHIP[collectionType]}
+              onChange={next => setCollectionType(next === "none" ? "none" : CHIP_TO_RESPONSE[next])}
+              showTasksChip
+              tasksActive={collectionType === "tasks"}
+              tasksLabel="Tasks"
+              onSelectTasks={() => setCollectionType(collectionType === "tasks" ? "none" : "tasks")}
+            />
 
             {/* Inline collection settings panel — type-specific */}
-            {collectionType === 'form' && (
-                <div className="mt-2 p-4 border rounded-xl bg-muted/30 space-y-4 animate-in fade-in slide-in-from-top-2">
-                 <div className="flex items-center gap-3">
-                   <div className="p-2 rounded-lg bg-primary/10 text-primary"><ClipboardList className="w-5 h-5" /></div>
-                   <div>
-                     <p className="text-body-emphasis">Form</p>
-                     <p className="text-caption text-muted-foreground">Ask questions and collect answers as responses</p>
-                   </div>
-                 </div>
-
-                 {/* Question list — order here is the order respondents see. */}
-                 <div className="space-y-3">
-                   {formQuestions.map((question, index) => (
-                     <div key={question.id} className="p-3 border rounded-lg bg-background space-y-3">
-                       {/* Question text and its answer type sit on one row, as in
-                           Google Forms — choosing the shape is part of writing the
-                           question, not a setting you go looking for afterwards. */}
-                       <div className="flex items-start gap-2">
-                         <span className="text-caption text-muted-foreground mt-2.5 w-4 shrink-0 tabular-nums">{index + 1}.</span>
-                         <div className="flex-1 space-y-2 min-w-0">
-                           <div className="flex items-start gap-2">
-                             <Input
-                               value={question.question}
-                               onChange={e => updateFormQuestion(question.id, { question: e.target.value })}
-                               placeholder="Ask a question"
-                               className="h-8 bg-background flex-1 min-w-0"
-                             />
-                             <Select
-                               value={question.answerType}
-                               onValueChange={value =>
-                                 updateFormQuestion(question.id, {
-                                   answerType: value as CalloutFormAnswerType,
-                                   // Seed two blanks the first time a question becomes a
-                                   // choice, so the author has somewhere to type.
-                                   options:
-                                     value === 'choice' && question.options.length === 0
-                                       ? [createDraftOption(), createDraftOption()]
-                                       : question.options
-                                 })
-                               }
-                             >
-                               <SelectTrigger className="h-8 w-[172px] shrink-0 bg-background">
-                                 <SelectValue />
-                               </SelectTrigger>
-                               <SelectContent>
-                                 {ANSWER_TYPE_ORDER.map(type => {
-                                   const descriptor = ANSWER_TYPE_DESCRIPTORS[type];
-                                   const TypeIcon = descriptor.icon;
-                                   return (
-                                     <SelectItem key={type} value={type}>
-                                       <span className="flex items-center gap-2">
-                                         <TypeIcon className="w-4 h-4 text-muted-foreground" />
-                                         {descriptor.label}
-                                       </span>
-                                     </SelectItem>
-                                   );
-                                 })}
-                               </SelectContent>
-                             </Select>
-                           </div>
-                           <Textarea
-                             value={question.explanation}
-                             onChange={e => updateFormQuestion(question.id, { explanation: e.target.value })}
-                             placeholder="Add an explanation (optional)"
-                             className="bg-background min-h-0 h-14 text-body"
-                           />
-                         </div>
-                       </div>
-
-                       {/* Answer preview — what the respondent will see. Inert
-                           here; the real inputs live in FormRespondDialog. */}
-                       <div className="pl-6">
-                         {question.answerType === 'choice' ? (
-                           <div className="space-y-2">
-                             {question.options.map((option, optionIndex) => (
-                               <div key={option.id} className="flex items-center gap-2">
-                                 <span className="w-4 h-4 rounded-full border border-muted-foreground/40 shrink-0" aria-hidden="true" />
-                                 <Input
-                                   value={option.label}
-                                   onChange={e => updateFormOption(question.id, option.id, e.target.value)}
-                                   placeholder={`Option ${optionIndex + 1}`}
-                                   className="h-8 bg-background flex-1 min-w-0"
-                                 />
-                                 <IconButton
-                                   variant="ghost"
-                                   tooltipLabel="Remove option"
-                                   disabled={question.options.length <= 2}
-                                   onClick={() => removeFormOption(question.id, option.id)}
-                                 >
-                                   <X className="w-4 h-4" />
-                                 </IconButton>
-                               </div>
-                             ))}
-                             <Button
-                               variant="ghost"
-                               size="sm"
-                               className="gap-1.5 text-caption text-muted-foreground"
-                               onClick={() => addFormOption(question.id)}
-                             >
-                               <Plus className="w-3.5 h-3.5" /> Add option
-                             </Button>
-                           </div>
-                         ) : (
-                           <div
-                             className={cn(
-                               'rounded-md border border-dashed border-border/70 bg-muted/20 px-3 flex items-center',
-                               question.answerType === 'long' ? 'h-14' : 'h-8'
-                             )}
-                           >
-                             <span className="text-caption text-muted-foreground">
-                               {ANSWER_TYPE_DESCRIPTORS[question.answerType].description}
-                             </span>
-                           </div>
-                         )}
-                       </div>
-
-                       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pl-6">
-                         <div className="flex items-center gap-0.5 ml-auto">
-                           <IconButton
-                             variant="ghost"
-                             tooltipLabel="Move up"
-                             disabled={index === 0}
-                             onClick={() => moveFormQuestion(index, -1)}
-                           >
-                             <ChevronUp className="w-4 h-4" />
-                           </IconButton>
-                           <IconButton
-                             variant="ghost"
-                             tooltipLabel="Move down"
-                             disabled={index === formQuestions.length - 1}
-                             onClick={() => moveFormQuestion(index, 1)}
-                           >
-                             <ChevronDown className="w-4 h-4" />
-                           </IconButton>
-                           <IconButton
-                             variant="ghost"
-                             tooltipLabel="Delete question"
-                             disabled={formQuestions.length === 1}
-                             onClick={() => removeFormQuestion(question.id)}
-                           >
-                             <Trash2 className="w-4 h-4" />
-                           </IconButton>
-                         </div>
-                       </div>
-                     </div>
-                   ))}
-
-                   {/* Add-question left, settings gear right — matching the
-                       Poll panel, where the per-framing settings live behind
-                       the gear rather than crowding the authoring surface. */}
-                   <div className="flex items-center justify-between gap-3 pt-1">
-                     <Button
-                       variant="outline"
-                       size="sm"
-                       className="gap-1.5 h-8"
-                       onClick={() => setFormQuestions(prev => [...prev, createDraftQuestion()])}
-                     >
-                       <Plus className="w-3.5 h-3.5" /> Add question
-                     </Button>
-                     <IconButton
-                       variant="ghost"
-                       tooltipLabel="Form settings"
-                       onClick={() => setFormSettingsOpen(true)}
-                     >
-                       <Settings className="w-4 h-4" />
-                     </IconButton>
-                   </div>
-                 </div>
-               </div>
-            )}
-
             {collectionType === 'links' && (
               <div className="mt-2 px-4 pb-4 pt-6 border rounded-xl bg-muted/30 space-y-4 animate-in fade-in slide-in-from-top-2">
                 {/* Pre-populate links */}
@@ -1356,21 +1083,17 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Form settings — the authoring-time twin of the gear on the callout card.
-          No responses exist yet, so the reveal confirmation never fires here. */}
       <FormSettingsDialog
         open={formSettingsOpen}
         onOpenChange={setFormSettingsOpen}
-        form={{
-          questions: [],
-          responses: [],
-          responseVisibility: formVisibility,
-          allowMultipleResponses: formAllowMultiple
-        }}
-        onChange={(settings) => {
-          setFormVisibility(settings.responseVisibility);
-          setFormAllowMultiple(settings.allowMultipleResponses);
-        }}
+        visibility={formSettings.visibility}
+        onVisibilityChange={visibility => setFormSettings(prev => ({ ...prev, visibility }))}
+        responseMode={formSettings.responseMode}
+        onResponseModeChange={responseMode => setFormSettings(prev => ({ ...prev, responseMode }))}
+        state={formSettings.state}
+        onStateChange={state => setFormSettings(prev => ({ ...prev, state }))}
+        defaultCollapsed={formSettings.defaultCollapsed}
+        onDefaultCollapsedChange={defaultCollapsed => setFormSettings(prev => ({ ...prev, defaultCollapsed }))}
       />
     </Dialog>
   );
