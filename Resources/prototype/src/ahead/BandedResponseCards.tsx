@@ -11,8 +11,14 @@
  * replaces the fade with the design in
  * `src/mockups/artifacts/contribution-cards-no-gradient.html`:
  *
- *   · A solid band along the bottom in `bg-card` with a `border-t`: the title
- *     in `text-foreground`, the author in `text-muted-foreground`.
+ *   · A solid label strip along the bottom in `bg-muted`: the author's
+ *     profile picture (initials when there is none), then the title in
+ *     `text-foreground` and the author in `text-muted-foreground`. The strip
+ *     and the picture make the label read as separate from the preview, so
+ *     it never competes with a memo's own headings (option F in the mockup).
+ *   · The memo preview is drawn smaller and in grey, as a thumbnail of the
+ *     memo, and cut cleanly by the strip: no fade mask (CRD's
+ *     `CroppedMarkdown` fades the bottom; this uses `MarkdownContent`).
  *   · The memo's signed-copies button sits in the band as a plain ghost button
  *     instead of white-on-blue.
  *   · The hover wash (`bg-primary/40` + "Open …" button) is unchanged, but
@@ -38,16 +44,39 @@ import { useTranslation } from 'react-i18next';
 import { type CollaboraDocumentPreviewType, colorByType, iconByType } from '@/crd/lib/collaboraDocumentPreview';
 import { cn } from '@/crd/lib/utils';
 import { Button } from '@/crd/primitives/button';
-import { CroppedMarkdown } from '@/crd/primitives/croppedMarkdown';
+import { MarkdownContent } from '@/crd/components/common/MarkdownContent';
+import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
 
 /** The solid title band — the one thing this file changes. */
-function ResponseCardBand({ title, author, children }: { title: string; author?: string; children?: ReactNode }) {
+function ResponseCardBand({
+  title,
+  author,
+  authorAvatarUrl,
+  children,
+}: {
+  title: string;
+  author?: string;
+  authorAvatarUrl?: string;
+  children?: ReactNode;
+}) {
+  const initials = author
+    ?.split(/\s+/)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
   return (
     <div
       data-slot="response-card-band"
-      className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 border-t border-border bg-card px-3 py-2.5"
+      className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center gap-2.5 bg-muted px-3 py-2.5"
     >
-      <div className="min-w-0">
+      {author && (
+        <Avatar className="size-8">
+          {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} alt="" />}
+          <AvatarFallback className="bg-card text-badge text-muted-foreground">{initials}</AvatarFallback>
+        </Avatar>
+      )}
+      <div className="min-w-0 flex-1">
         <p className="truncate text-card-title text-foreground">{title}</p>
         {author && <p className="truncate text-caption text-muted-foreground">{author}</p>}
       </div>
@@ -78,6 +107,8 @@ type BandedMemoCardProps = {
   title: string;
   markdownContent?: string;
   author?: string;
+  /** The author's profile picture; initials show when it is missing. */
+  authorAvatarUrl?: string;
   onClick?: () => void;
   signedCopiesCount?: number;
   onOpenSignedCopies?: () => void;
@@ -88,6 +119,7 @@ export function BandedMemoCard({
   title,
   markdownContent,
   author,
+  authorAvatarUrl,
   onClick,
   signedCopiesCount = 0,
   onOpenSignedCopies,
@@ -108,9 +140,13 @@ export function BandedMemoCard({
         className="absolute inset-0 z-0 w-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         onClick={onClick}
       />
-      <div className="pointer-events-none w-full h-full p-4">
+      <div className="pointer-events-none w-full h-full overflow-hidden p-3.5">
         {markdownContent ? (
-          <CroppedMarkdown content={markdownContent} maxHeight="180px" />
+          // A thumbnail of the memo: drawn at 72% and in grey, so the label
+          // strip below is the card's main text.
+          <div className="w-[139%] origin-top-left scale-[0.72] text-muted-foreground [&_*]:text-muted-foreground!">
+            <MarkdownContent content={markdownContent} />
+          </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <StickyNote className="w-8 h-8 text-muted-foreground/40" aria-hidden="true" />
@@ -120,7 +156,7 @@ export function BandedMemoCard({
 
       <OpenOverlay label={t('callout.openMemo')} group="memo" />
 
-      <ResponseCardBand title={title} author={author}>
+      <ResponseCardBand title={title} author={author} authorAvatarUrl={authorAvatarUrl}>
         {signedCopiesCount > 0 && onOpenSignedCopies && (
           <Button
             type="button"
@@ -142,11 +178,19 @@ type BandedWhiteboardCardProps = {
   title: string;
   previewUrl?: string;
   author?: string;
+  authorAvatarUrl?: string;
   onClick?: () => void;
   className?: string;
 };
 
-export function BandedWhiteboardCard({ title, previewUrl, author, onClick, className }: BandedWhiteboardCardProps) {
+export function BandedWhiteboardCard({
+  title,
+  previewUrl,
+  author,
+  authorAvatarUrl,
+  onClick,
+  className,
+}: BandedWhiteboardCardProps) {
   const { t } = useTranslation('crd-space');
 
   return (
@@ -171,7 +215,7 @@ export function BandedWhiteboardCard({ title, previewUrl, author, onClick, class
       )}
 
       <OpenOverlay label={t('callout.openWhiteboard')} group="wb" />
-      <ResponseCardBand title={title} author={author} />
+      <ResponseCardBand title={title} author={author} authorAvatarUrl={authorAvatarUrl} />
     </button>
   );
 }
@@ -181,6 +225,7 @@ type BandedDocumentCardProps = {
   documentType: CollaboraDocumentPreviewType;
   previewUrl?: string;
   author?: string;
+  authorAvatarUrl?: string;
   onClick?: () => void;
   className?: string;
 };
@@ -190,6 +235,7 @@ export function BandedDocumentCard({
   documentType,
   previewUrl,
   author,
+  authorAvatarUrl,
   onClick,
   className,
 }: BandedDocumentCardProps) {
@@ -224,7 +270,7 @@ export function BandedDocumentCard({
       </div>
 
       <OpenOverlay label={t('callout.openDocument')} group="doc" />
-      <ResponseCardBand title={title} author={author} />
+      <ResponseCardBand title={title} author={author} authorAvatarUrl={authorAvatarUrl} />
     </button>
   );
 }

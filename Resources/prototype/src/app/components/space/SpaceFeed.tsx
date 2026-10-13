@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
 import { BandedDocumentCard, BandedMemoCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
+import { demoAuthorAvatar } from '@/app/data/demoAuthorAvatars';
 import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
@@ -461,16 +462,19 @@ export function SpaceFeed() {
             <BandedMemoCard key="c1"
               title="Commercial Building Audit Checklist"
               author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               markdownContent={"## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"}
             />,
             <BandedMemoCard key="c2"
               title="Residential Audit Quick Guide"
               author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               markdownContent={"## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"}
             />,
             <BandedMemoCard key="c3"
               title="Post-Audit Reporting Template"
               author="Alex Contributor"
+              authorAvatarUrl={demoAuthorAvatar("Alex Contributor")}
               markdownContent={"## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"}
             />
           ]
@@ -485,24 +489,28 @@ export function SpaceFeed() {
             <BandedDocumentCard key="c1"
               title="Q2 Budget Report 2026"
               author="Elena Rodriguez"
+              authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
               documentType="spreadsheet"
               previewUrl="/document-previews/q2-budget-report.svg"
             />,
             <BandedDocumentCard key="c2"
               title="Technical Specification"
               author="Michael Chang"
+              authorAvatarUrl={demoAuthorAvatar("Michael Chang")}
               documentType="text"
               previewUrl="/document-previews/technical-specification.svg"
             />,
             <BandedDocumentCard key="c3"
               title="Site Assessment: North District"
               author="Alex Torres"
+              authorAvatarUrl={demoAuthorAvatar("Alex Torres")}
               documentType="presentation"
               previewUrl="/document-previews/site-assessment.svg"
             />,
             <BandedDocumentCard key="c4"
               title="Procurement Guidelines"
               author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               documentType="pdf"
             />
           ]
@@ -517,31 +525,37 @@ export function SpaceFeed() {
             <BandedWhiteboardCard key="c1"
               title="Public Library Solar Roof"
               author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               previewUrl={wb1}
             />,
             <BandedWhiteboardCard key="c2"
               title="Parking Lot Canopies"
               author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               previewUrl={wb2}
             />,
             <BandedWhiteboardCard key="c3"
               title="School Microgrids"
               author="Elena Rodriguez"
+              authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
               previewUrl={wb3}
             />,
             <BandedWhiteboardCard key="c4"
               title="Bus Stop Solar Stations"
               author="Michael Chang"
+              authorAvatarUrl={demoAuthorAvatar("Michael Chang")}
               previewUrl={wb4}
             />,
             <BandedWhiteboardCard key="c5"
               title="Town Hall Retrofit"
               author="James Wilson"
+              authorAvatarUrl={demoAuthorAvatar("James Wilson")}
               previewUrl={wb1}
             />,
             <BandedWhiteboardCard key="c6"
               title="Park Lighting Solar"
               author="Lisa Park"
+              authorAvatarUrl={demoAuthorAvatar("Lisa Park")}
               previewUrl={wb2}
             />
           ]

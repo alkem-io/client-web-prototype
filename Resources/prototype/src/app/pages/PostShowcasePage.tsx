@@ -1,6 +1,7 @@
 import { PostCard, type PostCardData } from '@/app/components/space/PostCard';
 import { ContributionGrid } from '@/app/components/contribution/ContributionGrid';
 import { BandedMemoCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
+import { demoAuthorAvatar } from '@/app/data/demoAuthorAvatars';
 import { ContributionPostCard } from '@/crd/components/contribution/ContributionPostCard';
 import { ContributionAddCard } from '@/crd/components/contribution/ContributionAddCard';
 
@@ -233,36 +234,42 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
                 <BandedWhiteboardCard
                   title="Public Library Solar Roof"
                   author="Sarah Chen"
+                  authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
                   previewUrl={wb1}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
                 <BandedWhiteboardCard
                   title="Parking Lot Canopies"
                   author="David Miller"
+                  authorAvatarUrl={demoAuthorAvatar("David Miller")}
                   previewUrl={wb2}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
                 <BandedWhiteboardCard
                   title="School Microgrids"
                   author="Elena Rodriguez"
+                  authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
                   previewUrl={wb3}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
                 <BandedWhiteboardCard
                   title="Bus Stop Solar Stations"
                   author="Marc Johnson"
+                  authorAvatarUrl={demoAuthorAvatar("Marc Johnson")}
                   previewUrl={wb4}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
                 <BandedWhiteboardCard
                   title="Town Hall Retrofit"
                   author="John Smith"
+                  authorAvatarUrl={demoAuthorAvatar("John Smith")}
                   previewUrl={wb1}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
                 <BandedWhiteboardCard
                   title="Park Lighting"
                   author="Emily Davis"
+                  authorAvatarUrl={demoAuthorAvatar("Emily Davis")}
                   previewUrl={wb2}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
