@@ -1,6 +1,12 @@
 /**
  * calloutFormTypes — the data model for the `form` contribution type.
  *
+ * RETIRED for the live prototype on 2026-10-13: forms now follow production
+ * (a form is added to a post, `PostFormBox`, production's types). This file is
+ * kept only for the compact post dialog exploration
+ * (`post-dialog-compact/`, `PostDialogExploration`), which still shows forms
+ * as a response type. Do not use it for new work.
+ *
  * A form is a *response type*, not a framing: the callout keeps its own head
  * content (text, whiteboard, …) and the question list defines the shape of what
  * contributors submit — the structured sibling of the free-form post, memo and

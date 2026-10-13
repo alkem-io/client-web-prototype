@@ -5,11 +5,6 @@
  * callout can't dominate the scroll. That's right for the feed and wrong when
  * you actually want to read them, so this is the escape hatch: the same cards,
  * uncollapsed, in a roomier grid with the callout's title for context.
- *
- * The `form` contribution type has its own dialog (`FormResponsesDialog`)
- * because a form's answers share a schema and are worth comparing column by
- * column. Everything else is free-form, so there is nothing to line up — more
- * room is the whole improvement.
  */
 import type { ReactNode } from 'react';
 import { cn } from '@/crd/lib/utils';

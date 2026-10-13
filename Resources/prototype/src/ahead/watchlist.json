@@ -81,18 +81,6 @@
       ]
     },
     {
-      "name": "Forms on posts",
-      "ours": "src/ahead/CalloutFormFraming.tsx, src/app/components/callout/Form*.tsx, the form builder in AddPostModal",
-      "gain": "A question set people answer on a post, with admin-only or member-visible responses",
-      "watchFor": [
-        "CalloutFormBox",
-        "CalloutFormFillIn",
-        "CalloutFormOwnResponses",
-        "CalloutFormResponsesTable",
-        "FormSettingsDialog"
-      ]
-    },
-    {
       "name": "Memo signing",
       "ours": "src/app/components/callout (memo framing)",
       "gain": "A callout people sign rather than comment on",
