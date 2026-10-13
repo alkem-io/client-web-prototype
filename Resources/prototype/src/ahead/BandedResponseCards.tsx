@@ -18,9 +18,10 @@
  *     `text-foreground` and the author in `text-muted-foreground`. The strip
  *     and the picture make the label read as separate from the preview, so
  *     it never competes with a memo's own headings (option G in the mockup).
- *   · The memo preview is drawn smaller and in grey, as a thumbnail of the
- *     memo, and cut cleanly by the strip: no fade mask (CRD's
- *     `CroppedMarkdown` fades the bottom; this uses `MarkdownContent`).
+ *   · The memo preview is compact and dark (headings at card-title size,
+ *     text at caption size, no blank row above the first heading) and is cut
+ *     cleanly by the strip: no fade mask (CRD's `CroppedMarkdown` fades the
+ *     bottom; this uses `MarkdownContent`).
  *   · The memo's signed-copies button sits in the band as a plain ghost button
  *     instead of white-on-blue.
  *   · The hover wash (`bg-primary/40` + "Open …" button) is unchanged, but
@@ -48,6 +49,15 @@ import { cn } from '@/crd/lib/utils';
 import { Button } from '@/crd/primitives/button';
 import { MarkdownContent } from '@/crd/components/common/MarkdownContent';
 import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
+
+/** Compact, dark memo text for the preview. `!` because CRD's own classes set these too. */
+const MEMO_PREVIEW_CLASSES = cn(
+  '[&>*:first-child]:mt-0!',
+  '[&_h1]:text-card-title! [&_h2]:text-card-title! [&_h3]:text-card-title! [&_h4]:text-card-title!',
+  '[&_h1]:mt-3! [&_h2]:mt-3! [&_h3]:mt-3! [&_h1]:mb-1! [&_h2]:mb-1! [&_h3]:mb-1!',
+  '[&_p]:text-caption! [&_li]:text-caption! [&_p]:text-foreground! [&_li]:text-foreground!',
+  '[&_p]:mb-2! [&_ul]:mb-2! [&_ol]:mb-2!'
+);
 
 /** The solid title band — the one thing this file changes. */
 function ResponseCardBand({
@@ -142,13 +152,12 @@ export function BandedMemoCard({
         className="absolute inset-0 z-0 w-full cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         onClick={onClick}
       />
-      <div className="pointer-events-none w-full h-full overflow-hidden p-3.5">
+      <div className="pointer-events-none w-full h-full overflow-hidden p-4">
         {markdownContent ? (
-          // A thumbnail of the memo: drawn at 72% and in grey, so the label
-          // strip below is the card's main text.
-          <div className="w-[139%] origin-top-left scale-[0.72] text-muted-foreground [&_*]:text-muted-foreground!">
-            <MarkdownContent content={markdownContent} />
-          </div>
+          // The memo at a compact size, in normal dark text: headings at card
+          // title size, body text at caption size, and no top margin on the
+          // first element (production's h2 margin left a blank row).
+          <MarkdownContent content={markdownContent} className={MEMO_PREVIEW_CLASSES} />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <StickyNote className="w-8 h-8 text-muted-foreground/40" aria-hidden="true" />
