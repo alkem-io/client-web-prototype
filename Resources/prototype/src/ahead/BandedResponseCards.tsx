@@ -17,7 +17,13 @@
  *     instead of white-on-blue.
  *   · The hover wash (`bg-primary/40` + "Open …" button) is unchanged, but
  *     sits under the band, so the title stays readable while hovering.
- *   · Card sizes, props and behaviour are otherwise identical to production's.
+ *   · Title and author use the Post response card's styles (`text-card-title`,
+ *     `text-caption`), not the 10px letter-spaced `text-badge` the fade used.
+ *   · All three cards are a fixed 200px tall. Production's whiteboard card
+ *     takes its height from the image, so on wide screens it outgrows the
+ *     collapsed grid's 220px window and the bottom of the card, now the title
+ *     band, is cut off.
+ *   · Props and behaviour are otherwise identical to production's.
  *
  * WHY IT IS HERE
  * The footer is not a slot on any of the three cards, so there is no way to
@@ -42,8 +48,8 @@ function ResponseCardBand({ title, author, children }: { title: string; author?:
       className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 border-t border-border bg-card px-3 py-2.5"
     >
       <div className="min-w-0">
-        <p className="truncate text-caption font-semibold text-foreground">{title}</p>
-        {author && <p className="truncate text-badge text-muted-foreground">{author}</p>}
+        <p className="truncate text-card-title text-foreground">{title}</p>
+        {author && <p className="truncate text-caption text-muted-foreground">{author}</p>}
       </div>
       {children}
     </div>
@@ -92,7 +98,7 @@ export function BandedMemoCard({
   return (
     <div
       className={cn(
-        'group/memo relative w-full rounded-lg overflow-hidden border border-border bg-card min-h-[180px] hover:ring-2 hover:ring-primary/50 transition-all',
+        'group/memo relative w-full rounded-lg overflow-hidden border border-border bg-card h-[200px] hover:ring-2 hover:ring-primary/50 transition-all',
         className
       )}
     >
@@ -147,7 +153,7 @@ export function BandedWhiteboardCard({ title, previewUrl, author, onClick, class
     <button
       type="button"
       className={cn(
-        'group/wb relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 min-h-[200px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left',
+        'group/wb relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 h-[200px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left',
         className
       )}
       onClick={onClick}
@@ -156,10 +162,10 @@ export function BandedWhiteboardCard({ title, previewUrl, author, onClick, class
         <img
           src={previewUrl}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover/wb:scale-105"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/wb:scale-105"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center">
           <Presentation className="w-8 h-8 text-muted-foreground/40" aria-hidden="true" />
         </div>
       )}
@@ -198,7 +204,7 @@ export function BandedDocumentCard({
     <button
       type="button"
       className={cn(
-        'group/doc relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 min-h-[200px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left',
+        'group/doc relative w-full rounded-lg overflow-hidden border border-border bg-muted/30 h-[200px] cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left',
         className
       )}
       onClick={onClick}
