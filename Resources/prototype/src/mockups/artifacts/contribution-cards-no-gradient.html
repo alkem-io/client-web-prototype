@@ -143,6 +143,35 @@ svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColo
 .after ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; }
 .after b { color: var(--ink); font-weight: 600; }
 
+
+/* ---------- round 2: label options ---------- */
+:root { --av-a: #2c7a6f; --av-b: #7a5c99; --av-c: #3b6e8f; }
+.round { margin-top: 56px; display: grid; gap: 14px; max-width: 72ch; }
+.round h2 { font-size: clamp(22px, 3vw, 28px); line-height: 1.2; font-weight: 700; letter-spacing: -0.015em; }
+.round p { color: var(--ink-soft); font-size: 15.5px; }
+.round b { color: var(--ink); font-weight: 600; }
+.verdict { justify-self: start; font-size: 12.5px; font-weight: 500; border-radius: 4px; padding: 3px 8px; background: var(--rec-soft); color: var(--rec); }
+.opt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; min-width: 0; }
+.mcard { position: relative; height: 200px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); color: var(--foreground); box-shadow: var(--shadow); }
+.mprev { padding: 16px; display: grid; gap: 8px; align-content: start; }
+.mprev h4 { margin: 0; font-size: 19px; line-height: 1.25; font-weight: 600; }
+.mprev h5 { margin: 0; font-size: 16.5px; line-height: 1.25; font-weight: 600; }
+.mprev ol, .mprev ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 13.5px; color: var(--muted-foreground); }
+.mprev .box { display: inline-block; width: 11px; height: 11px; border: 1px solid var(--muted-foreground); border-radius: 2px; margin-right: 6px; vertical-align: -1px; opacity: 0.6; }
+.thumb .mprev { padding: 14px; gap: 5px; }
+.thumb .mprev h4 { font-size: 14px; }
+.thumb .mprev h5 { font-size: 12.5px; }
+.thumb .mprev ol, .thumb .mprev ul { font-size: 11px; gap: 2px; padding-left: 16px; }
+.thumb .mprev h4, .thumb .mprev h5 { color: var(--muted-foreground); }
+.mband { position: absolute; inset-inline: 0; bottom: 0; display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--card); border-top: 1px solid var(--border); }
+.mband.tint { background: var(--muted); border-top-color: var(--muted); }
+.ticon { width: 30px; height: 30px; border-radius: 6px; display: grid; place-items: center; background: var(--muted); color: var(--muted-foreground); flex-shrink: 0; font-size: 15px; }
+.mband.tint .ticon { background: var(--card); }
+.mmeta { min-width: 0; display: grid; gap: 2px; }
+.mt { font-size: 14px; line-height: 1.3; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ma { font-size: 12px; line-height: 1.4; color: var(--muted-foreground); display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; }
+.pav { width: 16px; height: 16px; border-radius: 999px; display: grid; place-items: center; color: #ffffff; font-size: 8.5px; font-weight: 600; flex-shrink: 0; }
+
 @media (max-width: 760px) {
   .row { grid-template-columns: minmax(0, 1fr); gap: 22px; }
 }
@@ -298,6 +327,59 @@ svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColo
           </div>
         </div>
       </div>
+    </section>
+  </div>
+
+  <section class="round" aria-labelledby="t-round2">
+    <span class="eyebrow">Round 2 · 13 October</span>
+    <h2 id="t-round2">Making the label stand apart from the memo</h2>
+    <p>Built in the prototype, the solid band works, but on memos <b>the label and the memo's own headings use nearly the same type</b>, so they read as one block. Four ways to pull them apart, on the same three memos, with today's version first for comparison.</p>
+  </section>
+  <div class="rows">
+    <section class="row" aria-labelledby="t-optA">
+      <div class="note">
+        <span class="tag">Option A</span>
+        <h2 id="t-optA">As built now</h2>
+        <p>White band, title and author in the Post card's styles. The memo's own headings are as big and dark as the label, so the two run together.</p>
+        
+      </div>
+      <div class="opt-grid"><div class="mcard" role="img" aria-label="Memo card: Site Assessment Procedure by Tom Bradley"><div class="mprev" aria-hidden="true"><h4>Site Assessment Steps</h4><ol><li>Initial desk review</li><li>Solar irradiance analysis</li><li>Structural assessment</li><li>Grid connection check</li></ol></div><div class="mband"><div class="mmeta"><span class="mt">Site Assessment Procedure</span><span class="ma">Tom Bradley</span></div></div></div><div class="mcard" role="img" aria-label="Memo card: Safety Protocols for Installation by David Miller"><div class="mprev" aria-hidden="true"><h4>Safety Protocols</h4><h5>Before Work Begins</h5><ul><li><span class="box"></span>Risk assessment complete</li><li><span class="box"></span>PPE checked</li></ul></div><div class="mband"><div class="mmeta"><span class="mt">Safety Protocols for Installation</span><span class="ma">David Miller</span></div></div></div><div class="mcard" role="img" aria-label="Memo card: Commissioning Checklist by Sarah Chen"><div class="mprev" aria-hidden="true"><h4>Commissioning Steps</h4><ol><li>Visual inspection</li><li>Electrical testing</li><li>Performance verification</li></ol></div><div class="mband"><div class="mmeta"><span class="mt">Commissioning Checklist</span><span class="ma">Sarah Chen</span></div></div></div></div>
+    </section>
+    <section class="row" aria-labelledby="t-optB">
+      <div class="note">
+        <span class="tag">Option B</span>
+        <h2 id="t-optB">Tinted label strip</h2>
+        <p>The band turns light grey, like a label stuck on the card. The colour change alone separates it from the memo text.</p>
+        
+      </div>
+      <div class="opt-grid"><div class="mcard" role="img" aria-label="Memo card: Site Assessment Procedure by Tom Bradley"><div class="mprev" aria-hidden="true"><h4>Site Assessment Steps</h4><ol><li>Initial desk review</li><li>Solar irradiance analysis</li><li>Structural assessment</li><li>Grid connection check</li></ol></div><div class="mband tint"><div class="mmeta"><span class="mt">Site Assessment Procedure</span><span class="ma">Tom Bradley</span></div></div></div><div class="mcard" role="img" aria-label="Memo card: Safety Protocols for Installation by David Miller"><div class="mprev" aria-hidden="true"><h4>Safety Protocols</h4><h5>Before Work Begins</h5><ul><li><span class="box"></span>Risk assessment complete</li><li><span class="box"></span>PPE checked</li></ul></div><div class="mband tint"><div class="mmeta"><span class="mt">Safety Protocols for Installation</span><span class="ma">David Miller</span></div></div></div><div class="mcard" role="img" aria-label="Memo card: Commissioning Checklist by Sarah Chen"><div class="mprev" aria-hidden="true"><h4>Commissioning Steps</h4><ol><li>Visual inspection</li><li>Electrical testing</li><li>Performance verification</li></ol></div><div class="mband tint"><div class="mmeta"><span class="mt">Commissioning Checklist</span><span class="ma">Sarah Chen</span></div></div></div></div>
+    </section>
+    <section class="row" aria-labelledby="t-optC">
+      <div class="note">
+        <span class="tag">Option C</span>
+        <h2 id="t-optC">Icon and avatar</h2>
+        <p>A small memo icon on the left and the author's avatar, the way a Post card shows its author. The label gets its own shape instead of being just more text.</p>
+        
+      </div>
+      <div class="opt-grid"><div class="mcard" role="img" aria-label="Memo card: Site Assessment Procedure by Tom Bradley"><div class="mprev" aria-hidden="true"><h4>Site Assessment Steps</h4><ol><li>Initial desk review</li><li>Solar irradiance analysis</li><li>Structural assessment</li><li>Grid connection check</li></ol></div><div class="mband"><span class="ticon" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></svg></span><div class="mmeta"><span class="mt">Site Assessment Procedure</span><span class="ma"><span class="pav" style="background:var(--av-a)">TB</span>Tom Bradley</span></div></div></div><div class="mcard" role="img" aria-label="Memo card: Safety Protocols for Installation by David Miller"><div class="mprev" aria-hidden="true"><h4>Safety Protocols</h4><h5>Before Work Begins</h5><ul><li><span class="box"></span>Risk assessment complete</li><li><span class="box"></span>PPE checked</li></ul></div><div class="mband"><span class="ticon" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></svg></span><div class="mmeta"><span class="mt">Safety Protocols for Installation</span><span class="ma"><span class="pav" style="background:var(--av-b)">DM</span>David Miller</span></div></div></div><div class="mcard" role="img" aria-label="Memo card: Commissioning Checklist by Sarah Chen"><div class="mprev" aria-hidden="true"><h4>Commissioning Steps</h4><ol><li>Visual inspection</li><li>Electrical testing</li><li>Performance verification</li></ol></div><div class="mband"><span class="ticon" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></svg></span><div class="mmeta"><span class="mt">Commissioning Checklist</span><span class="ma"><span class="pav" style="background:var(--av-c)">SC</span>Sarah Chen</span></div></div></div></div>
+    </section>
+    <section class="row" aria-labelledby="t-optD">
+      <div class="note">
+        <span class="tag">Option D</span>
+        <h2 id="t-optD">Preview as a thumbnail</h2>
+        <p>The memo text shrinks and turns grey, so it reads as a picture of the memo. The label is then clearly the main text on the card.</p>
+        
+      </div>
+      <div class="opt-grid"><div class="mcard thumb" role="img" aria-label="Memo card: Site Assessment Procedure by Tom Bradley"><div class="mprev" aria-hidden="true"><h4>Site Assessment Steps</h4><ol><li>Initial desk review</li><li>Solar irradiance analysis</li><li>Structural assessment</li><li>Grid connection check</li></ol></div><div class="mband"><div class="mmeta"><span class="mt">Site Assessment Procedure</span><span class="ma">Tom Bradley</span></div></div></div><div class="mcard thumb" role="img" aria-label="Memo card: Safety Protocols for Installation by David Miller"><div class="mprev" aria-hidden="true"><h4>Safety Protocols</h4><h5>Before Work Begins</h5><ul><li><span class="box"></span>Risk assessment complete</li><li><span class="box"></span>PPE checked</li></ul></div><div class="mband"><div class="mmeta"><span class="mt">Safety Protocols for Installation</span><span class="ma">David Miller</span></div></div></div><div class="mcard thumb" role="img" aria-label="Memo card: Commissioning Checklist by Sarah Chen"><div class="mprev" aria-hidden="true"><h4>Commissioning Steps</h4><ol><li>Visual inspection</li><li>Electrical testing</li><li>Performance verification</li></ol></div><div class="mband"><div class="mmeta"><span class="mt">Commissioning Checklist</span><span class="ma">Sarah Chen</span></div></div></div></div>
+    </section>
+    <section class="row" aria-labelledby="t-optE">
+      <div class="note">
+        <span class="tag">Option E</span>
+        <h2 id="t-optE">All three together</h2>
+        <p>Grey strip, icon and avatar, smaller preview. The clearest split between "what's in it" and "what it is", and close to how whiteboard and document cards already work: picture on top, label below.</p>
+        <span class="verdict">Recommended</span>
+      </div>
+      <div class="opt-grid"><div class="mcard thumb" role="img" aria-label="Memo card: Site Assessment Procedure by Tom Bradley"><div class="mprev" aria-hidden="true"><h4>Site Assessment Steps</h4><ol><li>Initial desk review</li><li>Solar irradiance analysis</li><li>Structural assessment</li><li>Grid connection check</li></ol></div><div class="mband tint"><span class="ticon" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></svg></span><div class="mmeta"><span class="mt">Site Assessment Procedure</span><span class="ma"><span class="pav" style="background:var(--av-a)">TB</span>Tom Bradley</span></div></div></div><div class="mcard thumb" role="img" aria-label="Memo card: Safety Protocols for Installation by David Miller"><div class="mprev" aria-hidden="true"><h4>Safety Protocols</h4><h5>Before Work Begins</h5><ul><li><span class="box"></span>Risk assessment complete</li><li><span class="box"></span>PPE checked</li></ul></div><div class="mband tint"><span class="ticon" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></svg></span><div class="mmeta"><span class="mt">Safety Protocols for Installation</span><span class="ma"><span class="pav" style="background:var(--av-b)">DM</span>David Miller</span></div></div></div><div class="mcard thumb" role="img" aria-label="Memo card: Commissioning Checklist by Sarah Chen"><div class="mprev" aria-hidden="true"><h4>Commissioning Steps</h4><ol><li>Visual inspection</li><li>Electrical testing</li><li>Performance verification</li></ol></div><div class="mband tint"><span class="ticon" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/></svg></span><div class="mmeta"><span class="mt">Commissioning Checklist</span><span class="ma"><span class="pav" style="background:var(--av-c)">SC</span>Sarah Chen</span></div></div></div></div>
     </section>
   </div>
 
