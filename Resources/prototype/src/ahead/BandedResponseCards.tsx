@@ -18,8 +18,9 @@
  *     `text-foreground` and the author in `text-muted-foreground`. The strip
  *     and the picture make the label read as separate from the preview, so
  *     it never competes with a memo's own headings (option G in the mockup).
- *   · The memo preview is compact and dark (headings at card-title size,
- *     text at caption size, no blank row above the first heading) and is cut
+ *   · The memo preview is compact: headings dark at card-title size, body
+ *     text grey at caption size (the same two colours as a post response's
+ *     title and description), no blank row above the first heading. It is cut
  *     cleanly by the strip: no fade mask (CRD's `CroppedMarkdown` fades the
  *     bottom; this uses `MarkdownContent`).
  *   · The memo's signed-copies button sits in the band as a plain ghost button
@@ -63,12 +64,13 @@ import { CollapsibleTagList } from '@/crd/components/common/CollapsibleTagList';
 import { MarkdownContent } from '@/crd/components/common/MarkdownContent';
 import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
 
-/** Compact, dark memo text for the preview. `!` because CRD's own classes set these too. */
+/** Compact memo text for the preview: dark headings, grey body, like a post response. `!` because CRD's own classes set these too. */
 const MEMO_PREVIEW_CLASSES = cn(
   '[&>*:first-child]:mt-0!',
   '[&_h1]:text-card-title! [&_h2]:text-card-title! [&_h3]:text-card-title! [&_h4]:text-card-title!',
   '[&_h1]:mt-3! [&_h2]:mt-3! [&_h3]:mt-3! [&_h1]:mb-1! [&_h2]:mb-1! [&_h3]:mb-1!',
-  '[&_p]:text-caption! [&_li]:text-caption! [&_p]:text-foreground! [&_li]:text-foreground!',
+  '[&_h1]:text-foreground! [&_h2]:text-foreground! [&_h3]:text-foreground! [&_h4]:text-foreground!',
+  '[&_p]:text-caption! [&_li]:text-caption! [&_p]:text-muted-foreground! [&_li]:text-muted-foreground!',
   '[&_p]:mb-2! [&_ul]:mb-2! [&_ol]:mb-2!'
 );
 
@@ -174,9 +176,9 @@ export function BandedMemoCard({
       />
       <div className="pointer-events-none w-full h-full overflow-hidden p-4">
         {markdownContent ? (
-          // The memo at a compact size, in normal dark text: headings at card
-          // title size, body text at caption size, and no top margin on the
-          // first element (production's h2 margin left a blank row).
+          // The memo at a compact size: dark headings at card-title size, grey
+          // body text at caption size, and no top margin on the first element
+          // (production's h2 margin left a blank row).
           <MarkdownContent content={markdownContent} className={MEMO_PREVIEW_CLASSES} />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
