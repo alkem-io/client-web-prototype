@@ -11,11 +11,13 @@
  * replaces the fade with the design in
  * `src/mockups/artifacts/contribution-cards-no-gradient.html`:
  *
- *   · A solid label strip along the bottom in `bg-muted`: the author's
+ *   · A label strip along the bottom in the platform background
+ *     (`bg-background`) with a `border-t`, since that colour is barely
+ *     darker than the white card and the line is what separates it: the author's
  *     profile picture (initials when there is none), then the title in
  *     `text-foreground` and the author in `text-muted-foreground`. The strip
  *     and the picture make the label read as separate from the preview, so
- *     it never competes with a memo's own headings (option F in the mockup).
+ *     it never competes with a memo's own headings (option G in the mockup).
  *   · The memo preview is drawn smaller and in grey, as a thumbnail of the
  *     memo, and cut cleanly by the strip: no fade mask (CRD's
  *     `CroppedMarkdown` fades the bottom; this uses `MarkdownContent`).
@@ -68,12 +70,12 @@ function ResponseCardBand({
   return (
     <div
       data-slot="response-card-band"
-      className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center gap-2.5 bg-muted px-3 py-2.5"
+      className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center gap-2.5 border-t border-border bg-background px-3 py-2.5"
     >
       {author && (
         <Avatar className="size-8">
           {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} alt="" />}
-          <AvatarFallback className="bg-card text-badge text-muted-foreground">{initials}</AvatarFallback>
+          <AvatarFallback className="bg-muted text-badge text-muted-foreground">{initials}</AvatarFallback>
         </Avatar>
       )}
       <div className="min-w-0 flex-1">
