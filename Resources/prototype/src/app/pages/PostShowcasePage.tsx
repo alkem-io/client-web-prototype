@@ -1,8 +1,7 @@
 import { PostCard, type PostCardData } from '@/app/components/space/PostCard';
 import { ContributionGrid } from '@/app/components/contribution/ContributionGrid';
-import { ContributionWhiteboardCard } from '@/crd/components/contribution/ContributionWhiteboardCard';
+import { BandedMemoCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
 import { ContributionPostCard } from '@/crd/components/contribution/ContributionPostCard';
-import { ContributionMemoCard } from '@/crd/components/contribution/ContributionMemoCard';
 import { ContributionAddCard } from '@/crd/components/contribution/ContributionAddCard';
 
 import wb1 from '@/app/assets/wb1.png';
@@ -231,37 +230,37 @@ Please join us for the strategy session on Thursday at 2 PM. We'd love your feed
               </div>
 
               <ContributionGrid totalCount={6} onAddClick={() => {}} addLabel="+ Add Whiteboard">
-                <ContributionWhiteboardCard
+                <BandedWhiteboardCard
                   title="Public Library Solar Roof"
                   author="Sarah Chen"
                   previewUrl={wb1}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
-                <ContributionWhiteboardCard
+                <BandedWhiteboardCard
                   title="Parking Lot Canopies"
                   author="David Miller"
                   previewUrl={wb2}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
-                <ContributionWhiteboardCard
+                <BandedWhiteboardCard
                   title="School Microgrids"
                   author="Elena Rodriguez"
                   previewUrl={wb3}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
-                <ContributionWhiteboardCard
+                <BandedWhiteboardCard
                   title="Bus Stop Solar Stations"
                   author="Marc Johnson"
                   previewUrl={wb4}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
-                <ContributionWhiteboardCard
+                <BandedWhiteboardCard
                   title="Town Hall Retrofit"
                   author="John Smith"
                   previewUrl={wb1}
                   onClick={() => console.log('Whiteboard clicked')}
                 />
-                <ContributionWhiteboardCard
+                <BandedWhiteboardCard
                   title="Park Lighting"
                   author="Emily Davis"
                   previewUrl={wb2}

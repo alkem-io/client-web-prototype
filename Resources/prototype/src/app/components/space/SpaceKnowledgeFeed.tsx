@@ -10,9 +10,8 @@ import { MemoDialog } from "@/app/components/memo/MemoDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
-import { ContributionWhiteboardCard } from "@/crd/components/contribution/ContributionWhiteboardCard";
+import { BandedMemoCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
 import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
-import { ContributionMemoCard } from "@/crd/components/contribution/ContributionMemoCard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
@@ -940,22 +939,22 @@ export function SpaceKnowledgeFeed() {
           layout: 'grid',
           total: 4,
           cards: [
-            <ContributionMemoCard key="c1"
+            <BandedMemoCard key="c1"
               title="Site Assessment Procedure"
               author="Tom Bradley"
               markdownContent={"## Site Assessment Steps\n\n1. Initial desk review\n2. Solar irradiance analysis\n3. Structural assessment\n4. Grid connection feasibility\n5. Environmental screening\n\n### Required Equipment\n- Drone for aerial survey\n- Irradiance meter\n- Structural testing kit"}
             />,
-            <ContributionMemoCard key="c2"
+            <BandedMemoCard key="c2"
               title="Safety Protocols for Installation"
               author="David Miller"
               markdownContent={"## Safety Protocols\n\n### Before Work Begins\n- [ ] Risk assessment complete\n- [ ] Permits obtained\n- [ ] Team briefing done\n\n### During Installation\n- Hard hats mandatory\n- Harness required above 2m\n- Electrical isolation verified\n\n### Post-Installation\n- Final inspection checklist\n- Commissioning tests"}
             />,
-            <ContributionMemoCard key="c3"
+            <BandedMemoCard key="c3"
               title="Commissioning Checklist"
               author="Sarah Chen"
               markdownContent={"## Commissioning Steps\n\n1. Visual inspection\n2. Electrical testing\n3. Performance verification\n4. Documentation\n5. Handover\n\n### Sign-Off\n- Engineer approval\n- Client acceptance"}
             />,
-            <ContributionMemoCard key="c4"
+            <BandedMemoCard key="c4"
               title="Maintenance Schedule Template"
               author="Alex Contributor"
               markdownContent={"## Quarterly Maintenance\n\n- Panel cleaning\n- Inverter check\n- Wiring inspection\n- Performance data review\n\n## Annual Maintenance\n- Full system audit\n- Thermal imaging\n- Degradation assessment"}
@@ -969,32 +968,32 @@ export function SpaceKnowledgeFeed() {
           layout: 'grid',
           total: 6,
           cards: [
-            <ContributionWhiteboardCard key="c1"
+            <BandedWhiteboardCard key="c1"
               title="Rooftop Array Design A"
               author="David Miller"
               previewUrl={wb1}
             />,
-            <ContributionWhiteboardCard key="c2"
+            <BandedWhiteboardCard key="c2"
               title="Ground-Mount Concept"
               author="Tom Bradley"
               previewUrl={wb2}
             />,
-            <ContributionWhiteboardCard key="c3"
+            <BandedWhiteboardCard key="c3"
               title="Carpark Canopy Layout"
               author="Alex Contributor"
               previewUrl={wb3}
             />,
-            <ContributionWhiteboardCard key="c4"
+            <BandedWhiteboardCard key="c4"
               title="Facade Integration Sketch"
               author="Sarah Chen"
               previewUrl={wb4}
             />,
-            <ContributionWhiteboardCard key="c5"
+            <BandedWhiteboardCard key="c5"
               title="Community Centre Retrofit"
               author="Elena Rodriguez"
               previewUrl={wb1}
             />,
-            <ContributionWhiteboardCard key="c6"
+            <BandedWhiteboardCard key="c6"
               title="Sports Centre Array"
               author="Michael Chang"
               previewUrl={wb3}

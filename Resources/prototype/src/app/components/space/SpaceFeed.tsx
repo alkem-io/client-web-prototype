@@ -12,9 +12,8 @@ import { Card, CardContent } from "@/crd/primitives/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
-import { ContributionWhiteboardCard } from "@/crd/components/contribution/ContributionWhiteboardCard";
+import { BandedDocumentCard, BandedMemoCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
 import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
-import { ContributionMemoCard } from "@/crd/components/contribution/ContributionMemoCard";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
@@ -33,7 +32,7 @@ const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=f
 
 interface PostWithTags extends PostCardData {
   tags: string[];
-  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'tasks';
+  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'documents' | 'tasks';
   /** When set, the post body embeds one or more rich subspace cards (What / Why / Who). */
   embeddedSubspaces?: MockRichSubspace[];
 }
@@ -275,6 +274,21 @@ const INITIAL_POSTS: PostWithTags[] = [
       timestamp: "1 day ago",
       commentCount: 12
     },
+    // 5b. Post with a call for documents
+    {
+      id: "space-documents",
+      type: "text",
+      tags: ["Policy", "Budget"],
+      contributionType: "documents",
+      author: {
+        name: "Elena Rodriguez",
+        avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      },
+      title: "Share Your Pilot Paperwork",
+      snippet: "Upload the budgets, specifications and site assessments behind your pilot so other districts can reuse them. Edit them together right here, no need to email files around.",
+      timestamp: "2 days ago",
+      commentCount: 4
+    },
     // 6. Sprint board — tasks response type
     {
       id: "space-tasks",
@@ -444,20 +458,52 @@ export function SpaceFeed() {
           layout: 'grid',
           total: 3,
           cards: [
-            <ContributionMemoCard key="c1"
+            <BandedMemoCard key="c1"
               title="Commercial Building Audit Checklist"
               author="David Miller"
               markdownContent={"## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"}
             />,
-            <ContributionMemoCard key="c2"
+            <BandedMemoCard key="c2"
               title="Residential Audit Quick Guide"
               author="Sarah Chen"
               markdownContent={"## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"}
             />,
-            <ContributionMemoCard key="c3"
+            <BandedMemoCard key="c3"
               title="Post-Audit Reporting Template"
               author="Alex Contributor"
               markdownContent={"## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"}
+            />
+          ]
+        };
+      case 'documents':
+        return {
+          typeLabel: 'Documents',
+          addLabel: '+ Add Document',
+          layout: 'grid',
+          total: 4,
+          cards: [
+            <BandedDocumentCard key="c1"
+              title="Q2 Budget Report 2026"
+              author="Elena Rodriguez"
+              documentType="spreadsheet"
+              previewUrl="/document-previews/q2-budget-report.svg"
+            />,
+            <BandedDocumentCard key="c2"
+              title="Technical Specification"
+              author="Michael Chang"
+              documentType="text"
+              previewUrl="/document-previews/technical-specification.svg"
+            />,
+            <BandedDocumentCard key="c3"
+              title="Site Assessment: North District"
+              author="Alex Torres"
+              documentType="presentation"
+              previewUrl="/document-previews/site-assessment.svg"
+            />,
+            <BandedDocumentCard key="c4"
+              title="Procurement Guidelines"
+              author="David Miller"
+              documentType="pdf"
             />
           ]
         };
@@ -468,32 +514,32 @@ export function SpaceFeed() {
           layout: 'grid',
           total: 6,
           cards: [
-            <ContributionWhiteboardCard key="c1"
+            <BandedWhiteboardCard key="c1"
               title="Public Library Solar Roof"
               author="Sarah Chen"
               previewUrl={wb1}
             />,
-            <ContributionWhiteboardCard key="c2"
+            <BandedWhiteboardCard key="c2"
               title="Parking Lot Canopies"
               author="David Miller"
               previewUrl={wb2}
             />,
-            <ContributionWhiteboardCard key="c3"
+            <BandedWhiteboardCard key="c3"
               title="School Microgrids"
               author="Elena Rodriguez"
               previewUrl={wb3}
             />,
-            <ContributionWhiteboardCard key="c4"
+            <BandedWhiteboardCard key="c4"
               title="Bus Stop Solar Stations"
               author="Michael Chang"
               previewUrl={wb4}
             />,
-            <ContributionWhiteboardCard key="c5"
+            <BandedWhiteboardCard key="c5"
               title="Town Hall Retrofit"
               author="James Wilson"
               previewUrl={wb1}
             />,
-            <ContributionWhiteboardCard key="c6"
+            <BandedWhiteboardCard key="c6"
               title="Park Lighting Solar"
               author="Lisa Park"
               previewUrl={wb2}
