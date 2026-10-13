@@ -839,46 +839,75 @@ export function SpaceKnowledgeFeed() {
         return {
           typeLabel: 'Links & Files',
           addLabel: '+ Add Link or File',
-          layout: 'list',
+          layout: 'grid',
           total: 9,
           cards: [
             <ContributionLinkCard key="c1"
               title="IEEE Smart Grid Standards"
+              url="https://standards.ieee.org"
+              author="Tom Bradley"
+              authorAvatarUrl={demoAuthorAvatar("Tom Bradley")}
               description="Comprehensive standards for smart grid interoperability and communication protocols"
             />,
             <ContributionLinkCard key="c2"
               title="Energy Transition Toolkit.pdf"
+              fileInfo="PDF · 5.1 MB"
+              fileType="pdf"
+              author="Elena Rodriguez"
+              authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
               description="A practical guide for municipalities planning renewable transitions"
               isFile={true}
             />,
             <ContributionLinkCard key="c3"
               title="EU Clean Energy Package"
+              url="https://energy.ec.europa.eu"
+              author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               description="European Commission clean energy legislative package overview"
             />,
             <ContributionLinkCard key="c-l4"
               title="Municipal Energy Benchmarking Tool"
+              url="https://www.cbs.nl"
+              author="Michael Chang"
+              authorAvatarUrl={demoAuthorAvatar("Michael Chang")}
               description="Compare consumption across comparable municipalities using open CBS data"
             />,
             <ContributionLinkCard key="c-l5"
               title="Retrofit Cost Database 2026.xlsx"
+              fileInfo="Spreadsheet · 860 KB"
+              fileType="spreadsheet"
+              author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               description="Per-measure cost ranges collected from 340 completed projects"
               isFile={true}
             />,
             <ContributionLinkCard key="c-l6"
               title="TenneT Grid Capacity Map"
+              url="https://www.tennet.eu"
+              author="James Wilson"
+              authorAvatarUrl={demoAuthorAvatar("James Wilson")}
               description="Live view of available connection capacity by postcode area"
             />,
             <ContributionLinkCard key="c-l7"
               title="Heat Transition Standard (Dutch)"
+              url="https://www.rijksoverheid.nl"
+              author="Lisa Park"
+              authorAvatarUrl={demoAuthorAvatar("Lisa Park")}
               description="The national standard municipalities must follow when drafting heat plans"
             />,
             <ContributionLinkCard key="c-l8"
               title="Community Energy Legal Templates.zip"
+              fileInfo="ZIP · 1.2 MB"
+              author="Alex Contributor"
+              authorAvatarUrl={demoAuthorAvatar("Alex Contributor")}
               description="Cooperative statutes, member agreements and PPA templates"
               isFile={true}
             />,
             <ContributionLinkCard key="c-l9"
               title="IEA District Heating Case Studies"
+              url="https://www.iea.org"
+              author="Emily Davis"
+              authorAvatarUrl={demoAuthorAvatar("Emily Davis")}
               description="Fifteen European district heating retrofits with outcome data"
             />
           ]

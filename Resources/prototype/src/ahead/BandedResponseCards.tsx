@@ -37,6 +37,12 @@
  *     "author · date" in `text-caption text-muted-foreground`. Production's
  *     `ContributionPostCard` puts the title alone on top and a 20px avatar
  *     inline with the name below it.
+ *   · Links and files become compact tiles in the same grid (`BandedLinkTile`,
+ *     concept 2 in round 3 of the mockup) instead of production's
+ *     `ContributionLinkList` rows: the site's own icon (or the file type) and
+ *     the name in bold, the address or file size in grey, the description,
+ *     then who added it. Production's list shows neither the site icon nor
+ *     the person who added the link; both need confirming with development.
  *   · Props and behaviour are otherwise identical to production's.
  *
  * WHY IT IS HERE
@@ -46,7 +52,7 @@
  * a name check cannot see that, so `npm run sync:crd` will not flag it; check
  * `grep bg-gradient-to-t src/crd/components/contribution` after each sync.
  */
-import { FileSignature, MessageSquare, Presentation, StickyNote } from 'lucide-react';
+import { FileArchive, FileSignature, Globe, MessageSquare, Presentation, StickyNote } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type CollaboraDocumentPreviewType, colorByType, iconByType } from '@/crd/lib/collaboraDocumentPreview';
@@ -368,6 +374,108 @@ export function BandedPostCard({
           </span>
         )}
       </div>
+    </div>
+  );
+}
+
+type BandedLinkTileProps = {
+  title: string;
+  description?: string;
+  /** Where it lives, in grey under the name: "standards.ieee.org", "PDF · 2.4 MB". */
+  source?: string;
+  /** A file rather than a website link. */
+  isFile?: boolean;
+  /** For files: draws the matching coloured type icon. Omit for archives and other files. */
+  fileType?: CollaboraDocumentPreviewType;
+  /** For links: the site's own icon. A globe shows when it is missing or fails. */
+  iconUrl?: string;
+  author?: string;
+  authorAvatarUrl?: string;
+  href?: string;
+  onClick?: () => void;
+  /** Extra row under the author, e.g. the prototype's reactions. */
+  footer?: ReactNode;
+  className?: string;
+};
+
+/** The icon square: the site's icon, the file type, or a fallback. */
+function LinkIcon({ isFile, fileType, iconUrl }: Pick<BandedLinkTileProps, 'isFile' | 'fileType' | 'iconUrl'>) {
+  const [failed, setFailed] = useState(false);
+  const box = 'size-8 shrink-0 rounded-md border border-border bg-background flex items-center justify-center overflow-hidden';
+  if (isFile) {
+    const Icon = fileType ? iconByType[fileType] : FileArchive;
+    return (
+      <span className={box} aria-hidden="true">
+        <Icon className={cn('size-4', fileType ? colorByType[fileType] : 'text-muted-foreground')} />
+      </span>
+    );
+  }
+  return (
+    <span className={box} aria-hidden="true">
+      {iconUrl && !failed ? (
+        <img src={iconUrl} alt="" className="size-5" onError={() => setFailed(true)} />
+      ) : (
+        <Globe className="size-4 text-muted-foreground" />
+      )}
+    </span>
+  );
+}
+
+/** A link or file response: a compact tile in the response grid. */
+export function BandedLinkTile({
+  title,
+  description,
+  source,
+  isFile,
+  fileType,
+  iconUrl,
+  author,
+  authorAvatarUrl,
+  href,
+  onClick,
+  footer,
+  className,
+}: BandedLinkTileProps) {
+  return (
+    <div
+      className={cn(
+        'group/link relative flex w-full flex-col gap-2.5 rounded-lg border border-border bg-card p-3.5 hover:bg-muted/50 transition-colors',
+        className
+      )}
+    >
+      <a
+        href={href ?? '#'}
+        target={href ? '_blank' : undefined}
+        rel={href ? 'noopener noreferrer' : undefined}
+        onClick={
+          onClick
+            ? (e) => {
+                e.preventDefault();
+                onClick();
+              }
+            : undefined
+        }
+        aria-label={title}
+        className="absolute inset-0 z-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      />
+      <div className="pointer-events-none flex min-w-0 items-center gap-2.5">
+        <LinkIcon isFile={isFile} fileType={fileType} iconUrl={iconUrl} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-card-title text-foreground">{title}</p>
+          {source && <p className="truncate text-caption text-muted-foreground">{source}</p>}
+        </div>
+      </div>
+      {description && <p className="pointer-events-none line-clamp-2 text-caption text-muted-foreground">{description}</p>}
+      {author && (
+        <div className="pointer-events-none mt-auto flex min-w-0 items-center gap-2 text-caption text-muted-foreground">
+          <Avatar className="size-5">
+            {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} alt="" />}
+            <AvatarFallback className="bg-muted text-badge text-muted-foreground">{initialsOf(author)}</AvatarFallback>
+          </Avatar>
+          <span className="truncate">{author}</span>
+        </div>
+      )}
+      {footer && <div className="relative z-10">{footer}</div>}
     </div>
   );
 }

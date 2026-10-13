@@ -384,20 +384,30 @@ export function SpaceFeed() {
         return {
           typeLabel: 'Links & Files',
           addLabel: '+ Add Link or File',
-          layout: 'list',
+          layout: 'grid',
           total: 3,
           cards: [
             <ContributionLinkCard key="c1"
               title="IEEE Smart Grid Standards"
+              url="https://standards.ieee.org"
+              author="Tom Bradley"
+              authorAvatarUrl={demoAuthorAvatar("Tom Bradley")}
               description="Comprehensive standards for smart grid interoperability"
             />,
             <ContributionLinkCard key="c2"
               title="Grid Modernisation Report 2026.pdf"
+              fileInfo="PDF · 2.4 MB"
+              fileType="pdf"
+              author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               description="Annual report on grid infrastructure upgrades"
               isFile={true}
             />,
             <ContributionLinkCard key="c3"
               title="Battery Storage Regulations EU"
+              url="https://energy.ec.europa.eu"
+              author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               description="European Commission energy storage regulatory framework"
             />
           ]
