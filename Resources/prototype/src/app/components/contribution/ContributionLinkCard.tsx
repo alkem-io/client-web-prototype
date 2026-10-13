@@ -1,19 +1,22 @@
 /**
- * A link or file response — `@/ahead/BandedResponseCards`' `BandedLinkTile`,
- * with the prototype's emoji reactions in its footer and edit / delete buttons
- * that appear on hover.
+ * A link or file response — `@/ahead/BandedResponseCards`' `BandedLinkCard`,
+ * with edit / delete buttons that appear on hover.
+ *
+ * The prototype's emoji reactions on links are not shown: the card has the
+ * same fixed size as memo and whiteboard cards, which have none either.
+ * `reactionId` and `reactionsEnabled` are still accepted so callers compile.
  *
  * Website links get the site's own icon from a public icon service, worked out
  * from `url`. That is a prototype shortcut: production would need to store or
  * fetch the icon itself.
  */
 import { Pencil, Trash2 } from 'lucide-react';
-import { ReactionBar } from '@/app/components/space/ReactionBar';
-import { BandedLinkTile } from '@/ahead/BandedResponseCards';
+import { BandedLinkCard } from '@/ahead/BandedResponseCards';
 import type { CollaboraDocumentPreviewType } from '@/crd/lib/collaboraDocumentPreview';
 
 type ContributionLinkCardProps = {
   title: string;
+  /** Accepted for call-site compatibility; the card shows the address instead. */
   description?: string;
   url?: string;
   isFile?: boolean;
@@ -40,15 +43,12 @@ const hostOf = (url?: string) => {
 
 export function ContributionLinkCard({
   title,
-  description,
   url,
   isFile,
   fileInfo,
   fileType,
   author,
   authorAvatarUrl,
-  reactionId,
-  reactionsEnabled = true,
   onClick,
   className,
 }: ContributionLinkCardProps) {
@@ -56,9 +56,8 @@ export function ContributionLinkCard({
 
   return (
     <div className="group/linkcard relative">
-      <BandedLinkTile
+      <BandedLinkCard
         title={title}
-        description={description}
         source={isFile ? fileInfo : host}
         isFile={isFile}
         fileType={fileType}
@@ -67,7 +66,6 @@ export function ContributionLinkCard({
         authorAvatarUrl={authorAvatarUrl}
         href={url}
         onClick={onClick}
-        footer={reactionsEnabled ? <ReactionBar id={reactionId ?? `link:${title}`} /> : undefined}
         className={className}
       />
       <div className="absolute right-2 top-2 z-10 flex items-center gap-1 rounded-md bg-card opacity-0 shadow-sm transition-opacity group-hover/linkcard:opacity-100 focus-within:opacity-100">
