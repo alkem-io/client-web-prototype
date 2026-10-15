@@ -12,9 +12,8 @@ import { Card, CardContent } from "@/crd/primitives/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
-import { ContributionWhiteboardCard } from "@/crd/components/contribution/ContributionWhiteboardCard";
-import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
-import { ContributionMemoCard } from "@/crd/components/contribution/ContributionMemoCard";
+import { BandedDocumentCard, BandedMemoCard, BandedPostCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
+import { demoAuthorAvatar } from '@/app/data/demoAuthorAvatars';
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
@@ -29,11 +28,11 @@ import { richSubspaceToSpaceCard, type MockRichSubspace } from "@/app/mappers/sp
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
 const wb2 = "https://images.unsplash.com/photo-1574359219611-a3031f074b2c?auto=format&fit=crop&q=80&w=1080";
 const wb3 = "https://images.unsplash.com/photo-1578401058525-35aaec0b4658?auto=format&fit=crop&q=80&w=1080";
-const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=format&fit=crop&q=80&w=1080";
+const wb4 = "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1080";
 
 interface PostWithTags extends PostCardData {
   tags: string[];
-  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'tasks';
+  contributionType?: 'links' | 'posts' | 'memos' | 'whiteboards' | 'documents' | 'tasks';
   /** When set, the post body embeds one or more rich subspace cards (What / Why / Who). */
   embeddedSubspaces?: MockRichSubspace[];
 }
@@ -275,6 +274,21 @@ const INITIAL_POSTS: PostWithTags[] = [
       timestamp: "1 day ago",
       commentCount: 12
     },
+    // 5b. Post with a call for documents
+    {
+      id: "space-documents",
+      type: "text",
+      tags: ["Policy", "Budget"],
+      contributionType: "documents",
+      author: {
+        name: "Elena Rodriguez",
+        avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+      },
+      title: "Share Your Pilot Paperwork",
+      snippet: "Upload the budgets, specifications and site assessments behind your pilot so other districts can reuse them. Edit them together right here, no need to email files around.",
+      timestamp: "2 days ago",
+      commentCount: 4
+    },
     // 6. Sprint board — tasks response type
     {
       id: "space-tasks",
@@ -370,20 +384,30 @@ export function SpaceFeed() {
         return {
           typeLabel: 'Links & Files',
           addLabel: '+ Add Link or File',
-          layout: 'list',
+          layout: 'grid',
           total: 3,
           cards: [
             <ContributionLinkCard key="c1"
               title="IEEE Smart Grid Standards"
+              url="https://standards.ieee.org"
+              author="Tom Bradley"
+              authorAvatarUrl={demoAuthorAvatar("Tom Bradley")}
               description="Comprehensive standards for smart grid interoperability"
             />,
             <ContributionLinkCard key="c2"
               title="Grid Modernisation Report 2026.pdf"
+              fileInfo="PDF · 2.4 MB"
+              fileType="pdf"
+              author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               description="Annual report on grid infrastructure upgrades"
               isFile={true}
             />,
             <ContributionLinkCard key="c3"
               title="Battery Storage Regulations EU"
+              url="https://energy.ec.europa.eu"
+              author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               description="European Commission energy storage regulatory framework"
             />
           ]
@@ -395,41 +419,41 @@ export function SpaceFeed() {
           layout: 'grid',
           total: 5,
           cards: [
-            <ContributionPostCard key="c1"
+            <BandedPostCard key="c1"
               title="How Our Community Powered 200 Homes with Solar"
-              author={{ name: "James Wilson" }}
+              author={{ name: "James Wilson", avatarUrl: demoAuthorAvatar("James Wilson") }}
               createdDate="03/12/2026"
               description="A practical story of how we navigated permits, funding, and installation to bring solar to a low-income housing estate."
               tags={["community", "solar", "case-study"]}
               commentCount={6}
             />,
-            <ContributionPostCard key="c2"
+            <BandedPostCard key="c2"
               title="Lessons Learned: Our First Municipal Solar Farm"
-              author={{ name: "Priya Sharma" }}
+              author={{ name: "Priya Sharma", avatarUrl: demoAuthorAvatar("Priya Sharma") }}
               createdDate="02/28/2026"
               description="Three years in, here's what we'd do differently — from vendor selection to community engagement."
               tags={["lessons", "solar-farm"]}
               commentCount={4}
             />,
-            <ContributionPostCard key="c3"
+            <BandedPostCard key="c3"
               title="The Case for Community Ownership"
-              author={{ name: "Elena Rodriguez" }}
+              author={{ name: "Elena Rodriguez", avatarUrl: demoAuthorAvatar("Elena Rodriguez") }}
               createdDate="02/15/2026"
               description="Why community-owned solar cooperatives outperform developer-led models in long-term community value."
               tags={["ownership", "cooperatives"]}
               commentCount={3}
             />,
-            <ContributionPostCard key="c4"
+            <BandedPostCard key="c4"
               title="Grid Integration Challenges We Faced"
-              author={{ name: "David Miller" }}
+              author={{ name: "David Miller", avatarUrl: demoAuthorAvatar("David Miller") }}
               createdDate="02/01/2026"
               description="Technical hurdles we encountered connecting our 2MW community array to the municipal distribution grid."
               tags={["grid", "technical", "integration"]}
               commentCount={7}
             />,
-            <ContributionPostCard key="c5"
+            <BandedPostCard key="c5"
               title="Financing Models That Work"
-              author={{ name: "Nina Petrova" }}
+              author={{ name: "Nina Petrova", avatarUrl: demoAuthorAvatar("Nina Petrova") }}
               createdDate="01/20/2026"
               description="Comparing PPAs, community bonds, and municipal green bonds for funding distributed solar projects."
               tags={["finance", "bonds", "PPA"]}
@@ -444,20 +468,59 @@ export function SpaceFeed() {
           layout: 'grid',
           total: 3,
           cards: [
-            <ContributionMemoCard key="c1"
+            <BandedMemoCard key="c1"
               title="Commercial Building Audit Checklist"
               author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               markdownContent={"## Commercial Building Energy Audit\n\n### Pre-Visit Checklist\n- [ ] Obtain floor plans\n- [ ] Review utility bills (12 months)\n- [ ] Identify HVAC systems\n\n### On-Site Steps\n1. Thermal imaging scan\n2. Air infiltration test\n3. Lighting assessment"}
             />,
-            <ContributionMemoCard key="c2"
+            <BandedMemoCard key="c2"
               title="Residential Audit Quick Guide"
               author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               markdownContent={"## Residential Energy Audit\n\n### Key Areas\n- Insulation quality\n- Window seals & glazing\n- Heating system efficiency\n- Hot water system\n\n### Red Flags\n- Drafts near windows\n- Uneven temperatures\n- High baseline consumption"}
             />,
-            <ContributionMemoCard key="c3"
+            <BandedMemoCard key="c3"
               title="Post-Audit Reporting Template"
               author="Alex Contributor"
+              authorAvatarUrl={demoAuthorAvatar("Alex Contributor")}
               markdownContent={"## Audit Report Template\n\n### Executive Summary\n[Brief overview of findings]\n\n### Recommendations\n| Priority | Action | Est. Savings |\n|----------|--------|-------------|\n| High | LED retrofit | 15% |\n| Medium | HVAC upgrade | 25% |"}
+            />
+          ]
+        };
+      case 'documents':
+        return {
+          typeLabel: 'Documents',
+          addLabel: '+ Add Document',
+          layout: 'grid',
+          total: 4,
+          cards: [
+            <BandedDocumentCard key="c1"
+              title="Q2 Budget Report 2026"
+              author="Elena Rodriguez"
+              authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
+              documentType="spreadsheet"
+              previewUrl="/document-previews/q2-budget-report.svg"
+            />,
+            <BandedDocumentCard key="c2"
+              title="Technical Specification"
+              author="Michael Chang"
+              authorAvatarUrl={demoAuthorAvatar("Michael Chang")}
+              documentType="text"
+              previewUrl="/document-previews/technical-specification.svg"
+            />,
+            <BandedDocumentCard key="c3"
+              title="Site Assessment: North District"
+              author="Alex Torres"
+              authorAvatarUrl={demoAuthorAvatar("Alex Torres")}
+              documentType="presentation"
+              previewUrl="/document-previews/site-assessment.svg"
+            />,
+            <BandedDocumentCard key="c4"
+              title="Procurement Guidelines"
+              author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
+              documentType="pdf"
             />
           ]
         };
@@ -468,34 +531,40 @@ export function SpaceFeed() {
           layout: 'grid',
           total: 6,
           cards: [
-            <ContributionWhiteboardCard key="c1"
+            <BandedWhiteboardCard key="c1"
               title="Public Library Solar Roof"
               author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               previewUrl={wb1}
             />,
-            <ContributionWhiteboardCard key="c2"
+            <BandedWhiteboardCard key="c2"
               title="Parking Lot Canopies"
               author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               previewUrl={wb2}
             />,
-            <ContributionWhiteboardCard key="c3"
+            <BandedWhiteboardCard key="c3"
               title="School Microgrids"
               author="Elena Rodriguez"
+              authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
               previewUrl={wb3}
             />,
-            <ContributionWhiteboardCard key="c4"
+            <BandedWhiteboardCard key="c4"
               title="Bus Stop Solar Stations"
               author="Michael Chang"
+              authorAvatarUrl={demoAuthorAvatar("Michael Chang")}
               previewUrl={wb4}
             />,
-            <ContributionWhiteboardCard key="c5"
+            <BandedWhiteboardCard key="c5"
               title="Town Hall Retrofit"
               author="James Wilson"
+              authorAvatarUrl={demoAuthorAvatar("James Wilson")}
               previewUrl={wb1}
             />,
-            <ContributionWhiteboardCard key="c6"
+            <BandedWhiteboardCard key="c6"
               title="Park Lighting Solar"
               author="Lisa Park"
+              authorAvatarUrl={demoAuthorAvatar("Lisa Park")}
               previewUrl={wb2}
             />
           ]

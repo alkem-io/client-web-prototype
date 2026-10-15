@@ -10,9 +10,8 @@ import { MemoDialog } from "@/app/components/memo/MemoDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
-import { ContributionWhiteboardCard } from "@/crd/components/contribution/ContributionWhiteboardCard";
-import { ContributionPostCard } from "@/crd/components/contribution/ContributionPostCard";
-import { ContributionMemoCard } from "@/crd/components/contribution/ContributionMemoCard";
+import { BandedMemoCard, BandedPostCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
+import { demoAuthorAvatar } from '@/app/data/demoAuthorAvatars';
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
@@ -21,7 +20,7 @@ import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 const wb1 = "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1080";
 const wb2 = "https://images.unsplash.com/photo-1574359219611-a3031f074b2c?auto=format&fit=crop&q=80&w=1080";
 const wb3 = "https://images.unsplash.com/photo-1578401058525-35aaec0b4658?auto=format&fit=crop&q=80&w=1080";
-const wb4 = "https://images.unsplash.com/photo-1596496050844-3613acf57a8e?auto=format&fit=crop&q=80&w=1080";
+const wb4 = "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1080";
 
 // Media gallery images
 const mg1 = "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80&w=800";
@@ -840,46 +839,75 @@ export function SpaceKnowledgeFeed() {
         return {
           typeLabel: 'Links & Files',
           addLabel: '+ Add Link or File',
-          layout: 'list',
+          layout: 'grid',
           total: 9,
           cards: [
             <ContributionLinkCard key="c1"
               title="IEEE Smart Grid Standards"
+              url="https://standards.ieee.org"
+              author="Tom Bradley"
+              authorAvatarUrl={demoAuthorAvatar("Tom Bradley")}
               description="Comprehensive standards for smart grid interoperability and communication protocols"
             />,
             <ContributionLinkCard key="c2"
               title="Energy Transition Toolkit.pdf"
+              fileInfo="PDF · 5.1 MB"
+              fileType="pdf"
+              author="Elena Rodriguez"
+              authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
               description="A practical guide for municipalities planning renewable transitions"
               isFile={true}
             />,
             <ContributionLinkCard key="c3"
               title="EU Clean Energy Package"
+              url="https://energy.ec.europa.eu"
+              author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               description="European Commission clean energy legislative package overview"
             />,
             <ContributionLinkCard key="c-l4"
               title="Municipal Energy Benchmarking Tool"
+              url="https://www.cbs.nl"
+              author="Michael Chang"
+              authorAvatarUrl={demoAuthorAvatar("Michael Chang")}
               description="Compare consumption across comparable municipalities using open CBS data"
             />,
             <ContributionLinkCard key="c-l5"
               title="Retrofit Cost Database 2026.xlsx"
+              fileInfo="Spreadsheet · 860 KB"
+              fileType="spreadsheet"
+              author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               description="Per-measure cost ranges collected from 340 completed projects"
               isFile={true}
             />,
             <ContributionLinkCard key="c-l6"
               title="TenneT Grid Capacity Map"
+              url="https://www.tennet.eu"
+              author="James Wilson"
+              authorAvatarUrl={demoAuthorAvatar("James Wilson")}
               description="Live view of available connection capacity by postcode area"
             />,
             <ContributionLinkCard key="c-l7"
               title="Heat Transition Standard (Dutch)"
+              url="https://www.rijksoverheid.nl"
+              author="Lisa Park"
+              authorAvatarUrl={demoAuthorAvatar("Lisa Park")}
               description="The national standard municipalities must follow when drafting heat plans"
             />,
             <ContributionLinkCard key="c-l8"
               title="Community Energy Legal Templates.zip"
+              fileInfo="ZIP · 1.2 MB"
+              author="Alex Contributor"
+              authorAvatarUrl={demoAuthorAvatar("Alex Contributor")}
               description="Cooperative statutes, member agreements and PPA templates"
               isFile={true}
             />,
             <ContributionLinkCard key="c-l9"
               title="IEA District Heating Case Studies"
+              url="https://www.iea.org"
+              author="Emily Davis"
+              authorAvatarUrl={demoAuthorAvatar("Emily Davis")}
               description="Fifteen European district heating retrofits with outcome data"
             />
           ]
@@ -891,41 +919,41 @@ export function SpaceKnowledgeFeed() {
           layout: 'grid',
           total: 5,
           cards: [
-            <ContributionPostCard key="c1"
+            <BandedPostCard key="c1"
               title="Our District's Solar Journey: Year One"
-              author={{ name: "James Wilson" }}
+              author={{ name: "James Wilson", avatarUrl: demoAuthorAvatar("James Wilson") }}
               createdDate="04/10/2026"
               description="How we went from scepticism to 40% solar adoption in our neighbourhood through peer education and community financing."
               tags={["community", "solar", "adoption"]}
               commentCount={8}
             />,
-            <ContributionPostCard key="c2"
+            <BandedPostCard key="c2"
               title="Lessons from the Nordic Model"
-              author={{ name: "Priya Sharma" }}
+              author={{ name: "Priya Sharma", avatarUrl: demoAuthorAvatar("Priya Sharma") }}
               createdDate="03/22/2026"
               description="What we can learn from Denmark and Norway about community ownership and distributed generation."
               tags={["nordic", "ownership", "research"]}
               commentCount={5}
             />,
-            <ContributionPostCard key="c3"
+            <BandedPostCard key="c3"
               title="The Business Case for Municipal Solar"
-              author={{ name: "Nina Petrova" }}
+              author={{ name: "Nina Petrova", avatarUrl: demoAuthorAvatar("Nina Petrova") }}
               createdDate="03/05/2026"
               description="Financial analysis showing 7-year payback on municipal solar installations with current incentive structures."
               tags={["finance", "ROI", "municipal"]}
               commentCount={3}
             />,
-            <ContributionPostCard key="c4"
+            <BandedPostCard key="c4"
               title="Grid Integration Challenges We Faced"
-              author={{ name: "David Miller" }}
+              author={{ name: "David Miller", avatarUrl: demoAuthorAvatar("David Miller") }}
               createdDate="02/18/2026"
               description="Technical hurdles we encountered connecting our 2MW community array to the municipal distribution grid."
               tags={["grid", "technical"]}
               commentCount={7}
             />,
-            <ContributionPostCard key="c5"
+            <BandedPostCard key="c5"
               title="Financing Models That Work"
-              author={{ name: "Tom Bradley" }}
+              author={{ name: "Tom Bradley", avatarUrl: demoAuthorAvatar("Tom Bradley") }}
               createdDate="02/01/2026"
               description="Comparing PPAs, community bonds, and municipal green bonds for funding distributed solar projects."
               tags={["finance", "bonds", "PPA"]}
@@ -940,24 +968,28 @@ export function SpaceKnowledgeFeed() {
           layout: 'grid',
           total: 4,
           cards: [
-            <ContributionMemoCard key="c1"
+            <BandedMemoCard key="c1"
               title="Site Assessment Procedure"
               author="Tom Bradley"
+              authorAvatarUrl={demoAuthorAvatar("Tom Bradley")}
               markdownContent={"## Site Assessment Steps\n\n1. Initial desk review\n2. Solar irradiance analysis\n3. Structural assessment\n4. Grid connection feasibility\n5. Environmental screening\n\n### Required Equipment\n- Drone for aerial survey\n- Irradiance meter\n- Structural testing kit"}
             />,
-            <ContributionMemoCard key="c2"
+            <BandedMemoCard key="c2"
               title="Safety Protocols for Installation"
               author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               markdownContent={"## Safety Protocols\n\n### Before Work Begins\n- [ ] Risk assessment complete\n- [ ] Permits obtained\n- [ ] Team briefing done\n\n### During Installation\n- Hard hats mandatory\n- Harness required above 2m\n- Electrical isolation verified\n\n### Post-Installation\n- Final inspection checklist\n- Commissioning tests"}
             />,
-            <ContributionMemoCard key="c3"
+            <BandedMemoCard key="c3"
               title="Commissioning Checklist"
               author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               markdownContent={"## Commissioning Steps\n\n1. Visual inspection\n2. Electrical testing\n3. Performance verification\n4. Documentation\n5. Handover\n\n### Sign-Off\n- Engineer approval\n- Client acceptance"}
             />,
-            <ContributionMemoCard key="c4"
+            <BandedMemoCard key="c4"
               title="Maintenance Schedule Template"
               author="Alex Contributor"
+              authorAvatarUrl={demoAuthorAvatar("Alex Contributor")}
               markdownContent={"## Quarterly Maintenance\n\n- Panel cleaning\n- Inverter check\n- Wiring inspection\n- Performance data review\n\n## Annual Maintenance\n- Full system audit\n- Thermal imaging\n- Degradation assessment"}
             />
           ]
@@ -969,34 +1001,40 @@ export function SpaceKnowledgeFeed() {
           layout: 'grid',
           total: 6,
           cards: [
-            <ContributionWhiteboardCard key="c1"
+            <BandedWhiteboardCard key="c1"
               title="Rooftop Array Design A"
               author="David Miller"
+              authorAvatarUrl={demoAuthorAvatar("David Miller")}
               previewUrl={wb1}
             />,
-            <ContributionWhiteboardCard key="c2"
+            <BandedWhiteboardCard key="c2"
               title="Ground-Mount Concept"
               author="Tom Bradley"
+              authorAvatarUrl={demoAuthorAvatar("Tom Bradley")}
               previewUrl={wb2}
             />,
-            <ContributionWhiteboardCard key="c3"
+            <BandedWhiteboardCard key="c3"
               title="Carpark Canopy Layout"
               author="Alex Contributor"
+              authorAvatarUrl={demoAuthorAvatar("Alex Contributor")}
               previewUrl={wb3}
             />,
-            <ContributionWhiteboardCard key="c4"
+            <BandedWhiteboardCard key="c4"
               title="Facade Integration Sketch"
               author="Sarah Chen"
+              authorAvatarUrl={demoAuthorAvatar("Sarah Chen")}
               previewUrl={wb4}
             />,
-            <ContributionWhiteboardCard key="c5"
+            <BandedWhiteboardCard key="c5"
               title="Community Centre Retrofit"
               author="Elena Rodriguez"
+              authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
               previewUrl={wb1}
             />,
-            <ContributionWhiteboardCard key="c6"
+            <BandedWhiteboardCard key="c6"
               title="Sports Centre Array"
               author="Michael Chang"
+              authorAvatarUrl={demoAuthorAvatar("Michael Chang")}
               previewUrl={wb3}
             />
           ]

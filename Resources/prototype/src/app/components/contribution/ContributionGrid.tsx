@@ -43,6 +43,7 @@ export function ContributionGrid({
       // The add card occupies a grid slot, so it counts toward the total CRD
       // uses to decide whether the grid needs collapsing.
       totalCount={onAddClick ? totalCount + 1 : totalCount}
+      extraSlots={onAddClick ? 1 : 0}
       className={className}
     >
       {children}

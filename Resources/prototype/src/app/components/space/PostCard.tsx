@@ -17,6 +17,12 @@
  *   · the extra fixture fields (`framingForm`, `reactions`,
  *     `reactionOptions`, `embeddedImages`) ride on an extended `PostCardData`.
  *
+ *   · title-first header → CRD's `showPublishDetails: false` moves the title
+ *     into the header, and `TitleFirstHeaderStandIn` adds the author's picture
+ *     beside it and a subtle "author · time" line under it
+ *     (`@/ahead/TitleFirstPostHeader`). Posts that already hide their
+ *     publish details are left alone.
+ *
  *   · post truncation → CRD's snippet is withheld and `TruncatedPostDescription`
  *     (src/ahead) renders in its place, through `contributionsPreview` — the
  *     only slot inside the card body. Tags and references move with it so the
@@ -47,6 +53,7 @@ import { ReactionBar } from '@/app/components/space/ReactionBar';
 import { TruncatedPostDescription } from '@/ahead/TruncatedPostDescription';
 import type { PostReaction } from '@/app/components/space/post-reactions-data';
 import { PostFormBox, type PostFormData } from '@/app/components/callout/PostFormBox';
+import { TitleFirstHeaderStandIn } from '@/app/components/shared/TitleFirstHeaderStandIn';
 
 export type { MediaGalleryFeedThumbnail };
 export { POST_TYPE_DESCRIPTORS, type PostType } from '@/crd/components/space/PostCard';
@@ -138,9 +145,13 @@ export function PostCard({
   const ownsDescription =
     !FRAMING_PREVIEW_TYPES.has(post.type) && (!!post.snippet || !!post.embeddedImages?.length);
 
-  const crdPost: PostCardData = ownsDescription
-    ? { ...post, snippet: undefined, tags: undefined, references: undefined }
-    : post;
+  const titleFirst = post.showPublishDetails !== false && !!post.author;
+
+  const crdPost: PostCardData = {
+    ...post,
+    ...(ownsDescription ? { snippet: undefined, tags: undefined, references: undefined } : {}),
+    ...(titleFirst ? { showPublishDetails: false } : {}),
+  };
 
   return (
     <ActivityDotSlots
@@ -150,46 +161,53 @@ export function PostCard({
       // A block, so the feed's gap between cards (a margin) still applies.
       wrapperClassName="block"
     >
-      <CrdPostCard
-        {...rest}
-        post={crdPost}
-        children={
-          post.framingForm ? (
-            <>
-              <PostFormBox form={post.framingForm} />
-              {children}
-            </>
-          ) : (
-            children
-          )
-        }
-        contributionsPreview={
-          ownsDescription ? (
-            <>
-              <TruncatedPostDescription
-                content={post.snippet}
-                embeddedImages={post.embeddedImages}
-                collapsible={!post.descriptionExpanded}
+      <TitleFirstHeaderStandIn
+        enabled={titleFirst}
+        author={post.author}
+        timestamp={post.timestamp}
+        isDraft={post.isDraft}
+      >
+        <CrdPostCard
+          {...rest}
+          post={crdPost}
+          children={
+            post.framingForm ? (
+              <>
+                <PostFormBox form={post.framingForm} />
+                {children}
+              </>
+            ) : (
+              children
+            )
+          }
+          contributionsPreview={
+            ownsDescription ? (
+              <>
+                <TruncatedPostDescription
+                  content={post.snippet}
+                  embeddedImages={post.embeddedImages}
+                  collapsible={!post.descriptionExpanded}
+                />
+                <ReferencesAndTagsStrip references={post.references} tags={post.tags} className="mt-2" />
+                {contributionsPreview}
+              </>
+            ) : (
+              contributionsPreview
+            )
+          }
+          settingsSlot={settingsSlot}
+          reactionsSlot={
+            reactionsEnabled ? (
+              <ReactionBar
+                id={post.id}
+                options={post.reactionOptions}
+                canReact={canReact}
+                onChange={onReactionsChange}
               />
-              <ReferencesAndTagsStrip references={post.references} tags={post.tags} className="mt-2" />
-              {contributionsPreview}
-            </>
-          ) : (
-            contributionsPreview
-          )
-        }
-        settingsSlot={settingsSlot}
-        reactionsSlot={
-          reactionsEnabled ? (
-            <ReactionBar
-              id={post.id}
-              options={post.reactionOptions}
-              canReact={canReact}
-              onChange={onReactionsChange}
-            />
-          ) : undefined
-        }
-      />
+            ) : undefined
+          }
+        />
+      </TitleFirstHeaderStandIn>
     </ActivityDotSlots>
   );
 }
