@@ -38,13 +38,16 @@
  *     "author · date" in `text-caption text-muted-foreground`. Production's
  *     `ContributionPostCard` puts the title alone on top and a 20px avatar
  *     inline with the name below it.
- *   · Links and files become the same 200px card in the same grid
+  *   · Links and files become the same 200px card in the same grid
  *     (`BandedLinkCard`, concept 3 in round 3 of the mockup) instead of
- *     production's `ContributionLinkList` rows: the site's own icon (or the
- *     file type) and its address fill the picture area, and the label strip
- *     names it and who added it. Hovering says "Open Link" (a new string) or
- *     "Download". Production's list shows neither the site icon nor the
- *     person who added the link; both need confirming with development.
+ *     production's `ContributionLinkList` rows: a plain link icon (or the
+ *     coloured file-type icon) fills the picture area, and the label strip
+ *     gives the title with the address (or the file type, "PDF") in grey.
+ *     Hovering says "Open Link" (a new string) or "Download".
+ *     Deliberately no profile picture, no file size and no site icon: a link
+ *     only carries a name, an address and whether it is a file, so all
+ *     three would need server work. They are parked for after the server
+ *     move; the card is built so they can be added back without a redesign.
  *   · Props and behaviour are otherwise identical to production's.
  *
  * WHY IT IS HERE
@@ -54,7 +57,7 @@
  * a name check cannot see that, so `npm run sync:crd` will not flag it; check
  * `grep bg-gradient-to-t src/crd/components/contribution` after each sync.
  */
-import { FileArchive, FileSignature, Globe, MessageSquare, Presentation, StickyNote } from 'lucide-react';
+import { FileArchive, FileSignature, Link2, MessageSquare, Presentation, StickyNote } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type CollaboraDocumentPreviewType, colorByType, iconByType } from '@/crd/lib/collaboraDocumentPreview';
@@ -97,11 +100,14 @@ function ResponseCardBand({
   title,
   author,
   authorAvatarUrl,
+  subtitle,
   children,
 }: {
   title: string;
   author?: string;
   authorAvatarUrl?: string;
+  /** Grey second line when there is no author, e.g. a link's address. */
+  subtitle?: string;
   children?: ReactNode;
 }) {
   return (
@@ -112,7 +118,7 @@ function ResponseCardBand({
       {author && <AuthorAvatar name={author} avatarUrl={authorAvatarUrl} />}
       <div className="min-w-0 flex-1">
         <p className="truncate text-card-title text-foreground">{title}</p>
-        {author && <p className="truncate text-caption text-muted-foreground">{author}</p>}
+        {(author ?? subtitle) && <p className="truncate text-caption text-muted-foreground">{author ?? subtitle}</p>}
       </div>
       {children}
     </div>
@@ -383,24 +389,19 @@ export function BandedPostCard({
 
 type BandedLinkCardProps = {
   title: string;
-  /** Where it lives, under the icon: "standards.ieee.org", "PDF · 2.4 MB". */
+  /** Grey line under the title: the address ("standards.ieee.org") or the file type ("PDF"). */
   source?: string;
   /** A file rather than a website link. */
   isFile?: boolean;
   /** For files: draws the matching coloured type icon. Omit for archives and other files. */
   fileType?: CollaboraDocumentPreviewType;
-  /** For links: the site's own icon. A globe shows when it is missing or fails. */
-  iconUrl?: string;
-  author?: string;
-  authorAvatarUrl?: string;
   href?: string;
   onClick?: () => void;
   className?: string;
 };
 
-/** The big icon in the preview area: the site's icon, the file type, or a fallback. */
-function LinkIcon({ isFile, fileType, iconUrl }: Pick<BandedLinkCardProps, 'isFile' | 'fileType' | 'iconUrl'>) {
-  const [failed, setFailed] = useState(false);
+/** The big icon in the preview area: the coloured file type, or a plain link icon. */
+function LinkIcon({ isFile, fileType }: Pick<BandedLinkCardProps, 'isFile' | 'fileType'>) {
   const box = 'size-12 rounded-xl border border-border bg-card shadow-sm flex items-center justify-center overflow-hidden';
   if (isFile) {
     const Icon = fileType ? iconByType[fileType] : FileArchive;
@@ -412,28 +413,21 @@ function LinkIcon({ isFile, fileType, iconUrl }: Pick<BandedLinkCardProps, 'isFi
   }
   return (
     <span className={box} aria-hidden="true">
-      {iconUrl && !failed ? (
-        <img src={iconUrl} alt="" className="size-7" onError={() => setFailed(true)} />
-      ) : (
-        <Globe className="size-6 text-muted-foreground" />
-      )}
+      <Link2 className="size-6 text-muted-foreground" />
     </span>
   );
 }
 
 /**
  * A link or file response: the same 200px card as memos and whiteboards. With
- * nothing to preview, the site's icon (or the file type) and its address fill
- * the picture area, so a link reads as a link and never as a post.
+ * nothing to preview, a link icon (or the file type) fills the picture area,
+ * so a link reads as a link and never as a post.
  */
 export function BandedLinkCard({
   title,
   source,
   isFile,
   fileType,
-  iconUrl,
-  author,
-  authorAvatarUrl,
   href,
   onClick,
   className,
@@ -458,9 +452,8 @@ export function BandedLinkCard({
         className
       )}
     >
-      <div className="absolute inset-x-0 top-0 bottom-14 flex flex-col items-center justify-center gap-2.5 px-4">
-        <LinkIcon isFile={isFile} fileType={fileType} iconUrl={iconUrl} />
-        {source && <span className="max-w-full truncate text-caption text-muted-foreground">{source}</span>}
+      <div className="absolute inset-x-0 top-0 bottom-14 flex items-center justify-center px-4">
+        <LinkIcon isFile={isFile} fileType={fileType} />
       </div>
 
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 bg-primary/40 group-hover/link:opacity-100">
@@ -468,7 +461,7 @@ export function BandedLinkCard({
           {isFile ? t('memo.signing.download') : t('callout.openLink', 'Open Link')}
         </span>
       </div>
-      <ResponseCardBand title={title} author={author} authorAvatarUrl={authorAvatarUrl} />
+      <ResponseCardBand title={title} subtitle={source} />
     </a>
   );
 }

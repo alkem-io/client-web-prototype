@@ -396,7 +396,7 @@ export function SpaceFeed() {
             />,
             <ContributionLinkCard key="c2"
               title="Grid Modernisation Report 2026.pdf"
-              fileInfo="PDF · 2.4 MB"
+              fileInfo="PDF"
               fileType="pdf"
               author="David Miller"
               authorAvatarUrl={demoAuthorAvatar("David Miller")}
