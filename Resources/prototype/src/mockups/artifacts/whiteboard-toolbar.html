@@ -135,8 +135,9 @@ svg.i { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentCo
 
 /* grouped button: same 38px as every other tool; the corner arrow opens the list */
 .split { position: relative; }
-.split .chev { position: absolute; top: 2px; right: 2px; width: 13px; height: 13px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--tool-key); display: grid; place-items: center; cursor: pointer; }
-.split .chev:hover, .split .chev[aria-expanded="true"] { background: var(--island); color: var(--tool-ink); box-shadow: 0 0 0 1px var(--island-border); }
+.split .chev { position: absolute; top: 0; right: 0; bottom: 0; width: 15px; padding: 3px 0 0; border: 0; border-radius: 0 8px 8px 0; background: transparent; color: var(--tool-key); display: grid; justify-items: center; align-content: start; cursor: pointer; }
+.split .chev:hover, .split .chev[aria-expanded="true"] { background: color-mix(in srgb, var(--tool-selected-ink) 10%, transparent); color: var(--tool-ink); }
+.split.on .chev:hover, .split.on .chev[aria-expanded="true"] { background: color-mix(in srgb, var(--tool-selected-ink) 14%, transparent); }
 .split .chev svg.i { width: 9px; height: 9px; stroke-width: 3; }
 .split.on .chev { color: var(--tool-selected-ink); }
 
@@ -466,7 +467,7 @@ td:first-child { font-weight: 600; white-space: nowrap; }
       const main = toolBtn(shown, num);
       main.setAttribute('aria-pressed', pressed(active));
       main.title = `${T[shown].name} — ${num}. Press ${num} again for the next ${gid === 'shapes' ? 'shape' : 'line'}`;
-      main.addEventListener('click', () => setTool(shown));
+      main.addEventListener('click', (e) => { if (active) { e.stopPropagation(); S.open = isOpen ? null : gid; render(); } else setTool(shown); });
       const chev = el(`<button type="button" class="chev" aria-label="More ${g.name.toLowerCase()}" aria-expanded="${pressed(isOpen)}">${icon('chev')}</button>`);
       chev.addEventListener('click', (e) => { e.stopPropagation(); S.open = isOpen ? null : gid; render(); });
       split.append(main, chev); wrap.append(split);
@@ -477,7 +478,7 @@ td:first-child { font-weight: 600; white-space: nowrap; }
           it.addEventListener('click', () => setTool(id));
           pop.append(it);
         });
-        pop.append(el(`<div class="menu-sep"></div>`), el(`<p class="pop-note" style="padding:4px 8px 2px">The button keeps the one you pick. Press ${num} again to step through.</p>`));
+        pop.append(el(`<div class="menu-sep"></div>`), el(`<p class="pop-note" style="padding:4px 8px 2px">The button keeps the one you pick. Press ${num} again to step through without opening this list.</p>`));
         wrap.append(pop);
       }
     } else {
@@ -754,7 +755,7 @@ td:first-child { font-weight: 600; white-space: nowrap; }
     document.getElementById('dir-h').textContent = d.title;
     document.getElementById('dir-sum').textContent = d.sum;
     document.getElementById('group-sum').textContent = S.groupMode === 'split'
-      ? 'Grouped buttons are the same size as every other tool. The button shows the last shape you used; click it to draw that again. The small arrow in its top corner opens the rest. Press 2 again to step to the next shape.'
+      ? 'Grouped buttons are the same size as every other tool. The button shows the last shape you used; click it to draw that again. Click it again, or anywhere on its right edge, to open the rest. Press 2 again to step to the next shape.'
       : 'Grouped buttons: clicking opens a tray of options. The button keeps a fixed icon until you pick something from it.';
     const bars = document.getElementById('bars'); bars.innerHTML = ''; buildMain(bars, d);
     buildDock(document.getElementById('dock-slot'), d);
