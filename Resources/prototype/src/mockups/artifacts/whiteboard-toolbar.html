@@ -95,7 +95,6 @@ svg.i { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentCo
 /* ---------- control strip ---------- */
 .controls { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; margin-top: 28px; padding-block: 12px; background: var(--board); border-bottom: 1px solid var(--rule); display: grid; gap: 10px; }
 .ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-.ctl-label { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); min-width: 150px; }
 .pill { font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
 .pill:hover { border-color: var(--ink-soft); }
 .pill[aria-pressed="true"] { background: var(--ink); color: var(--board); border-color: var(--ink); }
@@ -134,13 +133,12 @@ svg.i { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentCo
 .tool .emoji { font-size: 17px; line-height: 1; }
 .tool.live { width: auto; padding-inline: 8px; gap: 6px; display: inline-flex; font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
 
-/* split button: main + chevron */
-.split { display: flex; align-items: stretch; border-radius: 8px; }
-.split .tool { border-top-right-radius: 0; border-bottom-right-radius: 0; }
-.split .chev { width: 16px; height: 38px; border: 0; background: transparent; color: var(--tool-key); border-radius: 0 8px 8px 0; display: grid; place-items: center; cursor: pointer; }
-.split .chev:hover, .split .chev[aria-expanded="true"] { background: var(--tool-hover); color: var(--tool-ink); }
-.split .chev svg.i { width: 12px; height: 12px; stroke-width: 2.25; }
-.split.on .chev { background: var(--tool-selected); color: var(--tool-selected-ink); }
+/* grouped button: same 38px as every other tool; the corner arrow opens the list */
+.split { position: relative; }
+.split .chev { position: absolute; top: 2px; right: 2px; width: 13px; height: 13px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--tool-key); display: grid; place-items: center; cursor: pointer; }
+.split .chev:hover, .split .chev[aria-expanded="true"] { background: var(--island); color: var(--tool-ink); box-shadow: 0 0 0 1px var(--island-border); }
+.split .chev svg.i { width: 9px; height: 9px; stroke-width: 3; }
+.split.on .chev { color: var(--tool-selected-ink); }
 
 /* popovers */
 .pop { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 20; background: var(--island); border-radius: 10px; box-shadow: var(--shadow); padding: 6px; min-width: 200px; color: var(--tool-ink); text-align: left; }
@@ -238,7 +236,6 @@ td:first-child { font-weight: 600; white-space: nowrap; }
 @media (max-width: 860px) {
   .row { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .notes { grid-template-columns: minmax(0, 1fr); }
-  .ctl-label { min-width: 0; flex-basis: 100%; }
   .wb { height: 620px; }
   .wb-top { top: 10px; }
 }
@@ -246,10 +243,10 @@ td:first-child { font-weight: 600; white-space: nowrap; }
 
 <div class="wrap">
   <header class="intro">
-    <span class="eyebrow">Design request · <a href="https://github.com/alkem-io/product/issues/1998">alkem-io/product #1998</a> · exploration, round 2</span>
+    <span class="eyebrow">Design request · <a href="https://github.com/alkem-io/product/issues/1998">alkem-io/product #1998</a> · exploration, round 3</span>
     <h1>Whiteboard Toolbar</h1>
-    <p>The most-used tools should be one click away, and reachable with the keys 1 to 9. Below is today's toolbar, then a live whiteboard where you can switch between the directions. Try the tools, press the number keys, start a timer, send a reaction.</p>
-    <p><b style="color:var(--ink)">Round 2:</b> three takes on direction C, marked "new". Frame moves into "more tools", and the laser pointer joins the reactions and the timer at the bottom.</p>
+    <p>The most-used tools should be one click away, and reachable with number keys. Below is today's toolbar, then the chosen direction on a live whiteboard. Try the tools, press the number keys, start a timer, send a reaction.</p>
+    <p><b style="color:var(--ink)">Round 3:</b> direction A with Figma-style grouped buttons, at the same size as the other tools. Frame moves into "more tools". Every whiteboard user gets the same toolbar.</p>
   </header>
 
   <!-- ===== Today ===== -->
@@ -276,14 +273,6 @@ td:first-child { font-weight: 600; white-space: nowrap; }
       </div>
     </div>
   </section>
-
-  <!-- ===== Controls ===== -->
-  <div class="controls" role="group" aria-label="Mockup settings">
-    <div class="ctl" id="ctl-dir"><span class="ctl-label">Direction</span></div>
-    <div class="ctl" id="ctl-group"><span class="ctl-label">Grouped buttons open as</span></div>
-    <div class="ctl" id="ctl-role"><span class="ctl-label">You are</span></div>
-    <div class="ctl" id="ctl-rule"><span class="ctl-label">Who can start a timer</span></div>
-  </div>
 
   <!-- ===== Playground ===== -->
   <section class="row" aria-labelledby="dir-h" style="border-bottom:0; padding-bottom: 20px;">
@@ -329,7 +318,7 @@ td:first-child { font-weight: 600; white-space: nowrap; }
     <div class="note">
       <span class="when">Reference</span>
       <h2 id="others-h">How other whiteboards group tools</h2>
-      <p>The brief asks whether a grouped button is a menu, or a button that changes what it does. The tools we get compared to do both, and keep the facilitator tools away from the drawing tools.</p>
+      <p>The brief asks whether a grouped button is a menu, or a button that changes what it does. The tools we get compared to do both, and keep the timer and reactions away from the drawing tools.</p>
     </div>
     <div class="stage">
       <div class="tbl-wrap">
@@ -355,12 +344,10 @@ td:first-child { font-weight: 600; white-space: nowrap; }
     </div>
     <div class="stage">
       <ol class="qs">
-        <li><b>Is the 9-tool limit about the keys or about the look?</b> <span>If it is the keys, the facilitator tools could sit outside the count (directions A and C). If it is the look, they have to earn a place inside it (B).</span></li>
-        <li><b>Which shapes go in the group?</b> <span>Rectangle, diamond and ellipse today. Diamond is the one the brief calls rarely used; it could leave the bar entirely and live in "more tools".</span></li>
-        <li><b>Should a timer be one-per-board?</b> <span>Today everyone can start their own and they stack up. For a workshop, one shared timer that only hosts control is easier to follow.</span></li>
-        <li><b>Do reactions need the board to be shared?</b> <span>Today the reaction button only appears once a second person joins. A facilitator setting up before a session can't see where it will be.</span></li>
-        <li><b>Frame and laser on the bar?</b> <span>They fill slots 8 and 9 in A and C. Both are in "more tools" today; frame is how people structure a workshop board, laser is how a host points at things.</span></li>
-        <li><b>Who is a host?</b> <span>The whiteboard only knows who is connected, not who runs the session. "Hosts only" needs a rule: space admins, the whiteboard's owner, or anyone with edit rights.</span></li>
+        <li><b>What goes on key 9?</b> <span>With frame in "more tools", the bar has eight numbered tools. Key 9 could stay free, go to frame after all, or open reactions.</span></li>
+        <li><b>Which shapes go in the group?</b> <span>Rectangle, ellipse and diamond. Diamond is the one the brief calls rarely used; it could leave for "more tools".</span></li>
+        <li><b>One timer per board, or one per person?</b> <span>Today everyone can start their own, and they stack up in the corner. One shared timer that anyone can start or stop is easier to follow in a workshop.</span></li>
+        <li><b>Show the timer and reactions box when you are alone on the board?</b> <span>Today reactions only appear once a second person joins. This round shows the box whenever you can edit, so a facilitator preparing a session can find it.</span></li>
       </ol>
     </div>
   </section>
@@ -426,142 +413,37 @@ td:first-child { font-weight: 600; white-space: nowrap; }
   const DIRS = {
     A: {
       label: 'A · Facilitator island',
-      title: 'Nine drawing tools, facilitator tools beside them',
-      sum: 'The smallest change from today. Shapes and lines fold into two buttons, which frees slots 8 and 9 for frame and laser. The timer joins reactions in the island next to the toolbar, which now shows whenever you can edit, not only when someone else has joined.',
-      main: ['lock', 'div', 'hand', 'select', { group: 'shapes' }, { group: 'lines' }, 'draw', 'text', 'image', 'eraser', 'frame', 'laser', 'div', 'moremenu'],
+      title: 'Eight tools on the bar, timer and reactions beside it',
+      sum: 'Shapes and lines fold into one button each. Frame moves to the top of "more tools"; the laser pointer joins the bar on key 8. The timer and reactions get their own small box next to the toolbar, shown to everyone who can edit the board, not only once someone else has joined.',
+      main: ['lock', 'div', 'hand', 'select', { group: 'shapes' }, { group: 'lines' }, 'draw', 'text', 'image', 'eraser', 'laser', 'div', 'moremenu'],
       facil: ['timer', 'react'],
       facilPlace: 'island',
-      keys: ['select', 'shapes', 'lines', 'draw', 'text', 'image', 'eraser', 'frame', 'laser'],
-      more: ['embed', 'lasso', 'emoji', 'gen'],
-      trade: [
-        '<b>Moves into the bar:</b> frame and laser, from "more tools".',
-        '<b>Moves next to the bar:</b> the countdown timer, from "more tools".',
-        '<b>Leaves the bar:</b> nothing; diamond, ellipse and line are one click into a group.',
-        '<b>Cost:</b> facilitator tools still have no number key, and they stay visually second.',
-      ],
-    },
-    B: {
-      label: 'B · Facilitator group inside',
-      title: 'Seven drawing tools, two facilitator tools, one bar',
-      sum: 'Reactions and the timer earn a place inside the nine, as their own tinted group at the end. They get keys 8 and 9. Frame and laser stay in "more tools", where they are today.',
-      main: ['lock', 'div', 'hand', 'select', { group: 'shapes' }, { group: 'lines' }, 'draw', 'text', 'image', 'eraser', 'div', 'facilgroup', 'div', 'moremenu'],
-      facil: ['react', 'timer'],
-      facilPlace: 'inline',
-      keys: ['select', 'shapes', 'lines', 'draw', 'text', 'image', 'eraser', 'react', 'timer'],
-      more: ['frame', 'laser', 'embed', 'lasso', 'emoji', 'gen'],
-      trade: [
-        '<b>Moves into the bar:</b> reactions (key 8) and timer (key 9).',
-        '<b>Stays in "more tools":</b> frame and laser.',
-        '<b>Gain:</b> one bar to look at, and the facilitator tools are as easy to reach as drawing.',
-        '<b>Cost:</b> a participant sees a timer button they may not be allowed to use. Switch "You are" to see how that looks.',
-      ],
-    },
-    C: {
-      label: 'C · Reactions centre stage',
-      title: 'Drawing on top, the session at the bottom',
-      sum: 'Following the Zoom example from the feedback. Five reactions sit in a dock at the bottom centre, one click each, no menu. The timer sits in the same dock and shows the time left right there. The top bar is purely for drawing.',
-      main: ['lock', 'div', 'hand', 'select', { group: 'shapes' }, { group: 'lines' }, 'draw', 'text', 'image', 'eraser', 'frame', 'laser', 'div', 'moremenu'],
-      facil: ['react', 'timer'],
-      facilPlace: 'dock',
-      keys: ['select', 'shapes', 'lines', 'draw', 'text', 'image', 'eraser', 'frame', 'laser'],
-      more: ['embed', 'lasso', 'emoji', 'gen'],
-      trade: [
-        '<b>Moves into the bar:</b> frame and laser.',
-        '<b>New:</b> a bottom dock with five one-click reactions and the timer.',
-        '<b>Gain:</b> the liveliest option; reacting takes one click instead of three.',
-        '<b>Cost:</b> one-click reactions rise from the dock, not from a spot you pick on the board. The other five emoji are behind the "+".',
-      ],
-    },
-    C1: {
-      label: 'C1 · Pointer first',
-      round: 2,
-      title: 'Bottom bar opens with the laser pointer',
-      sum: 'Frame leaves the top bar for "more tools". The laser pointer moves down to the bottom bar, first in line, then the five reactions, then the timer. The top bar is seven drawing tools and nothing else.',
-      main: ['lock', 'div', 'hand', 'select', { group: 'shapes' }, { group: 'lines' }, 'draw', 'text', 'image', 'eraser', 'div', 'moremenu'],
-      facilPlace: 'dock', dock: ['laser', 'div', 'emojis', 'div', 'timer'],
-      keys: ['select', 'shapes', 'lines', 'draw', 'text', 'image', 'eraser', 'laser', 'timer'],
+      keys: ['select', 'shapes', 'lines', 'draw', 'text', 'image', 'eraser', 'laser'],
       more: ['frame', 'embed', 'lasso', 'emoji', 'gen'],
       trade: [
-        '<b>Moves to "more tools":</b> frame.',
-        '<b>Moves to the bottom bar:</b> the laser pointer, on key 8. The timer is on key 9.',
-        '<b>Gain:</b> pointing and reacting sit side by side, which is how a host runs a session: point at a sticky, ask for a reaction.',
-        '<b>Cost:</b> the laser is the first thing in the bar, so it reads as more important than the reactions.',
-      ],
-    },
-    C2: {
-      label: 'C2 · Facilitator end',
-      round: 2,
-      title: 'Reactions first, facilitator tools at the end',
-      sum: 'Same top bar as C1. In the bottom bar the reactions come first and stay centre stage; the laser pointer and the timer sit together at the right end, in a tinted group that marks them as the tools for whoever runs the session.',
-      main: ['lock', 'div', 'hand', 'select', { group: 'shapes' }, { group: 'lines' }, 'draw', 'text', 'image', 'eraser', 'div', 'moremenu'],
-      facilPlace: 'dock', dock: ['emojis', 'div', 'facilgroup'],
-      keys: ['select', 'shapes', 'lines', 'draw', 'text', 'image', 'eraser', 'laser', 'timer'],
-      more: ['frame', 'embed', 'lasso', 'emoji', 'gen'],
-      trade: [
-        '<b>Moves to "more tools":</b> frame.',
-        '<b>Moves to the bottom bar:</b> the laser pointer (8), grouped with the timer (9).',
-        '<b>Gain:</b> reactions, the thing everyone uses, lead. The tinted group explains itself.',
-        '<b>Cost:</b> participants can use the laser too, so "facilitator" is a loose label for it.',
-      ],
-    },
-    C3: {
-      label: 'C3 · Two bottom bars',
-      round: 2,
-      title: 'Reactions in the centre, facilitator tools in the corner',
-      sum: 'Same top bar as C1. Reactions get the bottom centre to themselves. The laser pointer and the timer get their own small bar in the bottom-right corner, out of the way of participants but always visible to the host.',
-      main: ['lock', 'div', 'hand', 'select', { group: 'shapes' }, { group: 'lines' }, 'draw', 'text', 'image', 'eraser', 'div', 'moremenu'],
-      facilPlace: 'dock', dock: ['emojis'], dockFacil: ['laser', 'timer'],
-      keys: ['select', 'shapes', 'lines', 'draw', 'text', 'image', 'eraser', 'laser', 'timer'],
-      more: ['frame', 'embed', 'lasso', 'emoji', 'gen'],
-      trade: [
-        '<b>Moves to "more tools":</b> frame.',
-        '<b>Moves to a corner bar:</b> the laser pointer (8) and the timer (9).',
-        '<b>Gain:</b> the calmest version; the reaction bar is simple and the host tools have their own home.',
-        '<b>Cost:</b> three toolbars on one board. The corner bar is easy to miss for a first-time host, which is the problem we started with.',
+        '<b>Into the bar:</b> the laser pointer, on key 8.',
+        '<b>Into "more tools":</b> frame, as the first item.',
+        '<b>Next to the bar:</b> the countdown timer (from "more tools") and reactions, in one box.',
+        '<b>Grouped:</b> diamond, ellipse and line are one click into a group.',
+        '<b>Open:</b> key 9 is free. See the questions below.',
       ],
     },
   };
-  DIRS.C.dock = ['emojis', 'div', 'timer'];
-  DIRS.C.label = 'C · Round 1';
 
   /* ---------- state ---------- */
   const S = {
-    dir: 'C1', groupMode: 'split', role: 'host', rule: 'hosts',
+    dir: 'A', groupMode: 'split',
     tool: 'select', last: { shapes: 'rect', lines: 'arrow' },
     open: null, reactEmoji: null, timerMins: 5,
     timers: [], // { by, left, mine }
   };
   const pressed = (b) => (b ? 'true' : 'false');
-  const canTimer = () => S.rule === 'everyone' || S.role === 'host';
+  const canTimer = () => true;
   function setTool(id) {
     S.tool = id; S.reactEmoji = null; S.open = null;
     Object.entries(GROUPS).forEach(([gid, g]) => { if (g.items.includes(id)) S.last[gid] = id; });
     render();
   }
-
-  /* ---------- controls ---------- */
-  const CTL = {
-    'ctl-dir': Object.entries(DIRS).map(([v, d]) => ({ key: 'dir', v, l: d.label + (d.round === 2 ? ' <span class="k">new</span>' : '') })),
-    'ctl-group': [{ key: 'groupMode', v: 'split', l: 'Last-used button <span class="k">Figma</span>' }, { key: 'groupMode', v: 'tray', l: 'Tray <span class="k">FigJam, Miro</span>' }],
-    'ctl-role': [{ key: 'role', v: 'host', l: 'Facilitator' }, { key: 'role', v: 'guest', l: 'Participant' }],
-    'ctl-rule': [{ key: 'rule', v: 'hosts', l: 'Facilitators only' }, { key: 'rule', v: 'everyone', l: 'Everyone (today)' }],
-  };
-  Object.entries(CTL).forEach(([id, opts]) => {
-    const host = document.getElementById(id);
-    opts.forEach((o) => {
-      const b = document.createElement('button');
-      b.className = 'pill'; b.type = 'button'; b.innerHTML = o.l; b.dataset.key = o.key; b.dataset.v = o.v;
-      b.addEventListener('click', () => {
-        S[o.key] = o.v; S.open = null; if (o.key === 'dir') S.reactEmoji = null;
-        if (o.key === 'role' && o.v === 'guest' && !S.timers.length) S.timers.push({ by: 'started by a facilitator', left: 240, mine: false });
-        save(); render();
-      });
-      host.appendChild(b);
-    });
-  });
-  function save() { try { localStorage.setItem('wbtb2', JSON.stringify({ dir: S.dir, groupMode: S.groupMode, role: S.role, rule: S.rule })); } catch (e) {} }
-  try { Object.assign(S, JSON.parse(localStorage.getItem('wbtb2') || '{}')); } catch (e) {}
-  const hm = /^#dir-([abc][123]?)$/i.exec(location.hash); if (hm) S.dir = hm[1].toUpperCase();
 
   /* ---------- builders ---------- */
   const el = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
@@ -664,7 +546,7 @@ td:first-child { font-weight: 600; white-space: nowrap; }
       <h4>Countdown for everyone on this board</h4>
       <div class="presets"></div>
       <button type="button" class="start-btn">Start ${S.timerMins} min</button>
-      <p class="pop-note">${S.rule === 'hosts' ? 'Everyone sees it. Only facilitators can start or stop it.' : 'Everyone sees it. Anyone can start one.'}</p>
+      <p class="pop-note">Everyone on the board sees it.</p>
     </div>`);
     pop.addEventListener('click', (e) => e.stopPropagation());
     const pr = pop.querySelector('.presets');
@@ -675,8 +557,7 @@ td:first-child { font-weight: 600; white-space: nowrap; }
     });
     pop.querySelector('.start-btn').addEventListener('click', () => {
       S.timers = S.timers.filter((t) => !t.mine);
-      if (S.rule === 'hosts') S.timers = [];
-      S.timers.unshift({ by: S.role === 'host' ? 'You' : 'You', left: S.timerMins * 60, mine: true });
+      S.timers.unshift({ by: 'You', left: S.timerMins * 60, mine: true });
       S.open = null; render();
     });
     return pop;
@@ -724,7 +605,7 @@ td:first-child { font-weight: 600; white-space: nowrap; }
     });
     container.append(island);
     if (d.facilPlace === 'island') {
-      const f = el(`<div class="island facil" role="toolbar" aria-label="Facilitator tools"><span class="island-label">Session</span></div>`);
+      const f = el(`<div class="island facil" role="toolbar" aria-label="Timer and reactions"></div>`);
       d.facil.forEach((x) => f.append(x === 'timer' ? timerBtn(null) : reactBtn(null)));
       container.append(f);
     }
@@ -853,7 +734,7 @@ td:first-child { font-weight: 600; white-space: nowrap; }
     if (DIRS[S.dir].facilPlace === 'dock') return; // the dock shows it
     S.timers.forEach((t) => {
       const cls = t.left <= 5 ? 'critical' : t.left <= 60 ? 'warning' : '';
-      const canStop = t.mine || (S.rule === 'hosts' && S.role === 'host');
+      const canStop = t.mine;
       const p = el(`<div class="timer-pill ${cls}">${icon('timer')}<span>${fmt(t.left)}</span><small>${t.mine ? 'your timer' : t.by}</small>${canStop ? `<button type="button" aria-label="Stop timer">${icon('x')}</button>` : '<span style="width:6px"></span>'}</div>`);
       const stop = p.querySelector('button');
       if (stop) stop.addEventListener('click', (e) => { e.stopPropagation(); S.timers = S.timers.filter((x) => x !== t); render(); });
@@ -869,24 +750,23 @@ td:first-child { font-weight: 600; white-space: nowrap; }
   }
   function render() {
     const d = DIRS[S.dir];
-    document.querySelectorAll('.controls .pill').forEach((b) => b.setAttribute('aria-pressed', pressed(S[b.dataset.key] === b.dataset.v)));
-    document.getElementById('dir-tag').textContent = 'Direction ' + S.dir;
+    document.getElementById('dir-tag').textContent = 'Chosen direction';
     document.getElementById('dir-h').textContent = d.title;
     document.getElementById('dir-sum').textContent = d.sum;
     document.getElementById('group-sum').textContent = S.groupMode === 'split'
-      ? 'Grouped buttons: the button shows the last shape you used. Click it to draw that again; the small arrow opens the rest. Press 2 again to step to the next shape.'
+      ? 'Grouped buttons are the same size as every other tool. The button shows the last shape you used; click it to draw that again. The small arrow in its top corner opens the rest. Press 2 again to step to the next shape.'
       : 'Grouped buttons: clicking opens a tray of options. The button keeps a fixed icon until you pick something from it.';
     const bars = document.getElementById('bars'); bars.innerHTML = ''; buildMain(bars, d);
     buildDock(document.getElementById('dock-slot'), d);
-    document.getElementById('hint').textContent = S.reactEmoji ? 'Click anywhere on the board to react. Esc to stop.' : (S.tool === 'laser' ? 'Move over the board to point. Everyone sees the trail.' : SHAPE_SVG[S.tool] ? `Click the board to place a ${T[S.tool].name.toLowerCase()}.` : 'Press 1 to 9 to switch tools. Try pressing 2 a few times.');
+    document.getElementById('hint').textContent = S.reactEmoji ? 'Click anywhere on the board to react. Esc to stop.' : (S.tool === 'laser' ? 'Move over the board to point. Everyone sees the trail.' : SHAPE_SVG[S.tool] ? `Click the board to place a ${T[S.tool].name.toLowerCase()}.` : 'Press 1 to 8 to switch tools. Try pressing 2 a few times.');
     wb.dataset.cursor = S.reactEmoji ? 'react' : S.tool === 'laser' ? 'laser' : S.tool === 'hand' ? 'hand' : SHAPE_SVG[S.tool] ? 'draw' : '';
     // key map
     const km = document.getElementById('keymap'); km.innerHTML = '';
     d.keys.forEach((k, i) => {
       let label;
       if (GROUPS[k]) label = `${GROUPS[k].name} <small>${GROUPS[k].items.map((x) => T[x].name.toLowerCase()).join(', ')}</small>`;
-      else if (k === 'timer') label = 'Countdown timer <small>facilitator</small>';
-      else if (k === 'react') label = 'Emoji reactions <small>facilitator and participants</small>';
+      else if (k === 'timer') label = 'Countdown timer';
+      else if (k === 'react') label = 'Emoji reactions';
       else if (k === 'laser' && DIRS[S.dir].facilPlace === 'dock' && DIRS[S.dir].round === 2) label = 'Laser pointer <small>in the bottom bar</small>';
       else if (k === 'timer' && DIRS[S.dir].facilPlace === 'dock') label = 'Countdown timer <small>in the bottom bar</small>';
       else label = T[k].name;
