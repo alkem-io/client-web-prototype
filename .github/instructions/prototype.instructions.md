@@ -25,9 +25,13 @@ everything else is yours. He does not run git commands.
 4. **Push only when he wants someone else to see it**, and give him the link.
 5. **Never merge to `main` unless he says it is ready.** Merging means ready for a
    developer to build in client-web — not that one has built it.
-6. **Tell him where to look** — a link and what to look at. "The build passes" is
+6. **Every time `main` changes, update the live site.** Approved merge or
+   production sync alike: from `main`, in `Resources/prototype`, run
+   `vercel deploy --prod` and give him the link. Never from a branch, never by
+   pushing to GitHub.
+7. **Tell him where to look** — a link and what to look at. "The build passes" is
    not something he can check.
-7. Proposing ahead-of-production work? **Name `src/ahead/` out loud.**
+8. Proposing ahead-of-production work? **Name `src/ahead/` out loud.**
 
 **Two kinds of work.** *Concrete* ("we need this, and this is how it works") —
 build it. *Exploratory* ("let's see what this could even be") — make a **visual
