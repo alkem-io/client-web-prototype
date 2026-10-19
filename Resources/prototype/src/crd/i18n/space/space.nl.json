@@ -314,6 +314,7 @@
     "updateFailed": "De wijzigingen aan de $t(common.callout) konden niet worden opgeslagen. Probeer het opnieuw.",
     "contributors": "Contributors",
     "subspaces": "Subspaces",
+    "spacesHidden": "Sommige Spaces in dit overzicht worden niet weergegeven omdat je er geen toegang tot hebt.",
     "form": "Formulier"
   },
   "contribution": {
@@ -585,6 +586,7 @@
     "draftLabel": "Concept",
     "notifyMembers": "Space-leden informeren",
     "titleRequiredHint": "Voeg een titel toe aan je $t(common.callout) om verder te gaan",
+    "descriptionTooLongHint": "Maak de beschrijving korter om verder te gaan — deze is langer dan toegestaan",
     "saveDraft": "Concept opslaan",
     "save": "Opslaan",
     "publish": "Post",
@@ -611,14 +613,34 @@
         "customDescription": "Toont alleen de contributors die je selecteert."
       },
       "spaces": {
+        "fieldTitle": "Spaces in deze $t(common.callout)",
+        "switchLabel": "Spaces handmatig kiezen",
         "autoDescription": "Toont automatisch alle subspaces en wordt bijgewerkt wanneer ze worden toegevoegd of verwijderd.",
-        "customDescription": "Toont alleen de subspaces die je hieronder selecteert."
+        "customDescription": "Toont alleen de Spaces die je hieronder selecteert."
+      },
+      "spacePicker": {
+        "searchPlaceholder": "Spaces in dit account zoeken…",
+        "searchAriaLabel": "Spaces in dit account zoeken",
+        "noMatches": "Geen Spaces in dit account komen overeen met je zoekopdracht.",
+        "accountEmpty": "Dit account heeft geen andere Spaces.",
+        "loadFailed": "De lijst met Spaces kon niet worden geladen.",
+        "chipsEmpty": "Nog geen Spaces gekozen. Zoek hieronder om ze toe te voegen.",
+        "chipContext": "in {{parentName}}",
+        "badgeInThisSpace": "In deze Space",
+        "badgeCalloutIsHere": "$t(common.Callout) staat hier",
+        "noneSelected": "Geen Spaces geselecteerd",
+        "selectedCount_one": "{{count}} Space geselecteerd",
+        "selectedCount_other": "{{count}} Spaces geselecteerd",
+        "clearSelection": "Selectie wissen",
+        "levelSpace": "Space",
+        "levelSubspace": "Subspace",
+        "levelSubsubspace": "Sub-subspace",
+        "pathSubLine": "{{level}} in {{path}}",
+        "removeInParentAriaLabel": "{{name}} verwijderen, in {{parentName}}"
       },
       "noLongerAvailable": "Niet meer beschikbaar",
       "searchPlaceholder": "Leden zoeken…",
       "searchAriaLabel": "Leden zoeken",
-      "searchSubspacePlaceholder": "Subspaces zoeken…",
-      "searchSubspaceAriaLabel": "Subspaces zoeken",
       "noResults": "Geen overeenkomende resultaten",
       "loading": "Laden…",
       "loadMore": "Meer laden…",
@@ -887,10 +909,10 @@
         },
         "warning": {
           "reconnectTitle": "Editor opnieuw verbinden?",
-          "reconnectBody": "Hiermee wordt de huidige bewerkingssessie beëindigd en het document ter plekke opnieuw geopend — de pagina wordt niet opnieuw geladen. Wijzigingen sinds de laatste keer opslaan kunnen verloren gaan; kopieer eerst wat u nodig hebt.",
+          "reconnectBody": "Hiermee wordt de huidige bewerkingssessie beëindigd en het document ter plekke opnieuw geopend — de pagina wordt niet opnieuw geladen. Wijzigingen sinds de laatste keer opslaan kunnen verloren gaan; kopieer eerst wat je nodig hebt.",
           "reconnectConfirm": "Opnieuw verbinden",
           "reloadTitle": "Pagina opnieuw laden?",
-          "reloadBody": "Hiermee wordt de hele pagina opnieuw geladen en het document helemaal opnieuw geopend. Wijzigingen sinds de laatste keer opslaan kunnen verloren gaan; kopieer eerst wat u nodig hebt.",
+          "reloadBody": "Hiermee wordt de hele pagina opnieuw geladen en het document helemaal opnieuw geopend. Wijzigingen sinds de laatste keer opslaan kunnen verloren gaan; kopieer eerst wat je nodig hebt.",
           "reloadConfirm": "Pagina opnieuw laden",
           "cancel": "Annuleren"
         },
@@ -1127,14 +1149,14 @@
     "closeMap": "Kaart sluiten",
     "card": {
       "taglineFallback": "Deze gebruiker heeft geen ondertitel ingevuld.",
-      "associates_one": "{{count}} geassocieerde in deze organisatie",
-      "associates_other": "{{count}} geassocieerden in deze organisatie",
+      "associates_one": "{{count}} betrokkene bij deze organisatie",
+      "associates_other": "{{count}} betrokkenen bij deze organisatie",
       "actions": "Acties voor {{name}}",
       "viewProfile": "Profiel bekijken",
       "message": "Bericht",
       "website": "Bezoek de website van {{name}} (opent in een nieuw tabblad)",
       "opensInNewTab": "opent in een nieuw tabblad",
-      "joined": "Lid geworden van deze Space {{date}}"
+      "joined": "Lid van deze Space sinds {{date}}"
     },
     "types": {
       "user": "Personen",
@@ -1207,8 +1229,8 @@
     "type": {
       "SHORT_TEXT": "Korte tekst",
       "LONG_TEXT": "Lange tekst",
-      "SINGLE_CHOICE": "Enkele keuze",
-      "MULTIPLE_CHOICE": "Meerdere keuzes"
+      "SINGLE_CHOICE": "Eén antwoord",
+      "MULTIPLE_CHOICE": "Meerdere antwoorden mogelijk"
     },
     "required": "Verplicht",
     "dragQuestion": "Vraag {{number}} verplaatsen",
@@ -1249,7 +1271,7 @@
       "stateOpen": "Open voor reacties",
       "stateHelp": "Gesloten formulieren accepteren geen nieuwe reacties.",
       "defaultCollapsed": "Formulier standaard ingeklapt tonen",
-      "defaultCollapsedHelp": "Kijkers kunnen het nog steeds uitklappen",
+      "defaultCollapsedHelp": "Bezoekers kunnen het nog steeds uitklappen",
       "widenConfirm": {
         "title": "Reacties tonen aan leden?",
         "description_one": "Leden van {{space}} kunnen de {{count}} bestaande reactie lezen, ook als die is ingediend toen alleen admins die konden zien.",
