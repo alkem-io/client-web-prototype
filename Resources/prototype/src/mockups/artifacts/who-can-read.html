@@ -255,7 +255,8 @@ td .badge { font-size: 11.5px; }
   <header class="intro">
     <span class="eyebrow">Design concept · client-web #7730</span>
     <h1>Who can read what I post?</h1>
-    <p>Inside a space, nothing tells people whether what they write is open to the whole internet or stays among members. This page shows every place we answer that question, in the order a member runs into them. The same sentence appears everywhere, so people learn it once.</p>
+    <p>Inside a space, nothing tells members whether what they write is open to the whole internet or stays among members. This page shows every place we answer that question, in the order a member runs into them. The same sentence appears everywhere, so people learn it once.</p>
+    <p>Everything here except the subspace list is shown to members and admins only. People who aren't members see the space exactly as they do today.</p>
     <p>Use the switch below to see how the wording changes for each kind of space. The hardest case is a public subspace inside a private space. It is neither public nor private, so it gets its own label: <b>Members only</b>.</p>
   </header>
 
@@ -277,9 +278,9 @@ td .badge { font-size: 11.5px; }
       <div class="note">
         <span class="when">Always there</span>
         <h2 id="t-header">A badge next to the space name</h2>
-        <p>Shown on every tab of every space and subspace. Hovering, focusing or tapping it opens one sentence naming who can read what's posted here.</p>
+        <p>Shown on every tab of every space and subspace, to members and admins. Hovering, focusing or tapping it opens one sentence naming who can read what's posted here.</p>
         <p>"What does this mean?" opens the About dialog at the new <i>Who can see what</i> section. That way the badge and About lead to each other.</p>
-        <span class="status"><b>In the ticket</b> · required</span>
+        <span class="status"><b>Agreed</b> · seen by members and admins</span>
       </div>
       <div class="stage">
         <div class="screen">
@@ -318,7 +319,7 @@ td .badge { font-size: 11.5px; }
         <h2 id="t-welcome">A welcome dialog the first time you visit as a member</h2>
         <p>It appears however you became a member: by joining, by an approved application, by accepting an invitation, or by being added by an admin. You need to be a member to post, so this is the last moment before your first post.</p>
         <p>It never comes back after "Got it". The footer tells you the badge is where to find it again.</p>
-        <span class="status"><b>In the ticket</b> · required</span>
+        <span class="status"><b>Agreed</b> · seen once, by each new member</span>
       </div>
       <div class="stage">
         <div class="dialog-stage">
@@ -352,81 +353,14 @@ td .badge { font-size: 11.5px; }
       </div>
     </section>
 
-    <!-- 3 · create post -->
-    <section class="row" aria-labelledby="t-post">
-      <div class="note">
-        <span class="when">Every time you post</span>
-        <h2 id="t-post">One line next to the Post button</h2>
-        <p>In the normal Create Post dialog, in the empty space to the left of Save draft and Post, where your eyes go just before you commit. It only informs. You can't change who reads it from here, because that is a space setting.</p>
-        <p>In a public space the line gets a light blue tint. Posting to the open internet is the one case where a surprise does real harm.</p>
-        <span class="status"><b>Added by us</b> · the ticket rules this out, so it needs updating</span>
-      </div>
-      <div class="stage">
-        <div class="dialog-stage">
-          <div class="dialog pd" role="presentation">
-            <div class="dlg-head">
-              <h4>Create Post</h4>
-              <span class="pd-head-actions"><span class="pd-btn pd-outline">Find template</span><svg class="i x" aria-hidden="true"><use href="#i-x"/></svg></span>
-            </div>
-            <div class="dlg-body">
-              <div class="field-title">Speed bumps on Kerkstraat?</div>
-              <div class="pd-editor">
-                <div class="pd-toolbar" aria-hidden="true"><span>↶</span><span>↷</span><i></i><b>B</b><em>I</em><i></i><span>H1</span><span>H2</span><span>H3</span><i></i><span>☰</span><span>“</span><span>&lt;&gt;</span><i></i><svg class="i"><use href="#i-image"/></svg><svg class="i"><use href="#i-share"/></svg></div>
-                <p class="pd-text">Three near-misses outside the school this month. Should we ask the council for a 30 km/h zone, or start with speed bumps between the bakery and the bridge?</p>
-              </div>
-              <div class="pd-group"><span class="pd-label">Add to post</span><div class="pd-chips"><span class="pd-chip">Whiteboard</span><span class="pd-chip">Memo</span><span class="pd-chip">Document</span><span class="pd-chip">Call to action</span><span class="pd-chip">Media gallery</span><span class="pd-chip"><b class="on">Poll ✓</b></span><span class="pd-chip">Contributors</span><span class="pd-chip">Subspaces</span></div></div>
-              <div class="pd-group"><span class="pd-label">Responses</span><div class="pd-chips"><span class="pd-chip">Links &amp; files</span><span class="pd-chip">Posts</span><span class="pd-chip">Memos</span><span class="pd-chip">Whiteboards</span><span class="pd-chip">Documents</span><span class="pd-chip">Tasks board</span></div></div>
-              <div class="pd-more">More options <span aria-hidden="true">›</span></div>
-            </div>
-            <div class="dlg-foot">
-              <span class="audience" data-bind="postLine"></span>
-              <span class="buttons"><span class="pd-btn">Save draft</span><span class="pd-btn pd-primary">Post</span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4 · contribute -->
-    <section class="row" aria-labelledby="t-respond">
-      <div class="note">
-        <span class="when">Every time you contribute</span>
-        <h2 id="t-respond">The same line when responding to a post</h2>
-        <p>Shown in the dialog you get when a post asks for responses, here a post as a response. It works the same for whiteboards, memos, documents and links. Only one word changes: "response" instead of "post".</p>
-        <p>Comments are left out for now.</p>
-        <span class="status"><b>Added by us</b> · the ticket rules this out, so it needs updating</span>
-      </div>
-      <div class="stage">
-        <div class="dialog-stage">
-          <div class="dialog pd" role="presentation">
-            <div class="dlg-head">
-              <h4>Create Post</h4>
-              <svg class="i x" aria-hidden="true"><use href="#i-x"/></svg>
-            </div>
-            <div class="dlg-body">
-              <p class="context">Responding to <b>Where do cars park on the pavement?</b></p>
-              <div class="field-title">Photo: school entrance at 8:15</div>
-              <div class="pd-editor">
-                <div class="pd-toolbar" aria-hidden="true"><span>↶</span><span>↷</span><i></i><b>B</b><em>I</em><i></i><span>H1</span><span>H2</span><span>H3</span><i></i><span>☰</span><span>“</span><span>&lt;&gt;</span><i></i><svg class="i"><use href="#i-image"/></svg><svg class="i"><use href="#i-share"/></svg></div>
-                <p class="pd-text">Taken this morning. Cars parked on both sides, kids walking in the road.</p>
-              </div>
-            </div>
-            <div class="dlg-foot">
-              <span class="audience" data-bind="respondLine"></span>
-              <span class="buttons"><span class="pd-btn">Cancel</span><span class="pd-btn pd-primary">Post</span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5 · about -->
+    <!-- 3 · about -->
     <section class="row" aria-labelledby="t-about">
       <div class="note">
         <span class="when">When you go looking</span>
         <h2 id="t-about">A "Who can see what" section in About</h2>
-        <p>Same rows as the welcome dialog. This is the full explanation behind the badge, but not the only place people find it. Few people open About on their own.</p>
-        <span class="status"><b>In the ticket</b> · no longer the main place</span>
+        <p>Same rows as the welcome dialog: the full explanation behind the badge. Few people open About on their own, so it backs up the badge and the welcome dialog rather than replacing them.</p>
+        <p>Only members and admins see this section. Everyone else sees About as it is today.</p>
+        <span class="status"><b>Agreed</b> · seen by members and admins</span>
       </div>
       <div class="stage">
         <div class="dialog-stage">
@@ -466,13 +400,13 @@ td .badge { font-size: 11.5px; }
       </div>
     </section>
 
-    <!-- 6 · subspace list -->
+    <!-- 4 · subspace list -->
     <section class="row" aria-labelledby="t-list">
       <div class="note">
         <span class="when">While browsing</span>
         <h2 id="t-list">The same icon in the subspace list</h2>
         <p>The sidebar already shows a lock on private subspaces. With this change it uses the same three icons and the same hover sentence as the badge, so the list and the header never disagree.</p>
-        <span class="status"><b>In the ticket</b> · nice to have</span>
+        <span class="status"><b>Agreed</b> · seen by anyone who can see the list</span>
       </div>
       <div class="stage">
         <div class="screen side">
@@ -513,17 +447,17 @@ td .badge { font-size: 11.5px; }
       <article class="decision">
         <h3>Do we mention people who can see in without being members?</h3>
         <p>Admins of the space above can open a private subspace, and so can the organisation that hosts the space. Members don't know this today.</p>
-        <p class="rec"><b>Agreed:</b> yes, in one small line, only in the welcome dialog and About. Leave it out of the badge and the post line. Saying "only members" when that isn't quite true would cost trust if someone finds out later. The developers need to confirm exactly who this covers.</p>
+        <p class="rec"><b>Agreed:</b> yes, in one small line, only in the welcome dialog and About. Leave it out of the badge. Saying "only members" when that isn't quite true would cost trust if someone finds out later. The developers need to confirm exactly who this covers.</p>
       </article>
       <article class="decision">
         <h3>Where does "who can see your profile" go?</h3>
         <p>Joining a space puts you on its member list. Whether non-members can see that list depends on a space setting.</p>
-        <p class="rec"><b>Agreed:</b> only in the welcome dialog and About. That's when it matters, because it's the moment you show up on the list. Writing a post doesn't change who can see your profile, so it stays off the post line.</p>
+        <p class="rec"><b>Agreed:</b> only in the welcome dialog and About. That's when it matters, because it's the moment you show up on the list. It stays out of the badge, which is only about posts.</p>
       </article>
       <article class="decision">
         <h3>Should people see this before they join?</h3>
         <p>The ticket is written for "members and prospective members", but every place it lists is for people who already joined.</p>
-        <p class="rec"><b>Agreed:</b> keep it out of this round. The badge is visible to anyone who can open the space, which covers most of it.</p>
+        <p class="rec"><b>Agreed:</b> no. The badge, the welcome dialog and the About section are for members and admins only. People who aren't members see nothing new.</p>
       </article>
       <article class="decision">
         <h3>Which words do we use?</h3>
@@ -536,7 +470,8 @@ td .badge { font-size: 11.5px; }
   <section class="section" aria-labelledby="t-out">
     <h2 id="t-out">Not in this round</h2>
     <ul class="outscope">
-      <li>Comments. The line only appears when creating a post or adding a response.</li>
+      <li>A line in the Create Post and response dialogs. We tried it and decided against it.</li>
+      <li>Comments.</li>
       <li>Telling members when a space changes from private to public. That has its own ticket (#8716).</li>
       <li>The rest of the old design: who can post, who can create subspaces, how to join, licences.</li>
       <li>Whiteboards shared through a guest link, which can be reached outside these rules.</li>
@@ -617,11 +552,8 @@ td .badge { font-size: 11.5px; }
     set('listIcon', icon(c.icon));
     set('audienceShort', esc(c.short));
     set('hidden', esc(c.hidden));
-    set('postLine', icon(c.icon) + '<span>' + esc(c.post) + '</span>');
-    set('respondLine', icon(c.icon) + '<span>' + esc(c.respond) + '</span>');
 
     document.querySelectorAll('[data-bind="badge"]').forEach(function (el) { el.classList.toggle('is-private', c.privateStyle); });
-    document.querySelectorAll('[data-bind="postLine"], [data-bind="respondLine"]').forEach(function (el) { el.classList.toggle('is-public', !!c.publicLine); });
     document.querySelectorAll('[data-bind="hidden"]').forEach(function (el) { el.hidden = !c.hidden; });
     document.querySelectorAll('.case-btn').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.case === key)); });
     document.querySelectorAll('tr[data-row]').forEach(function (r) { r.classList.toggle('current', r.dataset.row === key); });

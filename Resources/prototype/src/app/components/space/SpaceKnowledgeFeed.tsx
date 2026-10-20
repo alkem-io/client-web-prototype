@@ -851,7 +851,7 @@ export function SpaceKnowledgeFeed() {
             />,
             <ContributionLinkCard key="c2"
               title="Energy Transition Toolkit.pdf"
-              fileInfo="PDF · 5.1 MB"
+              fileInfo="PDF"
               fileType="pdf"
               author="Elena Rodriguez"
               authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
@@ -874,7 +874,7 @@ export function SpaceKnowledgeFeed() {
             />,
             <ContributionLinkCard key="c-l5"
               title="Retrofit Cost Database 2026.xlsx"
-              fileInfo="Spreadsheet · 860 KB"
+              fileInfo="Spreadsheet"
               fileType="spreadsheet"
               author="David Miller"
               authorAvatarUrl={demoAuthorAvatar("David Miller")}
@@ -897,7 +897,7 @@ export function SpaceKnowledgeFeed() {
             />,
             <ContributionLinkCard key="c-l8"
               title="Community Energy Legal Templates.zip"
-              fileInfo="ZIP · 1.2 MB"
+              fileInfo="ZIP"
               author="Alex Contributor"
               authorAvatarUrl={demoAuthorAvatar("Alex Contributor")}
               description="Cooperative statutes, member agreements and PPA templates"
