@@ -110,9 +110,15 @@ Claude running inside Copilot — these apply.
 5. **Never merge to `main` unless he says it is ready.** That call is his. Merging
    means the design is ready for a developer to build in client-web — not that a
    developer has built it.
-6. **Tell him where to look**, with a link and what to look at. "The build passes"
+6. **Every time `main` changes, update the live site on Vercel.** That covers an
+   approved merge and a production sync landing on `main` alike. Switch to
+   `main`, then from `Resources/prototype` run `vercel deploy --prod`, and give
+   him the link. Always deploy from `main`, never from a branch, and always with
+   the Vercel command — pushing to GitHub is not how the site gets updated here.
+   If the deploy fails, say so; `main` is not finished until the site matches it.
+7. **Tell him where to look**, with a link and what to look at. "The build passes"
    is not a result he can check.
-7. When you propose ahead-of-production work, **name `src/ahead/` explicitly**, so
+8. When you propose ahead-of-production work, **name `src/ahead/` explicitly**, so
    it is visible that the rule was applied rather than guessed at.
 
 **Expect to go round several times.** Most of his time on a piece of work goes on
