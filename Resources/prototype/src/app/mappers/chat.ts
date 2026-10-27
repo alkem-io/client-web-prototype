@@ -73,7 +73,6 @@ export function toChatMessage(message: Message): ChatMessage {
       avatarUrl: message.senderAvatar || undefined,
     },
     content: message.content,
-    timestamp: message.timeLabel,
     timestampMs: Date.parse(message.timestamp) || 0,
     reactions: (message.reactions ?? []).map(r => ({
       emoji: r.emoji,

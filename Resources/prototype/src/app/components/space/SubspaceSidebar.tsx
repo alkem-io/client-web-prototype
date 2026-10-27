@@ -162,6 +162,21 @@ export function SubspaceSidebar({
   return (
     <>
       <CrdSubspaceSidebar
+        // Production's default for a subspace — what its sidebar showed before
+        // the widgets became configurable.
+        widgets={[
+          'intent',
+          'about',
+          'createPost',
+          'community',
+          'events',
+          'activity',
+          'index',
+          'subspaceLinks',
+          'virtualContributors',
+          'updates',
+        ]}
+        activityEnabled={true}
         className={className}
         collapsed={isCollapsed}
         onToggleCollapse={onToggleCollapse}
