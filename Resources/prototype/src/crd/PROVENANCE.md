@@ -8,9 +8,9 @@ primitives and design tokens in this prototype.
 |---|---|
 | Source repo | https://github.com/alkem-io/client-web |
 | Branch | `develop` |
-| Commit | `17c1aa6d3d1f6a0296633a93d77e8b4b7231db08` |
-| Commit date | 2026-10-16 12:15:54 +0300 |
-| Vendored on | 2026-10-16 |
+| Commit | `71f8ddcf7d0a97097a4de445c0ddc0c8a8ecb252` |
+| Commit date | 2026-10-26 17:03:11 +0100 |
+| Vendored on | 2026-10-27 |
 | Files | 881 |
 
 ## Rules
