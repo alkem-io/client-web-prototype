@@ -6,7 +6,7 @@ import { DatabankChip } from './DatabankChip';
 
 /** Lines each Wat / Waarom / Wie section shows before it is cut off. */
 const LINES = 5;
-/** Links shown before "+ N meer links". */
+/** Links shown before "+ N meer referenties". */
 const LINKS_PREVIEW = 2;
 
 type InitiativeCardProps = {
@@ -32,7 +32,7 @@ const external ={ target: '_blank', rel: 'noopener noreferrer' } as const;
 /**
  * One initiative in the Databank: a left column (image, title, tagline, tags,
  * classifications, lead, "Open subspace") and a right column (Wat / Waarom /
- * Wie, Links). Stacks into one column when the card is narrow.
+ * Wie, Referenties). Stacks into one column when the card is narrow.
  *
  * Height matching: each section starts clamped to LINES lines. When the left
  * column is taller than the right, the sections grow in whole lines, top to
@@ -287,7 +287,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
             {links.length > 0 && (
               <section aria-labelledby={`${initiative.id}-links`} className="flex flex-col gap-1.5">
                 <h4 id={`${initiative.id}-links`} className="text-label uppercase text-muted-foreground">
-                  Links
+                  Referenties
                 </h4>
                 <ul className="flex flex-col gap-1">
                   {shownLinks.map(link => (
@@ -310,7 +310,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                     onClick={() => setLinksOpen(o => !o)}
                     className="-ml-2 min-h-8 self-start rounded-md px-2 text-left text-body-emphasis text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    {linksOpen ? 'Toon minder links' : `+ ${links.length - LINKS_PREVIEW} meer links`}
+                    {linksOpen ? 'Toon minder referenties' : `+ ${links.length - LINKS_PREVIEW} meer referenties`}
                   </button>
                 )}
               </section>
