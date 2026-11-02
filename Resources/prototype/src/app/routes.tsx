@@ -46,6 +46,7 @@ import SubspaceStackingExploration from "./pages/SubspaceStackingExploration";
 import PostDialogExploration from "./pages/PostDialogExploration";
 import MemoSigningExploration from "./pages/MemoSigningExploration";
 import { SubspaceApplicationPage } from "./pages/SubspaceApplicationPage";
+import DatabankPage from "./pages/DatabankPage";
 import MockupGalleryPage from "@/mockups/gallery/GalleryPage";
 import MockupCompositionPage from "@/mockups/gallery/CompositionPage";
 import MockupCalibratePage from "@/mockups/gallery/CalibratePage";
@@ -150,6 +151,9 @@ export const router = createBrowserRouter([
               { path: "knowledge-base", Component: SpaceKnowledgeBase },
             ]
           },
+
+          /* GemeenteDelers: Databank praktijkvoorbeelden tab (own layout — see DatabankPage) */
+          { path: "/space/gemeentedelers/databank-praktijkvoorbeelden", Component: DatabankPage },
 
           /* Settings — no SpaceShell (has its own sidebar layout) */
           { path: "/space/:spaceSlug/settings", Component: SpaceSettingsPage },

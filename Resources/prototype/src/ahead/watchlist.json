@@ -97,6 +97,16 @@
         "TemplateProfilePage",
         "TemplateProfileView"
       ]
+    },
+    {
+      "name": "Databank praktijkvoorbeelden (subspaces as a filterable database)",
+      "ours": "src/app/pages/DatabankPage.tsx + src/app/components/databank/",
+      "gain": "A space tab listing subspaces as rich initiative cards (About What/Why/Who, lead, links) with faceted filtering on tags and classifications, live counts per value",
+      "watchFor": [
+        "InitiativeCard",
+        "FacetFilterPanel",
+        "SubspaceDatabank"
+      ]
     }
   ]
 }
