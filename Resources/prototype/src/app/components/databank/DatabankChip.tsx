@@ -10,7 +10,8 @@ import { cn } from '@/crd/lib/utils';
  *
  * - `outline`: free tags (white, bordered)
  * - `filled`: classification values (soft fill)
- * - `more`: dashed "Lees meer" / "+ N labels" expanders
+ * - `more`: "Lees meer" / "+ N labels" expanders — an outline chip with a
+ *   dashed border, so they read as part of the same set
  *
  * A pressed chip is filled with the primary colour. A disabled chip (a facet
  * value that would leave no results) is muted and dashed.
@@ -43,7 +44,7 @@ export function DatabankChip({
             : variant === 'filled'
               ? 'border-secondary bg-secondary text-secondary-foreground hover:border-primary'
               : variant === 'more'
-                ? 'self-start border-dashed border-muted-foreground bg-card font-semibold text-foreground hover:border-primary'
+                ? 'self-start border-dashed border-border bg-card text-foreground hover:border-primary'
                 : 'border-border bg-card text-foreground hover:border-primary',
         className
       )}
