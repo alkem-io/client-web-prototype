@@ -20,14 +20,12 @@ type Layout = {
   gives: Record<string, number>;
   /** Sections still cut off after growing — these get a "Lees meer". */
   overflow: Record<string, boolean>;
+  /** Whole lines a cut-off section shows before its "…". */
+  lines: Record<string, number>;
   /** Whether all classification rows fit without making the left column the taller one. */
   labelsFit: boolean;
 };
 
-const FADE_LAST_LINE = {
-  maskImage: 'linear-gradient(to bottom, black calc(100% - 1lh), transparent)',
-  WebkitMaskImage: 'linear-gradient(to bottom, black calc(100% - 1lh), transparent)',
-};
 
 const external ={ target: '_blank', rel: 'noopener noreferrer' } as const;
 
@@ -48,7 +46,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
-  const [layout, setLayout] = useState<Layout>({ gives: {}, overflow: {}, labelsFit: true });
+  const [layout, setLayout] = useState<Layout>({ gives: {}, overflow: {}, lines: {}, labelsFit: true });
 
   const leftColRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
@@ -100,6 +98,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
 
     const gives: Record<string, number> = {};
     const overflow: Record<string, boolean> = {};
+    const lines: Record<string, number> = {};
     for (const c of clamped) {
       let give = Math.min(c.need, Math.floor(room / c.lineHeight) * c.lineHeight);
       if (c.need - give < 1) give = c.need;
@@ -112,6 +111,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
       // A section holding a video is never "complete" while collapsed: the
       // video only shows once it is opened.
       overflow[c.title] = c.need - give > 1 || c.hasVideo;
+      lines[c.title] = LINES + Math.round(give / c.lineHeight);
     }
 
     const labels = labelsRef.current;
@@ -128,7 +128,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
           Math.abs((prev.gives[c.title] ?? 0) - gives[c.title]) > 0.5 ||
           !!prev.overflow[c.title] !== overflow[c.title]
       );
-    if (changed) setLayout({ gives, overflow, labelsFit });
+    if (changed) setLayout({ gives, overflow, lines, labelsFit });
   }, [sections]);
 
   const measureRef = useRef(measure);
@@ -276,6 +276,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                 open={!!openSections[section.title]}
                 give={layout.gives[section.title] ?? 0}
                 cutOff={!!layout.overflow[section.title]}
+                lines={layout.lines[section.title] ?? LINES}
                 contentRef={el => {
                   sectionRefs.current[section.title] = el;
                 }}
@@ -337,11 +338,12 @@ type CardSectionProps = {
   open: boolean;
   give: number;
   cutOff: boolean;
+  lines: number;
   contentRef: (el: HTMLDivElement | null) => void;
   onToggle: () => void;
 };
 
-function CardSection({ cardId, cardName, section, open, give, cutOff, contentRef, onToggle }: CardSectionProps) {
+function CardSection({ cardId, cardName, section, open, give, cutOff, lines, contentRef, onToggle }: CardSectionProps) {
   // The video only shows once the section is opened.
   const blocks = open ? section.blocks : section.blocks.filter(b => b.kind !== 'video');
   if (blocks.length === 0) return null;
@@ -358,11 +360,16 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, contentRef
       <div
         id={contentId}
         ref={contentRef}
-        className="flex flex-col gap-1.5 overflow-hidden text-body text-foreground"
-        // `lh` = this box's own line height, so the clamp is in whole lines.
-        // Paragraph gaps mean the cut can still land mid-line, so a cut-off
-        // section fades its last line out.
-        style={open ? undefined : { maxHeight: `calc(${LINES}lh + ${give}px)`, ...(cutOff ? FADE_LAST_LINE : {}) }}
+        className="space-y-1.5 overflow-hidden text-body text-foreground"
+        // A cut-off section is clamped by whole lines and ends in "…". One that
+        // grew to fit is capped by height (`lh` = this box's own line height).
+        style={
+          open
+            ? undefined
+            : cutOff
+              ? { display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: lines }
+              : { maxHeight: `calc(${LINES}lh + ${give}px)` }
+        }
       >
         {blocks.map((block, i) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: static mock content, order never changes
