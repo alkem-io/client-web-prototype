@@ -376,7 +376,7 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, contentRef
           aria-controls={contentId}
           aria-label={`${action}: ${section.title} van ${cardName}`}
           onClick={onToggle}
-          className="mt-0.5"
+          className="mt-0.5 self-end"
         >
           {action}
         </DatabankChip>
