@@ -7,6 +7,9 @@ import {
 import type { ParentSpaceStackItem } from "@/crd/components/space/ParentSpaceStack";
 import { CreatePostButton } from "@/crd/components/space/sidebar/CreatePostButton";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
+import { useSpaceFilters } from "@/app/components/space/FilterContext";
+import { FacetedSearchSummary, FacetSections } from "@/ahead/FacetedSearchPanel";
+import { SearchField } from "@/crd/forms/SearchField";
 import type { MockSpaceCard } from "@/app/mappers/spaceCard";
 
 /** The subspace's framing question, shown in the info block. */
@@ -133,6 +136,7 @@ export function SubspaceSidebar({
   const navigate = useNavigate();
   const { spaceSlug, subspaceSlug } = useParams<{ spaceSlug: string; subspaceSlug: string }>();
   const [communityOpen, setCommunityOpen] = useState(false);
+  const filters = useSpaceFilters();
 
   // Outermost first, so the stack reads grandparent → parent.
   const parentSpaces: ParentSpaceStackItem[] = [
@@ -168,13 +172,15 @@ export function SubspaceSidebar({
           'intent',
           'about',
           'createPost',
+          // Holds the search panel. CRD's own `search` widget is its flat
+          // `SearchSection`; `updatesSlot` is its one slot placeable by widget id.
+          'updates',
           'community',
           'events',
           'activity',
           'index',
           'subspaceLinks',
           'virtualContributors',
-          'updates',
         ]}
         activityEnabled={true}
         className={className}
@@ -212,6 +218,18 @@ export function SubspaceSidebar({
         onShowAllSubspaces={() => navigate(`${base}/subspaces`)}
         onAboutClick={() => setCommunityOpen(true)}
         onQuickActionClick={handleQuickAction}
+        updatesSlot={
+          <div className="flex flex-col gap-3">
+            <SearchField
+              value={filters.searchText}
+              onValueChange={filters.setSearchText}
+              placeholder="Search posts…"
+              ariaLabel="Search posts…"
+            />
+            <FacetedSearchSummary filters={filters} />
+            {filters.facets.length > 0 && <FacetSections filters={filters} />}
+          </div>
+        }
         actionsSlot={
           <CreatePostButton onClick={() => window.dispatchEvent(new Event('open-add-post-modal'))} />
         }

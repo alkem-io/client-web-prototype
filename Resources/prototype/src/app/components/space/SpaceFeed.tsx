@@ -7,7 +7,7 @@ import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/Co
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { DocumentDetailDialog } from "@/app/components/dialogs/DocumentDetailDialog";
-import { useSpaceFilters } from "@/app/components/space/FilterContext";
+import { useFeedSearch } from "@/app/components/space/FilterContext";
 import { Card, CardContent } from "@/crd/primitives/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
@@ -339,7 +339,6 @@ export function SpaceFeed() {
     const stored = localStorage.getItem('alkemio-collapse-posts');
     return stored !== null ? stored === 'true' : false;
   });
-  const { searchValue, activeTags } = useSpaceFilters();
 
   const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
     posts,
@@ -672,18 +671,7 @@ export function SpaceFeed() {
     ? contributionCardsFor(contributionsDialogPost)
     : undefined;
 
-  // Filter posts based on search and tag filters
-  const filteredPosts = posts.filter((post) => {
-    const q = searchValue.toLowerCase();
-    const matchesSearch = !searchValue || 
-      post.title.toLowerCase().includes(q) ||
-      (post.snippet?.toLowerCase().includes(q) ?? false) ||
-      (post.author?.name.toLowerCase().includes(q) ?? false);
-    
-    const matchesTags = activeTags.length === 0 || activeTags.every((tag) => post.tags.includes(tag));
-    
-    return matchesSearch && matchesTags;
-  });
+  const filteredPosts = useFeedSearch(posts);
 
   return (
     <div className="w-full">

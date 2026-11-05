@@ -10,12 +10,12 @@ import {
   DialogTitle,
   DialogDescription
 } from "@/crd/primitives/dialog";
-import { Plus, Mail, UserPlus, Search, List, FileText, X, Calendar, ChevronDown, Target, ExternalLink, ArrowUpDown } from "lucide-react";
+import { Plus, Mail, UserPlus, Search, List, FileText, Calendar, ChevronDown, Target, ExternalLink, ArrowUpDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { cn } from "@/crd/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { SpaceSidebar as CrdSpaceSidebar } from "@/crd/components/space/SpaceSidebar";
-import { CollapsibleTagList } from "@/crd/components/common/CollapsibleTagList";
+import { FacetedSearchSummary, FacetSections } from "@/ahead/FacetedSearchPanel";
 import { CreatePostButton } from "@/crd/components/space/sidebar/CreatePostButton";
 import { CreateSubspaceButton } from "@/crd/components/space/sidebar/CreateSubspaceButton";
 import { InviteButton } from "@/crd/components/space/sidebar/InviteButton";
@@ -42,13 +42,6 @@ interface SpaceSidebarProps {
   /** Admin-controlled feature toggles */
   widgetConfig?: SidebarWidgetConfig;
 }
-
-const TAB_TAGS: Record<string, string[]> = {
-  home:       ["Updates", "Events", "Ideas", "Announcements", "Strategy", "Discussion", "Question", "Feedback", "Milestone", "Decision", "Blocker", "Action Item", "Proposal", "Vote", "Summary", "Minutes", "Agenda", "Follow-up", "Retrospective", "Planning", "Sprint", "Release", "Bug Report", "Feature Request", "Enhancement", "Onboarding", "Welcome", "Celebration", "Recognition", "Resource", "Link", "Tutorial", "Guide", "Best Practice", "Lesson Learned", "Case Study", "Interview", "Podcast", "Webinar", "Workshop", "Hackathon", "Challenge"],
-  community:  ["Members", "Active", "Leads", "New"],
-  workspaces: ["Energy", "Strategy", "Transport", "Urban", "Green Spaces", "Policy", "Community", "Digital", "Simulation", "Regulation"],
-  knowledge:  ["Reports", "Policy", "Research", "Data", "Technical", "Funding", "Community", "Templates", "Legal", "Infrastructure", "Governance", "Environment", "Education", "Standards", "Compliance", "Audit", "Budget", "Procurement", "Contracts", "Risk Assessment", "Impact Analysis", "Benchmarks", "Case Studies", "White Papers", "Presentations", "Dashboards", "Metrics", "KPIs", "Frameworks", "Methodologies", "Tools", "Software", "Hardware", "IoT", "AI/ML", "Blockchain", "Open Data", "APIs", "Integrations", "Workflows", "Automation", "Security", "Privacy", "Accessibility", "Sustainability", "Carbon", "Circular Economy", "Social Impact", "Equity", "Innovation", "Pilots", "Prototypes"]
-};
 
 const TAB_INDEX: Record<string, Array<{ title: string; type: string; author: string; tags: string[] }>> = {
   home: [
@@ -100,7 +93,7 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
   const [applicationDialogOpen, setApplicationDialogOpen] = useState(false);
 
   // Use filter context
-  const { searchValue, activeTags, setSearchValue, toggleTag, clearTags } = useSpaceFilters();
+  const filters = useSpaceFilters();
 
   // Mock form config for subspace application
   const mockFormConfig: ApplicationFormConfig = {
@@ -250,64 +243,12 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
     organization: "Organization"
   };
 
-  const tags = TAB_TAGS[variant] ?? TAB_TAGS.home;
   const allIndexItems = TAB_INDEX[variant] ?? TAB_INDEX.home;
   const searchPlaceholder =
     variant === "workspaces" ? "Search subspaces…"
     : variant === "knowledge" ? "Search knowledge base…"
     : variant === "community" ? "Search community…"
     : "Search posts…";
-
-  // Filter index items by search and tag
-  const filteredIndexItems = allIndexItems.filter((item) => {
-    const matchesSearch = searchValue === "" || 
-      item.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-      item.author.toLowerCase().includes(searchValue.toLowerCase());
-    
-    const matchesTags = activeTags.length === 0 || activeTags.every((tag) => item.tags.includes(tag));
-    
-    return matchesSearch && matchesTags;
-  });
-
-  const hasFilters = searchValue !== "" || activeTags.length > 0;
-  const matchCount = filteredIndexItems.length;
-
-  // Shown next to whichever of Search / Tags is on, so an active filter is
-  // always clearable.
-  const filterFeedback = hasFilters && (
-    <div
-      className="flex items-center justify-between gap-2 p-2 rounded-md text-caption mb-3"
-      style={{
-        background: "color-mix(in srgb, var(--primary) 10%, transparent)",
-        color: "var(--primary)"
-      }}
-    >
-      <span>
-        <strong>{matchCount}</strong> item{matchCount !== 1 ? 's' : ''} match
-        {activeTags.length > 0 && (
-          <>
-            {" "}tagged <strong>"{activeTags.join('" + "')}"</strong>
-          </>
-        )}
-        {activeTags.length > 0 && searchValue && " and "}
-        {searchValue && (
-          <>
-            {" "}search for <strong>"{searchValue}"</strong>
-          </>
-        )}
-      </span>
-      <button
-        onClick={() => {
-          setSearchValue("");
-          clearTags();
-        }}
-        className="flex items-center justify-center w-5 h-5 rounded hover:bg-primary/20 transition-colors"
-        title="Clear filters"
-      >
-        <X className="w-3 h-3" />
-      </button>
-    </div>
-  );
 
   // ─── Sidebar widgets — visibility and order come from Settings → Layout ────
   const widgetNodes: Record<string, React.ReactNode> = {
@@ -338,24 +279,23 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
     search: (
       <div className="pb-2">
         <SearchField
-          value={searchValue}
-          onValueChange={setSearchValue}
+          value={filters.searchText}
+          onValueChange={filters.setSearchText}
           placeholder={searchPlaceholder}
           ariaLabel={searchPlaceholder}
         />
-        {!config.enabled.tags && filterFeedback}
+        <FacetedSearchSummary filters={filters} className="mt-3" />
       </div>
     ),
-    tags: (
-      <>
-        {/* CRD bundles search + tags into one `SearchSection`; the prototype keeps
-            them as two independently-togglable widgets (Settings → Layout), so the
-            tag half is composed from `CollapsibleTagList` directly. */}
-        <CollapsibleTagList tags={tags} selectedTags={activeTags} onTagClick={toggleTag} />
-        {filterFeedback}
-        <div className="mb-2" />
-      </>
-    ),
+    // Search and Tags stay two independently-togglable widgets (Settings → Layout),
+    // so the summary follows whichever is on.
+    tags:
+      filters.facets.length > 0 ? (
+        <div className="pb-2">
+          {!config.enabled.search && <FacetedSearchSummary filters={filters} className="mb-3" />}
+          <FacetSections filters={filters} />
+        </div>
+      ) : null,
     subspaceLinks:
       variant === "home" ? (
         <>

@@ -5,6 +5,7 @@ import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { HeaderActionIcons, type HeaderActionIconsData } from "@/crd/components/space/HeaderActionIcons";
 import { SpaceSidebar } from "./SpaceSidebar";
 import { FilterProvider, useSpaceFilters } from "./FilterContext";
+import { FacetedSearchSummary, FacetSections } from "@/ahead/FacetedSearchPanel";
 import { SpaceShell as CrdSpaceShell } from "@/crd/layouts/SpaceShell";
 import { Activity, Video, FileText, Share2, Settings, Info, Menu, Filter, X, ChevronDown, ChevronUp, ArrowUp, Home, Users, Layers, BookOpen, MessageSquare, PanelLeftOpen, PanelLeftClose, Search, Plus, MessageCircle, LayoutGrid, List, CheckCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -739,14 +740,8 @@ interface SidebarIconRailProps extends MobileStrategyProps {
 function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScaling, enabledFeatures, onExpand }: SidebarIconRailProps) {
   const features = enabledFeatures || { search: true, tags: true, post: true, addUser: true, createSubspace: true, subspaceLinks: true, index: true };
   const [activePopover, setActivePopover] = useState<string | null>(null);
-  const { searchValue, setSearchValue, activeTags, toggleTag, clearTags } = useSpaceFilters();
+  const filters = useSpaceFilters();
 
-  const TAB_TAGS: Record<string, string[]> = {
-    home: ["Updates", "Announcements", "Events", "Ideas", "Questions", "Partnerships", "Research", "Progress"],
-    community: ["Active", "Leads", "New Members", "Organizations", "Mentors"],
-    workspaces: ["Energy", "Strategy", "Transport", "Urban", "Policy", "Community", "Digital"],
-    knowledge: ["Reports", "Research", "Policy", "Technical", "Templates", "Community", "Data", "Funding"]
-  };
 
   const SUBSPACE_LINKS = [
     { name: "Energy Transition", href: `/space/${slug}/subspaces` },
@@ -754,7 +749,6 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
     { name: "Circular Economy", href: `/space/${slug}/subspaces` },
   ];
 
-  const tags = TAB_TAGS[sidebarVariant] || TAB_TAGS.home;
 
   const togglePopover = (id: string) => {
     setActivePopover(activePopover === id ? null : id);
@@ -794,9 +788,9 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
               >
                 <div className="relative">
                   <Search className="w-4 h-4" />
-                  {activeTags.length > 0 && (
+                  {filters.active.length > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
-                      {activeTags.length}
+                      {filters.active.length}
                     </span>
                   )}
                 </div>
@@ -874,47 +868,15 @@ function SidebarIconRail({ slug, sidebarVariant, activeTabDescription, usesScali
                     <input
                       type="text"
                       placeholder="Search posts, comments, documents…"
-                      value={searchValue}
-                      onChange={(e) => setSearchValue(e.target.value)}
+                      value={filters.searchText}
+                      onChange={(e) => filters.setSearchText(e.target.value)}
                       className="w-full h-9 pl-8 pr-3 text-body rounded-lg border border-border bg-input-background text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-ring"
                       autoFocus
                     />
                   </div>
                 )}
-                {searchValue && (
-                  <p className="text-caption text-muted-foreground">
-                    Filtering by: <span className="font-medium text-foreground">"{searchValue}"</span>
-                    <button onClick={() => setSearchValue("")} className="ml-2 text-primary hover:underline">Clear</button>
-                  </p>
-                )}
-                {features.tags && (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <span className="text-caption text-muted-foreground uppercase tracking-wide">Tags</span>
-                      {activeTags.length > 0 && (
-                        <button onClick={clearTags} className="text-caption text-primary hover:underline">
-                          Clear all
-                        </button>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {tags.map((tag) => (
-                        <button
-                          key={tag}
-                          onClick={() => toggleTag(tag)}
-                          className={cn(
-                            "px-2.5 py-1 rounded-full text-caption transition-colors",
-                            activeTags.includes(tag)
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-                          )}
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
+                <FacetedSearchSummary filters={filters} />
+                {features.tags && <FacetSections filters={filters} />}
               </div>
             )}
 

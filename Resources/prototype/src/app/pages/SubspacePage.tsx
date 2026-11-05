@@ -11,6 +11,7 @@ import {
 import { Button } from "@/crd/primitives/button";
 import { SubspaceHeader } from "@/app/components/space/SubspaceHeader";
 import { SubspaceSidebar } from "@/app/components/space/SubspaceSidebar";
+import { FilterProvider, useFeedSearch, useSpaceFilters } from "@/app/components/space/FilterContext";
 import { cn } from "@/crd/lib/utils";
 import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs";
 import { HeaderActionIcons } from "@/crd/components/space/HeaderActionIcons";
@@ -302,6 +303,14 @@ const SUBSPACE_POSTS: CalloutPost[] = [
 
 /* ─── Page Component ─── */
 export default function SubspacePage() {
+  return (
+    <FilterProvider>
+      <SubspacePageContent />
+    </FilterProvider>
+  );
+}
+
+function SubspacePageContent() {
   const {
     spaceSlug = "green-energy",
     subspaceSlug = "renewable-energy-transition",
@@ -334,10 +343,12 @@ export default function SubspacePage() {
   }, []);
 
   // Filter posts by active phase
-  const filteredPosts = useMemo(
+  const phasePosts = useMemo(
     () => SUBSPACE_POSTS.filter((p) => p.callout === activeCallout),
     [activeCallout]
   );
+  const filters = useSpaceFilters();
+  const filteredPosts = useFeedSearch(phasePosts);
 
   return (
     <div
@@ -501,7 +512,11 @@ export default function SubspacePage() {
                     }
                     tabs={info.callouts}
                     activeTab={activeCallout}
-                    onTabChange={setActiveCallout}
+                    onTabChange={(id) => {
+                      // A search never leaks across phases.
+                      filters.clearAll();
+                      setActiveCallout(id);
+                    }}
                   activityOwner={activeSlug}
                 />
               </div>
@@ -554,14 +569,16 @@ export default function SubspacePage() {
                     marginBottom: 4
                   }}
                 >
-                  No posts in this phase yet
+                  {filters.hasActive ? "No results" : "No posts in this phase yet"}
                 </p>
                 <p
                   style={{
                     color: "var(--muted-foreground)"
                   }}
                 >
-                  Be the first to share something here.
+                  {filters.hasActive
+                    ? "Nothing in this phase matches your search."
+                    : "Be the first to share something here."}
                 </p>
               </div>
             )}
