@@ -3,7 +3,7 @@ import { SearchField } from '@/crd/forms/SearchField';
 import type { DatabankFilters } from './useDatabankFilters';
 
 const DUTCH_LABELS: FacetLabels = {
-  showAll: total => `Toon alle ${total}`,
+  showMore: hidden => `+ ${hidden} ${hidden === 1 ? 'label' : 'labels'}`,
   showLess: 'Toon minder',
   selected: (selected, total) => `${selected} van ${total}`,
   selectedAria: (selected, total) => `${selected} van ${total} geselecteerd`,

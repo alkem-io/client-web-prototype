@@ -20,11 +20,11 @@ import type { FacetedSearch } from './facetedSearch';
  * Layout switches Search and Tags on and off independently.
  */
 
-/** How many values an open section shows before "Show all N". */
+/** How many values an open section shows before "+ N labels". */
 const FACET_PREVIEW = 5;
 
 export type FacetLabels = {
-  showAll: (total: number) => string;
+  showMore: (hidden: number) => string;
   showLess: string;
   selected: (selected: number, total: number) => string;
   selectedAria: (selected: number, total: number) => string;
@@ -33,7 +33,7 @@ export type FacetLabels = {
 };
 
 const ENGLISH_LABELS: FacetLabels = {
-  showAll: total => `Show all ${total}`,
+  showMore: hidden => `+ ${hidden} ${hidden === 1 ? 'label' : 'labels'}`,
   showLess: 'Show less',
   selected: (selected, total) => `${selected} of ${total}`,
   selectedAria: (selected, total) => `${selected} of ${total} selected`,
@@ -151,14 +151,13 @@ export function FacetSections({ filters, labels = ENGLISH_LABELS }: { filters: F
                 ))}
               </div>
               {total > FACET_PREVIEW && (
-                <button
-                  type="button"
+                <FacetChip
+                  variant="more"
                   aria-expanded={!!showAll}
                   onClick={() => setExpanded(prev => ({ ...prev, [facet.group]: !prev[facet.group] }))}
-                  className="-ml-2 min-h-8 self-start rounded-md px-2 text-body-emphasis text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  {showAll ? labels.showLess : labels.showAll(total)}
-                </button>
+                  {showAll ? labels.showLess : labels.showMore(total - FACET_PREVIEW)}
+                </FacetChip>
               )}
             </CollapsibleContent>
           </Collapsible>
