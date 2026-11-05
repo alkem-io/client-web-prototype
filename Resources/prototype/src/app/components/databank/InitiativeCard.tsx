@@ -38,7 +38,8 @@ const external ={ target: '_blank', rel: 'noopener noreferrer' } as const;
  * column is taller than the right, the sections grow in whole lines, top to
  * bottom, into that spare height, so the two columns end up about equal. When
  * the classification rows are what makes the left column taller, they condense
- * to the first value plus a "+ N labels" pill.
+ * to the first value and any values selected as filters, plus a "+ N labels"
+ * pill for the rest.
  */
 export function InitiativeCard({ initiative, isActive, onToggleFilter }: InitiativeCardProps) {
   const { name, sections, classifications, links } = initiative;
@@ -151,8 +152,14 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
   const totalLabels = classifications.reduce((n, c) => n + c.values.length, 0);
   const condensed = !labelsOpen && !layout.labelsFit && totalLabels > 1;
   const labelRows = condensed
-    ? [{ label: classifications[0].label, values: [classifications[0].values[0]] }]
+    ? classifications
+        .map((c, rowIndex) => ({
+          label: c.label,
+          values: c.values.filter((v, i) => (rowIndex === 0 && i === 0) || isActive(c.label, v)),
+        }))
+        .filter(row => row.values.length > 0)
     : classifications;
+  const hiddenLabels = totalLabels - labelRows.reduce((n, row) => n + row.values.length, 0);
 
   const chip = (group: string, value: string, variant: 'outline' | 'filled') => (
     <DatabankChip
@@ -206,14 +213,14 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                         {row.values.map(v => chip(row.label, v, 'filled'))}
                       </ClassificationRow>
                     ))}
-                    {condensed && (
+                    {hiddenLabels > 0 && (
                       <DatabankChip
                         variant="more"
                         aria-expanded={false}
                         aria-label={`Toon alle ${totalLabels} labels van ${name}`}
                         onClick={() => setLabelsOpen(true)}
                       >
-                        + {totalLabels - 1} labels
+                        + {hiddenLabels} labels
                       </DatabankChip>
                     )}
                   </div>
