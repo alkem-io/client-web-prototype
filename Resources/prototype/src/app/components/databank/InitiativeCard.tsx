@@ -1,6 +1,6 @@
 import { ArrowRight, ExternalLink, Play } from 'lucide-react';
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { DatabankBlock, DatabankInitiative, DatabankSection } from '@/app/data/databank-data';
+import type { DatabankBlock, DatabankInitiative, DatabankLead, DatabankSection } from '@/app/data/databank-data';
 import { cn } from '@/crd/lib/utils';
 import { Button } from '@/crd/primitives/button';
 import { DatabankChip } from './DatabankChip';
@@ -10,10 +10,48 @@ const LINES = 5;
 /** Links shown before "+ N meer referenties". */
 const LINKS_PREVIEW = 2;
 
+export type InitiativeCardLabels = {
+  readMore: string;
+  showLess: string;
+  enter: string;
+  enterAria: (name: string) => string;
+  references: string;
+  moreReferences: (hidden: number) => string;
+  lessReferences: string;
+  allLabelsAria: (total: number, name: string) => string;
+  sectionAria: (action: string, section: string, name: string) => string;
+};
+
+const DUTCH_LABELS: InitiativeCardLabels = {
+  readMore: 'Lees meer',
+  showLess: 'Toon minder',
+  enter: 'Betreden',
+  enterAria: name => `Betreed subspace ${name}`,
+  references: 'Referenties',
+  moreReferences: hidden => `+ ${hidden} meer referenties`,
+  lessReferences: 'Toon minder referenties',
+  allLabelsAria: (total, name) => `Toon alle ${total} labels van ${name}`,
+  sectionAria: (action, section, name) => `${action}: ${section} van ${name}`,
+};
+
+export const ENGLISH_CARD_LABELS: InitiativeCardLabels = {
+  readMore: 'Read more',
+  showLess: 'Show less',
+  enter: 'Enter',
+  enterAria: name => `Enter subspace ${name}`,
+  references: 'References',
+  moreReferences: hidden => `+ ${hidden} more references`,
+  lessReferences: 'Show fewer references',
+  allLabelsAria: (total, name) => `Show all ${total} labels of ${name}`,
+  sectionAria: (action, section, name) => `${action}: ${section} of ${name}`,
+};
+
 type InitiativeCardProps = {
   initiative: DatabankInitiative;
-  isActive: (group: string, value: string) => boolean;
-  onToggleFilter: (group: string, value: string) => void;
+  /** Without these, tags and classifications are plain labels rather than filters. */
+  isActive?: (group: string, value: string) => boolean;
+  onToggleFilter?: (group: string, value: string) => void;
+  labels?: InitiativeCardLabels;
 };
 
 type Layout = {
@@ -42,8 +80,10 @@ const external ={ target: '_blank', rel: 'noopener noreferrer' } as const;
  * to the first value and any values selected as filters, plus a "+ N labels"
  * pill for the rest.
  */
-export function InitiativeCard({ initiative, isActive, onToggleFilter }: InitiativeCardProps) {
+export function InitiativeCard({ initiative, isActive, onToggleFilter, labels = DUTCH_LABELS }: InitiativeCardProps) {
   const { name, sections, classifications, links } = initiative;
+  const linkProps = initiative.url.startsWith('/') ? {} : external;
+  const leads = [initiative.lead, ...(initiative.otherLeads ?? [])];
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [labelsOpen, setLabelsOpen] = useState(false);
@@ -156,22 +196,35 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
     ? classifications
         .map((c, rowIndex) => ({
           label: c.label,
-          values: c.values.filter((v, i) => (rowIndex === 0 && i === 0) || isActive(c.label, v)),
+          values: c.values.filter((v, i) => (rowIndex === 0 && i === 0) || isActive?.(c.label, v)),
         }))
         .filter(row => row.values.length > 0)
     : classifications;
   const hiddenLabels = totalLabels - labelRows.reduce((n, row) => n + row.values.length, 0);
 
-  const chip = (group: string, value: string, variant: 'outline' | 'filled') => (
-    <DatabankChip
-      key={value}
-      variant={variant}
-      pressed={isActive(group, value)}
-      onClick={() => onToggleFilter(group, value)}
-    >
-      {value}
-    </DatabankChip>
-  );
+  const chip = (group: string, value: string, variant: 'outline' | 'filled') =>
+    onToggleFilter ? (
+      <DatabankChip
+        key={value}
+        variant={variant}
+        pressed={isActive?.(group, value)}
+        onClick={() => onToggleFilter(group, value)}
+      >
+        {value}
+      </DatabankChip>
+    ) : (
+      <span
+        key={value}
+        className={cn(
+          'inline-flex min-h-7 max-w-full items-center rounded-full border px-3 py-1 text-caption font-medium',
+          variant === 'filled'
+            ? 'border-secondary bg-secondary text-secondary-foreground'
+            : 'border-border bg-card text-foreground'
+        )}
+      >
+        {value}
+      </span>
+    );
 
   const shownLinks = linksOpen ? links : links.slice(0, LINKS_PREVIEW);
 
@@ -187,12 +240,14 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
           className="flex min-w-0 flex-col @lg:min-w-52 @lg:max-w-85 @lg:shrink-0 @lg:grow @lg:basis-56 @2xl:min-w-65 @2xl:basis-70"
         >
           <div ref={topRef}>
-            <img src={initiative.imageUrl} alt="" className="block aspect-video w-full object-cover" />
+            {initiative.imageUrl && (
+              <img src={initiative.imageUrl} alt="" className="block aspect-video w-full object-cover" />
+            )}
             <div className="flex flex-col gap-2.5 px-4 pt-4 pb-3">
               <h3 className="text-subsection-title text-foreground">
                 <a
                   href={initiative.url}
-                  {...external}
+                  {...linkProps}
                   className="rounded-sm hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {name}
@@ -218,7 +273,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                       <DatabankChip
                         variant="more"
                         aria-expanded={false}
-                        aria-label={`Toon alle ${totalLabels} labels van ${name}`}
+                        aria-label={labels.allLabelsAria(totalLabels, name)}
                         onClick={() => setLabelsOpen(true)}
                       >
                         + {hiddenLabels} labels
@@ -251,17 +306,12 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
           <div ref={footRef} className="mt-auto px-4 pt-3 pb-4">
             <div className="flex flex-col gap-3 border-t border-border pt-3">
               <p className="text-caption font-medium text-muted-foreground">Lead</p>
-              <div className="flex items-center gap-2.5">
-                <img
-                  src={initiative.lead.logoUrl}
-                  alt=""
-                  className="size-9 shrink-0 rounded-md border border-border bg-card object-contain"
-                />
-                <span className="text-card-title text-foreground">{initiative.lead.name}</span>
-              </div>
+              {leads.map(lead => (
+                <LeadRow key={lead.name} lead={lead} />
+              ))}
               <Button asChild={true} size="lg" className="h-11 w-full">
-                <a href={initiative.url} {...external} aria-label={`Betreed subspace ${name}`}>
-                  Betreden
+                <a href={initiative.url} {...linkProps} aria-label={labels.enterAria(name)}>
+                  {labels.enter}
                   <ArrowRight aria-hidden="true" />
                 </a>
               </Button>
@@ -280,6 +330,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                 key={section.title}
                 cardId={initiative.id}
                 cardName={name}
+                labels={labels}
                 section={section}
                 open={!!openSections[section.title]}
                 give={layout.gives[section.title] ?? 0}
@@ -295,7 +346,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
             {links.length > 0 && (
               <section aria-labelledby={`${initiative.id}-links`} className="flex flex-col gap-1.5">
                 <h4 id={`${initiative.id}-links`} className="text-card-title uppercase tracking-wide text-foreground">
-                  Referenties
+                  {labels.references}
                 </h4>
                 <ul className="flex flex-col gap-1">
                   {shownLinks.map(link => (
@@ -318,7 +369,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                     onClick={() => setLinksOpen(o => !o)}
                     className="-ml-2 min-h-8 self-start rounded-md px-2 text-left text-body-emphasis text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    {linksOpen ? 'Toon minder referenties' : `+ ${links.length - LINKS_PREVIEW} meer referenties`}
+                    {linksOpen ? labels.lessReferences : labels.moreReferences(links.length - LINKS_PREVIEW)}
                   </button>
                 )}
               </section>
@@ -327,6 +378,29 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
         </div>
       </div>
     </article>
+  );
+}
+
+function LeadRow({ lead }: { lead: DatabankLead }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      {lead.logoUrl ? (
+        <img
+          src={lead.logoUrl}
+          alt=""
+          className="size-9 shrink-0 rounded-md border border-border bg-card object-contain"
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="flex size-9 shrink-0 items-center justify-center rounded-md text-caption font-medium text-white"
+          style={{ backgroundColor: lead.color }}
+        >
+          {lead.initials}
+        </span>
+      )}
+      <span className="text-card-title text-foreground">{lead.name}</span>
+    </div>
   );
 }
 
@@ -342,6 +416,7 @@ function ClassificationRow({ label, children }: { label: string; children: React
 type CardSectionProps = {
   cardId: string;
   cardName: string;
+  labels: InitiativeCardLabels;
   section: DatabankSection;
   open: boolean;
   give: number;
@@ -351,14 +426,14 @@ type CardSectionProps = {
   onToggle: () => void;
 };
 
-function CardSection({ cardId, cardName, section, open, give, cutOff, lines, contentRef, onToggle }: CardSectionProps) {
+function CardSection({ cardId, cardName, labels, section, open, give, cutOff, lines, contentRef, onToggle }: CardSectionProps) {
   // The video only shows once the section is opened.
   const blocks = open ? section.blocks : section.blocks.filter(b => b.kind !== 'video');
   if (blocks.length === 0) return null;
 
   const headingId = `${cardId}-${section.title}`;
   const contentId = `${headingId}-content`;
-  const action = open ? 'Toon minder' : 'Lees meer';
+  const action = open ? labels.showLess : labels.readMore;
 
   return (
     <section aria-labelledby={headingId} className={cn('flex flex-col gap-1.5', (open || cutOff) && 'not-last:-mb-6')}>
@@ -391,7 +466,7 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, lines, con
           variant="more"
           aria-expanded={open}
           aria-controls={contentId}
-          aria-label={`${action}: ${section.title} van ${cardName}`}
+          aria-label={labels.sectionAria(action, section.title, cardName)}
           onClick={onToggle}
           className="relative z-10 -mt-0.5 self-end"
         >

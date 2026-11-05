@@ -17,9 +17,12 @@ export type DatabankBlock =
   | { kind: 'video'; title: string; thumbnailUrl: string };
 
 export type DatabankSection = {
-  title: 'Wat' | 'Waarom' | 'Wie';
+  title: string;
   blocks: DatabankBlock[];
 };
+
+/** A lead without a logo shows `initials` on `color`. */
+export type DatabankLead = { name: string; logoUrl?: string; initials?: string; color?: string };
 
 export type DatabankInitiative = {
   id: string;
@@ -27,8 +30,10 @@ export type DatabankInitiative = {
   tagline: string;
   /** The subspace this initiative lives in. */
   url: string;
-  imageUrl: string;
-  lead: { name: string; logoUrl: string };
+  imageUrl?: string;
+  lead: DatabankLead;
+  /** Further leads, shown under `lead`. */
+  otherLeads?: DatabankLead[];
   tags: string[];
   classifications: { label: string; values: string[] }[];
   sections: DatabankSection[];
