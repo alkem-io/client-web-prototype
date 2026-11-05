@@ -1,6 +1,7 @@
 import { ArrowRight, ExternalLink, Play } from 'lucide-react';
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { DatabankBlock, DatabankInitiative, DatabankSection } from '@/app/data/databank-data';
+import { cn } from '@/crd/lib/utils';
 import { Button } from '@/crd/primitives/button';
 import { FacetChip } from '@/ahead/FacetedSearchPanel';
 
@@ -31,7 +32,7 @@ const external ={ target: '_blank', rel: 'noopener noreferrer' } as const;
 
 /**
  * One initiative in the Databank: a left column (image, title, tagline, tags,
- * classifications, lead, "Open subspace") and a right column (Wat / Waarom /
+ * classifications, lead, "Betreden") and a right column (Wat / Waarom /
  * Wie, Referenties). Stacks into one column when the card is narrow.
  *
  * Height matching: each section starts clamped to LINES lines. When the left
@@ -259,8 +260,8 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                 <span className="text-card-title text-foreground">{initiative.lead.name}</span>
               </div>
               <Button asChild={true} size="lg" className="h-11 w-full">
-                <a href={initiative.url} {...external} aria-label={`Open subspace ${name}`}>
-                  Open subspace
+                <a href={initiative.url} {...external} aria-label={`Betreed subspace ${name}`}>
+                  Betreden
                   <ArrowRight aria-hidden="true" />
                 </a>
               </Button>
@@ -293,7 +294,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
 
             {links.length > 0 && (
               <section aria-labelledby={`${initiative.id}-links`} className="flex flex-col gap-1.5">
-                <h4 id={`${initiative.id}-links`} className="text-label uppercase text-muted-foreground">
+                <h4 id={`${initiative.id}-links`} className="text-card-title uppercase tracking-wide text-foreground">
                   Referenties
                 </h4>
                 <ul className="flex flex-col gap-1">
@@ -360,8 +361,8 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, lines, con
   const action = open ? 'Toon minder' : 'Lees meer';
 
   return (
-    <section aria-labelledby={headingId} className="flex flex-col gap-1.5">
-      <h4 id={headingId} className="text-label uppercase text-muted-foreground">
+    <section aria-labelledby={headingId} className={cn('flex flex-col gap-1.5', (open || cutOff) && '-mb-1.5')}>
+      <h4 id={headingId} className="text-card-title uppercase tracking-wide text-foreground">
         {section.title}
       </h4>
       <div
@@ -390,7 +391,7 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, lines, con
           aria-controls={contentId}
           aria-label={`${action}: ${section.title} van ${cardName}`}
           onClick={onToggle}
-          className="mt-0.5 self-end"
+          className="-mt-0.5 self-end"
         >
           {action}
         </FacetChip>
