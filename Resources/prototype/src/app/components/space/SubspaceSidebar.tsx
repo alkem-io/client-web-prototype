@@ -8,8 +8,7 @@ import type { ParentSpaceStackItem } from "@/crd/components/space/ParentSpaceSta
 import { CreatePostButton } from "@/crd/components/space/sidebar/CreatePostButton";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
-import { FacetedSearchSummary, FacetSections } from "@/ahead/FacetedSearchPanel";
-import { SearchField } from "@/crd/forms/SearchField";
+import { FacetedSearchCard } from "@/ahead/FacetedSearchPanel";
 import type { MockSpaceCard } from "@/app/mappers/spaceCard";
 
 /** The subspace's framing question, shown in the info block. */
@@ -218,18 +217,7 @@ export function SubspaceSidebar({
         onShowAllSubspaces={() => navigate(`${base}/subspaces`)}
         onAboutClick={() => setCommunityOpen(true)}
         onQuickActionClick={handleQuickAction}
-        updatesSlot={
-          <div className="flex flex-col gap-3">
-            <SearchField
-              value={filters.searchText}
-              onValueChange={filters.setSearchText}
-              placeholder="Search posts…"
-              ariaLabel="Search posts…"
-            />
-            <FacetedSearchSummary filters={filters} />
-            {filters.facets.length > 0 && <FacetSections filters={filters} />}
-          </div>
-        }
+        updatesSlot={<FacetedSearchCard filters={filters} searchLabel="Search" placeholder="Search posts…" />}
         actionsSlot={
           <CreatePostButton onClick={() => window.dispatchEvent(new Event('open-add-post-modal'))} />
         }

@@ -1,5 +1,4 @@
-import { type FacetLabels, FacetedSearchSummary, FacetSections } from '@/ahead/FacetedSearchPanel';
-import { SearchField } from '@/crd/forms/SearchField';
+import { FacetedSearchCard, type FacetLabels } from '@/ahead/FacetedSearchPanel';
 import type { DatabankFilters } from './useDatabankFilters';
 
 const DUTCH_LABELS: FacetLabels = {
@@ -11,30 +10,9 @@ const DUTCH_LABELS: FacetLabels = {
   valueAria: (value, count) => `${value}, ${count} ${count === 1 ? 'initiatief' : 'initiatieven'}`,
 };
 
-/** Sidebar filter panel: "Zoeken" (production's `SearchField`) and the shared search panel parts. */
+/** Sidebar filter panel, with the Databank's Dutch wording. */
 export function DatabankFilterPanel({ filters }: { filters: DatabankFilters }) {
   return (
-    <section
-      aria-label="Filters"
-      className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4"
-    >
-      <div className="flex flex-col gap-3">
-        {/* Wrapping <label>: SearchField takes no id, so the label is associated
-            by nesting. Its aria-label repeats the same word. */}
-        <label className="flex flex-col gap-1.5">
-          <span className="text-card-title text-foreground">Zoeken</span>
-          <SearchField
-            value={filters.searchText}
-            onValueChange={filters.setSearchText}
-            placeholder="Zoek initiatieven..."
-            ariaLabel="Zoeken"
-            className="[&_input]:h-11"
-          />
-        </label>
-        <FacetedSearchSummary filters={filters} />
-      </div>
-
-      <FacetSections filters={filters} labels={DUTCH_LABELS} />
-    </section>
+    <FacetedSearchCard filters={filters} searchLabel="Zoeken" placeholder="Zoek initiatieven..." labels={DUTCH_LABELS} />
   );
 }

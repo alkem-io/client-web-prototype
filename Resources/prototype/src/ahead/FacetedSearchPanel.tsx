@@ -1,6 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 import { type ComponentProps, useState } from 'react';
 import { SearchMatchSummary } from '@/crd/components/space/sidebar/SearchMatchSummary';
+import { SearchField } from '@/crd/forms/SearchField';
 import { cn } from '@/crd/lib/utils';
 import { Badge } from '@/crd/primitives/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/crd/primitives/collapsible';
@@ -16,8 +17,8 @@ import type { FacetedSearch } from './facetedSearch';
  * The pill switches to the primary colour and "N of M" when values in it are
  * selected, so a filter stays noticeable while its section is closed.
  *
- * Separate parts rather than one panel, because the prototype's Settings →
- * Layout switches Search and Tags on and off independently.
+ * `FacetedSearchCard` is the widget itself. Search and facets can each be left
+ * out, because the prototype's Settings → Layout switches them independently.
  */
 
 /** How many values an open section shows before "+ N labels". */
@@ -164,5 +165,52 @@ export function FacetSections({ filters, labels = ENGLISH_LABELS }: { filters: F
         );
       })}
     </div>
+  );
+}
+
+type FacetedSearchCardProps = {
+  filters: FacetedSearch;
+  /** The heading above the search field. */
+  searchLabel: string;
+  placeholder: string;
+  showSearch?: boolean;
+  showFacets?: boolean;
+  labels?: FacetLabels;
+};
+
+/** The search widget: search field, match summary and facet sections in one card. */
+export function FacetedSearchCard({
+  filters,
+  searchLabel,
+  placeholder,
+  showSearch = true,
+  showFacets = true,
+  labels,
+}: FacetedSearchCardProps) {
+  const hasFacets = showFacets && filters.facets.length > 0;
+  if (!showSearch && !hasFacets) return null;
+
+  return (
+    <section aria-label="Filters" className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4">
+      <div className="flex flex-col gap-3 empty:hidden">
+        {showSearch && (
+          // Wrapping <label>: SearchField takes no id, so the label is associated
+          // by nesting. Its aria-label repeats the same word.
+          <label className="flex flex-col gap-1.5">
+            <span className="text-card-title text-foreground">{searchLabel}</span>
+            <SearchField
+              value={filters.searchText}
+              onValueChange={filters.setSearchText}
+              placeholder={placeholder}
+              ariaLabel={searchLabel}
+              className="[&_input]:h-11"
+            />
+          </label>
+        )}
+        <FacetedSearchSummary filters={filters} />
+      </div>
+
+      {hasFacets && <FacetSections filters={filters} labels={labels} />}
+    </section>
   );
 }

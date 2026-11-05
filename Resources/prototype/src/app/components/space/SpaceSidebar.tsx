@@ -15,12 +15,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { cn } from "@/crd/lib/utils";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { SpaceSidebar as CrdSpaceSidebar } from "@/crd/components/space/SpaceSidebar";
-import { FacetedSearchSummary, FacetSections } from "@/ahead/FacetedSearchPanel";
+import { FacetedSearchCard } from "@/ahead/FacetedSearchPanel";
 import { CreatePostButton } from "@/crd/components/space/sidebar/CreatePostButton";
 import { CreateSubspaceButton } from "@/crd/components/space/sidebar/CreateSubspaceButton";
 import { InviteButton } from "@/crd/components/space/sidebar/InviteButton";
 import { PostIndexButton } from "@/crd/components/space/sidebar/PostIndexButton";
-import { SearchField } from "@/crd/forms/SearchField";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { ActivityDot } from "@/ahead/ActivityDot";
 import { spaceOrSubspaceIds } from "@/app/data/activity-data";
@@ -250,6 +249,19 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
     : variant === "community" ? "Search community…"
     : "Search posts…";
 
+  const searchSlot = visibleWidgets(config).find((k) => k === "search" || k === "tags");
+  const searchCard = (
+    <div className="pb-2">
+      <FacetedSearchCard
+        filters={filters}
+        searchLabel="Search"
+        placeholder={searchPlaceholder}
+        showSearch={config.enabled.search}
+        showFacets={config.enabled.tags}
+      />
+    </div>
+  );
+
   // ─── Sidebar widgets — visibility and order come from Settings → Layout ────
   const widgetNodes: Record<string, React.ReactNode> = {
     about: (
@@ -276,26 +288,9 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
       variant === "home" || variant === "workspaces" ? (
         <CreateSubspaceButton onClick={() => setApplicationDialogOpen(true)} />
       ) : null,
-    search: (
-      <div className="pb-2">
-        <SearchField
-          value={filters.searchText}
-          onValueChange={filters.setSearchText}
-          placeholder={searchPlaceholder}
-          ariaLabel={searchPlaceholder}
-        />
-        <FacetedSearchSummary filters={filters} className="mt-3" />
-      </div>
-    ),
-    // Search and Tags stay two independently-togglable widgets (Settings → Layout),
-    // so the summary follows whichever is on.
-    tags:
-      filters.facets.length > 0 ? (
-        <div className="pb-2">
-          {!config.enabled.search && <FacetedSearchSummary filters={filters} className="mb-3" />}
-          <FacetSections filters={filters} />
-        </div>
-      ) : null,
+    // One card, wherever the first of Search / Tags sits in Settings → Layout.
+    search: searchSlot === "search" ? searchCard : null,
+    tags: searchSlot === "tags" ? searchCard : null,
     subspaceLinks:
       variant === "home" ? (
         <>
