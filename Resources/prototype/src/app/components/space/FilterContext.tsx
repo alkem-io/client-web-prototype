@@ -37,6 +37,11 @@ export function useSpaceFilters() {
   return ctx.filters;
 }
 
+/** For components that also render outside a space's tabs. */
+export function useOptionalSpaceFilters() {
+  return useContext(FilterContext)?.filters ?? null;
+}
+
 /** The parts of a post the feed search reads. */
 type SearchablePost = {
   id: string;
