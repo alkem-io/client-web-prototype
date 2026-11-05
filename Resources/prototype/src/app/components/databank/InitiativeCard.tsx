@@ -33,7 +33,7 @@ const external ={ target: '_blank', rel: 'noopener noreferrer' } as const;
 /**
  * One initiative in the Databank: a left column (image, title, tagline, tags,
  * classifications, lead, "Betreden") and a right column (Wat / Waarom /
- * Wie, Referenties). Stacks into one column when the card is narrow.
+ * Wie, Referenties). Stacks into one column only at phone widths, below `@lg`.
  *
  * Height matching: each section starts clamped to LINES lines. When the left
  * column is taller than the right, the sections grow in whole lines, top to
@@ -180,11 +180,11 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
       aria-label={name}
       className="@container overflow-hidden rounded-xl border border-border bg-background"
     >
-      <div className="flex flex-col @2xl:flex-row">
+      <div className="flex flex-col @lg:flex-row">
         {/* ── Left column ── */}
         <div
           ref={leftColRef}
-          className="flex min-w-0 flex-col @2xl:min-w-65 @2xl:max-w-85 @2xl:shrink-0 @2xl:grow @2xl:basis-70"
+          className="flex min-w-0 flex-col @lg:min-w-52 @lg:max-w-85 @lg:shrink-0 @lg:grow @lg:basis-56 @2xl:min-w-65 @2xl:basis-70"
         >
           <div ref={topRef}>
             <img src={initiative.imageUrl} alt="" className="block aspect-video w-full object-cover" />
@@ -272,7 +272,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
         {/* ── Right column ── */}
         <div
           ref={rightColRef}
-          className="min-w-0 border-t border-border bg-card @2xl:grow-999 @2xl:basis-95 @2xl:border-t-0 @2xl:border-l"
+          className="min-w-0 border-t border-border bg-card @lg:grow-999 @lg:basis-95 @lg:border-t-0 @lg:border-l"
         >
           <div ref={rightInnerRef} className="flex flex-col gap-3.5 px-5 py-4">
             {sections.map(section => (
