@@ -250,7 +250,9 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
 
   // ── Space routes ──
   if (path.startsWith("/space/")) {
-    const spaceSlug = params.spaceSlug;
+    // Fixed routes like /space/gemeentedelers/databank-praktijkvoorbeelden
+    // carry no :spaceSlug param, so fall back to the path itself.
+    const spaceSlug = params.spaceSlug ?? path.split("/")[2];
     if (!spaceSlug) {
       return [homeSegment, { label: "Space", href: path, isCurrentPage: true }];
     }

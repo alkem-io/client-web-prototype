@@ -1,12 +1,13 @@
 import { ArrowRight, ExternalLink, Play } from 'lucide-react';
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { DatabankBlock, DatabankInitiative, DatabankSection } from '@/app/data/databank-data';
+import { cn } from '@/crd/lib/utils';
 import { Button } from '@/crd/primitives/button';
-import { DatabankChip } from './DatabankChip';
+import { FacetChip } from '@/ahead/FacetedSearchPanel';
 
 /** Lines each Wat / Waarom / Wie section shows before it is cut off. */
 const LINES = 5;
-/** Links shown before "+ N meer links". */
+/** Links shown before "+ N meer referenties". */
 const LINKS_PREVIEW = 2;
 
 type InitiativeCardProps = {
@@ -20,27 +21,26 @@ type Layout = {
   gives: Record<string, number>;
   /** Sections still cut off after growing — these get a "Lees meer". */
   overflow: Record<string, boolean>;
+  /** Whole lines a cut-off section shows before its "…". */
+  lines: Record<string, number>;
   /** Whether all classification rows fit without making the left column the taller one. */
   labelsFit: boolean;
 };
 
-const FADE_LAST_LINE = {
-  maskImage: 'linear-gradient(to bottom, black calc(100% - 1lh), transparent)',
-  WebkitMaskImage: 'linear-gradient(to bottom, black calc(100% - 1lh), transparent)',
-};
 
 const external ={ target: '_blank', rel: 'noopener noreferrer' } as const;
 
 /**
  * One initiative in the Databank: a left column (image, title, tagline, tags,
- * classifications, lead, "Open subspace") and a right column (Wat / Waarom /
- * Wie, Links). Stacks into one column when the card is narrow.
+ * classifications, lead, "Betreden") and a right column (Wat / Waarom /
+ * Wie, Referenties). Stacks into one column when the card is narrow.
  *
  * Height matching: each section starts clamped to LINES lines. When the left
  * column is taller than the right, the sections grow in whole lines, top to
  * bottom, into that spare height, so the two columns end up about equal. When
  * the classification rows are what makes the left column taller, they condense
- * to the first value plus a "+ N labels" pill.
+ * to the first value and any values selected as filters, plus a "+ N labels"
+ * pill for the rest.
  */
 export function InitiativeCard({ initiative, isActive, onToggleFilter }: InitiativeCardProps) {
   const { name, sections, classifications, links } = initiative;
@@ -48,7 +48,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
-  const [layout, setLayout] = useState<Layout>({ gives: {}, overflow: {}, labelsFit: true });
+  const [layout, setLayout] = useState<Layout>({ gives: {}, overflow: {}, lines: {}, labelsFit: true });
 
   const leftColRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
@@ -100,6 +100,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
 
     const gives: Record<string, number> = {};
     const overflow: Record<string, boolean> = {};
+    const lines: Record<string, number> = {};
     for (const c of clamped) {
       let give = Math.min(c.need, Math.floor(room / c.lineHeight) * c.lineHeight);
       if (c.need - give < 1) give = c.need;
@@ -112,6 +113,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
       // A section holding a video is never "complete" while collapsed: the
       // video only shows once it is opened.
       overflow[c.title] = c.need - give > 1 || c.hasVideo;
+      lines[c.title] = LINES + Math.round(give / c.lineHeight);
     }
 
     const labels = labelsRef.current;
@@ -128,7 +130,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
           Math.abs((prev.gives[c.title] ?? 0) - gives[c.title]) > 0.5 ||
           !!prev.overflow[c.title] !== overflow[c.title]
       );
-    if (changed) setLayout({ gives, overflow, labelsFit });
+    if (changed) setLayout({ gives, overflow, lines, labelsFit });
   }, [sections]);
 
   const measureRef = useRef(measure);
@@ -151,18 +153,24 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
   const totalLabels = classifications.reduce((n, c) => n + c.values.length, 0);
   const condensed = !labelsOpen && !layout.labelsFit && totalLabels > 1;
   const labelRows = condensed
-    ? [{ label: classifications[0].label, values: [classifications[0].values[0]] }]
+    ? classifications
+        .map((c, rowIndex) => ({
+          label: c.label,
+          values: c.values.filter((v, i) => (rowIndex === 0 && i === 0) || isActive(c.label, v)),
+        }))
+        .filter(row => row.values.length > 0)
     : classifications;
+  const hiddenLabels = totalLabels - labelRows.reduce((n, row) => n + row.values.length, 0);
 
   const chip = (group: string, value: string, variant: 'outline' | 'filled') => (
-    <DatabankChip
+    <FacetChip
       key={value}
       variant={variant}
       pressed={isActive(group, value)}
       onClick={() => onToggleFilter(group, value)}
     >
       {value}
-    </DatabankChip>
+    </FacetChip>
   );
 
   const shownLinks = linksOpen ? links : links.slice(0, LINKS_PREVIEW);
@@ -206,15 +214,15 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                         {row.values.map(v => chip(row.label, v, 'filled'))}
                       </ClassificationRow>
                     ))}
-                    {condensed && (
-                      <DatabankChip
+                    {hiddenLabels > 0 && (
+                      <FacetChip
                         variant="more"
                         aria-expanded={false}
                         aria-label={`Toon alle ${totalLabels} labels van ${name}`}
                         onClick={() => setLabelsOpen(true)}
                       >
-                        + {totalLabels - 1} labels
-                      </DatabankChip>
+                        + {hiddenLabels} labels
+                      </FacetChip>
                     )}
                   </div>
 
@@ -228,9 +236,9 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                     {classifications.map(row => (
                       <ClassificationRow key={row.label} label={row.label}>
                         {row.values.map(v => (
-                          <DatabankChip key={v} variant="filled" tabIndex={-1}>
+                          <FacetChip key={v} variant="filled" tabIndex={-1}>
                             {v}
-                          </DatabankChip>
+                          </FacetChip>
                         ))}
                       </ClassificationRow>
                     ))}
@@ -252,8 +260,8 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                 <span className="text-card-title text-foreground">{initiative.lead.name}</span>
               </div>
               <Button asChild={true} size="lg" className="h-11 w-full">
-                <a href={initiative.url} {...external} aria-label={`Open subspace ${name}`}>
-                  Open subspace
+                <a href={initiative.url} {...external} aria-label={`Betreed subspace ${name}`}>
+                  Betreden
                   <ArrowRight aria-hidden="true" />
                 </a>
               </Button>
@@ -276,6 +284,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                 open={!!openSections[section.title]}
                 give={layout.gives[section.title] ?? 0}
                 cutOff={!!layout.overflow[section.title]}
+                lines={layout.lines[section.title] ?? LINES}
                 contentRef={el => {
                   sectionRefs.current[section.title] = el;
                 }}
@@ -285,8 +294,8 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
 
             {links.length > 0 && (
               <section aria-labelledby={`${initiative.id}-links`} className="flex flex-col gap-1.5">
-                <h4 id={`${initiative.id}-links`} className="text-label uppercase text-muted-foreground">
-                  Links
+                <h4 id={`${initiative.id}-links`} className="text-card-title uppercase tracking-wide text-foreground">
+                  Referenties
                 </h4>
                 <ul className="flex flex-col gap-1">
                   {shownLinks.map(link => (
@@ -309,7 +318,7 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                     onClick={() => setLinksOpen(o => !o)}
                     className="-ml-2 min-h-8 self-start rounded-md px-2 text-left text-body-emphasis text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    {linksOpen ? 'Toon minder links' : `+ ${links.length - LINKS_PREVIEW} meer links`}
+                    {linksOpen ? 'Toon minder referenties' : `+ ${links.length - LINKS_PREVIEW} meer referenties`}
                   </button>
                 )}
               </section>
@@ -337,11 +346,12 @@ type CardSectionProps = {
   open: boolean;
   give: number;
   cutOff: boolean;
+  lines: number;
   contentRef: (el: HTMLDivElement | null) => void;
   onToggle: () => void;
 };
 
-function CardSection({ cardId, cardName, section, open, give, cutOff, contentRef, onToggle }: CardSectionProps) {
+function CardSection({ cardId, cardName, section, open, give, cutOff, lines, contentRef, onToggle }: CardSectionProps) {
   // The video only shows once the section is opened.
   const blocks = open ? section.blocks : section.blocks.filter(b => b.kind !== 'video');
   if (blocks.length === 0) return null;
@@ -351,35 +361,42 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, contentRef
   const action = open ? 'Toon minder' : 'Lees meer';
 
   return (
-    <section aria-labelledby={headingId} className="flex flex-col gap-1.5">
-      <h4 id={headingId} className="text-label uppercase text-muted-foreground">
+    <section aria-labelledby={headingId} className={cn('flex flex-col gap-1.5', (open || cutOff) && 'not-last:-mb-6')}>
+      <h4 id={headingId} className="text-card-title uppercase tracking-wide text-foreground">
         {section.title}
       </h4>
       <div
         id={contentId}
         ref={contentRef}
-        className="flex flex-col gap-1.5 overflow-hidden text-body text-foreground"
-        // `lh` = this box's own line height, so the clamp is in whole lines.
-        // Paragraph gaps mean the cut can still land mid-line, so a cut-off
-        // section fades its last line out.
-        style={open ? undefined : { maxHeight: `calc(${LINES}lh + ${give}px)`, ...(cutOff ? FADE_LAST_LINE : {}) }}
+        className="space-y-1.5 overflow-hidden text-body text-foreground"
+        // A cut-off section is clamped by whole lines and ends in "…". One that
+        // grew to fit is capped by height (`lh` = this box's own line height).
+        style={
+          open
+            ? undefined
+            : cutOff
+              ? { display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: lines }
+              : { maxHeight: `calc(${LINES}lh + ${give}px)` }
+        }
       >
         {blocks.map((block, i) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: static mock content, order never changes
           <Block key={i} block={block} />
         ))}
       </div>
+      {/* The pill reaches into the empty space beside the next section's heading,
+          and stays above it so all of it can be clicked. */}
       {(open || cutOff) && (
-        <DatabankChip
+        <FacetChip
           variant="more"
           aria-expanded={open}
           aria-controls={contentId}
           aria-label={`${action}: ${section.title} van ${cardName}`}
           onClick={onToggle}
-          className="mt-0.5 self-end"
+          className="relative z-10 -mt-0.5 self-end"
         >
           {action}
-        </DatabankChip>
+        </FacetChip>
       )}
     </section>
   );

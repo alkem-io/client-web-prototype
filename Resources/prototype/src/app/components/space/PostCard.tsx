@@ -31,6 +31,13 @@
  *     the description would land below the preview. Upstream ask: a
  *     `descriptionSlot`. See the component's header.
  *
+ *   · selectable tags → inside a tab, the post's tags are production's
+ *     `CollapsibleTagList` in its toggle mode, wired to the sidebar search:
+ *     a selected tag turns dark and comes first, so it never hides behind "+N".
+ *     CRD's card takes no tag props, so its tags are withheld and these render
+ *     in `contributionsPreview`, which puts them below a framing preview.
+ *     Upstream ask: a `tagsSlot`, or selection props on `PostCard`.
+ *
  * PHASE 1 REMOVALS — recorded in PHASE-2.md:
  *   · the activity dot beside the title (§1 — CRD renders the title, no slot)
  *     — back since 2026-10-06 through `@/app/components/shared/ActivityDotSlots`; hovering the
@@ -43,7 +50,9 @@ import { type ReactNode, useEffect, useRef } from 'react';
 import { type ActivityDotSlot, ActivityDotSlots, afterNameSlot } from '@/app/components/shared/ActivityDotSlots';
 import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
 import { postItem } from '@/app/data/activity-data';
+import { useOptionalSpaceFilters } from '@/app/components/space/FilterContext';
 import { ReferencesAndTagsStrip } from '@/crd/components/callout/ReferencesAndTagsStrip';
+import { CollapsibleTagList } from '@/crd/components/common/CollapsibleTagList';
 import {
   PostCard as CrdPostCard,
   type PostCardData as CrdPostCardData,
@@ -147,9 +156,22 @@ export function PostCard({
 
   const titleFirst = post.showPublishDetails !== false && !!post.author;
 
+  const filters = useOptionalSpaceFilters();
+  const tags = post.tags ?? [];
+  const selectedTags = filters ? tags.filter(tag => filters.isActive('Tags', tag)) : [];
+  const tagList =
+    filters && tags.length > 0 ? (
+      <CollapsibleTagList
+        tags={[...selectedTags, ...tags.filter(tag => !selectedTags.includes(tag))]}
+        selectedTags={selectedTags}
+        onTagClick={tag => filters.toggle('Tags', tag)}
+      />
+    ) : null;
+
   const crdPost: PostCardData = {
     ...post,
     ...(ownsDescription ? { snippet: undefined, tags: undefined, references: undefined } : {}),
+    ...(filters ? { tags: undefined } : {}),
     ...(titleFirst ? { showPublishDetails: false } : {}),
   };
 
@@ -188,7 +210,13 @@ export function PostCard({
                   embeddedImages={post.embeddedImages}
                   collapsible={!post.descriptionExpanded}
                 />
-                <ReferencesAndTagsStrip references={post.references} tags={post.tags} className="mt-2" />
+                <ReferencesAndTagsStrip references={post.references} tags={filters ? undefined : post.tags} className="mt-2" />
+                {tagList && <div className="mt-2">{tagList}</div>}
+                {contributionsPreview}
+              </>
+            ) : tagList ? (
+              <>
+                {tagList}
                 {contributionsPreview}
               </>
             ) : (

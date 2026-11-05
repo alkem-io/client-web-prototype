@@ -5,7 +5,7 @@ import { PostCard, PostProps } from "./PostCard";
 import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
-import { useSpaceFilters } from "./FilterContext";
+import { useFeedSearch } from "./FilterContext";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 
 const INITIAL_COMMUNITY_POSTS: PostProps[] = [
@@ -65,7 +65,6 @@ export function CommunityFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
   const [posts, setPosts] = useState<PostProps[]>(INITIAL_COMMUNITY_POSTS);
-  const { searchValue } = useSpaceFilters();
 
   // Listen for sidebar "New Post" button event
   useEffect(() => {
@@ -81,19 +80,7 @@ export function CommunityFeed() {
     isAdmin: true
   });
 
-  const filteredPosts = posts.filter((post) => {
-    if (!searchValue) return true;
-    const q = searchValue.toLowerCase();
-    return (
-      post.title.toLowerCase().includes(q) ||
-      post.snippet.toLowerCase().includes(q) ||
-      post.author.name.toLowerCase().includes(q) ||
-      (post.commentTexts && post.commentTexts.some((c) => c.toLowerCase().includes(q))) ||
-      (post.contentPreview?.documents && post.contentPreview.documents.some((d) => d.title.toLowerCase().includes(q))) ||
-      (post.contentPreview?.items && post.contentPreview.items.some((i) => i.title.toLowerCase().includes(q))) ||
-      (post.contentPreview?.whiteboards && post.contentPreview.whiteboards.some((w) => w.title.toLowerCase().includes(q)))
-    );
-  });
+  const filteredPosts = useFeedSearch(posts);
 
   return (
     <div className="w-full">

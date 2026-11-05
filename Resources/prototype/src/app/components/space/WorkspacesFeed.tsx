@@ -5,7 +5,7 @@ import { PostCard, PostProps } from "./PostCard";
 import { CommentsPanel, SEEDED_COMMENT_COUNT } from '@/app/components/comment/CommentsPanel';
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
-import { useSpaceFilters } from "@/app/components/space/FilterContext";
+import { useFeedSearch } from "@/app/components/space/FilterContext";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 
@@ -83,7 +83,6 @@ export function WorkspacesFeed() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
   const [posts, setPosts] = useState<PostWithTags[]>(INITIAL_WORKSPACES_POSTS);
-  const { searchValue, activeTags } = useSpaceFilters();
 
   const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
     posts,
@@ -120,22 +119,7 @@ export function WorkspacesFeed() {
     return () => window.removeEventListener("open-add-post-modal", handler);
   }, []);
 
-  // Filter posts based on search and tag filters
-  const filteredPosts = posts.filter((post) => {
-    const q = searchValue.toLowerCase();
-    const matchesSearch = !searchValue || 
-      post.title.toLowerCase().includes(q) ||
-      post.snippet.toLowerCase().includes(q) ||
-      post.author.name.toLowerCase().includes(q) ||
-      (post.commentTexts && post.commentTexts.some((c: string) => c.toLowerCase().includes(q))) ||
-      (post.contentPreview?.documents && post.contentPreview.documents.some((d) => d.title.toLowerCase().includes(q))) ||
-      (post.contentPreview?.items && post.contentPreview.items.some((i) => i.title.toLowerCase().includes(q))) ||
-      (post.contentPreview?.whiteboards && post.contentPreview.whiteboards.some((w) => w.title.toLowerCase().includes(q)));
-    
-    const matchesTags = activeTags.length === 0 || activeTags.every((tag) => post.tags.includes(tag));
-    
-    return matchesSearch && matchesTags;
-  });
+  const filteredPosts = useFeedSearch(posts);
 
   return (
     <div className="w-full">
