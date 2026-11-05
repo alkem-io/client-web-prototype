@@ -13,8 +13,8 @@ import { cn } from '@/crd/lib/utils';
  * - `more`: "Lees meer" / "+ N labels" expanders — an outline chip with a
  *   dashed border, so they read as part of the same set
  *
- * A pressed chip is filled with the primary colour. A disabled chip (a facet
- * value that would leave no results) is muted and dashed.
+ * A pressed chip is filled with the primary colour. A disabled chip is muted
+ * and dashed.
  */
 type DatabankChipProps = ComponentProps<'button'> & {
   variant?: 'outline' | 'filled' | 'more';
