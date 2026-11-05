@@ -7,7 +7,7 @@ import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { PostDetailDialog } from "@/app/components/dialogs/PostDetailDialog";
 import { MemoDialog } from "@/app/components/memo/MemoDialog";
-import { useFeedSearch } from "@/app/components/space/FilterContext";
+import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { ContributionGrid } from "@/app/components/contribution/ContributionGrid";
 import { ContributionsDialog } from "@/app/components/contribution/ContributionsDialog";
 import { BandedMemoCard, BandedPostCard, BandedWhiteboardCard } from '@/ahead/BandedResponseCards';
@@ -795,6 +795,7 @@ export function SpaceKnowledgeFeed() {
     const stored = localStorage.getItem('alkemio-collapse-posts');
     return stored !== null ? stored === 'true' : false;
   });
+  const { searchValue, activeTags } = useSpaceFilters();
 
   const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
     posts,
@@ -1123,7 +1124,18 @@ export function SpaceKnowledgeFeed() {
     ? contributionCardsFor(contributionsDialogPost)
     : undefined;
 
-  const filteredPosts = useFeedSearch(posts);
+  // Filter posts based on search and tag filters
+  const filteredPosts = posts.filter((post) => {
+    const q = searchValue.toLowerCase();
+    const matchesSearch = !searchValue || 
+      post.title.toLowerCase().includes(q) ||
+      (post.snippet?.toLowerCase().includes(q) ?? false) ||
+      (post.author?.name.toLowerCase().includes(q) ?? false);
+    
+    const matchesTags = activeTags.length === 0 || activeTags.every((tag) => post.tags.includes(tag));
+    
+    return matchesSearch && matchesTags;
+  });
 
   return (
     <div className="w-full">

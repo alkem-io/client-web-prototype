@@ -11,7 +11,6 @@ import {
 import { Button } from "@/crd/primitives/button";
 import { SubspaceHeader } from "@/app/components/space/SubspaceHeader";
 import { SubspaceSidebar } from "@/app/components/space/SubspaceSidebar";
-import { FilterProvider, useFeedSearch, useSpaceFilters } from "@/app/components/space/FilterContext";
 import { cn } from "@/crd/lib/utils";
 import { CalloutTabs, type CalloutTab } from "@/app/components/space/ChannelTabs";
 import { HeaderActionIcons } from "@/crd/components/space/HeaderActionIcons";
@@ -303,14 +302,6 @@ const SUBSPACE_POSTS: CalloutPost[] = [
 
 /* ─── Page Component ─── */
 export default function SubspacePage() {
-  return (
-    <FilterProvider>
-      <SubspacePageContent />
-    </FilterProvider>
-  );
-}
-
-function SubspacePageContent() {
   const {
     spaceSlug = "green-energy",
     subspaceSlug = "renewable-energy-transition",
@@ -343,12 +334,10 @@ function SubspacePageContent() {
   }, []);
 
   // Filter posts by active phase
-  const phasePosts = useMemo(
+  const filteredPosts = useMemo(
     () => SUBSPACE_POSTS.filter((p) => p.callout === activeCallout),
     [activeCallout]
   );
-  const filters = useSpaceFilters();
-  const filteredPosts = useFeedSearch(phasePosts);
 
   return (
     <div
@@ -512,11 +501,7 @@ function SubspacePageContent() {
                     }
                     tabs={info.callouts}
                     activeTab={activeCallout}
-                    onTabChange={(id) => {
-                      // A search never leaks across phases.
-                      filters.clearAll();
-                      setActiveCallout(id);
-                    }}
+                    onTabChange={setActiveCallout}
                   activityOwner={activeSlug}
                 />
               </div>
@@ -569,16 +554,14 @@ function SubspacePageContent() {
                     marginBottom: 4
                   }}
                 >
-                  {filters.hasActive ? "No results" : "No posts in this phase yet"}
+                  No posts in this phase yet
                 </p>
                 <p
                   style={{
                     color: "var(--muted-foreground)"
                   }}
                 >
-                  {filters.hasActive
-                    ? "Nothing in this phase matches your search."
-                    : "Be the first to share something here."}
+                  Be the first to share something here.
                 </p>
               </div>
             )}
