@@ -361,7 +361,7 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, lines, con
   const action = open ? 'Toon minder' : 'Lees meer';
 
   return (
-    <section aria-labelledby={headingId} className={cn('flex flex-col gap-1.5', (open || cutOff) && '-mb-1.5')}>
+    <section aria-labelledby={headingId} className={cn('flex flex-col gap-1.5', (open || cutOff) && 'not-last:-mb-6')}>
       <h4 id={headingId} className="text-card-title uppercase tracking-wide text-foreground">
         {section.title}
       </h4>
@@ -384,6 +384,8 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, lines, con
           <Block key={i} block={block} />
         ))}
       </div>
+      {/* The pill reaches into the empty space beside the next section's heading,
+          and stays above it so all of it can be clicked. */}
       {(open || cutOff) && (
         <FacetChip
           variant="more"
@@ -391,7 +393,7 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, lines, con
           aria-controls={contentId}
           aria-label={`${action}: ${section.title} van ${cardName}`}
           onClick={onToggle}
-          className="-mt-0.5 self-end"
+          className="relative z-10 -mt-0.5 self-end"
         >
           {action}
         </FacetChip>
