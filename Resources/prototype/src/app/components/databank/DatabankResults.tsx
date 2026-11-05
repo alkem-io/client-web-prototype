@@ -1,4 +1,3 @@
-import type { DatabankInitiative } from '@/app/data/databank-data';
 import { InitiativeCard } from './InitiativeCard';
 import type { DatabankFilters } from './useDatabankFilters';
 
@@ -18,7 +17,7 @@ export function DatabankResults({ filters, total }: { filters: DatabankFilters; 
         </output>
       </div>
 
-      {filters.visible.map((initiative: DatabankInitiative) => (
+      {filters.visible.map(({ initiative }) => (
         <InitiativeCard
           key={initiative.id}
           initiative={initiative}

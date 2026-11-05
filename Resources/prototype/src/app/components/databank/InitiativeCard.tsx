@@ -2,7 +2,7 @@ import { ArrowRight, ExternalLink, Play } from 'lucide-react';
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { DatabankBlock, DatabankInitiative, DatabankSection } from '@/app/data/databank-data';
 import { Button } from '@/crd/primitives/button';
-import { DatabankChip } from './DatabankChip';
+import { FacetChip } from '@/ahead/FacetedSearchPanel';
 
 /** Lines each Wat / Waarom / Wie section shows before it is cut off. */
 const LINES = 5;
@@ -162,14 +162,14 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
   const hiddenLabels = totalLabels - labelRows.reduce((n, row) => n + row.values.length, 0);
 
   const chip = (group: string, value: string, variant: 'outline' | 'filled') => (
-    <DatabankChip
+    <FacetChip
       key={value}
       variant={variant}
       pressed={isActive(group, value)}
       onClick={() => onToggleFilter(group, value)}
     >
       {value}
-    </DatabankChip>
+    </FacetChip>
   );
 
   const shownLinks = linksOpen ? links : links.slice(0, LINKS_PREVIEW);
@@ -214,14 +214,14 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                       </ClassificationRow>
                     ))}
                     {hiddenLabels > 0 && (
-                      <DatabankChip
+                      <FacetChip
                         variant="more"
                         aria-expanded={false}
                         aria-label={`Toon alle ${totalLabels} labels van ${name}`}
                         onClick={() => setLabelsOpen(true)}
                       >
                         + {hiddenLabels} labels
-                      </DatabankChip>
+                      </FacetChip>
                     )}
                   </div>
 
@@ -235,9 +235,9 @@ export function InitiativeCard({ initiative, isActive, onToggleFilter }: Initiat
                     {classifications.map(row => (
                       <ClassificationRow key={row.label} label={row.label}>
                         {row.values.map(v => (
-                          <DatabankChip key={v} variant="filled" tabIndex={-1}>
+                          <FacetChip key={v} variant="filled" tabIndex={-1}>
                             {v}
-                          </DatabankChip>
+                          </FacetChip>
                         ))}
                       </ClassificationRow>
                     ))}
@@ -384,7 +384,7 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, lines, con
         ))}
       </div>
       {(open || cutOff) && (
-        <DatabankChip
+        <FacetChip
           variant="more"
           aria-expanded={open}
           aria-controls={contentId}
@@ -393,7 +393,7 @@ function CardSection({ cardId, cardName, section, open, give, cutOff, lines, con
           className="mt-0.5 self-end"
         >
           {action}
-        </DatabankChip>
+        </FacetChip>
       )}
     </section>
   );
