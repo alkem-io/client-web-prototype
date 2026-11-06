@@ -1,7 +1,7 @@
 import { Info, Layers, LayoutGrid, Megaphone, Settings as SettingsIcon, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useParams } from "react-router";
-import { SubspaceSettingsAbout } from "@/app/components/space/SubspaceSettingsAbout";
+import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
 import { SubspaceSettingsLayout } from "@/app/components/space/SubspaceSettingsLayout";
 import { SubspaceSettingsCommunity } from "@/app/components/space/SubspaceSettingsCommunity";
 import { SubspaceSettingsUpdates } from "@/app/components/space/SubspaceSettingsUpdates";
@@ -42,16 +42,7 @@ function renderTab(tab: TabId, profile: SubspaceProfile, base: string, parentHre
   const scope = `subspace:${base}`;
   switch (tab) {
     case "about":
-      return (
-        <SubspaceSettingsAbout
-          subspaceName={profile.title}
-          initials={profile.initials}
-          avatarColor="#22c55e"
-          parentInitials="GE"
-          parentAvatarColor="#2563eb"
-          memberCount={24}
-        />
-      );
+      return <SpaceAboutTab level="L1" scope={scope} initial={() => buildSubspaceAbout(profile)} href={base} />;
     case "layout":
       return <SubspaceSettingsLayout />;
     case "community":
