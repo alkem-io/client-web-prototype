@@ -83,24 +83,33 @@ is finished until the row in "Recently graduated" says Done.
 | "Start collapsed" for the sidebar | Beneath the space Layout tab | A setting in `SpaceSettingsLayoutView` |
 | Search box for an organisation's associates | Above the Associates tab | A search field in `OrgAssociatesTabView` |
 
-**Goes away with our old screens. Jeroen can still bring any of these back:**
+**Goes away with our old screens. Agreed with Jeroen on 2026-11-06: follow production as closely as possible.**
 
-| What | Area | Why it cannot simply stay |
+| What | Area | Why it does not stay |
 |---|---|---|
-| Reordering tabs on a top-level space | Space Layout | Production blocks this. Keeping it means rebuilding the tab around production's columns |
+| Reordering tabs on a top-level space | Space Layout | Production blocks this on purpose |
 | Collapsible columns that spring open while dragging | Space and subspace Layout | No way to add it without changing production's screen |
 | A separate on/off for tag chips | Space and subspace Layout | Production includes tags in Search, so turning Search on now turns on both |
-| Archiving a subspace | Subspace settings, Subspaces | Production can filter archived subspaces but has no way to archive one. Keeping it means keeping the whole tab ours |
+| Archiving a subspace | Subspace settings, Subspaces | Production can filter archived subspaces but has no way to archive one. **Ask for production:** an archive action in `SpaceSettingsSubspacesView` |
 | Title and pinning on an update | Subspace settings, Updates | Production left these out on purpose: the server does not store them |
 | Filter and sortable columns on members | Subspace settings, Community | No way to add it without changing production's screen |
 | License card | Profile, Account | Not in production's screen |
 | Cancel an application (the button did nothing yet) | Profile, Membership | Not in production's screen |
 | Privacy switches (they had no effect yet) | Profile, Settings | Not in production's screen |
 
-Also gone, with nothing lost in practice: buttons that never did anything, the
-sidebar mode choice (it was never saved), and the hover card on virtual
-contributors in the space Community tab, which is one more place for the
-hover-card slot asked for under `ProfileHoverCard`.
+Also gone, as small differences that follow from the same decision:
+
+- **Space:** dragging a banner freely (production's crop dialog replaces it), the
+  avatar on top-level spaces, the storage count card, the plans link, the link from
+  the classification picker to Templates, and the hover card on virtual contributors
+  in Community, which is one more place for the hover-card slot asked for under
+  `ProfileHoverCard`.
+- **Profile:** the Twitter field (production has Bluesky), the overall email and
+  in-app switches (production has one per kind of notification), and the application
+  date, status and member counts on Membership.
+- **Organisation:** the second domain switch on Associates (it is still on Settings).
+- **Everywhere:** buttons that never did anything, and the sidebar mode choice, which
+  was never saved.
 
 ## Recently graduated
 
