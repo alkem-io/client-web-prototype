@@ -12,7 +12,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
-import { SpaceSettingsLayout } from "@/app/components/space/SpaceSettingsLayout";
+import { SpaceLayoutTab } from "@/app/components/space/settings/SpaceLayoutTab";
 import { SpaceSettingsCommunity } from "@/app/components/space/SpaceSettingsCommunity";
 import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
 import { SpaceSettingsSubspaces } from "@/app/components/space/SpaceSettingsSubspaces";
@@ -74,7 +74,7 @@ function renderTab(tab: TabId) {
     case "about":
       return <SpaceAboutTab />;
     case "layout":
-      return <SpaceSettingsLayout />;
+      return <SpaceLayoutTab />;
     case "community":
       return <SpaceSettingsCommunity />;
     case "updates":
