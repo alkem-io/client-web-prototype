@@ -2,10 +2,10 @@ import { Info, Layers, LayoutGrid, Megaphone, Settings as SettingsIcon, Users } 
 import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
+import { SpaceCommunityTab } from "@/app/components/space/settings/SpaceCommunityTab";
 import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
 import { SubspaceOwnSettingsTab } from "@/app/components/space/settings/SubspaceOwnSettingsTab";
 import { SubspaceSettingsLayout } from "@/app/components/space/SubspaceSettingsLayout";
-import { SubspaceSettingsCommunity } from "@/app/components/space/SubspaceSettingsCommunity";
 import { SubspaceSettingsSubspaces } from "@/app/components/space/SubspaceSettingsSubspaces";
 import {
   buildNestedSubspaces,
@@ -46,7 +46,7 @@ function renderTab(tab: TabId, profile: SubspaceProfile, base: string, parentHre
     case "layout":
       return <SubspaceSettingsLayout />;
     case "community":
-      return <SubspaceSettingsCommunity />;
+      return <SpaceCommunityTab level="L1" scope={scope} spaceName={profile.title} initial={DEMO_SUBSPACE_COMMUNITY} />;
     case "updates":
       return <SpaceUpdatesTab scope={scope} initial={DEMO_SUBSPACE_UPDATES} />;
     case "subspaces":
