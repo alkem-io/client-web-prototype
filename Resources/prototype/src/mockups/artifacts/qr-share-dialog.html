@@ -41,7 +41,7 @@
 
 * { box-sizing: border-box; }
 body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
-.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; display: grid; gap: 56px; }
+.wrap { max-width: 1640px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; display: grid; gap: 56px; }
 h1, h2, h3 { text-wrap: balance; margin: 0; }
 p { margin: 0; }
 svg.i { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -55,7 +55,11 @@ section { display: grid; gap: 28px; }
 .sec-head { display: grid; gap: 6px; max-width: 70ch; padding-top: 24px; border-top: 1px solid var(--rule); }
 h2 { font-size: 24px; line-height: 1.25; letter-spacing: -0.01em; font-weight: 600; }
 .sec-head p { color: var(--ink-soft); }
-.row { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 32px; align-items: start; }
+.rows { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; }
+.row { display: grid; gap: 10px; width: 448px; max-width: 100%; min-width: 0; }
+.row.wide { width: 680px; }
+.cap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-soft); }
+.rules { max-width: 560px; }
 .note { display: grid; gap: 10px; }
 .note h3 { font-size: 18px; line-height: 1.3; font-weight: 600; }
 .note p, .note li { font-size: 14px; color: var(--ink-soft); }
@@ -63,11 +67,10 @@ h2 { font-size: 24px; line-height: 1.25; letter-spacing: -0.01em; font-weight: 6
 .tag { justify-self: start; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--tag); color: var(--tag-fg); }
 .tag.pick { background: var(--pick-soft); color: var(--pick); font-weight: 500; }
 .effort { font-size: 13px; color: var(--ink); border-top: 1px solid var(--rule); padding-top: 10px; }
-.stage { min-width: 0; display: flex; justify-content: center; }
+.stage { min-width: 0; }
 
 /* ---------- production's share dialog, true size ---------- */
-.dlg { container-type: inline-size; width: 448px; max-width: 100%; background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow); padding: 24px; display: grid; gap: 16px; font-size: 14px; position: relative; }
-.dlg.wide { width: 680px; }
+.dlg { container-type: inline-size; width: 100%; max-width: 100%; background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow); padding: 24px; display: grid; gap: 16px; font-size: 14px; position: relative; }
 .dlg-title { font-size: 18px; font-weight: 600; line-height: 1.3; }
 .dlg-x { position: absolute; top: 16px; right: 16px; color: var(--muted-foreground); opacity: 0.7; display: flex; }
 .stack { display: grid; gap: 12px; min-width: 0; }
@@ -129,10 +132,6 @@ td.msg { color: var(--ink-soft); }
 .asks b { font-weight: 600; }
 .asks span { color: var(--ink-soft); font-size: 14px; }
 
-@media (max-width: 900px) {
-  .row, .img-board, .asks li { grid-template-columns: minmax(0, 1fr); }
-  .stage { justify-content: flex-start; }
-}
 @media (max-width: 520px) {
   .tries { grid-template-columns: minmax(0, 1fr); }
   .dlg { padding: 18px; }
@@ -156,29 +155,14 @@ td.msg { color: var(--ink-soft); }
 </svg>
 
 <div class="wrap">
-  <header>
-    <div class="eyebrow">Design pass · alkem-io/alkemio #2222</div>
-    <h1>QR code in the share dialog</h1>
-    <p class="lede">A facilitator puts the share dialog on the projector and the room scans it. Three places the code could sit, how to handle an item with two links, and when to show the access reminder.</p>
-  </header>
+  <header><h1>QR code in the share dialog</h1></header>
 
   <section>
-    <div class="sec-head">
-      <h2>Where the QR code sits</h2>
-      <p>All three are at true size, with the code at 240 pixels. The buttons show their feedback but nothing saves from this page. The dialog is shown for a post on a members-only space.</p>
-    </div>
+    <div class="sec-head"><h2>Where the code sits</h2></div>
+    <div class="rows">
 
     <div class="row">
-      <div class="note">
-        <span class="tag pick">A · My recommendation</span>
-        <h3>Below everything that's there today</h3>
-        <ul>
-          <li>Copy link stays first, where people already reach for it.</li>
-          <li>The code has its own area, and its buttons sit right under it.</li>
-          <li>It's the tallest of the three, so low laptop screens may need to scroll to reach the buttons.</li>
-        </ul>
-        <p class="effort"><b>Smallest change.</b> Production's dialog already has a space for extra content at the bottom, so its existing parts stay as they are.</p>
-      </div>
+      <div class="cap"><span class="tag pick">A · Recommended</span><span>Copy link stays first</span></div>
       <div class="stage">
         <div class="dlg" role="group" aria-label="Layout A">
           <span class="dlg-x"><svg class="i"><use href="#i-x"/></svg></span>
@@ -199,17 +183,8 @@ td.msg { color: var(--ink-soft); }
       </div>
     </div>
 
-    <div class="row">
-      <div class="note">
-        <span class="tag">B</span>
-        <h3>Side by side, in a wider dialog</h3>
-        <ul>
-          <li>The shortest of the three, so everything fits on a low laptop or a projector without scrolling.</li>
-          <li>All the actions are visible beside the code at once.</li>
-          <li>The dialog gets wider than any share dialog today, and goes back to stacking on a phone.</li>
-        </ul>
-        <p class="effort"><b>Medium change.</b> Developers would need to rework how production's dialog is laid out.</p>
-      </div>
+    <div class="row wide">
+      <div class="cap"><span class="tag">B</span><span>Fits low screens</span></div>
       <div class="stage">
         <div class="dlg wide" role="group" aria-label="Layout B">
           <span class="dlg-x"><svg class="i"><use href="#i-x"/></svg></span>
@@ -231,15 +206,7 @@ td.msg { color: var(--ink-soft); }
     </div>
 
     <div class="row">
-      <div class="note">
-        <span class="tag">C</span>
-        <h3>QR code first</h3>
-        <ul>
-          <li>The strongest moment in the room: the code is the first thing anyone sees.</li>
-          <li>Most sharing still happens outside a room, and here Copy link moves below a large code.</li>
-        </ul>
-        <p class="effort"><b>Medium change.</b> Everyone who uses the dialog would see its order change, so it needs agreement beyond this ticket.</p>
-      </div>
+      <div class="cap"><span class="tag">C</span><span>Code comes first</span></div>
       <div class="stage">
         <div class="dlg" role="group" aria-label="Layout C">
           <span class="dlg-x"><svg class="i"><use href="#i-x"/></svg></span>
@@ -259,24 +226,15 @@ td.msg { color: var(--ink-soft); }
         </div>
       </div>
     </div>
+    </div>
   </section>
 
   <section>
-    <div class="sec-head">
-      <h2>When an item has two links</h2>
-      <p>A public whiteboard has a members link and a public link. This is still undecided in tickets #2222 and #2225. Both options below build on layout A, and they'd adapt if you choose B or C.</p>
-    </div>
+    <div class="sec-head"><h2>Items with two links</h2></div>
+    <div class="rows">
 
     <div class="row">
-      <div class="note">
-        <span class="tag pick">1 · My recommendation</span>
-        <h3>A switch, and one code at a time</h3>
-        <ul>
-          <li>There's only ever one code on the projector, so nobody can scan the wrong one.</li>
-          <li>The link, the code and the message all change together. Try the switch.</li>
-          <li>The facilitator has to notice the switch. If the wrong link is selected, guests hit a locked page, which makes the starting choice matter.</li>
-        </ul>
-      </div>
+      <div class="cap"><span class="tag pick">1 · Recommended</span><span>One code at a time. Try the switch.</span></div>
       <div class="stage">
         <div class="dlg" role="group" aria-label="Two links, option 1" id="toggle-dialog">
           <span class="dlg-x"><svg class="i"><use href="#i-x"/></svg></span>
@@ -301,16 +259,8 @@ td.msg { color: var(--ink-soft); }
       </div>
     </div>
 
-    <div class="row">
-      <div class="note">
-        <span class="tag">2</span>
-        <h3>Both links, labelled, each with a code</h3>
-        <ul>
-          <li>Both links are visible at once, with nothing to discover.</li>
-          <li>Two codes on a projector is a real risk: a phone reads whichever it finds first, so part of the room could land on the members link and be locked out.</li>
-          <li>Each code is smaller, and the dialog has to be wider.</li>
-        </ul>
-      </div>
+    <div class="row wide">
+      <div class="cap"><span class="tag">2</span><span>Two codes: phones may read the wrong one</span></div>
       <div class="stage">
         <div class="dlg wide" role="group" aria-label="Two links, option 2">
           <span class="dlg-x"><svg class="i"><use href="#i-x"/></svg></span>
@@ -342,79 +292,34 @@ td.msg { color: var(--ink-soft); }
         </div>
       </div>
     </div>
+    </div>
   </section>
 
   <section>
-    <div class="sec-head">
-      <h2>When the reminder shows</h2>
-      <p>Your rule: it follows who can actually open this item, not just what kind of space it's in. The dialog can't work this out today, so each screen that opens it would need to tell it.</p>
-    </div>
+    <div class="sec-head"><h2>Access reminder</h2></div>
     <div class="table-scroll">
-      <table>
-        <thead><tr><th scope="col">The item lives in</th><th scope="col">What shows under the code</th></tr></thead>
+      <table class="rules">
         <tbody>
-          <tr><td>A members-only space</td><td class="msg">Only people with access to this page can open this link or QR code.</td></tr>
-          <tr><td>A public space</td><td class="hidden-word">Nothing, because anyone can open it</td></tr>
-          <tr><td>A members-only subspace inside a public space</td><td class="msg">Only people with access to this page can open this link or QR code.</td></tr>
-          <tr><td>A public link on a whiteboard, chosen with the switch</td><td class="msg">Anyone with the link can edit. <span class="hidden-word">(production's existing wording)</span></td></tr>
+          <tr><td>Members-only space</td><td>Shows</td></tr>
+          <tr><td>Public space</td><td class="hidden-word">Hidden</td></tr>
+          <tr><td>Members-only subspace in a public space</td><td>Shows</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section>
-    <div class="sec-head">
-      <h2>The image, with the logo in the centre</h2>
-      <p>This is what Download image and Copy QR code would produce: the code with its white margin, and nothing else.</p>
-    </div>
-    <div class="img-board">
-      <div class="export">
-        <span class="qr-tile"><svg role="img" aria-label="Example of the downloaded QR code image"><use href="#qr-members"/></svg></span>
-        <span class="file">qr-samen-ontwerpen.png</span>
-      </div>
-      <div class="notes">
-        <p><b>The logo covers 22% of the code's width.</b> QR codes carry spare data so they can survive damage, and the logo uses up part of that. At this size it still passed every software test below, with room to spare.</p>
-        <p><b>Long addresses make denser codes.</b> The table tests a very long example: an address of 169 characters. Alkemio's addresses vary with the length of each title.</p>
-        <p><b>It stays black on white in dark mode.</b> Contrast is what makes a code scan, and a white tile is also the safest thing to paste onto a slide.</p>
-        <p><b>The dialog reaches about 4 metres.</b> On a 3-metre-wide projected Full HD screen, a 240-pixel code is about 37 cm wide. By the usual rule of thumb of ten times its width, that's roughly 4 metres, and less for long addresses. For the back of a bigger room, the downloaded image on a slide is the answer. The ticket's optional full-screen view could help too, but it's left out for now.</p>
-      </div>
-    </div>
-
-    <div class="table-scroll">
-      <table class="scan">
-        <caption class="eyebrow" style="text-align:left;padding-bottom:10px">Scan test, 169-character address, read by software</caption>
-        <thead><tr><th scope="col">Logo size</th><th scope="col">Crisp, on screen</th><th scope="col">Soft phone photo</th><th scope="col">Washed-out projector</th><th scope="col">At an angle</th><th scope="col">Small and far away</th></tr></thead>
-        <tbody><tr><td>No logo</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td></tr><tr><td>18%</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td></tr><tr class="used"><td>22% (used)</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td></tr><tr><td>26%</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td><td class="p">Read</td></tr><tr><td>30%</td><td class="p">Read</td><td class="p">Read</td><td class="f">Failed</td><td class="p">Read</td><td class="p">Read</td></tr><tr><td>34%</td><td class="f">Failed</td><td class="f">Failed</td><td class="f">Failed</td><td class="f">Failed</td><td class="f">Failed</td></tr></tbody>
-      </table>
-    </div>
-
-    <div class="notes">
-      <p><b>These tests are software, not a phone.</b> Please scan the two codes below with your own phone. They hold example addresses, so the page may say it can't be found. If your phone reads the address, the test passed. A real test on a projector should happen before this ships.</p>
-    </div>
+    <div class="sec-head"><h2>Scan these with your phone</h2><p>Example addresses: "page not found" still counts as a pass.</p></div>
     <div class="tries">
       <div class="try">
         <span class="qr-tile"><svg role="img" aria-label="Test QR code with a typical address"><use href="#qr-members"/></svg></span>
-        <span><b>Typical address</b>, 114 characters</span>
+        <span><b>Typical address</b></span>
       </div>
       <div class="try">
         <span class="qr-tile"><svg role="img" aria-label="Test QR code with a very long address"><use href="#qr-long"/></svg></span>
-        <span><b>Very long address</b>, 169 characters</span>
+        <span><b>Very long address</b></span>
       </div>
     </div>
-  </section>
-
-  <section>
-    <div class="sec-head">
-      <h2>What I need from you</h2>
-      <p>Once these are settled, I'll build it working in the prototype, on a forum discussion, which already opens the real dialog.</p>
-    </div>
-    <ul class="asks">
-      <li><b>Which layout: A, B or C?</b><span>I'd go with A. It keeps Copy link where it is and it's the smallest change.</span></li>
-      <li><b>Two links: the switch, or both shown?</b><span>I'd go with the switch, so the room only ever sees one code.</span></li>
-      <li><b>With two links, which does the switch start on?</b><span>I'd start on Members, so a share is never more open than the person expects. The catch: a facilitator running a public session has to switch first.</span></li>
-      <li><b>Is the reminder wording right?</b><span>"Only people with access to this page can open this link or QR code." It would also need translating into all six languages when it's built.</span></li>
-      <li><b>Do both test codes scan on your phone?</b><span>If the long one struggles, I'd make the logo smaller before anything else.</span></li>
-    </ul>
   </section>
 </div>
 
