@@ -3,10 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
 import { SpaceCommunityTab } from "@/app/components/space/settings/SpaceCommunityTab";
+import { SpaceSubspacesTab } from "@/app/components/space/settings/SpaceSubspacesTab";
 import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
 import { SubspaceOwnSettingsTab } from "@/app/components/space/settings/SubspaceOwnSettingsTab";
 import { SubspaceSettingsLayout } from "@/app/components/space/SubspaceSettingsLayout";
-import { SubspaceSettingsSubspaces } from "@/app/components/space/SubspaceSettingsSubspaces";
 import {
   buildNestedSubspaces,
   buildSubspaceAbout,
@@ -50,7 +50,9 @@ function renderTab(tab: TabId, profile: SubspaceProfile, base: string, parentHre
     case "updates":
       return <SpaceUpdatesTab scope={scope} initial={DEMO_SUBSPACE_UPDATES} />;
     case "subspaces":
-      return <SubspaceSettingsSubspaces />;
+      return (
+        <SpaceSubspacesTab level="L1" scope={scope} spaceName={profile.title} initial={buildNestedSubspaces(base)} />
+      );
     case "settings":
       return <SubspaceOwnSettingsTab scope={scope} profile={profile} parentHref={parentHref} />;
   }
