@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
 import { SpaceLayoutTab } from "@/app/components/space/settings/SpaceLayoutTab";
-import { SpaceSettingsCommunity } from "@/app/components/space/SpaceSettingsCommunity";
+import { SpaceCommunityTab } from "@/app/components/space/settings/SpaceCommunityTab";
 import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
 import { SpaceSettingsSubspaces } from "@/app/components/space/SpaceSettingsSubspaces";
 import { SpaceTemplatesTab } from "@/app/components/space/settings/SpaceTemplatesTab";
@@ -76,7 +76,7 @@ function renderTab(tab: TabId) {
     case "layout":
       return <SpaceLayoutTab />;
     case "community":
-      return <SpaceSettingsCommunity />;
+      return <SpaceCommunityTab />;
     case "updates":
       return <SpaceUpdatesTab />;
     case "subspaces":
