@@ -7,7 +7,15 @@ import { SubspaceSettingsCommunity } from "@/app/components/space/SubspaceSettin
 import { SubspaceSettingsUpdates } from "@/app/components/space/SubspaceSettingsUpdates";
 import { SubspaceSettingsSubspaces } from "@/app/components/space/SubspaceSettingsSubspaces";
 import { SubspaceSettingsSettings } from "@/app/components/space/SubspaceSettingsSettings";
-import { getSubspaceProfile, type SubspaceProfile } from "@/app/components/space/settings/subspaceDemoData";
+import {
+  buildNestedSubspaces,
+  buildSubspaceAbout,
+  buildSubspacePhases,
+  DEMO_SUBSPACE_COMMUNITY,
+  DEMO_SUBSPACE_UPDATES,
+  getSubspaceProfile,
+  type SubspaceProfile,
+} from "@/app/components/space/settings/subspaceDemoData";
 import { SpaceSettingsHeader } from "@/crd/components/space/settings/SpaceSettingsHeader";
 import {
   type SpaceSettingsTabDescriptor,
@@ -29,7 +37,9 @@ type TabId = (typeof TABS)[number]["id"];
 
 const isTabId = (value: string | undefined): value is TabId => TABS.some((tab) => tab.id === value);
 
-function renderTab(tab: TabId, profile: SubspaceProfile) {
+function renderTab(tab: TabId, profile: SubspaceProfile, base: string, parentHref: string) {
+  // Each subspace keeps its own demo data.
+  const scope = `subspace:${base}`;
   switch (tab) {
     case "about":
       return (
@@ -96,7 +106,7 @@ export default function SubspaceSettingsPage() {
       }
     >
       {/* Extra room at the bottom keeps the unsaved-changes bar off the last control. */}
-      <div className="flex flex-col gap-4 pt-2 pb-24">{renderTab(tab, profile)}</div>
+      <div className="flex flex-col gap-4 pt-2 pb-24">{renderTab(tab, profile, base, `/space/${spaceSlug}`)}</div>
     </SpaceShell>
   );
 }

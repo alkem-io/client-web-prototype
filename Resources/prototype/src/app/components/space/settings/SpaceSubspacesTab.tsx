@@ -23,7 +23,7 @@ import { buildContent, type DemoTemplate, useDemoTemplates } from './templatesDe
 const IMAGE = (photo: string) =>
   `https://images.unsplash.com/photo-${photo}?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600`;
 
-const tile = (
+export const tile = (
   id: string,
   name: string,
   description: string,
@@ -105,7 +105,8 @@ export function SpaceSubspacesTab({
     `${scope}:subspaces:defaultTemplate`,
     't1'
   );
-  const [templates, setTemplates] = useDemoTemplates(scope);
+  // Templates are held by the top-level space, at every level (as in production).
+  const [templates, setTemplates] = useDemoTemplates();
 
   const [pendingDelete, setPendingDelete] = useState<SubspaceTile | null>(null);
   const [changeDefaultOpen, setChangeDefaultOpen] = useState(false);
@@ -203,7 +204,6 @@ export function SpaceSubspacesTab({
       />
 
       <DemoTemplatePicker
-        scope={scope}
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         allowedTypes={['space']}

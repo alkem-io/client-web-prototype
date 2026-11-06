@@ -90,7 +90,7 @@ const readStoredBanner = (): { image?: string; height?: number } => {
   }
 };
 
-type AboutState = { about: AboutFormValues; classifications: ClassificationEntryData[] };
+export type AboutState = { about: AboutFormValues; classifications: ClassificationEntryData[] };
 
 const buildDemoAbout = (): AboutState => {
   const stored = readStoredBanner();
