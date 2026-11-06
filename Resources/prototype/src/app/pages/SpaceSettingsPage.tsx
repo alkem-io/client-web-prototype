@@ -18,7 +18,7 @@ import { SpaceSettingsUpdates } from "@/app/components/space/SpaceSettingsUpdate
 import { SpaceSettingsSubspaces } from "@/app/components/space/SpaceSettingsSubspaces";
 import { SpaceSettingsTemplates } from "@/app/components/space/SpaceSettingsTemplates";
 import { SpaceSettingsStorage } from "@/app/components/space/SpaceSettingsStorage";
-import { SpaceSettingsSettings } from "@/app/components/space/SpaceSettingsSettings";
+import { SpaceSettingsTab } from "@/app/components/space/settings/SpaceSettingsTab";
 import { SpaceAccountTab } from "@/app/components/space/settings/SpaceAccountTab";
 import { SpaceSettingsHeader } from "@/crd/components/space/settings/SpaceSettingsHeader";
 import {
@@ -86,7 +86,7 @@ function renderTab(tab: TabId) {
     case "storage":
       return <SpaceSettingsStorage />;
     case "settings":
-      return <SpaceSettingsSettings />;
+      return <SpaceSettingsTab />;
     case "account":
       return <SpaceAccountTab />;
   }
