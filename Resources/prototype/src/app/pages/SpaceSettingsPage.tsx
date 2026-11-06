@@ -14,7 +14,7 @@ import { Navigate, useNavigate, useParams } from "react-router";
 import { SpaceSettingsAbout } from "@/app/components/space/SpaceSettingsAbout";
 import { SpaceSettingsLayout } from "@/app/components/space/SpaceSettingsLayout";
 import { SpaceSettingsCommunity } from "@/app/components/space/SpaceSettingsCommunity";
-import { SpaceSettingsUpdates } from "@/app/components/space/SpaceSettingsUpdates";
+import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
 import { SpaceSettingsSubspaces } from "@/app/components/space/SpaceSettingsSubspaces";
 import { SpaceSettingsTemplates } from "@/app/components/space/SpaceSettingsTemplates";
 import { SpaceStorageTab } from "@/app/components/space/settings/SpaceStorageTab";
@@ -78,7 +78,7 @@ function renderTab(tab: TabId) {
     case "community":
       return <SpaceSettingsCommunity />;
     case "updates":
-      return <SpaceSettingsUpdates />;
+      return <SpaceUpdatesTab />;
     case "subspaces":
       return <SpaceSettingsSubspaces />;
     case "templates":
