@@ -11,58 +11,6 @@
   ],
   "surfaces": [
     {
-      "name": "Space settings",
-      "ours": "src/app/components/space/SpaceSettings*.tsx (10 tabs)",
-      "gain": "The full space admin surface: about, community, layout, subspaces, templates, storage, updates, account",
-      "watchFor": [
-        "SpaceSettingsAboutView",
-        "SpaceSettingsCommunityView",
-        "SpaceSettingsLayoutView",
-        "SpaceSettingsSubspacesView",
-        "SpaceSettingsStorageView",
-        "SpaceSettingsUpdatesView",
-        "SpaceSettingsAccountView",
-        "SpaceSettingsSettingsView",
-        "SpaceSettingsTabStrip"
-      ]
-    },
-    {
-      "name": "Subspace settings",
-      "ours": "src/app/components/space/SubspaceSettings*.tsx (6 tabs)",
-      "gain": "The same surface one level down, where production currently reuses the space one",
-      "watchFor": [
-        "SpaceSettingsAboutView",
-        "SpaceSettingsCommunityView",
-        "SpaceSettingsLayoutView",
-        "SpaceSettingsSubspacesView",
-        "SpaceSettingsUpdatesView"
-      ]
-    },
-    {
-      "name": "User profile settings",
-      "ours": "src/app/pages/UserProfileSettingsPage.tsx, UserSettingsPage.tsx, UserGenericSettingsPage.tsx",
-      "gain": "A person's own account surface: profile, notifications, security, organisations, memberships",
-      "watchFor": [
-        "UserProfileTabView",
-        "UserNotificationsTabView",
-        "UserSecurityTabView",
-        "UserOrganizationsTabView",
-        "UserMembershipTabView",
-        "UserSettingsTabView"
-      ]
-    },
-    {
-      "name": "Organisation settings",
-      "ours": "src/app/pages/OrgSettingsPage.tsx",
-      "gain": "Organisation admin: profile, associates, invitations",
-      "watchFor": [
-        "OrgProfileTabView",
-        "OrgAssociatesTabView",
-        "OrgInvitationsTabView",
-        "OrgSettingsTabView"
-      ]
-    },
-    {
       "name": "Innovation pack and template settings",
       "ours": "src/app/pages/PackSettingsPage.tsx, TemplateSettingsPage.tsx",
       "gain": "Editing a pack and the templates inside it",

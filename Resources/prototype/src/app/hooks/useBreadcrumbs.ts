@@ -344,10 +344,22 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
     ];
   }
 
+  // ── Organisation settings ──
+  if (path.startsWith("/organization/") && path.includes("/settings")) {
+    const slug = path.split("/")[2];
+    const name = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    const settingsHref = `/organization/${slug}/settings`;
+    const tab = path.split("/")[4] ?? "profile";
+    return [
+      { label: name, href: `/organization/${slug}`, isCurrentPage: false },
+      { label: "Settings", href: `${settingsHref}/profile`, isCurrentPage: false },
+      { label: tab[0].toUpperCase() + tab.slice(1), href: `${settingsHref}/${tab}`, isCurrentPage: true },
+    ];
+  }
+
   // ── Organisation profile ──
   // Pre-existing gap: `/organization/:slug` had no case, so every organisation
-  // profile fell through to the "Page Not Found" crumb below. Settings pages
-  // under it are handled by the settings block above.
+  // profile fell through to the "Page Not Found" crumb below.
   if (path.startsWith("/organization/") && !path.includes("/settings")) {
     const slug = path.split("/")[2];
     const name = slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
