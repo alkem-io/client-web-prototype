@@ -15,7 +15,7 @@ import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
 import { SpaceLayoutTab } from "@/app/components/space/settings/SpaceLayoutTab";
 import { SpaceCommunityTab } from "@/app/components/space/settings/SpaceCommunityTab";
 import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
-import { SpaceSettingsSubspaces } from "@/app/components/space/SpaceSettingsSubspaces";
+import { SpaceSubspacesTab } from "@/app/components/space/settings/SpaceSubspacesTab";
 import { SpaceTemplatesTab } from "@/app/components/space/settings/SpaceTemplatesTab";
 import { SpaceStorageTab } from "@/app/components/space/settings/SpaceStorageTab";
 import { SpaceSettingsTab } from "@/app/components/space/settings/SpaceSettingsTab";
@@ -80,7 +80,7 @@ function renderTab(tab: TabId) {
     case "updates":
       return <SpaceUpdatesTab />;
     case "subspaces":
-      return <SpaceSettingsSubspaces />;
+      return <SpaceSubspacesTab />;
     case "templates":
       return <SpaceTemplatesTab />;
     case "storage":
