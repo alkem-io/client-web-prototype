@@ -19,7 +19,7 @@ import { SpaceSettingsSubspaces } from "@/app/components/space/SpaceSettingsSubs
 import { SpaceSettingsTemplates } from "@/app/components/space/SpaceSettingsTemplates";
 import { SpaceSettingsStorage } from "@/app/components/space/SpaceSettingsStorage";
 import { SpaceSettingsSettings } from "@/app/components/space/SpaceSettingsSettings";
-import { SpaceSettingsAccount } from "@/app/components/space/SpaceSettingsAccount";
+import { SpaceAccountTab } from "@/app/components/space/settings/SpaceAccountTab";
 import { SpaceSettingsHeader } from "@/crd/components/space/settings/SpaceSettingsHeader";
 import {
   type SpaceSettingsTabDescriptor,
@@ -88,7 +88,7 @@ function renderTab(tab: TabId) {
     case "settings":
       return <SpaceSettingsSettings />;
     case "account":
-      return <SpaceSettingsAccount />;
+      return <SpaceAccountTab />;
   }
 }
 
