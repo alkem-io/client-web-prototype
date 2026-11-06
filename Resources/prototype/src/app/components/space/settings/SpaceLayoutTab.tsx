@@ -6,6 +6,7 @@ import {
   saveSpaceSidebarWidgets,
   SPACE_WIDGET_DEFS,
   type SidebarWidgetConfig,
+  type SidebarWidgetDef,
 } from '@/app/components/space/SidebarWidgets';
 import { SettingsSection } from '@/crd/components/common/SettingsSection';
 import { SpaceSettingsLayoutView } from '@/crd/components/space/settings/SpaceSettingsLayoutView';
@@ -47,15 +48,20 @@ const WIDGET_TO_PRODUCTION: Record<string, SidebarWidgetId> = {
   index: 'index',
 };
 
-export const toProductionWidgets = (config: SidebarWidgetConfig): SidebarWidgetId[] => [
-  ...new Set(config.order.filter(key => config.enabled[key] && WIDGET_TO_PRODUCTION[key]).map(key => WIDGET_TO_PRODUCTION[key])),
+export const toProductionWidgets = (
+  config: SidebarWidgetConfig,
+  mapping: Record<string, SidebarWidgetId> = WIDGET_TO_PRODUCTION
+): SidebarWidgetId[] => [
+  ...new Set(config.order.filter(key => config.enabled[key] && mapping[key]).map(key => mapping[key])),
 ];
 
-export const fromProductionWidgets = (sidebar: SidebarWidgetId[]): SidebarWidgetConfig => {
-  const chosen = sidebar.flatMap(id =>
-    Object.keys(WIDGET_TO_PRODUCTION).filter(key => WIDGET_TO_PRODUCTION[key] === id)
-  );
-  const allKeys = SPACE_WIDGET_DEFS.map(def => def.key);
+export const fromProductionWidgets = (
+  sidebar: SidebarWidgetId[],
+  mapping: Record<string, SidebarWidgetId> = WIDGET_TO_PRODUCTION,
+  defs: SidebarWidgetDef[] = SPACE_WIDGET_DEFS
+): SidebarWidgetConfig => {
+  const chosen = sidebar.flatMap(id => Object.keys(mapping).filter(key => mapping[key] === id));
+  const allKeys = defs.map(def => def.key);
   return {
     order: [...chosen, ...allKeys.filter(key => !chosen.includes(key))],
     enabled: Object.fromEntries(allKeys.map(key => [key, chosen.includes(key)])),
@@ -141,15 +147,23 @@ const moveCallout = (columns: LayoutPoolColumn[], calloutId: string, target: Lay
   });
 };
 
+/** What a subspace's extra Layout actions need from the board. */
+export type LayoutBoard = {
+  columns: LayoutPoolColumn[];
+  hasUnsavedChanges: boolean;
+  /** Replaces the whole flow straight away, without going through the unsaved-changes bar. */
+  replaceColumns: (columns: LayoutPoolColumn[]) => void;
+  setReplacing: (replacing: boolean) => void;
+};
+
 type SpaceLayoutTabProps = {
   level?: 'L0' | 'L1' | 'L2';
   scope?: string;
   initialColumns?: () => LayoutPoolColumn[];
-  /** Top-level spaces write widget choices to the store their sidebar reads. Subspaces pass their own. */
-  onWidgetsChange?: (columnId: LayoutColumnId, sidebar: SidebarWidgetId[]) => void;
-  /** "Start collapsed" is a top-level space setting. */
-  showSidebarDefault?: boolean;
-  headerActionsSlot?: ReactNode;
+  /** Fills production's header actions slot. */
+  headerActions?: (board: LayoutBoard) => ReactNode;
+  /** Shown above production's view. */
+  aboveBoard?: (columns: LayoutPoolColumn[]) => ReactNode;
 };
 
 const saveSpaceWidgets = (columnId: LayoutColumnId, sidebar: SidebarWidgetId[]) => {
@@ -167,17 +181,18 @@ export function SpaceLayoutTab({
   level = 'L0',
   scope = 'space',
   initialColumns = buildDemoColumns,
-  onWidgetsChange = saveSpaceWidgets,
-  showSidebarDefault = level === 'L0',
-  headerActionsSlot,
+  headerActions,
+  aboveBoard,
 }: SpaceLayoutTabProps) {
   const navigate = useNavigate();
-  const { spaceSlug = '' } = useParams<{ spaceSlug: string }>();
+  const { spaceSlug = '', subspaceSlug } = useParams<{ spaceSlug: string; subspaceSlug: string }>();
+  // "Start collapsed", the shared collapse setting and the stored widgets belong to top-level spaces.
+  const isTopLevel = level === 'L0';
   const form = useDemoForm<LayoutValues>(
     `${scope}:layout`,
     () => ({ columns: initialColumns(), startCollapsed: readStartCollapsed() }),
     next => {
-      if (!showSidebarDefault) return;
+      if (!isTopLevel) return;
       try {
         localStorage.setItem(SIDEBAR_DEFAULT_KEY, next.startCollapsed ? 'railed' : 'expanded');
       } catch {
@@ -186,6 +201,7 @@ export function SpaceLayoutTab({
     }
   );
   const [templatePickerFor, setTemplatePickerFor] = useState<LayoutColumnId | null>(null);
+  const [replacing, setReplacing] = useState(false);
   const { columns, startCollapsed } = form.value;
 
   const hasBoardChanges = useMemo(
@@ -200,6 +216,10 @@ export function SpaceLayoutTab({
     }));
 
   const saveLayout = async (id: LayoutColumnId, layout: PhaseLayoutInput) => {
+    if (!isTopLevel) {
+      updateColumn(id, { layout });
+      return;
+    }
     // Our feeds read one collapse setting for the whole space, not one per tab, so
     // every tab shows the same value rather than claiming something members won't see.
     form.applyNow(previous => ({
@@ -209,14 +229,12 @@ export function SpaceLayoutTab({
         return column.id === id ? { ...column, layout } : { ...column, layout: shared };
       }),
     }));
-    if (level === 'L0') {
-      try {
-        localStorage.setItem(COLLAPSE_POSTS_KEY, String(layout.descriptionCollapsed));
-      } catch {
-        /* storage unavailable: the prototype keeps the in-memory state */
-      }
+    try {
+      localStorage.setItem(COLLAPSE_POSTS_KEY, String(layout.descriptionCollapsed));
+    } catch {
+      /* storage unavailable: the prototype keeps the in-memory state */
     }
-    onWidgetsChange(id, layout.sidebar);
+    saveSpaceWidgets(id, layout.sidebar);
   };
 
   const columnMenuActions: ColumnMenuActions = {
@@ -231,18 +249,29 @@ export function SpaceLayoutTab({
     onOpenDefaultCalloutTemplatePicker: setTemplatePickerFor,
     onSaveColumnDetails: async (id, title, description) => updateColumn(id, { title, description }),
     onSaveLayout: saveLayout,
-    onDeletePhase: async id =>
-      form.applyNow(previous => {
-        const remaining = previous.columns.filter(column => column.id !== id);
-        const orphans = previous.columns.find(column => column.id === id)?.callouts ?? [];
-        return {
-          ...previous,
-          // Posts on a deleted tab move to the first tab rather than disappearing.
-          columns: remaining.map((column, index) =>
-            index === 0 ? { ...column, callouts: [...column.callouts, ...orphans] } : column
-          ),
-        };
-      }),
+    // As in production, there is no delete on the last phase left.
+    onDeletePhase:
+      columns.length > 1
+        ? async id =>
+            form.applyNow(previous => {
+              const remaining = previous.columns.filter(column => column.id !== id);
+              const deleted = previous.columns.find(column => column.id === id);
+              return {
+                ...previous,
+                // Posts on a deleted tab move to the first tab rather than disappearing,
+                // and if it was the active one, the first tab takes over.
+                columns: remaining.map((column, index) =>
+                  index === 0
+                    ? {
+                        ...column,
+                        callouts: [...column.callouts, ...(deleted?.callouts ?? [])],
+                        isCurrentPhase: column.isCurrentPhase || Boolean(deleted?.isCurrentPhase),
+                      }
+                    : column
+                ),
+              };
+            })
+        : undefined,
     onToggleVisibility: async (id, isHidden) => updateColumn(id, { isHidden }),
   };
 
@@ -254,10 +283,11 @@ export function SpaceLayoutTab({
 
   return (
     <>
+      {aboveBoard?.(columns)}
       <SpaceSettingsLayoutView
         level={level}
         canManageTabs={true}
-        entityNoun={level === 'L0' ? 'tab' : 'phase'}
+        entityNoun={isTopLevel ? 'tab' : 'phase'}
         columns={columns}
         saveBar={saveBar}
         hasUnsavedChanges={hasBoardChanges}
@@ -276,7 +306,9 @@ export function SpaceLayoutTab({
             columns: moveCallout(previous.columns, id, { columnId: target, index: Number.MAX_SAFE_INTEGER }),
           }))
         }
-        onViewPost={() => navigate(`/space/${spaceSlug}`)}
+        onViewPost={() =>
+          navigate(subspaceSlug ? `/space/${spaceSlug}/subspaces/${subspaceSlug}` : `/space/${spaceSlug}`)
+        }
         columnMenuActions={columnMenuActions}
         onCreatePhase={async ({ displayName, description }) =>
           form.applyNow(previous => ({
@@ -302,11 +334,17 @@ export function SpaceLayoutTab({
           }))
         }
         maximumNumberOfStates={8}
-        headerActionsSlot={headerActionsSlot}
+        isReplacingFlow={replacing}
+        headerActionsSlot={headerActions?.({
+          columns,
+          hasUnsavedChanges: hasBoardChanges,
+          replaceColumns: next => form.applyNow(previous => ({ ...previous, columns: next })),
+          setReplacing,
+        })}
         {...demoMarkdownUpload}
       />
 
-      {showSidebarDefault && (
+      {isTopLevel && (
         <SettingsSection
           className="mt-6"
           title="Sidebar"
@@ -335,7 +373,6 @@ export function SpaceLayoutTab({
       <TabSaveBar count={form.count} saving={form.saving} save={form.save} discard={form.discard} />
 
       <DemoTemplatePicker
-        scope={scope}
         open={templatePickerFor !== null}
         onClose={() => setTemplatePickerFor(null)}
         allowedTypes={['callout']}

@@ -3,10 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useParams } from "react-router";
 import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
 import { SpaceCommunityTab } from "@/app/components/space/settings/SpaceCommunityTab";
+import { SpaceLayoutTab } from "@/app/components/space/settings/SpaceLayoutTab";
 import { SpaceSubspacesTab } from "@/app/components/space/settings/SpaceSubspacesTab";
 import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
+import { SubspaceFlowActions, SubspaceFlowBar } from "@/app/components/space/settings/SubspaceFlowActions";
 import { SubspaceOwnSettingsTab } from "@/app/components/space/settings/SubspaceOwnSettingsTab";
-import { SubspaceSettingsLayout } from "@/app/components/space/SubspaceSettingsLayout";
 import {
   buildNestedSubspaces,
   buildSubspaceAbout,
@@ -44,7 +45,15 @@ function renderTab(tab: TabId, profile: SubspaceProfile, base: string, parentHre
     case "about":
       return <SpaceAboutTab level="L1" scope={scope} initial={() => buildSubspaceAbout(profile)} href={base} />;
     case "layout":
-      return <SubspaceSettingsLayout />;
+      return (
+        <SpaceLayoutTab
+          level="L1"
+          scope={scope}
+          initialColumns={buildSubspacePhases}
+          headerActions={(board) => <SubspaceFlowActions board={board} scope={scope} />}
+          aboveBoard={(columns) => <SubspaceFlowBar columns={columns} />}
+        />
+      );
     case "community":
       return <SpaceCommunityTab level="L1" scope={scope} spaceName={profile.title} initial={DEMO_SUBSPACE_COMMUNITY} />;
     case "updates":
