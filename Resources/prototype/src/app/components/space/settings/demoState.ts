@@ -39,6 +39,8 @@ export type DemoForm<T> = {
   patch: (patch: Partial<T>) => void;
   save: () => Promise<void>;
   discard: () => void;
+  /** Applies a change that production saves straight away, to both the saved value and the buffer. */
+  applyNow: (updater: (previous: T) => T) => void;
 };
 
 /** A form buffered against its saved value, for tabs saved through the unsaved-changes bar. */
@@ -73,7 +75,15 @@ export function useDemoForm<T extends object>(
 
   const discard = useCallback(() => setValue(saved), [saved]);
 
-  return { value, saved, count, saving, set, patch, save, discard };
+  const applyNow = useCallback(
+    (updater: (previous: T) => T) => {
+      setValue(updater);
+      setSaved(updater);
+    },
+    [setSaved]
+  );
+
+  return { value, saved, count, saving, set, patch, save, discard, applyNow };
 }
 
 /** Markdown image upload for the demo: the picked file is shown from a local address. */
