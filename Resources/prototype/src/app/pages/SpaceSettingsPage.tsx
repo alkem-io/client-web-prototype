@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate, useParams } from "react-router";
-import { SpaceSettingsAbout } from "@/app/components/space/SpaceSettingsAbout";
+import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
 import { SpaceSettingsLayout } from "@/app/components/space/SpaceSettingsLayout";
 import { SpaceSettingsCommunity } from "@/app/components/space/SpaceSettingsCommunity";
 import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
@@ -72,7 +72,7 @@ const isTabId = (value: string | undefined): value is TabId => TABS.some((tab) =
 function renderTab(tab: TabId) {
   switch (tab) {
     case "about":
-      return <SpaceSettingsAbout />;
+      return <SpaceAboutTab />;
     case "layout":
       return <SpaceSettingsLayout />;
     case "community":
