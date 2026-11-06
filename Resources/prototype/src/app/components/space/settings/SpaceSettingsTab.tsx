@@ -9,7 +9,7 @@ import {
   type UserInfoVisibility,
 } from '@/crd/components/space/settings/SpaceSettingsSettingsView';
 
-type SettingsValues = {
+export type SettingsValues = {
   privacy: SpacePrivacy;
   userInfoVisibility: UserInfoVisibility;
   membershipPolicy: MembershipPolicy;

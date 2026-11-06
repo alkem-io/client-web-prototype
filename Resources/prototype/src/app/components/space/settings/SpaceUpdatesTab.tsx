@@ -8,7 +8,7 @@ import {
 } from '@/crd/components/space/settings/SpaceSettingsUpdatesView';
 import { demoDelay, demoMarkdownUpload, useDemoState } from './demoState';
 
-const ELENA: UpdateAuthor = {
+export const ELENA: UpdateAuthor = {
   id: 'u1',
   displayName: 'Elena Martinez',
   avatarUrl:
@@ -17,7 +17,7 @@ const ELENA: UpdateAuthor = {
   roleLabel: 'Host',
 };
 
-const SARAH: UpdateAuthor = {
+export const SARAH: UpdateAuthor = {
   id: 'u2',
   displayName: 'Sarah Chen',
   avatarUrl:

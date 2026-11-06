@@ -52,7 +52,7 @@ type RemovalKind =
 
 type PendingRemoval = { kind: RemovalKind; id: string; name: string; orgInvitation?: boolean };
 
-type CommunityData = {
+export type CommunityData = {
   members: CommunityMember[];
   pending: PendingMembership[];
   organizations: CommunityOrg[];
@@ -489,7 +489,8 @@ function GuidelinesSlot({ scope, subspace }: { scope: string; subspace: boolean 
   const [saving, setSaving] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [savingAsTemplate, setSavingAsTemplate] = useState<number | null>(null);
-  const [, setTemplates] = useDemoTemplates(scope);
+  // Templates are held by the top-level space, at every level (as in production).
+  const [, setTemplates] = useDemoTemplates();
   const isDirty = JSON.stringify(draft) !== JSON.stringify(saved);
 
   const save = async () => {
@@ -543,7 +544,6 @@ function GuidelinesSlot({ scope, subspace }: { scope: string; subspace: boolean 
       </SettingsEditorDialog>
 
       <DemoTemplatePicker
-        scope={scope}
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}
         allowedTypes={['communityGuidelines']}
