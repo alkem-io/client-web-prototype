@@ -70,9 +70,6 @@ subspace, profile and organisation settings use production's screens wherever
 possible. Only what production cannot do yet stays ours. This replaces the earlier
 "parked" position and the earlier decision that our space settings stay.
 
-**Status: in progress on the `settings-follow-production` branch.** Nothing below
-is finished until the row in "Recently graduated" says Done.
-
 **Stays ours, because production does not have it:**
 
 | What | Where it sits | Ask for production |
@@ -82,6 +79,8 @@ is finished until the row in "Recently graduated" says Done.
 | Form builder and applications review for proposing a subspace | Beneath the space Subspaces tab | A place for it in `SpaceSettingsSubspacesView` |
 | "Start collapsed" for the sidebar | Beneath the space Layout tab | A setting in `SpaceSettingsLayoutView` |
 | Search box for an organisation's associates | Above the Associates tab | A search field in `OrgAssociatesTabView` |
+| Save Flow as Template | In the subspace Layout tab's header actions | A flow-only save in `SpaceSettingsLayoutView` |
+| A short explanation of each sidebar widget (widget hints, approved 2026-10-07) | Not shown any more: production's sidebar dialog lists names only, with no place for them | A one-line hint per widget in `PhaseLayoutDialog`. The wording is in `app/components/space/SidebarWidgets.tsx` |
 
 **Goes away with our old screens. Agreed with Jeroen on 2026-11-06: follow production as closely as possible.**
 
@@ -108,8 +107,25 @@ Also gone, as small differences that follow from the same decision:
   in-app switches (production has one per kind of notification), and the application
   date, status and member counts on Membership.
 - **Organisation:** the second domain switch on Associates (it is still on Settings).
+- **Subspace:** the parent space's avatar in the About preview, per-section save
+  buttons, summary tiles, virtual contributors at subspace level, member counts and
+  last-active dates on subspaces, the four fixed flows in Load Template (production's
+  template picker replaces them), and the row of phases above the Layout board.
 - **Everywhere:** buttons that never did anything, and the sidebar mode choice, which
   was never saved.
+
+**Where the demo falls short of production, and why that is fine for now:**
+
+- Production's sidebar dialog offers widgets our member pages cannot show yet
+  (Apply/Join, Latest Update, Contact Leads, Virtual Contributors, Community
+  Guidelines, Community, Recent Activity). Choosing one does nothing, and the choice
+  is forgotten on reload.
+- Subspace sidebar choices save in settings, but the member subspace page does not
+  read them. It never did.
+- Post collapse is per tab in the dialog, but our feeds read one setting, so a change
+  affects every tab. Tab renames, added tabs and the publisher switch do not reach
+  member pages.
+- Demo changes mostly reset on reload.
 
 ## Recently graduated
 
@@ -117,7 +133,7 @@ Kept as a record, so it is clear the process works:
 
 | Was | Became | Status |
 |---|---|---|
-| Our space, subspace, profile and organisation settings | Production's settings screens in `crd/components/space/settings`, `user/settings`, `organization/settings` and `contributor/settings` | **In progress** since 2026-11-06, by design decision: follow production. See "Settings: we follow production" above. |
+| Our space, subspace, profile and organisation settings | Production's settings screens in `crd/components/space/settings`, `user/settings`, `organization/settings` and `contributor/settings` | **Done** on 2026-11-06 at `4f6f3811`, by design decision: follow production. Our old tabs are deleted, and each tab now holds only demo state around production's screen (`app/components/space/settings`, `user/settings`, `org/settings`). See "Settings: we follow production" above. |
 | `TimeGroupedChatThreadView`, `ChatOptionsMenu`, `FilledGroupAvatar` | Production's own `ChatThreadView` (day separators, a time after an hour of quiet, exact time on hover or tap, grouped corners), `ChatOptionsMenu`, `ChatPanel`'s `onTitleClick`, and `GroupAvatar` filling the circle | **Done** at `71f8ddcf` (client-web#10377, #10378). All three deleted, and both stand-ins with them (`ChatGroupAvatarSlots` and the title-click listener in `MessagesOverlay`). Production also added an expand/collapse toggle to the chat panel. Still not built anywhere: reactions overlapping the bubble's bottom edge. |
 | `CalloutFormFraming` and the prototype's form flow | Production's forms: `CalloutFormBox`, `CalloutFormFillIn`, `CalloutFormOwnResponses`, `CalloutFormResponsesTable`, `CalloutFormResponseDialog`, `FormQuestionsEditor`, `FormSettingsDialog` | **Done** on 2026-10-13, by design decision: follow production. A form is now added to a post ("Add to post"), not a response type. Ours is deleted; `app/components/callout/PostFormBox` only holds demo state. Production's version also brought multiple-choice, one-or-many responses and open/closed. The compact post dialog exploration still shows the old model. |
 | `MemoFramingPreview` | `crd/components/space/PostCard` (memo framing now `aspect-video`) and `CalloutCollaboraPreview` (one 16:9 size, `compact` removed) | **Done** at `13cd741a`. Deleted; the prototype's `PostCard` lets CRD draw both previews again. Production's memo box is ours with 12px padding instead of 16px. |

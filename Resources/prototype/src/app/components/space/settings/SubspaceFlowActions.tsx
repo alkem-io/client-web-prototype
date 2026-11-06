@@ -1,4 +1,4 @@
-import { ChevronsRight, PanelLeft, Replace, Upload } from 'lucide-react';
+import { PanelLeft, Replace, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -195,21 +195,5 @@ export function SubspaceFlowActions({ board, scope }: { board: LayoutBoard; scop
         />
       )}
     </>
-  );
-}
-
-/** The flow as a row of phases, read in order. Display only. */
-export function SubspaceFlowBar({ columns }: { columns: LayoutPoolColumn[] }) {
-  return (
-    <div className="mb-4 flex items-center gap-1.5 overflow-x-auto pb-2">
-      {columns.map((column, index) => (
-        <div key={column.id} className="flex shrink-0 items-center gap-1.5">
-          <div className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-caption font-medium text-primary">
-            {column.title}
-          </div>
-          {index < columns.length - 1 && <ChevronsRight aria-hidden="true" className="size-4 text-primary" />}
-        </div>
-      ))}
-    </div>
   );
 }

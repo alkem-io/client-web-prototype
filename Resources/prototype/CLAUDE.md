@@ -66,6 +66,8 @@ a sync that made the drift worse, and the build will not tell you.
 > the per-tab widget editor — none of which production has. It was restored
 > from `main` and rebased. A future sync agent must apply rule 2, not rule 1,
 > to any surface where the prototype leads.
+> (Since 2026-11-06 settings follow production on Jeroen's decision, Layout tab
+> included. The rule still holds everywhere else.)
 
 > **Second trap, same shape: the space search box.**
 > `SpaceSubspacesList` ships with its own search field, which looks like proof

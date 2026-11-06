@@ -6,7 +6,7 @@ import { SpaceCommunityTab } from "@/app/components/space/settings/SpaceCommunit
 import { SpaceLayoutTab } from "@/app/components/space/settings/SpaceLayoutTab";
 import { SpaceSubspacesTab } from "@/app/components/space/settings/SpaceSubspacesTab";
 import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
-import { SubspaceFlowActions, SubspaceFlowBar } from "@/app/components/space/settings/SubspaceFlowActions";
+import { SubspaceFlowActions } from "@/app/components/space/settings/SubspaceFlowActions";
 import { SubspaceOwnSettingsTab } from "@/app/components/space/settings/SubspaceOwnSettingsTab";
 import {
   buildNestedSubspaces,
@@ -51,7 +51,6 @@ function renderTab(tab: TabId, profile: SubspaceProfile, base: string, parentHre
           scope={scope}
           initialColumns={buildSubspacePhases}
           headerActions={(board) => <SubspaceFlowActions board={board} scope={scope} />}
-          aboveBoard={(columns) => <SubspaceFlowBar columns={columns} />}
         />
       );
     case "community":

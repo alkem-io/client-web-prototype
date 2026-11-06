@@ -162,8 +162,6 @@ type SpaceLayoutTabProps = {
   initialColumns?: () => LayoutPoolColumn[];
   /** Fills production's header actions slot. */
   headerActions?: (board: LayoutBoard) => ReactNode;
-  /** Shown above production's view. */
-  aboveBoard?: (columns: LayoutPoolColumn[]) => ReactNode;
 };
 
 const saveSpaceWidgets = (columnId: LayoutColumnId, sidebar: SidebarWidgetId[]) => {
@@ -182,7 +180,6 @@ export function SpaceLayoutTab({
   scope = 'space',
   initialColumns = buildDemoColumns,
   headerActions,
-  aboveBoard,
 }: SpaceLayoutTabProps) {
   const navigate = useNavigate();
   const { spaceSlug = '', subspaceSlug } = useParams<{ spaceSlug: string; subspaceSlug: string }>();
@@ -283,7 +280,6 @@ export function SpaceLayoutTab({
 
   return (
     <>
-      {aboveBoard?.(columns)}
       <SpaceSettingsLayoutView
         level={level}
         canManageTabs={true}
