@@ -25,8 +25,9 @@ to remember.
    upstream. That is the graduation signal.
 3. Delete ours, repoint the imports to `@/crd/…`, record it below.
 
-Read a surface marked `[!]` as: *production has this now — our version is a
-duplicate, and anything built on top of it is being built twice.*
+Read a surface marked `[!]` as: *production has screens by these names — compare
+what each one does, then decide.* A name match alone does not make ours a
+duplicate.
 
 ## Components in this folder
 
@@ -43,6 +44,8 @@ have it. That comment is what development reads.
 | `ThreeColumnContributionGrid` | A callout's contributions three across on wide screens instead of two, cards closer to thumbnail size. Collapsed, it shows the first row in full plus a clean cut through the middle of the second, so it is clear there is more; production clips at a fixed 220px, which leaves a thin strip that reads as a mistake. The button says how many are hidden ("+3 more"), not the total. Needs a `columns` prop on `ContributionGrid` (and `ContributionsPreviewSkeleton`), and the collapse measured from the first row |
 | `BandedResponseCards` | Memo, whiteboard and document responses without the blue title fade (product#2207): a label strip in the platform background colour, with a thin line above it, holds the author's profile picture, the title and the author, so the label reads apart from the preview; memo previews are compact, with dark headings and grey body text like a post response, and cut cleanly with no fade; cards are a fixed 200px so the collapsed grid never cuts off the label; the hover wash stays and sits under the strip. Post responses, which have no preview, get the same label at the top: picture, title, then "author · date" in grey. Links and files become the same 200px card in the same grid instead of a list: a plain link icon or the coloured file type as the picture, the label strip giving the title with the address or file type ("PDF") in grey, "Open Link" (a new string) or "Download" on hover. No profile picture, file size or site icon on these: links do not carry them, so they would need server work, and they are parked until after the server move. The ask is to change `ContributionMemoCard`, `ContributionWhiteboardCard`, `ContributionDocumentCard` and `ContributionPostCard` themselves, and to show links as these cards. A name check cannot see this graduate: after each sync, check whether production's cards still use `bg-gradient-to-t` |
 | `TitleFirstPostHeader` | Posts in the feed lead with what they are about: the title on top beside the author's picture, "author · time" subtle underneath, the same order as the label on response cards. Needs a header layout option on `PostCard` (or this as its default). Until then a stand-in places it (`app/components/shared/TitleFirstHeaderStandIn`, not part of the ask) |
+| `NewActivitySettingsSection` | A person controls the new-activity dots from their notification settings: dots on or off, and mark everything as read, with undo. Sits beneath production's `UserNotificationsTabView`. Needs a place for it in that view, or a section of its own |
+| `DigitalSigningSettingsSection` | A person links their Cleverbase account for digital signing, which memo signing depends on. Sits beneath production's `UserSecurityTabView`. Needs a place for it in that view, or a section of its own |
 
 If this list grows past ten or so entries, the process has stopped working.
 Nothing else belongs in this folder: not pages, not mock data, not wrappers
@@ -50,24 +53,54 @@ around components production already has.
 
 ## Surfaces on the watchlist
 
-Status as of upstream `13cd741a` (2026-10-09). Run the check for current numbers.
+Status as of upstream `4f6f3811` (2026-11-06). Run the check for current numbers.
 
 | Surface | Upstream | Note |
 |---|---|---|
-| Space settings | `[!]` 9/9 | Production built the full tab set. Ours is now the duplicate. |
-| Subspace settings | `[!]` 5/5 | Production reuses the space views one level down. |
-| User profile settings | `[!]` 6/6 | Profile, notifications, security, organisations, memberships. |
-| Organisation settings | `[!]` 4/4 | Profile, associates, invitations. |
-| Pack and template settings | `[!]` 2/2 | `InnovationPackAdminView`, `InnovationPackForm`. |
-| Subspace application wizard | `[~]` 1/2 | `ApplicationFormEditor` landed; the wizard has not. |
+| Pack and template settings | `[!]` 2/2 | `InnovationPackAdminView`, `InnovationPackForm`. Not compared yet, and not part of the settings decision below. |
+| Subspace application wizard | `[~]` 1/2 | `ApplicationFormEditor` landed; the wizard has not. The form builder for proposing a subspace stays ours, beneath production's Subspaces tab. |
 | Memo signing | `[~]` 1/2 | `MemoSigningDialog` landed; the signature panel has not. |
 | Template detail as a full page | `[ ]` 0/2 | Still a dialog upstream. |
+| Databank praktijkvoorbeelden | `[ ]` 0/3 | Subspaces as a filterable database. |
 
-**The settings surfaces are the live question for the dev session.** The
-prototype designed them ahead of production, production has since built its
-own, and the two have not been compared. Converting them is deliberately
-*parked*, not forgotten — the designs need to be looked at side by side first,
-because whichever way that goes, one of the two sets is redundant work.
+## Settings: we follow production
+
+**Decided by Jeroen on 2026-11-06.** Production built our settings pages, so space,
+subspace, profile and organisation settings use production's screens wherever
+possible. Only what production cannot do yet stays ours. This replaces the earlier
+"parked" position and the earlier decision that our space settings stay.
+
+**Status: in progress on the `settings-follow-production` branch.** Nothing below
+is finished until the row in "Recently graduated" says Done.
+
+**Stays ours, because production does not have it:**
+
+| What | Where it sits | Ask for production |
+|---|---|---|
+| New-activity dot settings | Beneath Notifications (`NewActivitySettingsSection`) | A place for it in `UserNotificationsTabView` |
+| Cleverbase digital signing | Beneath Security (`DigitalSigningSettingsSection`) | A place for it in `UserSecurityTabView` |
+| Form builder and applications review for proposing a subspace | Beneath the space Subspaces tab | A place for it in `SpaceSettingsSubspacesView` |
+| "Start collapsed" for the sidebar | Beneath the space Layout tab | A setting in `SpaceSettingsLayoutView` |
+| Search box for an organisation's associates | Above the Associates tab | A search field in `OrgAssociatesTabView` |
+
+**Goes away with our old screens. Jeroen can still bring any of these back:**
+
+| What | Area | Why it cannot simply stay |
+|---|---|---|
+| Reordering tabs on a top-level space | Space Layout | Production blocks this. Keeping it means rebuilding the tab around production's columns |
+| Collapsible columns that spring open while dragging | Space and subspace Layout | No way to add it without changing production's screen |
+| A separate on/off for tag chips | Space and subspace Layout | Production includes tags in Search, so turning Search on now turns on both |
+| Archiving a subspace | Subspace settings, Subspaces | Production can filter archived subspaces but has no way to archive one. Keeping it means keeping the whole tab ours |
+| Title and pinning on an update | Subspace settings, Updates | Production left these out on purpose: the server does not store them |
+| Filter and sortable columns on members | Subspace settings, Community | No way to add it without changing production's screen |
+| License card | Profile, Account | Not in production's screen |
+| Cancel an application (the button did nothing yet) | Profile, Membership | Not in production's screen |
+| Privacy switches (they had no effect yet) | Profile, Settings | Not in production's screen |
+
+Also gone, with nothing lost in practice: buttons that never did anything, the
+sidebar mode choice (it was never saved), and the hover card on virtual
+contributors in the space Community tab, which is one more place for the
+hover-card slot asked for under `ProfileHoverCard`.
 
 ## Recently graduated
 
@@ -75,6 +108,7 @@ Kept as a record, so it is clear the process works:
 
 | Was | Became | Status |
 |---|---|---|
+| Our space, subspace, profile and organisation settings | Production's settings screens in `crd/components/space/settings`, `user/settings`, `organization/settings` and `contributor/settings` | **In progress** since 2026-11-06, by design decision: follow production. See "Settings: we follow production" above. |
 | `TimeGroupedChatThreadView`, `ChatOptionsMenu`, `FilledGroupAvatar` | Production's own `ChatThreadView` (day separators, a time after an hour of quiet, exact time on hover or tap, grouped corners), `ChatOptionsMenu`, `ChatPanel`'s `onTitleClick`, and `GroupAvatar` filling the circle | **Done** at `71f8ddcf` (client-web#10377, #10378). All three deleted, and both stand-ins with them (`ChatGroupAvatarSlots` and the title-click listener in `MessagesOverlay`). Production also added an expand/collapse toggle to the chat panel. Still not built anywhere: reactions overlapping the bubble's bottom edge. |
 | `CalloutFormFraming` and the prototype's form flow | Production's forms: `CalloutFormBox`, `CalloutFormFillIn`, `CalloutFormOwnResponses`, `CalloutFormResponsesTable`, `CalloutFormResponseDialog`, `FormQuestionsEditor`, `FormSettingsDialog` | **Done** on 2026-10-13, by design decision: follow production. A form is now added to a post ("Add to post"), not a response type. Ours is deleted; `app/components/callout/PostFormBox` only holds demo state. Production's version also brought multiple-choice, one-or-many responses and open/closed. The compact post dialog exploration still shows the old model. |
 | `MemoFramingPreview` | `crd/components/space/PostCard` (memo framing now `aspect-video`) and `CalloutCollaboraPreview` (one 16:9 size, `compact` removed) | **Done** at `13cd741a`. Deleted; the prototype's `PostCard` lets CRD draw both previews again. Production's memo box is ours with 12px padding instead of 16px. |

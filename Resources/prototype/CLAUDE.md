@@ -218,11 +218,11 @@ Two things this does *not* mean:
   production for. `ExpandedSpaceCard` has nowhere to put an `ActivityDot`. Write
   the ask down in `src/ahead/README.md` rather than quietly accepting the loss.
 
-Measured at `cc126d7a`: production has built **every settings tab the prototype
-has** — space 9/9, subspace 5/5, user 6/6, organisation 4/4, packs 2/2. Settings
-are no longer ahead; they are two complete designs of the same screens that have
-never been compared. **Do not convert them** — that comparison is a design
-decision for the dev session, not a mechanical swap.
+**Settings follow production** (Jeroen's decision, 2026-11-06): space, subspace,
+profile and organisation settings use production's screens wherever possible, and
+only what production cannot do stays ours. The list is in
+[`src/ahead/README.md`](src/ahead/README.md). Pack and template settings have not
+been compared yet, so do not convert those without asking.
 
 ## Typography
 
