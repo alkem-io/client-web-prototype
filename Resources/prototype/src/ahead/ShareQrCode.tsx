@@ -251,7 +251,7 @@ export function ShareQrCode({ url, title, isPublic = false }: ShareQrCodeProps) 
         aria-label={`${label}. ${large ? strings.smaller : strings.larger}`}
         className={cn(
           "block aspect-square w-full cursor-zoom-in rounded-md border border-border bg-white p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          large && "cursor-zoom-out border-transparent p-3"
+          large && "cursor-zoom-out p-3"
         )}
       >
         <span
