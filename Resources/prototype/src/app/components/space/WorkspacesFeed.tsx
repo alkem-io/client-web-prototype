@@ -1,3 +1,4 @@
+import { usePostMenu } from "@/app/components/space/PostMenu";
 import { useState, useEffect } from "react";
 import { Button } from "@/crd/primitives/button";
 import { Plus } from "lucide-react";
@@ -91,6 +92,7 @@ export function WorkspacesFeed() {
     currentUser: MOCK_CURRENT_USER,
     isAdmin: true
   });
+  const { menuFor, dialogs: postMenuDialogs } = usePostMenu(posts, setPosts);
 
   function getContributionPreview(post: PostWithTags) {
     if (post.contributionType !== 'tasks') return undefined;
@@ -157,6 +159,7 @@ export function WorkspacesFeed() {
           <PostCard
             // Comments open inline in the card footer — production's thread.
             commentsSlot={<CommentsPanel threadId={post.id} />}
+          settingsSlot={menuFor(post)}
             key={post.id}
             post={post as any}
             onClick={() => setSelectedPost(post)}
@@ -166,6 +169,8 @@ export function WorkspacesFeed() {
           />
         ))}
       </div>
+
+      {postMenuDialogs}
 
       <input
         ref={fileInputRef}

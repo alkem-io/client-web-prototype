@@ -1,3 +1,4 @@
+import { usePostMenu } from "@/app/components/space/PostMenu";
 import { useState, useEffect, type ReactNode } from "react";
 import { Button } from "@/crd/primitives/button";
 import { Plus, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
@@ -803,6 +804,7 @@ export function SpaceKnowledgeFeed() {
     currentUser: MOCK_CURRENT_USER,
     isAdmin: true
   });
+  const { menuFor, dialogs: postMenuDialogs } = usePostMenu(posts, setPosts);
 
   // Persist collapse preference
   useEffect(() => {
@@ -1148,6 +1150,7 @@ export function SpaceKnowledgeFeed() {
             <PostCard
               // Comments open inline in the card footer — production's thread.
               commentsSlot={<CommentsPanel threadId={post.id} />}
+            settingsSlot={menuFor(post)}
               post={{
                 ...post,
                 descriptionExpanded: !collapseEnabled
@@ -1162,6 +1165,8 @@ export function SpaceKnowledgeFeed() {
           </div>
         ))}
       </CrdSpaceFeed>
+
+      {postMenuDialogs}
 
       <input
         ref={fileInputRef}
