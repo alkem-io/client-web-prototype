@@ -1,3 +1,4 @@
+import { usePostMenu } from "@/app/components/space/PostMenu";
 import { useState, useEffect, type ReactNode } from "react";
 import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
 import { Button } from "@/crd/primitives/button";
@@ -348,6 +349,7 @@ export function SpaceFeed() {
     currentUser: MOCK_CURRENT_USER,
     isAdmin: true
   });
+  const { menuFor, dialogs: postMenuDialogs } = usePostMenu(posts, setPosts);
 
 
   // Persist collapse preference
@@ -703,6 +705,7 @@ export function SpaceFeed() {
           <PostCard
             // Comments open inline in the card footer — production's thread.
             commentsSlot={<CommentsPanel threadId={post.id} />}
+          settingsSlot={menuFor(post)}
             key={post.id}
             post={{
               ...post,
@@ -716,6 +719,8 @@ export function SpaceFeed() {
           />
         ))}
       </CrdSpaceFeed>
+
+      {postMenuDialogs}
 
       <input
         ref={fileInputRef}

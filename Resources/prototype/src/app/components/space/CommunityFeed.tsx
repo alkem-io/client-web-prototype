@@ -1,3 +1,4 @@
+import { usePostMenu } from "@/app/components/space/PostMenu";
 import { useState, useEffect } from "react";
 import { Button } from "@/crd/primitives/button";
 import { Plus } from "lucide-react";
@@ -80,6 +81,7 @@ export function CommunityFeed() {
     currentUser: MOCK_CURRENT_USER,
     isAdmin: true
   });
+  const { menuFor, dialogs: postMenuDialogs } = usePostMenu(posts, setPosts);
 
   const filteredPosts = posts.filter((post) => {
     if (!searchValue) return true;
@@ -115,6 +117,7 @@ export function CommunityFeed() {
           <PostCard
             // Comments open inline in the card footer — production's thread.
             commentsSlot={<CommentsPanel threadId={post.id} />}
+          settingsSlot={menuFor(post)}
             key={post.id}
             post={post as any}
             onClick={() => setSelectedPost(post)}
@@ -123,6 +126,8 @@ export function CommunityFeed() {
           />
         ))}
       </div>
+
+      {postMenuDialogs}
 
       <input
         ref={fileInputRef}
