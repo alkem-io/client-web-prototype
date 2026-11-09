@@ -1,12 +1,11 @@
 import { type Dispatch, type ReactNode, type SetStateAction, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { ShareQrCode } from '@/ahead/ShareQrCode';
 import { CalloutContextMenu } from '@/crd/components/callout/CalloutContextMenu';
 import { CalloutVisibilityChangeDialog } from '@/crd/components/callout/CalloutVisibilityChangeDialog';
-import { ShareDialog } from '@/crd/components/common/ShareDialog';
 import { ConfirmationDialog } from '@/crd/components/dialogs/ConfirmationDialog';
 import type { PostCardData } from '@/crd/components/space/PostCard';
+import { ItemShareDialog } from '@/app/components/shared/ItemShareDialog';
 import { TemplateEditorDialog } from './settings/TemplateEditorDialog';
 import { buildContent, useDemoTemplates } from './settings/templatesDemo';
 
@@ -88,15 +87,13 @@ export function usePostMenu<T extends MenuPost>(
 
   const dialogs = (
     <>
-      <ShareDialog
+      <ItemShareDialog
         open={sharing !== null}
         onOpenChange={open => !open && setSharing(null)}
         url={sharing ? postShareUrl(sharing.title) : undefined}
-        title={t('contextMenu.share')}
-      >
-        {/* Ahead of production (alkemio#2222): the QR code in the space the dialog leaves below the link. */}
-        {sharing && <ShareQrCode url={postShareUrl(sharing.title)} title={sharing.title} />}
-      </ShareDialog>
+        itemTitle={sharing?.title ?? ''}
+        dialogTitle={t('contextMenu.share')}
+      />
 
       <CalloutVisibilityChangeDialog
         open={changingVisibility !== null}

@@ -15,7 +15,8 @@
  * Banner: CRD takes the L0 root's banner for subspaces (a subspace has no
  * settable page banner), which is what `imageUrl` already carried here.
  */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { ItemShareDialog } from '@/app/components/shared/ItemShareDialog';
 import { SubspaceHeader as CrdSubspaceHeader } from '@/crd/components/space/SubspaceHeader';
 import { resolveBannerShape } from '@/app/mappers/spaceBanner';
 import type { HeaderActionIconsData } from '@/crd/components/space/HeaderActionIcons';
@@ -44,6 +45,8 @@ type SubspaceHeaderProps = {
 };
 
 export function SubspaceHeader({
+  spaceSlug,
+  subspaceSlug,
   title,
   description,
   imageUrl,
@@ -53,23 +56,33 @@ export function SubspaceHeader({
   // A subspace inherits the L0 root's banner, so it must take the same shape —
   // otherwise it renders at the raw image ratio and towers over the space page.
   const banner = useMemo(() => resolveBannerShape(imageUrl ?? ''), [imageUrl]);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const actions: HeaderActionIconsData = {
     showInfo: true,
     onInfoClick,
     showShare: true,
+    onShareClick: () => setShareOpen(true),
     showSettings: true,
   };
 
   return (
-    <CrdSubspaceHeader
-      title={title}
-      tagline={description}
-      bannerUrl={banner.url}
-      bannerAspectRatio={banner.ratio}
-      color={avatarColor ?? 'var(--primary)'}
-      actions={actions}
-      overlayHeader={true}
-    />
+    <>
+      <CrdSubspaceHeader
+        title={title}
+        tagline={description}
+        bannerUrl={banner.url}
+        bannerAspectRatio={banner.ratio}
+        color={avatarColor ?? 'var(--primary)'}
+        actions={actions}
+        overlayHeader={true}
+      />
+      <ItemShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        url={`/space/${spaceSlug}/subspaces/${subspaceSlug}`}
+        itemTitle={title}
+      />
+    </>
   );
 }

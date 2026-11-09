@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useParams, useLocation, useSearchParams, Outlet, Link } from "react-router";
-import { SpaceHeader } from "./SpaceHeader";
+import { SPACE_TITLE, SpaceHeader } from "./SpaceHeader";
+import { ItemShareDialog } from "@/app/components/shared/ItemShareDialog";
 import { SpaceNavigationTabs } from "./SpaceNavigationTabs";
 import { HeaderActionIcons, type HeaderActionIconsData } from "@/crd/components/space/HeaderActionIcons";
 import { SpaceSidebar } from "./SpaceSidebar";
@@ -36,6 +37,7 @@ export function SpaceShell() {
   const variant = (parseInt(searchParams.get("v") || "1") || 1) as 1 | 2 | 3 | 4 | 5;
   const [activeTabDescription, setActiveTabDescription] = useState("Activity and updates from members of this space.");
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(searchParams.get("welcome") === "true");
   // Mobile responsive strategy: ?m=1..5 (0 = default/hidden)
   const mobileStrategy = Math.max(0, Math.min(5, parseInt(searchParams.get("m") || "0") || 0)) as 0 | 1 | 2 | 3 | 4 | 5;
@@ -97,6 +99,7 @@ export function SpaceShell() {
     showActivity: true,
     showVideoCall: true,
     showShare: true,
+    onShareClick: () => setShareOpen(true),
     showSettings: true,
     settingsHref: `/space/${slug}/settings`,
   };
@@ -295,6 +298,7 @@ export function SpaceShell() {
       </div>
       )}
       <AboutThisSpaceDialog open={aboutOpen} onOpenChange={setAboutOpen} spaceSlug={slug} />
+      <ItemShareDialog open={shareOpen} onOpenChange={setShareOpen} url={`/space/${slug}`} itemTitle={SPACE_TITLE} />
       <WelcomeSpaceDialog open={welcomeOpen} onOpenChange={setWelcomeOpen} spaceName={slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} />
 
       {/* Footer */}

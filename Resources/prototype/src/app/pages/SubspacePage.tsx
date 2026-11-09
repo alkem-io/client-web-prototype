@@ -20,6 +20,7 @@ import { KanbanPostDialog } from "@/app/components/space/KanbanBoardPost";
 import { AddPostModal } from "@/app/components/space/AddPostModal";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import { AboutThisSpaceDialog } from "@/app/components/space/AboutThisSpaceDialog";
+import { ItemShareDialog } from "@/app/components/shared/ItemShareDialog";
 
 /* ─── Mock subspace metadata ─── */
 
@@ -324,6 +325,7 @@ export default function SubspacePage() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCommunityDialogOpen, setIsCommunityDialogOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [kanbanDialogPost, setKanbanDialogPost] = useState<(typeof SUBSPACE_POSTS)[number] | null>(null);
 
   // Listen for sidebar "New Post" button event
@@ -494,6 +496,7 @@ export default function SubspacePage() {
                           showActivity: true,
                           showVideoCall: true,
                           showShare: true,
+                          onShareClick: () => setIsShareOpen(true),
                           showSettings: true,
                           settingsHref: `/space/${spaceSlug}/subspaces/${subspaceSlug}/settings/about`,
                         }}
@@ -583,6 +586,12 @@ export default function SubspacePage() {
       />
 
       {/* About this Subspace Dialog */}
+      <ItemShareDialog
+        open={isShareOpen}
+        onOpenChange={setIsShareOpen}
+        url={`/space/${spaceSlug}/subspaces/${subspaceSlug}`}
+        itemTitle={info.title}
+      />
       <AboutThisSpaceDialog
         open={isAboutOpen}
         onOpenChange={setIsAboutOpen}
