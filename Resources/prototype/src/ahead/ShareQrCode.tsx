@@ -243,7 +243,14 @@ export function ShareQrCode({ url, title, isPublic = false }: ShareQrCodeProps) 
   const SizeIcon = large ? Minimize2 : Maximize2;
 
   return (
-    <div className={cn("grid gap-4", large ? "grid-cols-1 gap-3" : "grid-cols-[176px_minmax(0,1fr)] items-start")}>
+    <div
+      className={cn(
+        "grid gap-3",
+        // Side by side once the dialog is wide enough (sm+); stacked on a phone, where a 176px
+        // code plus the three nowrap buttons would overflow the dialog and clip their labels.
+        large ? "grid-cols-1" : "sm:grid-cols-[176px_minmax(0,1fr)] sm:gap-4 sm:items-start"
+      )}
+    >
       <button
         type="button"
         onClick={() => setLarge(value => !value)}
@@ -251,6 +258,9 @@ export function ShareQrCode({ url, title, isPublic = false }: ShareQrCodeProps) 
         aria-label={`${label}. ${large ? strings.smaller : strings.larger}`}
         className={cn(
           "block aspect-square w-full cursor-zoom-in rounded-md border border-border bg-white p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          // Stacked on a phone the code would otherwise fill the dialog; cap and centre it so
+          // "Show larger" still adds something. From sm+ it sits in the 176px track at full width.
+          !large && "mx-auto max-w-[200px] sm:mx-0 sm:max-w-none",
           large && "cursor-zoom-out p-3"
         )}
       >
