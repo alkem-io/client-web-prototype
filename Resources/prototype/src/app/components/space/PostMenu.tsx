@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { CalloutContextMenu } from '@/crd/components/callout/CalloutContextMenu';
 import { CalloutVisibilityChangeDialog } from '@/crd/components/callout/CalloutVisibilityChangeDialog';
-import { ShareDialog } from '@/crd/components/common/ShareDialog';
 import { ConfirmationDialog } from '@/crd/components/dialogs/ConfirmationDialog';
 import type { PostCardData } from '@/crd/components/space/PostCard';
+import { ItemShareDialog } from '@/app/components/shared/ItemShareDialog';
 import { TemplateEditorDialog } from './settings/TemplateEditorDialog';
 import { buildContent, useDemoTemplates } from './settings/templatesDemo';
 
@@ -87,11 +87,12 @@ export function usePostMenu<T extends MenuPost>(
 
   const dialogs = (
     <>
-      <ShareDialog
+      <ItemShareDialog
         open={sharing !== null}
         onOpenChange={open => !open && setSharing(null)}
         url={sharing ? postShareUrl(sharing.title) : undefined}
-        title={t('contextMenu.share')}
+        itemTitle={sharing?.title ?? ''}
+        dialogTitle={t('contextMenu.share')}
       />
 
       <CalloutVisibilityChangeDialog

@@ -14,7 +14,8 @@
  * **height** — approximated as CRD's `bannerAspectRatio` so a shorter banner
  * still reads as shorter.
  */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { ItemShareDialog } from '@/app/components/shared/ItemShareDialog';
 import { SpaceHeader as CrdSpaceHeader } from '@/crd/components/space/SpaceHeader';
 import type { HeaderActionIconsData } from '@/crd/components/space/HeaderActionIcons';
 import { resolveBannerShape } from '@/app/mappers/spaceBanner';
@@ -22,7 +23,7 @@ import { resolveBannerShape } from '@/app/mappers/spaceBanner';
 const BANNER_IMAGE =
   'https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBjaGFsbGVuZ2UlMjBjcmVhdGl2ZSUyMHdvcmtzaG9wJTIwdGVhbSUyMGNvbGxhYm9yYXRpb24lMjBpbm5vdmF0aW9uJTIwc3ByaW50JTIwZGVzaWduJTIwc3ByaW50fGVufDF8fHx8MTc2OTA5NDMxMHww&ixlib=rb-4.1.0&q=80&w=1920&h=192&fit=crop';
 
-const SPACE_TITLE = 'Steward-Ownership Field Builder Community';
+export const SPACE_TITLE = 'Steward-Ownership Field Builder Community';
 const SPACE_TAGLINE =
   'The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.';
 
@@ -49,23 +50,33 @@ type SpaceHeaderProps = {
 
 export function SpaceHeader({ spaceSlug, spaceName, onInfoClick }: SpaceHeaderProps) {
   const banner = useMemo(() => resolveBannerShape(BANNER_IMAGE), []);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const actions: HeaderActionIconsData = {
     showInfo: true,
     onInfoClick,
     showShare: true,
+    onShareClick: () => setShareOpen(true),
     showSettings: true,
     settingsHref: `/space/${spaceSlug}/settings`,
   };
 
   return (
-    <CrdSpaceHeader
-      title={spaceName ?? SPACE_TITLE}
-      tagline={SPACE_TAGLINE}
-      bannerUrl={banner.url}
-      bannerAspectRatio={banner.ratio}
-      actions={actions}
-      overlayHeader={true}
-    />
+    <>
+      <CrdSpaceHeader
+        title={spaceName ?? SPACE_TITLE}
+        tagline={SPACE_TAGLINE}
+        bannerUrl={banner.url}
+        bannerAspectRatio={banner.ratio}
+        actions={actions}
+        overlayHeader={true}
+      />
+      <ItemShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        url={`/space/${spaceSlug}`}
+        itemTitle={spaceName ?? SPACE_TITLE}
+      />
+    </>
   );
 }
