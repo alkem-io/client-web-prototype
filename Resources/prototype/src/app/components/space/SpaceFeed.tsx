@@ -1,3 +1,4 @@
+import { usePostMenu } from "@/app/components/space/PostMenu";
 import { useState, useEffect, type ReactNode } from "react";
 import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
 import { Button } from "@/crd/primitives/button";
@@ -17,11 +18,12 @@ import { demoAuthorAvatar } from '@/app/data/demoAuthorAvatars';
 import { ContributionLinkCard } from "@/app/components/contribution/ContributionLinkCard";
 import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
-import { ExpandedSpaceCard } from "@/crd/components/space/ExpandedSpaceCard";
-import { ActivityDotSlots, cardNameSlot } from "@/app/components/shared/ActivityDotSlots";
+import { ENGLISH_CARD_LABELS, InitiativeCard } from "@/app/components/databank/InitiativeCard";
+import type { DatabankInitiative } from "@/app/data/databank-data";
+import { ActivityDotSlots, afterNameSlot } from "@/app/components/shared/ActivityDotSlots";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { subspaceContainer } from "@/app/data/activity-data";
-import { richSubspaceToSpaceCard, type MockRichSubspace } from "@/app/mappers/spaceCard";
+import type { MockRichSubspace } from "@/app/mappers/spaceCard";
 
 
 // Whiteboard Preview Images (using Unsplash to avoid module loading errors)
@@ -347,6 +349,7 @@ export function SpaceFeed() {
     currentUser: MOCK_CURRENT_USER,
     isAdmin: true
   });
+  const { menuFor, dialogs: postMenuDialogs } = usePostMenu(posts, setPosts);
 
 
   // Persist collapse preference
@@ -396,7 +399,7 @@ export function SpaceFeed() {
             />,
             <ContributionLinkCard key="c2"
               title="Grid Modernisation Report 2026.pdf"
-              fileInfo="PDF · 2.4 MB"
+              fileInfo="PDF"
               fileType="pdf"
               author="David Miller"
               authorAvatarUrl={demoAuthorAvatar("David Miller")}
@@ -702,6 +705,7 @@ export function SpaceFeed() {
           <PostCard
             // Comments open inline in the card footer — production's thread.
             commentsSlot={<CommentsPanel threadId={post.id} />}
+          settingsSlot={menuFor(post)}
             key={post.id}
             post={{
               ...post,
@@ -715,6 +719,8 @@ export function SpaceFeed() {
           />
         ))}
       </CrdSpaceFeed>
+
+      {postMenuDialogs}
 
       <input
         ref={fileInputRef}
@@ -796,13 +802,32 @@ function LeadUpdate() {
 }
 
 /** A subspace card in the feed, with the new-activity pulse at the end of its name. */
-function FeedSubspaceCard({ subspace }: { subspace: Parameters<typeof richSubspaceToSpaceCard>[0] }) {
+function FeedSubspaceCard({ subspace }: { subspace: MockRichSubspace }) {
   const { hasContainerActivity } = useActivityIndicators();
-  const space = richSubspaceToSpaceCard(subspace);
-  const slots = hasContainerActivity(subspaceContainer(subspace.slug)) ? [cardNameSlot(subspace.slug, space.name)] : [];
+  const slots = hasContainerActivity(subspaceContainer(subspace.slug))
+    ? [afterNameSlot(subspace.slug, `${subspace.name} has new activity`, (root) => [...root.querySelectorAll("h3")])]
+    : [];
   return (
     <ActivityDotSlots slots={slots}>
-      <ExpandedSpaceCard space={space} />
+      <InitiativeCard initiative={toRichCard(subspace)} labels={ENGLISH_CARD_LABELS} />
     </ActivityDotSlots>
   );
 }
+
+const toRichCard = (subspace: MockRichSubspace): DatabankInitiative => {
+  const [lead, ...otherLeads] = subspace.leads.map(({ name, initials, color }) => ({ name, initials, color }));
+  const section = (title: string, text: string) => ({ title, blocks: [{ kind: "paragraph" as const, text }] });
+  return {
+    id: subspace.slug,
+    name: subspace.name,
+    tagline: subspace.tagline,
+    url: `/space/${subspace.parentSlug}/subspaces/${subspace.slug}`,
+    imageUrl: subspace.bannerImage,
+    lead,
+    otherLeads,
+    tags: subspace.tags,
+    classifications: [],
+    sections: [section("What", subspace.what), section("Why", subspace.why), section("Who", subspace.who)],
+    links: [],
+  };
+};

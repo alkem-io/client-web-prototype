@@ -14,11 +14,9 @@ import SubspaceSettingsPage from "./pages/SubspaceSettingsPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import UserSettingsPage from "./pages/UserSettingsPage";
 import UserAccountPage from "./pages/UserAccountPage";
-import UserProfileSettingsPage from "./pages/UserProfileSettingsPage";
 import UserMembershipPage from "./pages/UserMembershipPage";
 import UserOrganizationsPage from "./pages/UserOrganizationsPage";
 import UserNotificationsPage from "./pages/UserNotificationsPage";
-import UserGenericSettingsPage from "./pages/UserGenericSettingsPage";
 import TemplateLibraryPage from "./pages/TemplateLibraryPage";
 import TemplatePackDetailPage from "./pages/TemplatePackDetailPage";
 import TemplateDetailPage from "./pages/TemplateDetailPage";
@@ -46,6 +44,7 @@ import SubspaceStackingExploration from "./pages/SubspaceStackingExploration";
 import PostDialogExploration from "./pages/PostDialogExploration";
 import MemoSigningExploration from "./pages/MemoSigningExploration";
 import { SubspaceApplicationPage } from "./pages/SubspaceApplicationPage";
+import DatabankPage from "./pages/DatabankPage";
 import MockupGalleryPage from "@/mockups/gallery/GalleryPage";
 import MockupCompositionPage from "@/mockups/gallery/CompositionPage";
 import MockupCalibratePage from "@/mockups/gallery/CalibratePage";
@@ -150,6 +149,9 @@ export const router = createBrowserRouter([
               { path: "knowledge-base", Component: SpaceKnowledgeBase },
             ]
           },
+
+          /* GemeenteDelers: Databank praktijkvoorbeelden tab (own layout — see DatabankPage) */
+          { path: "/space/gemeentedelers/databank-praktijkvoorbeelden", Component: DatabankPage },
 
           /* Settings — no SpaceShell (has its own sidebar layout) */
           { path: "/space/:spaceSlug/settings", Component: SpaceSettingsPage },

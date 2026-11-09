@@ -67,6 +67,8 @@
   },
   "sidebar": {
     "aboutSpace": "Over deze Space",
+    "community": "Community",
+    "recentActivity": "Recente activiteit",
     "subspaces": "Subspaces",
     "showAll": "Alles tonen",
     "create": "Aanmaken",
@@ -838,6 +840,13 @@
         "continue-error": "De ondertekeningssessie kon niet worden gestart. Bereid een nieuwe kopie voor en probeer het opnieuw.",
         "return-error": "Het ondertekeningsresultaat kon niet worden geladen"
       }
+    },
+    "downloadPdf": {
+      "button": "PDF downloaden",
+      "tooltip": "Downloaden als PDF",
+      "busy": "De PDF-service is bezet, probeer het zo opnieuw.",
+      "tooLarge": "Deze memo is te groot of bevat inhoud die niet als PDF kan worden geëxporteerd.",
+      "failed": "Het downloaden van de PDF is mislukt."
     }
   },
   "callToAction": {
@@ -930,8 +939,10 @@
     "previous": "Vorige afbeelding",
     "next": "Volgende afbeelding",
     "goToImage": "Ga naar afbeelding {{index}}",
+    "goToVideo": "Ga naar video {{index}}",
     "thumbnailsLabel": "Miniaturen",
     "download": "Afbeelding downloaden",
+    "downloadVideo": "Video downloaden",
     "fullscreen": "Volledig scherm",
     "exitFullscreen": "Volledig scherm verlaten",
     "emptyState": {
@@ -951,9 +962,8 @@
     }
   },
   "postSnippet": {
-    "readMore": "… Lees meer",
-    "readLess": "Lees minder",
-    "seeFullDescription": "Volledige beschrijving"
+    "readMore": "Lees meer",
+    "showLess": "Minder tonen"
   },
   "postPreview": {
     "createdBy": "Aangemaakt door",
@@ -1008,13 +1018,16 @@
     "cantComment": "Je hebt geen toestemming om hier te reageren, antwoorden of een reactie te geven.",
     "attachments": {
       "attach": "Bestanden toevoegen",
+      "addImage": "Afbeelding toevoegen",
       "dropHint": "Laat los om bestanden toe te voegen",
       "stagedListLabel": "Te versturen bestanden",
       "removeAttachment": "{{name}} verwijderen",
       "uploading": "Uploaden…",
       "uploadFailed": "Uploaden mislukt. Verstuur opnieuw om het nogmaals te proberen, of verwijder het bestand.",
+      "failed": "Uploaden mislukt",
       "sendUnconfirmed": "Verzenden is niet bevestigd. Controleer het gesprek voordat je opnieuw verzendt.",
-      "errorTooMany": "Je kunt maximaal {{max}} bestanden toevoegen.",
+      "errorTooMany_one": "Je kunt maar één bestand toevoegen.",
+      "errorTooMany_other": "Je kunt maximaal {{count}} bestanden toevoegen.",
       "errorTooLarge": "{{name}} is groter dan {{max}} MB.",
       "errorUnsupportedType": "{{name}} heeft een niet-ondersteund bestandstype."
     }

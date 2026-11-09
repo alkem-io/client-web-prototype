@@ -1,6 +1,8 @@
-import { ChevronLeft, Settings, X } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { ChevronLeft, Maximize2, Minimize2, Settings, X } from 'lucide-react';
+import { type ReactNode, useEffect, useState } from 'react';
+import { chatHeaderIconButtonClass } from '@/crd/components/chat/CallControls';
 import { useScreenSize } from '@/crd/hooks/useMediaQuery';
+import { claimEscape } from '@/crd/lib/claimEscape';
 import { cn } from '@/crd/lib/utils';
 
 type ChatPanelProps = {
@@ -16,8 +18,15 @@ type ChatPanelProps = {
   /** When provided, a shortcut to the notification (sound) settings is shown in the header. */
   onGoToSettings?: () => void;
   settingsLabel: string;
+  /** Labels of the expand / collapse toggle (desktop only). */
+  expandLabel: string;
+  collapseLabel: string;
   /** Conversation identity (avatar) rendered between the back affordance and the title. */
   titleAvatar?: ReactNode;
+  /** When provided, the avatar and title become one button that calls this (e.g. open the chat's settings). */
+  onTitleClick?: () => void;
+  /** What the title button does, appended to its accessible name after the title. */
+  titleActionLabel?: string;
   /** Conversation-specific actions (e.g. group/guidance menu) shown in the header. */
   headerActions?: ReactNode;
   children: ReactNode;
@@ -25,9 +34,15 @@ type ChatPanelProps = {
 
 /**
  * The floating card shell for the unified chat. Anchored above the launcher on
- * desktop; expands to full-screen on small screens. Provides a sticky header and
- * a scroll-free body region — each child view (list / thread) owns its own
- * scrollable area via the `flex-1 min-h-0 overflow-y-auto` pattern.
+ * desktop, where it can be expanded to a large centered window and collapsed
+ * back; full-screen on small screens. Provides a sticky header and a scroll-free
+ * body region — each child view (list / thread) owns its own scrollable area via
+ * the `flex-1 min-h-0 overflow-y-auto` pattern.
+ *
+ * Non-modal in every mode: focus is not trapped. While the panel covers the
+ * page (expanded, or full-screen on a small screen) the page itself does not
+ * scroll behind it; expanded, the page is dimmed like behind any other dialog,
+ * and a click on the dimmed page collapses the panel again.
  */
 export function ChatPanel({
   open,
@@ -38,65 +53,139 @@ export function ChatPanel({
   backLabel,
   onGoToSettings,
   settingsLabel,
+  expandLabel,
+  collapseLabel,
   titleAvatar,
+  onTitleClick,
+  titleActionLabel,
   headerActions,
   children,
 }: ChatPanelProps) {
   const { isSmallScreen } = useScreenSize();
+  const [expanded, setExpanded] = useState(false);
+  const isExpanded = expanded && !isSmallScreen;
+  const coversPage = open && (isSmallScreen || isExpanded);
+
+  useEffect(() => {
+    if (!coversPage) {
+      return;
+    }
+    // Lock on <body>, as Radix overlays do: a lock on <html> stops body overflow
+    // reaching the viewport, so a dialog's own body lock would reset the page scroll.
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
+  }, [coversPage]);
+
+  // While the panel covers the page it is the topmost layer: Escape steps back
+  // from a thread to the list, then closes. A dialog opened from inside the chat
+  // is a Radix layer that handles Escape first, so the chat skips that press.
+  // Listening on window lets document-level overlays opened above the chat
+  // (search) claim Escape first. The floating card leaves Escape to the page.
+  useEffect(() => {
+    if (!coversPage) {
+      return;
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (claimEscape(e)) {
+        (onBack ?? onClose)();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [coversPage, onBack, onClose]);
 
   if (!open) {
     return null;
   }
 
-  return (
-    <div
-      role="dialog"
-      aria-label={title}
-      className={cn(
-        'fixed z-50 flex flex-col overflow-hidden bg-card text-card-foreground shadow-xl',
-        isSmallScreen
-          ? 'inset-0 rounded-none'
-          : 'bottom-24 right-4 h-[600px] max-h-[calc(100vh-7rem)] w-[380px] rounded-xl border border-border'
+  const titleContent = (
+    <>
+      {titleAvatar && (
+        <span aria-hidden="true" className="shrink-0">
+          {titleAvatar}
+        </span>
       )}
-    >
-      <header className="flex shrink-0 items-center gap-1 border-b border-border px-2 py-2">
-        {onBack && (
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label={backLabel}
-            className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <ChevronLeft aria-hidden="true" className="size-5" />
+      <span className="text-subsection-title min-w-0 flex-1 truncate px-1">{title}</span>
+    </>
+  );
+
+  return (
+    <>
+      {isExpanded && (
+        <div
+          aria-hidden="true"
+          data-slot="chat-backdrop"
+          className="fixed inset-0 z-50 bg-black/50"
+          onClick={() => setExpanded(false)}
+        />
+      )}
+      <div
+        role="dialog"
+        aria-label={title}
+        data-expanded={isExpanded}
+        className={cn(
+          'fixed z-50 flex flex-col overflow-hidden bg-card text-card-foreground shadow-xl',
+          isSmallScreen
+            ? 'inset-0 rounded-none'
+            : isExpanded
+              ? 'left-1/2 top-1/2 h-[min(800px,calc(100vh-4rem))] w-[min(960px,calc(100vw-10rem))] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border'
+              : 'bottom-24 right-4 h-[600px] max-h-[calc(100vh-7rem)] w-[380px] rounded-xl border border-border'
+        )}
+      >
+        <header className="flex shrink-0 items-center gap-1 border-b border-border px-2 py-2">
+          {onBack && (
+            <button type="button" onClick={onBack} aria-label={backLabel} className={chatHeaderIconButtonClass}>
+              <ChevronLeft aria-hidden="true" className="size-6" />
+            </button>
+          )}
+          {onTitleClick ? (
+            <button
+              type="button"
+              onClick={onTitleClick}
+              className="flex min-w-8 flex-1 items-center gap-1 rounded-md text-left hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {titleContent}
+              {titleActionLabel && <span className="sr-only">, {titleActionLabel}</span>}
+            </button>
+          ) : (
+            titleContent
+          )}
+          {headerActions}
+          {!isSmallScreen && (
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              aria-label={isExpanded ? collapseLabel : expandLabel}
+              aria-expanded={isExpanded}
+              className={chatHeaderIconButtonClass}
+            >
+              {isExpanded ? (
+                <Minimize2 aria-hidden="true" className="size-6" />
+              ) : (
+                <Maximize2 aria-hidden="true" className="size-6" />
+              )}
+            </button>
+          )}
+          {onGoToSettings && (
+            <button
+              type="button"
+              onClick={onGoToSettings}
+              aria-label={settingsLabel}
+              className={chatHeaderIconButtonClass}
+            >
+              <Settings aria-hidden="true" className="size-6" />
+            </button>
+          )}
+          <button type="button" onClick={onClose} aria-label={closeLabel} className={chatHeaderIconButtonClass}>
+            <X aria-hidden="true" className="size-6" />
           </button>
-        )}
-        {titleAvatar && (
-          <span aria-hidden="true" className="shrink-0">
-            {titleAvatar}
-          </span>
-        )}
-        <span className="text-subsection-title min-w-0 flex-1 truncate px-1">{title}</span>
-        {headerActions}
-        {onGoToSettings && (
-          <button
-            type="button"
-            onClick={onGoToSettings}
-            aria-label={settingsLabel}
-            className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <Settings aria-hidden="true" className="size-5" />
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={closeLabel}
-          className="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <X aria-hidden="true" className="size-5" />
-        </button>
-      </header>
-      <div className="flex min-h-0 flex-1 flex-col">{children}</div>
-    </div>
+        </header>
+        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+      </div>
+    </>
   );
 }

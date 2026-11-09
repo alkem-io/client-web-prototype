@@ -1,4 +1,4 @@
-import { AtSign, Loader2, Paperclip, Send, Smile, X } from 'lucide-react';
+import { AtSign, CircleAlert, Image as ImageIcon, ImagePlus, Loader2, Paperclip, Send, Smile, X } from 'lucide-react';
 import {
   type ClipboardEvent,
   type CSSProperties,
@@ -16,7 +16,7 @@ import { cn } from '@/crd/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/crd/primitives/avatar';
 import { Button } from '@/crd/primitives/button';
 import { MentionSuggestionItem } from './MentionSuggestionItem';
-import { MENTION_MARKUP, mapPlainIndexToMarkupIndex } from './mentionMarkup';
+import { countMentionsOf, MENTION_MARKUP, mapPlainIndexToMarkupIndex } from './mentionMarkup';
 import type { CommentAuthor, ComposerAttachment, CrdMentionSearch, CrdMentionSuggestion } from './types';
 
 type CommentInputProps = {
@@ -54,10 +54,9 @@ type CommentInputProps = {
    */
   refocusAfterSubmit?: boolean;
   /**
-   * Enables the attach-file affordance (feature 013). Only the conversation
-   * composer opts in this round; comment/post composers leave it off and render
-   * exactly as before. When true a paperclip button + preview chips appear and
-   * the message can be sent with attachments only (no text required).
+   * Enables the attach-file affordance. When true an attach button + preview
+   * chips appear and the message can be sent with attachments only (no text
+   * required). Composers that leave it off render exactly as before.
    */
   attachmentsEnabled?: boolean;
   /** Currently staged attachments (with their upload lifecycle state). */
@@ -70,6 +69,12 @@ type CommentInputProps = {
   attachmentError?: string;
   /** `accept` attribute for the file picker, derived from the bucket policy. */
   acceptMimeTypes?: string;
+  /**
+   * Image-only composers show an image button and image chips instead of the
+   * paperclip metaphor, which reads as "any file". Behaviour is unchanged; the
+   * accepted types still come from `acceptMimeTypes`.
+   */
+  imagesOnly?: boolean;
 };
 
 type EnrichedSuggestion = SuggestionDataItem & CrdMentionSuggestion;
@@ -79,6 +84,13 @@ const MAX_ROWS = 5;
 const STAGED_LIST_CLASS = 'mb-1.5 flex flex-wrap gap-1.5';
 
 const carriesFiles = (transfer: DataTransfer) => Array.from(transfer.types).includes('Files');
+
+// The small-screen mention list stops short of the site/dialog header (h-16).
+const MOBILE_LIST_TOP_GUTTER = 72;
+// With less room than this above the input, the list opens below it instead of
+// shrinking until a suggestion can no longer be tapped.
+const MOBILE_LIST_MIN_HEIGHT = 144;
+const MOBILE_LIST_INPUT_GAP = 4;
 
 // react-mentions renders an overlay + textarea stack. These inline styles
 // neutralize its defaults so the textarea blends with the surrounding Tailwind
@@ -118,6 +130,14 @@ const mentionsInputStyle = {
   },
 };
 
+// react-mentions' suggestions wrapper is only zIndex 1, so the `relative z-10`
+// links in a post and its comments would paint over the small-screen list and
+// take its taps. Stays below the site header (z-50).
+const smallScreenMentionsInputStyle = {
+  ...mentionsInputStyle,
+  suggestions: { ...mentionsInputStyle.suggestions, zIndex: 30 },
+};
+
 // `react-mentions` paints the styled mention chip in an overlay layer on top
 // of the underlying textarea, and BOTH layers paint their text (it relies on
 // pixel-perfect alignment to look like one). Any property that changes glyph
@@ -147,8 +167,11 @@ export function CommentInput({
   onRemoveAttachment,
   attachmentError,
   acceptMimeTypes,
+  imagesOnly = false,
 }: CommentInputProps) {
   const { t } = useTranslation('crd-space');
+  const AttachIcon = imagesOnly ? ImagePlus : Paperclip;
+  const ChipIcon = imagesOnly ? ImageIcon : Paperclip;
   const { isSmallScreen } = useScreenSize();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -175,6 +198,10 @@ export function CommentInput({
     (trimmedContent.length > 0 || (attachmentsEnabled && attachments.length > 0));
   const showCharCount = content.length >= Math.floor(maxLength * 0.8);
   const mentionsEnabled = Boolean(mentionSearch);
+  // TEMP: VCs disabled (#10398) — ids of suggestions that cannot be picked; a change that adds one is rejected.
+  const unavailableMentionIdsRef = useRef(new Set<string>());
+  const addsUnavailableMention = (next: string) =>
+    Array.from(unavailableMentionIdsRef.current).some(id => countMentionsOf(next, id) > countMentionsOf(content, id));
 
   const handleFilesPicked = (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) return;
@@ -320,6 +347,9 @@ export function CommentInput({
   const handleMentionSearch = async (query: string, callback: (items: EnrichedSuggestion[]) => void) => {
     if (!mentionSearch) return callback([]);
     const results = await mentionSearch(query);
+    for (const suggestion of results) {
+      if (suggestion.unavailable) unavailableMentionIdsRef.current.add(suggestion.id);
+    }
     callback(
       results.map(suggestion => ({
         id: suggestion.id,
@@ -328,6 +358,7 @@ export function CommentInput({
         city: suggestion.city,
         country: suggestion.country,
         virtualContributor: suggestion.virtualContributor,
+        unavailable: suggestion.unavailable,
         displayName: suggestion.displayName,
       }))
     );
@@ -372,10 +403,13 @@ export function CommentInput({
                   <output aria-label={t('comments.attachments.uploading')} className="flex shrink-0">
                     <Loader2 aria-hidden="true" className="size-3.5 animate-spin" />
                   </output>
+                ) : attachment.status === 'error' ? (
+                  <CircleAlert aria-hidden="true" className="size-3.5 shrink-0" />
                 ) : (
-                  <Paperclip aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+                  <ChipIcon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
                 )}
                 <span className="min-w-0 flex-1 truncate">{attachment.name}</span>
+                {attachment.status === 'error' && <span className="sr-only">{t('comments.attachments.failed')}</span>}
                 <button
                   type="button"
                   // The consumer snapshots the ready document ids *before*
@@ -403,11 +437,18 @@ export function CommentInput({
               {t('comments.attachments.dropHint')}
             </div>
           )}
+          {/* On iOS, 16px text: WebKit zooms the page on focus when a field's
+              text is smaller, and does not zoom back out. The mentions
+              textarea inherits its font from this wrapper (and its overlay must
+              match it), so the size is set here rather than on the textarea. */}
           {mentionsEnabled ? (
-            <div className="min-h-6 min-w-0 flex-1 text-body [&_textarea]:placeholder:text-muted-foreground">
+            <div className="min-h-6 min-w-0 flex-1 text-body ios:text-base [&_textarea]:placeholder:text-muted-foreground">
               <MentionsInput
                 value={content}
-                onChange={(_event, newValue) => setContent(newValue)}
+                onChange={(_event, newValue) => {
+                  if (addsUnavailableMention(newValue)) return;
+                  setContent(newValue);
+                }}
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
                 maxLength={maxLength}
@@ -415,27 +456,46 @@ export function CommentInput({
                 aria-label={t('comments.addComment')}
                 allowSpaceInQuery={true}
                 forceSuggestionsAboveCursor={true}
-                style={mentionsInputStyle}
+                style={isSmallScreen ? smallScreenMentionsInputStyle : mentionsInputStyle}
                 inputRef={(input: HTMLTextAreaElement | null) => {
                   textareaRef.current = input;
                 }}
                 customSuggestionsContainer={children => {
                   // On phones react-mentions' cursor-anchored popover often
                   // spills past the viewport edge. Position the dropdown as a
-                  // fixed overlay anchored just above the input's top so it
-                  // stays near the text the user is typing while still being
-                  // fully tappable.
+                  // fixed overlay just above the input, or just below it when
+                  // there is too little room above, so it stays near the text
+                  // the user is typing while still being fully tappable.
                   let mobileStyle: CSSProperties | undefined;
                   if (isSmallScreen) {
-                    const rect = textareaRef.current?.getBoundingClientRect();
-                    const inputTop = rect?.top ?? 0;
+                    const input = textareaRef.current;
+                    const inputRect = input?.getBoundingClientRect();
+                    // A transformed dialog is the containing block of its fixed
+                    // descendants, so `top` is relative to it, not the viewport.
+                    // It also clips them.
+                    const block = input?.closest('[data-slot="dialog-content"]')?.getBoundingClientRect();
+                    const blockTop = block?.top ?? 0;
+                    // The visual viewport is what the on-screen keyboard and
+                    // iOS panning leave visible of the layout viewport.
+                    const viewport = window.visualViewport;
+                    const viewportBottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
+                    const listBottom = (inputRect?.top ?? 0) - blockTop - MOBILE_LIST_INPUT_GAP;
+                    const listTop = (inputRect?.bottom ?? 0) - blockTop + MOBILE_LIST_INPUT_GAP;
+                    const roomAbove =
+                      listBottom - Math.max(MOBILE_LIST_TOP_GUTTER, (viewport?.offsetTop ?? 0) - blockTop);
+                    const roomBelow =
+                      Math.min(viewportBottom, block?.bottom ?? viewportBottom) -
+                      blockTop -
+                      listTop -
+                      MOBILE_LIST_INPUT_GAP;
+                    const opensAbove = roomAbove >= MOBILE_LIST_MIN_HEIGHT || roomAbove >= roomBelow;
                     mobileStyle = {
                       position: 'fixed',
                       left: '0.5rem',
                       right: '0.5rem',
-                      bottom: `calc(100vh - ${Math.max(inputTop, 80) - 4}px)`,
-                      maxHeight: '14rem',
-                      zIndex: 50,
+                      top: `${opensAbove ? listBottom : listTop}px`,
+                      transform: opensAbove ? 'translateY(-100%)' : undefined,
+                      maxHeight: `min(14rem, ${opensAbove ? roomAbove : roomBelow}px)`,
                     };
                   }
 
@@ -474,7 +534,7 @@ export function CommentInput({
               onChange={event => setContent(event.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={t('comments.addComment')}
-              className="min-h-6 min-w-0 flex-1 resize-none bg-transparent px-1 py-1 text-body outline-hidden placeholder:text-muted-foreground"
+              className="min-h-6 min-w-0 flex-1 resize-none bg-transparent px-1 py-1 text-body ios:text-base outline-hidden placeholder:text-muted-foreground"
               rows={1}
               aria-label={t('comments.addComment')}
             />
@@ -498,9 +558,9 @@ export function CommentInput({
                   className="h-6 w-6 text-muted-foreground hover:text-foreground md:h-7 md:w-7"
                   disabled={disabled}
                   onClick={() => fileInputRef.current?.click()}
-                  aria-label={t('comments.attachments.attach')}
+                  aria-label={t(imagesOnly ? 'comments.attachments.addImage' : 'comments.attachments.attach')}
                 >
-                  <Paperclip className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden="true" />
+                  <AttachIcon className="h-3.5 w-3.5 md:h-4 md:w-4" aria-hidden="true" />
                 </Button>
               </>
             )}

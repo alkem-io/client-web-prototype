@@ -14,23 +14,16 @@
  * of `messagingData`, which the rest of the messaging surfaces already use, so
  * the panel now reads the same conversations they do.
  *
- * The thread itself is `TimeGroupedChatThreadView` from `src/ahead/` rather
- * than CRD's `ChatThreadView`: it groups messages by time and shows a time only
- * at the start of a day and after a pause (client-web#10377). It still renders
- * CRD's own bubbles and composer.
- *
- * The header follows client-web#10378: the gear (notification settings) shows
- * in the list only; inside a group chat a "more" menu (`@/ahead/ChatOptionsMenu`)
- * holds group settings and leaving, and tapping the group's picture or name
- * opens group settings too. Group avatars fill the circle
- * (`@/ahead/FilledGroupAvatar`), in the header and — through a stand-in,
- * `ChatGroupAvatarSlots` — in the list.
+ * The calmer thread (client-web#10377), the "more" menu with group settings
+ * and leaving, the clickable group picture and name, and group avatars that
+ * fill the circle (client-web#10378) all started in `src/ahead/` and are now
+ * production's own.
  *
  * NOT converted, deliberately: the prototype's space channels
  * (`SpaceChannelView`, `SpaceChatTab`, `SpaceChannelComposer`). Production has
  * no channel concept — those are prototype-ahead. See PHASE-2.md §12.
  */
-import { type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { ChatConversationList } from '@/crd/components/chat/ChatConversationList';
@@ -44,10 +37,9 @@ import { CONVERSATIONS, MESSAGES, USERS } from '@/app/components/messaging/messa
 import { toChatListItem, toChatMessage, toChatThreadHeader } from '@/app/mappers/chat';
 import { useScreenSize } from '@/crd/hooks/useMediaQuery';
 import { useMessages } from '@/app/contexts/MessagesContext';
-import { TimeGroupedChatThreadView } from '@/ahead/TimeGroupedChatThreadView';
-import { ChatOptionsMenu } from '@/ahead/ChatOptionsMenu';
-import { FilledGroupAvatar } from '@/ahead/FilledGroupAvatar';
-import { ChatGroupAvatarSlots } from '@/app/components/shared/ChatGroupAvatarSlots';
+import { ChatThreadView } from '@/crd/components/chat/ChatThreadView';
+import { ChatOptionsMenu } from '@/crd/components/chat/ChatOptionsMenu';
+import { GroupAvatar } from '@/crd/components/chat/GroupAvatar';
 
 const CURRENT_USER = { id: 'me', name: 'You' };
 
@@ -63,9 +55,6 @@ const FIXTURE_DAY_SHIFT = startOfToday.getTime() - FIXTURE_TODAY.getTime();
 
 const NOTIFICATION_SETTINGS_URL = '/user/alex-rivera/settings/notifications';
 
-/** Production's `ChatPanel` draws the header's avatar and title as plain elements. */
-const HEADER_TITLE_SELECTOR = 'header > span.text-subsection-title, header > span[aria-hidden]';
-
 export function MessagesOverlay() {
   const { isOpen, openMessages, closeMessages } = useMessages();
   const { t } = useTranslation('crd-chat');
@@ -76,7 +65,6 @@ export function MessagesOverlay() {
   const [sent, setSent] = useState<Record<string, ChatMessage[]>>({});
 
   const navigate = useNavigate();
-  const panelRef = useRef<HTMLDivElement>(null);
   const [groupSettingsOpen, setGroupSettingsOpen] = useState(false);
   const [leaveConfirmOpen, setLeaveConfirmOpen] = useState(false);
   const [leftIds, setLeftIds] = useState<string[]>([]);
@@ -127,7 +115,6 @@ export function MessagesOverlay() {
           id: `local-${now}`,
           author: CURRENT_USER,
           content,
-          timestamp: 'Just now',
           timestampMs: now,
           reactions: [],
           isOwn: true,
@@ -150,34 +137,15 @@ export function MessagesOverlay() {
     setSelectedId(null);
   };
 
-  // Stand-in for an `onTitleClick` on `ChatPanel` (see `ChatOptionsMenu`):
-  // tapping a group's picture or name opens its settings. The menu is the way
-  // in from the keyboard; this is the shortcut for pointer and touch.
-  const openSettingsFromTitle = (event: MouseEvent) => {
-    if (!isGroup) return;
-    if ((event.target as Element).closest(HEADER_TITLE_SELECTOR)) setGroupSettingsOpen(true);
-  };
-  useEffect(() => {
-    const targets = panelRef.current?.querySelectorAll(HEADER_TITLE_SELECTOR) ?? [];
-    for (const el of targets) {
-      el.classList.toggle('cursor-pointer', isGroup);
-      el.classList.toggle('hover:underline', isGroup && el.matches('.text-subsection-title'));
-    }
-  }, [isGroup, isOpen, selectedId]);
-
   const titleAvatar = selectedItem ? (
-    selectedItem.isGroup && !selectedItem.avatarUrl ? (
-      <FilledGroupAvatar members={selectedItem.memberAvatars ?? []} size="sm" />
-    ) : (
-      <ConversationAvatar
-        size="sm"
-        displayName={selectedItem.displayName}
-        avatarUrl={selectedItem.avatarUrl}
-        isGroup={selectedItem.isGroup}
-        isGuidance={selectedItem.isGuidance}
-        memberAvatars={selectedItem.memberAvatars}
-      />
-    )
+    <ConversationAvatar
+      size="sm"
+      displayName={selectedItem.displayName}
+      avatarUrl={selectedItem.avatarUrl}
+      isGroup={selectedItem.isGroup}
+      isGuidance={selectedItem.isGuidance}
+      memberAvatars={selectedItem.memberAvatars}
+    />
   ) : undefined;
 
   const searchResults = useMemo(() => {
@@ -208,7 +176,6 @@ export function MessagesOverlay() {
         unreadLabel={t('launcher.unreadLabel')}
       />
 
-      <div ref={panelRef} className="contents" onClick={openSettingsFromTitle}>
       <ChatPanel
         open={isOpen}
         title={selected ? selected.name : t('panel.title')}
@@ -227,11 +194,16 @@ export function MessagesOverlay() {
               }
         }
         settingsLabel={t('panel.settings')}
+        expandLabel={t('panel.expand')}
+        collapseLabel={t('panel.collapse')}
         titleAvatar={titleAvatar}
+        // Tapping a group's picture or name opens its settings.
+        onTitleClick={isGroup ? () => setGroupSettingsOpen(true) : undefined}
+        titleActionLabel={isGroup ? t('group.settings') : undefined}
         headerActions={
           isGroup ? (
             <ChatOptionsMenu
-              label="Chat options"
+              label={t('thread.options')}
               settingsLabel={t('group.settings')}
               onOpenSettings={() => setGroupSettingsOpen(true)}
               leaveLabel={t('group.leave')}
@@ -241,7 +213,7 @@ export function MessagesOverlay() {
         }
       >
         {selected ? (
-          <TimeGroupedChatThreadView
+          <ChatThreadView
             conversation={toChatThreadHeader(selected)}
             messages={messages}
             messagesLoading={false}
@@ -252,21 +224,14 @@ export function MessagesOverlay() {
             onSendMessage={send}
           />
         ) : (
-          <ChatGroupAvatarSlots
-            groups={conversations
-              .filter(c => c.isGroup && !c.avatarUrl)
-              .map(c => ({ name: c.displayName, members: c.memberAvatars ?? [] }))}
-          >
-            <ChatConversationList
-              conversations={conversations}
-              isLoading={false}
-              onSelectConversation={setSelectedId}
-              onNewMessage={() => {}}
-            />
-          </ChatGroupAvatarSlots>
+          <ChatConversationList
+            conversations={conversations}
+            isLoading={false}
+            onSelectConversation={setSelectedId}
+            onNewMessage={() => {}}
+          />
         )}
       </ChatPanel>
-      </div>
 
       {selected && isGroup && (
         <>
@@ -283,7 +248,7 @@ export function MessagesOverlay() {
             ]}
             avatarSlot={
               <span className="flex items-center gap-3 p-1">
-                <FilledGroupAvatar members={groupMembers} size="lg" />
+                <GroupAvatar members={groupMembers} size="lg" />
                 <span className="text-control text-muted-foreground">{t('group.avatar.edit')}</span>
               </span>
             }

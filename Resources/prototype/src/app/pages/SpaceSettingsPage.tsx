@@ -1,176 +1,134 @@
-import { useParams, Link, useLocation, Navigate } from "react-router";
-import { SpaceSettingsAbout } from "@/app/components/space/SpaceSettingsAbout";
-import { SpaceSettingsLayout } from "@/app/components/space/SpaceSettingsLayout";
-import { SpaceSettingsCommunity } from "@/app/components/space/SpaceSettingsCommunity";
-import { SpaceSettingsUpdates } from "@/app/components/space/SpaceSettingsUpdates";
-import { SpaceSettingsSubspaces } from "@/app/components/space/SpaceSettingsSubspaces";
-import { SpaceSettingsTemplates } from "@/app/components/space/SpaceSettingsTemplates";
-import { SpaceSettingsStorage } from "@/app/components/space/SpaceSettingsStorage";
-import { SpaceSettingsSettings } from "@/app/components/space/SpaceSettingsSettings";
-import { SpaceSettingsAccount } from "@/app/components/space/SpaceSettingsAccount";
-import { Info, Layout, Users, Megaphone, Layers, FileText, HardDrive, Settings, UserCircle, Bookmark } from "lucide-react";
-import { cn } from "@/crd/lib/utils";
+import {
+  Bookmark,
+  HardDrive,
+  Info,
+  Layers,
+  LayoutGrid,
+  Megaphone,
+  Settings as SettingsIcon,
+  UserCircle,
+  Users,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Navigate, useNavigate, useParams } from "react-router";
+import { SpaceAboutTab } from "@/app/components/space/settings/SpaceAboutTab";
+import { SpaceLayoutTab } from "@/app/components/space/settings/SpaceLayoutTab";
+import { SpaceCommunityTab } from "@/app/components/space/settings/SpaceCommunityTab";
+import { SpaceUpdatesTab } from "@/app/components/space/settings/SpaceUpdatesTab";
+import { SpaceSubspacesTab } from "@/app/components/space/settings/SpaceSubspacesTab";
+import { SpaceTemplatesTab } from "@/app/components/space/settings/SpaceTemplatesTab";
+import { SpaceStorageTab } from "@/app/components/space/settings/SpaceStorageTab";
+import { SpaceSettingsTab } from "@/app/components/space/settings/SpaceSettingsTab";
+import { SpaceAccountTab } from "@/app/components/space/settings/SpaceAccountTab";
+import { SpaceSettingsHeader } from "@/crd/components/space/settings/SpaceSettingsHeader";
+import {
+  type SpaceSettingsTabDescriptor,
+  SpaceSettingsTabStrip,
+} from "@/crd/components/space/settings/SpaceSettingsTabStrip";
+import { SpaceShell } from "@/crd/layouts/SpaceShell";
+import { getInitials } from "@/crd/lib/getInitials";
 
 interface SpaceData {
   name: string;
-  initials: string;
-  avatarColor: string;
   bannerImage: string;
   description: string;
 }
 
 const SPACE_DATA: Record<string, SpaceData> = {
-  "green-energy": { name: "Green Energy Space", initials: "GE", avatarColor: "#2563eb", bannerImage: "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBjaGFsbGVuZ2UlMjBjcmVhdGl2ZSUyMHdvcmtzaG9wJTIwdGVhbSUyMGNvbGxhYm9yYXRpb24lMjBpbm5vdmF0aW9uJTIwc3ByaW50JTIwZGVzaWduJTIwc3ByaW50fGVufDF8fHx8MTc2OTA5NDMxMHww&ixlib=rb-4.1.0&q=80&w=400", description: "Accelerating the transition to sustainable energy systems worldwide." },
-  "sustainability-lab": { name: "Sustainability Lab", initials: "SL", avatarColor: "#16a34a", bannerImage: "https://images.unsplash.com/photo-1623652554515-91c833e3080e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsYWJvcmF0aW9uJTIwdGVhbXdvcmslMjBpbm5vdmF0aW9uJTIwZGVzaWduJTIwdGhpbmtpbmclMjB3b3Jrc2hvcHxlbnwxfHx8fDE3NjkwODc1ODd8MA&ixlib=rb-4.1.0&q=80&w=400", description: "Experimenting with innovative approaches to environmental sustainability." },
-  "urban-mobility": { name: "Urban Mobility Lab", initials: "UM", avatarColor: "#0891b2", bannerImage: "https://images.unsplash.com/photo-1735639013995-086e648eaa38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxicmFpbnN0b3JtaW5nJTIwY3JlYXRpdmUlMjB3b3Jrc2hvcCUyMHRlYW18ZW58MXx8fHwxNzY5MDg3NTg3fDA&ixlib=rb-4.1.0&q=80&w=400", description: "Reimagining city transportation for better accessibility and lower emissions." },
-  "community-garden": { name: "Community Garden", initials: "CG", avatarColor: "#65a30d", bannerImage: "https://images.unsplash.com/photo-1768659347532-74d3b1efb0ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBtZWV0aW5nJTIwY29sbGFib3JhdGlvbiUyMHRlYW18ZW58MXx8fHwxNzY5MDg3NTg3fDA&ixlib=rb-4.1.0&q=80&w=400", description: "Growing food and community connections in urban neighborhoods." },
-  "innovation-lab": { name: "Innovation Lab", initials: "IL", avatarColor: "#7c3aed", bannerImage: "https://images.unsplash.com/photo-1676276376052-dc9c9c0b6917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbm5vdmF0aW9uJTIwbGFiJTIwdGVhbXdvcmslMjBtb2Rlcm4lMjBvZmZpY2V8ZW58MXx8fHwxNzY5MDg3NTg2fDA&ixlib=rb-4.1.0&q=80&w=400", description: "A collaborative space for breakthrough ideas and rapid experimentation." }
+  "green-energy": { name: "Green Energy Space", bannerImage: "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBjaGFsbGVuZ2UlMjBjcmVhdGl2ZSUyMHdvcmtzaG9wJTIwdGVhbSUyMGNvbGxhYm9yYXRpb24lMjBpbm5vdmF0aW9uJTIwc3ByaW50JTIwZGVzaWduJTIwc3ByaW50fGVufDF8fHx8MTc2OTA5NDMxMHww&ixlib=rb-4.1.0&q=80&w=400", description: "Accelerating the transition to sustainable energy systems worldwide." },
+  "sustainability-lab": { name: "Sustainability Lab", bannerImage: "https://images.unsplash.com/photo-1623652554515-91c833e3080e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsYWJvcmF0aW9uJTIwdGVhbXdvcmslMjBpbm5vdmF0aW9uJTIwZGVzaWduJTIwdGhpbmtpbmclMjB3b3Jrc2hvcHxlbnwxfHx8fDE3NjkwODc1ODd8MA&ixlib=rb-4.1.0&q=80&w=400", description: "Experimenting with innovative approaches to environmental sustainability." },
+  "urban-mobility": { name: "Urban Mobility Lab", bannerImage: "https://images.unsplash.com/photo-1735639013995-086e648eaa38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxicmFpbnN0b3JtaW5nJTIwY3JlYXRpdmUlMjB3b3Jrc2hvcCUyMHRlYW18ZW58MXx8fHwxNzY5MDg3NTg3fDA&ixlib=rb-4.1.0&q=80&w=400", description: "Reimagining city transportation for better accessibility and lower emissions." },
+  "community-garden": { name: "Community Garden", bannerImage: "https://images.unsplash.com/photo-1768659347532-74d3b1efb0ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBtZWV0aW5nJTIwY29sbGFib3JhdGlvbiUyMHRlYW18ZW58MXx8fHwxNzY5MDg3NTg3fDA&ixlib=rb-4.1.0&q=80&w=400", description: "Growing food and community connections in urban neighborhoods." },
+  "innovation-lab": { name: "Innovation Lab", bannerImage: "https://images.unsplash.com/photo-1676276376052-dc9c9c0b6917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpbm5vdmF0aW9uJTIwbGFiJTIwdGVhbXdvcmslMjBtb2Rlcm4lMjBvZmZpY2V8ZW58MXx8fHwxNzY5MDg3NTg2fDA&ixlib=rb-4.1.0&q=80&w=400", description: "A collaborative space for breakthrough ideas and rapid experimentation." },
 };
 
 function getSpaceData(slug: string): SpaceData {
-  return SPACE_DATA[slug] || {
-    name: slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-    initials: slug.substring(0, 2).toUpperCase(),
-    avatarColor: "#64748b",
-    bannerImage: "",
-    description: "A collaborative space for innovation."
-  };
+  return (
+    SPACE_DATA[slug] || {
+      name: slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      bannerImage: "",
+      description: "A collaborative space for innovation.",
+    }
+  );
 }
 
-export function SpaceSettingsPage() {
-  const { spaceSlug, tab } = useParams<{ spaceSlug: string; tab: string }>();
-  const location = useLocation();
-  const space = spaceSlug ? getSpaceData(spaceSlug) : getSpaceData("");
+/** Production's tab order. */
+const TABS = [
+  { id: "about", icon: Info },
+  { id: "layout", icon: LayoutGrid },
+  { id: "community", icon: Users },
+  { id: "updates", icon: Megaphone },
+  { id: "subspaces", icon: Layers },
+  { id: "templates", icon: Bookmark },
+  { id: "storage", icon: HardDrive },
+  { id: "settings", icon: SettingsIcon },
+  { id: "account", icon: UserCircle },
+] as const;
 
-  // If no tab is provided, redirect to 'about'
-  if (!tab && location.pathname.endsWith("/settings")) {
+type TabId = (typeof TABS)[number]["id"];
+
+const isTabId = (value: string | undefined): value is TabId => TABS.some((tab) => tab.id === value);
+
+function renderTab(tab: TabId) {
+  switch (tab) {
+    case "about":
+      return <SpaceAboutTab />;
+    case "layout":
+      return <SpaceLayoutTab />;
+    case "community":
+      return <SpaceCommunityTab />;
+    case "updates":
+      return <SpaceUpdatesTab />;
+    case "subspaces":
+      return <SpaceSubspacesTab />;
+    case "templates":
+      return <SpaceTemplatesTab />;
+    case "storage":
+      return <SpaceStorageTab />;
+    case "settings":
+      return <SpaceSettingsTab />;
+    case "account":
+      return <SpaceAccountTab />;
+  }
+}
+
+/** Space settings, in production's shell: its header, its tab strip and its tab order. */
+export function SpaceSettingsPage() {
+  const { spaceSlug = "", tab } = useParams<{ spaceSlug: string; tab: string }>();
+  const navigate = useNavigate();
+  const { t } = useTranslation("crd-spaceSettings");
+  const space = getSpaceData(spaceSlug);
+
+  if (!isTabId(tab)) {
     return <Navigate to={`/space/${spaceSlug}/settings/about`} replace />;
   }
 
-  const tabs = [
-    { label: "About", icon: Info, id: "about" },
-    { label: "Layout", icon: Layout, id: "layout" },
-    { label: "Community", icon: Users, id: "community" },
-    { label: "Updates", icon: Megaphone, id: "updates" },
-    { label: "Subspaces", icon: Layers, id: "subspaces" },
-    { label: "Templates", icon: Bookmark, id: "templates" },
-    { label: "Storage", icon: HardDrive, id: "storage" },
-    { label: "Settings", icon: Settings, id: "settings" },
-    { label: "Account", icon: UserCircle, id: "account" },
-  ];
+  const tabs: ReadonlyArray<SpaceSettingsTabDescriptor<TabId>> = TABS.map(({ id, icon }) => ({
+    id,
+    icon,
+    label: t(`tabs.${id}`),
+  }));
 
   return (
-    <div className="min-h-screen bg-background pb-12">
-      {/* Sticky header with title + tabs */}
-      <div className="sticky top-16 z-20 bg-card">
-        <div className="px-6 md:px-8 pt-8 pb-0">
-          <div className="grid grid-cols-12 gap-6">
-            <div className="col-span-12 lg:col-start-2 lg:col-span-10">
-              <div className="flex items-center gap-4 mb-8">
-                {space.bannerImage ? (
-                  <div
-                    className="w-12 h-12 rounded-full shrink-0 overflow-hidden"
-                    style={{ border: "2px solid var(--border)" }}
-                  >
-                    <img src={space.bannerImage} alt={space.name} className="w-full h-full object-cover" />
-                  </div>
-                ) : (
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-white text-card-title font-bold shrink-0"
-                    style={{ backgroundColor: space.avatarColor }}
-                  >
-                    {space.initials}
-                  </div>
-                )}
-                <div>
-                  <h1 className="text-page-title">{space.name}</h1>
-                  <p className="text-muted-foreground text-body mt-0.5">{space.description}</p>
-                </div>
-              </div>
-
-              <div className="flex items-end gap-0 overflow-x-auto no-scrollbar relative">
-                {/* Bottom border line that runs the full width */}
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-border" />
-                {tabs.map((item) => {
-                  const isActive = tab === item.id;
-                  return (
-                    <Link
-                      key={item.id}
-                      to={`/space/${spaceSlug}/settings/${item.id}`}
-                      className={cn(
-                        "relative flex items-center gap-2 px-4 py-2.5 transition-all duration-200 whitespace-nowrap select-none rounded-t-lg text-control",
-                        isActive
-                          ? "bg-background text-foreground font-semibold border border-border border-b-0 z-10 -mb-px"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent"
-                      )}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <main className="px-6 md:px-8 py-8">
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-start-2 lg:col-span-10">
-        <div>
-          {/* Content Rendered based on Tab */}
-          <div className="w-full min-h-[500px]">
-            {tab === 'about' ? (
-              <SpaceSettingsAbout />
-            ) : tab === 'layout' ? (
-              <SpaceSettingsLayout />
-            ) : tab === 'community' ? (
-              <SpaceSettingsCommunity />
-            ) : tab === 'updates' ? (
-              <SpaceSettingsUpdates />
-            ) : tab === 'subspaces' ? (
-              <SpaceSettingsSubspaces />
-            ) : tab === 'templates' ? (
-              <SpaceSettingsTemplates />
-            ) : tab === 'storage' ? (
-              <SpaceSettingsStorage />
-            ) : tab === 'settings' ? (
-              <SpaceSettingsSettings />
-            ) : tab === 'account' ? (
-              <SpaceSettingsAccount />
-            ) : (
-              <div className="flex flex-col justify-center h-full min-h-[300px] space-y-4">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "var(--muted)" }}>
-                  <div className="w-8 h-8 rounded-md" style={{ background: "color-mix(in srgb, var(--muted-foreground) 20%, transparent)" }} />
-                </div>
-                <div>
-                  <h2
-                    className="capitalize text-section-title"
-                    style={{
-                      color: "var(--foreground)"
-                      }}
-                  >
-                    {tab} Settings
-                  </h2>
-                  <p
-                    className="max-w-sm text-body"
-                    style={{
-                      color: "var(--muted-foreground)",
-                      marginTop: "var(--spacing-2, 8px)"
-                    }}
-                  >
-                    This section is under development. Please check back later for {tab} configuration options.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-          </div>
-        </div>
-      </main>
-    </div>
+    <SpaceShell
+      header={
+        <SpaceSettingsHeader
+          title={space.name}
+          titleHref={`/space/${spaceSlug}`}
+          tagline={space.description}
+          visual={{ src: space.bannerImage || undefined, initials: getInitials(space.name) }}
+        />
+      }
+      tabs={
+        <SpaceSettingsTabStrip
+          activeTab={tab}
+          onTabChange={(next) => navigate(`/space/${spaceSlug}/settings/${next}`)}
+          tabs={tabs}
+        />
+      }
+    >
+      {/* Extra room at the bottom keeps the unsaved-changes bar off the last control. */}
+      <div className="flex flex-col gap-4 pt-2 pb-24">{renderTab(tab)}</div>
+    </SpaceShell>
   );
 }

@@ -29,7 +29,9 @@ The one that matters most, because it is the easiest to break by accident:
 Jeroen is the designer, not a developer. **Catch up with production
 (`npm run sync:crd`) when a piece of work starts, start a branch before editing
 anything — exploratory work included — commit as you go, and never merge to
-`main` unless he says it is ready.** He does not run git commands. Write for a
+`main` unless he says it is ready.** Every time `main` changes, update the live
+site: from `main`, in `Resources/prototype`, run `vercel deploy --prod` and give
+him the link. He does not run git commands. Write for a
 designer — plain words, no git vocabulary.
 
 Exploratory work makes a **visual artifact** first and iterates on that before

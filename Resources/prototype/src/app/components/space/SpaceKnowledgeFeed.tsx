@@ -1,3 +1,4 @@
+import { usePostMenu } from "@/app/components/space/PostMenu";
 import { useState, useEffect, type ReactNode } from "react";
 import { Button } from "@/crd/primitives/button";
 import { Plus, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
@@ -803,6 +804,7 @@ export function SpaceKnowledgeFeed() {
     currentUser: MOCK_CURRENT_USER,
     isAdmin: true
   });
+  const { menuFor, dialogs: postMenuDialogs } = usePostMenu(posts, setPosts);
 
   // Persist collapse preference
   useEffect(() => {
@@ -851,7 +853,7 @@ export function SpaceKnowledgeFeed() {
             />,
             <ContributionLinkCard key="c2"
               title="Energy Transition Toolkit.pdf"
-              fileInfo="PDF · 5.1 MB"
+              fileInfo="PDF"
               fileType="pdf"
               author="Elena Rodriguez"
               authorAvatarUrl={demoAuthorAvatar("Elena Rodriguez")}
@@ -874,7 +876,7 @@ export function SpaceKnowledgeFeed() {
             />,
             <ContributionLinkCard key="c-l5"
               title="Retrofit Cost Database 2026.xlsx"
-              fileInfo="Spreadsheet · 860 KB"
+              fileInfo="Spreadsheet"
               fileType="spreadsheet"
               author="David Miller"
               authorAvatarUrl={demoAuthorAvatar("David Miller")}
@@ -897,7 +899,7 @@ export function SpaceKnowledgeFeed() {
             />,
             <ContributionLinkCard key="c-l8"
               title="Community Energy Legal Templates.zip"
-              fileInfo="ZIP · 1.2 MB"
+              fileInfo="ZIP"
               author="Alex Contributor"
               authorAvatarUrl={demoAuthorAvatar("Alex Contributor")}
               description="Cooperative statutes, member agreements and PPA templates"
@@ -1148,6 +1150,7 @@ export function SpaceKnowledgeFeed() {
             <PostCard
               // Comments open inline in the card footer — production's thread.
               commentsSlot={<CommentsPanel threadId={post.id} />}
+            settingsSlot={menuFor(post)}
               post={{
                 ...post,
                 descriptionExpanded: !collapseEnabled
@@ -1162,6 +1165,8 @@ export function SpaceKnowledgeFeed() {
           </div>
         ))}
       </CrdSpaceFeed>
+
+      {postMenuDialogs}
 
       <input
         ref={fileInputRef}

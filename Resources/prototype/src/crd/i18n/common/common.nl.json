@@ -35,6 +35,7 @@
           "invalidToken": "Ongeldig token.",
           "loginFlow": "Login flow error.",
           "loginFlowInit": "Kan de login-flow niet initialiseren.",
+          "platformSupportSelfTarget": "Je kunt dit niet voor je eigen account doen. Vraag een andere Platform Support-gebruiker of een beheerder van de organisatie.",
           "sessionExpired": "Sessie verlopen.",
           "sessionExtend": "Kan sessie niet verlengen.",
           "subscriptionNotAuthenticated": "Abonnement vereist authenticatie.",
@@ -1602,6 +1603,41 @@
     "download": "{{name}} downloaden",
     "unavailableHint": "Dit bestand kon niet worden geladen. Download het om te bekijken.",
     "unavailableNoDownload": "Dit bestand is niet beschikbaar.",
-    "loading": "Bijlage laden"
+    "loading": "Bijlage laden",
+    "openMedia": "{{name}} openen in de mediaviewer"
+  },
+  "unsavedChanges": {
+    "count_one": "{{count}} niet-opgeslagen wijziging",
+    "count_other": "{{count}} niet-opgeslagen wijzigingen",
+    "save": "Wijzigingen opslaan",
+    "discard": "Verwerpen",
+    "saving": "Opslaan…",
+    "saved": "Wijzigingen opgeslagen",
+    "regionLabel": "Niet-opgeslagen wijzigingen",
+    "discardDialog": {
+      "title_one": "1 niet-opgeslagen wijziging verwerpen?",
+      "title_other": "{{count}} niet-opgeslagen wijzigingen verwerpen?",
+      "description": "Elk gewijzigd veld op dit tabblad krijgt weer zijn opgeslagen waarde.",
+      "confirm": "Verwerpen"
+    },
+    "leaveDialog": {
+      "title": "Niet-opgeslagen wijzigingen",
+      "description": "Je hebt niet-opgeslagen wijzigingen op dit tabblad. Sla ze op, verwerp ze of blijf op dit tabblad?",
+      "save": "Opslaan",
+      "discard": "Verwerpen en verlaten"
+    },
+    "saveFailedDialog": {
+      "title": "Je wijzigingen konden niet worden opgeslagen",
+      "description": "Iemand heeft deze pagina mogelijk intussen gewijzigd. Vernieuw de pagina om de nieuwste versie te laden — je niet-opgeslagen wijzigingen gaan verloren.",
+      "refresh": "Pagina vernieuwen",
+      "close": "Sluiten"
+    }
+  },
+  "vcPaused": {
+    "title": "Virtual Contributors krijgen een upgrade! 🚀",
+    "description": "We bouwen ze opnieuw op om ze slimmer en behulpzamer te maken. In de tussentijd kun je ze niet aanmaken, toevoegen of vermelden, maar je bestaande VC's blijven zichtbaar.",
+    "learnMore": "Meer informatie",
+    "contactSupport": "Contact opnemen met support",
+    "mentionUnavailable": "Tijdelijk niet beschikbaar"
   }
 }

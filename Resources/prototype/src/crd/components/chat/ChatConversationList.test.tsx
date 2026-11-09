@@ -68,3 +68,24 @@ describe('ChatConversationList draft preview', () => {
     expect(names[1]).toContain('Grace Hopper');
   });
 });
+
+describe('ChatConversationList scrolling', () => {
+  test('contains overscroll, so scrolling past either end of the list does not scroll the page behind', () => {
+    renderList([conversation({})]);
+    expect(screen.getByRole('list').className).toContain('overscroll-contain');
+  });
+});
+
+describe('ChatConversationList call badge', () => {
+  test('flags only the conversations with a running call', () => {
+    renderList([
+      conversation({ id: 'with-call', displayName: 'Team', isGroup: true, hasActiveCall: true }),
+      conversation({ id: 'without-call', displayName: 'Other team', isGroup: true }),
+    ]);
+
+    const badges = screen.getAllByRole('img', { name: 'call.listBadge' });
+    expect(badges).toHaveLength(1);
+    expect(badges[0].closest('li')).toHaveTextContent('Team');
+    expect(badges[0].closest('li')).not.toHaveTextContent('Other team');
+  });
+});

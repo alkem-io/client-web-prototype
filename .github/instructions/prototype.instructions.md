@@ -25,9 +25,13 @@ everything else is yours. He does not run git commands.
 4. **Push only when he wants someone else to see it**, and give him the link.
 5. **Never merge to `main` unless he says it is ready.** Merging means ready for a
    developer to build in client-web — not that one has built it.
-6. **Tell him where to look** — a link and what to look at. "The build passes" is
+6. **Every time `main` changes, update the live site.** Approved merge or
+   production sync alike: from `main`, in `Resources/prototype`, run
+   `vercel deploy --prod` and give him the link. Never from a branch, never by
+   pushing to GitHub.
+7. **Tell him where to look** — a link and what to look at. "The build passes" is
    not something he can check.
-7. Proposing ahead-of-production work? **Name `src/ahead/` out loud.**
+8. Proposing ahead-of-production work? **Name `src/ahead/` out loud.**
 
 **Two kinds of work.** *Concrete* ("we need this, and this is how it works") —
 build it. *Exploratory* ("let's see what this could even be") — make a **visual
@@ -88,12 +92,12 @@ Graduating one: delete ours, repoint imports to `@/crd/…`, verify in the brows
 record it in `src/ahead/README.md`. It is not automatic — "noticed and held, for
 this reason" is a valid outcome. Not noticing is the one to prevent.
 
-## 4. Do not convert the settings pages
+## 4. Settings follow production
 
-Production has built every settings tab the prototype has (space 9/9, subspace
-5/5, user 6/6, organisation 4/4, packs 2/2). They are two complete designs of the
-same screens that have never been compared. That comparison is a design decision,
-not a mechanical swap.
+Jeroen's decision, 2026-11-06: space, subspace, profile and organisation settings
+use production's screens wherever possible, and only what production cannot do
+stays ours. The list is in `src/ahead/README.md`. Pack and template settings have
+not been compared yet, so do not convert those without asking.
 
 ## 5. Verify in the browser
 

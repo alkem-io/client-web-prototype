@@ -6,9 +6,9 @@
  * same fixed size as memo and whiteboard cards, which have none either.
  * `reactionId` and `reactionsEnabled` are still accepted so callers compile.
  *
- * Website links get the site's own icon from a public icon service, worked out
- * from `url`. That is a prototype shortcut: production would need to store or
- * fetch the icon itself.
+ * No profile picture, file size or site icon: production's links do not carry
+ * them, so showing them would need server work (parked until after the server
+ * move). `author` and `authorAvatarUrl` are still accepted so callers compile.
  */
 import { Pencil, Trash2 } from 'lucide-react';
 import { BandedLinkCard } from '@/ahead/BandedResponseCards';
@@ -20,7 +20,7 @@ type ContributionLinkCardProps = {
   description?: string;
   url?: string;
   isFile?: boolean;
-  /** For files: "PDF · 2.4 MB". Links show their address instead. */
+  /** For files: the type, "PDF". Links show their address instead. */
   fileInfo?: string;
   fileType?: CollaboraDocumentPreviewType;
   author?: string;
@@ -47,8 +47,6 @@ export function ContributionLinkCard({
   isFile,
   fileInfo,
   fileType,
-  author,
-  authorAvatarUrl,
   onClick,
   className,
 }: ContributionLinkCardProps) {
@@ -61,9 +59,6 @@ export function ContributionLinkCard({
         source={isFile ? fileInfo : host}
         isFile={isFile}
         fileType={fileType}
-        iconUrl={host ? `https://www.google.com/s2/favicons?domain=${host}&sz=64` : undefined}
-        author={author}
-        authorAvatarUrl={authorAvatarUrl}
         href={url}
         onClick={onClick}
         className={className}

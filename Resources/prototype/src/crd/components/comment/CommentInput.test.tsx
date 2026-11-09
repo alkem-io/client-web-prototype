@@ -1,8 +1,15 @@
 import { createEvent, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { type ReactNode, useState } from 'react';
-import { describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ComposerAttachment } from './types';
+
+const screenSize = vi.hoisted(() => ({ isSmallScreen: false, isMediumScreen: false, isLargeScreen: true }));
+
+vi.mock('@/crd/hooks/useMediaQuery', async importOriginal => ({
+  ...(await importOriginal<typeof import('@/crd/hooks/useMediaQuery')>()),
+  useScreenSize: () => screenSize,
+}));
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -93,6 +100,27 @@ const uploading: ComposerAttachment = { id: 'a2', name: 'big.pdf', status: 'uplo
 const failed: ComposerAttachment = { id: 'a3', name: 'broken.png', status: 'error', mimeType: 'image/png' };
 
 describe('CommentInput attachments', () => {
+  test('imagesOnly renders the image button with the "Add image" name and image chips', () => {
+    const { container } = render(
+      <CommentInput onSubmit={vi.fn()} attachmentsEnabled={true} imagesOnly={true} attachments={[ready]} />
+    );
+    const button = screen.getByRole('button', { name: 'comments.attachments.addImage' });
+    expect(button.querySelector('svg')).toHaveClass('lucide-image-plus');
+    expect(screen.queryByRole('button', { name: 'comments.attachments.attach' })).not.toBeInTheDocument();
+    const chip = screen.getByText('photo.png').closest('li') as HTMLElement;
+    expect(chip.querySelector('svg')).toHaveClass('lucide-image');
+    expect(container.querySelector('.lucide-paperclip')).toBeNull();
+  });
+
+  test('without imagesOnly the paperclip button and label are unchanged', () => {
+    render(<CommentInput onSubmit={vi.fn()} attachmentsEnabled={true} attachments={[ready]} />);
+    const button = screen.getByRole('button', { name: 'comments.attachments.attach' });
+    expect(button.querySelector('svg')).toHaveClass('lucide-paperclip');
+    expect(screen.queryByRole('button', { name: 'comments.attachments.addImage' })).not.toBeInTheDocument();
+    const chip = screen.getByText('photo.png').closest('li') as HTMLElement;
+    expect(chip.querySelector('svg')).toHaveClass('lucide-paperclip');
+  });
+
   test('does not render the attach affordance unless attachments are enabled', () => {
     render(<CommentInput onSubmit={vi.fn()} />);
     expect(screen.queryByRole('button', { name: 'comments.attachments.attach' })).not.toBeInTheDocument();
@@ -187,6 +215,13 @@ describe('CommentInput attachments', () => {
       render(<CommentInput onSubmit={onSubmit} attachmentsEnabled={true} attachments={[failed]} value="here you go" />);
       fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Enter' });
       expect(onSubmit).toHaveBeenCalledWith('here you go');
+    });
+
+    test('the failed file is marked failed in text, not by colour alone', () => {
+      render(<CommentInput onSubmit={vi.fn()} attachmentsEnabled={true} attachments={[ready, failed]} />);
+      const [readyChip, failedChip] = screen.getAllByRole('listitem');
+      expect(failedChip).toHaveTextContent('comments.attachments.failed');
+      expect(readyChip).not.toHaveTextContent('comments.attachments.failed');
     });
 
     test('busy sending disables retry and removal', () => {
@@ -335,5 +370,192 @@ describe('CommentInput drop and paste', () => {
 
     expect(fireEvent.paste(getTextarea(), { clipboardData: clipboard([image]) })).toBe(true);
     expect(onAttachFiles).not.toHaveBeenCalled();
+  });
+});
+
+// iOS Safari zooms the page in on focus when a field's text is under 16px. The
+// composer (chat and comments) must use 16px text on iOS; jsdom does not
+// apply Tailwind, so the classes are what is asserted.
+describe('CommentInput iOS font size', () => {
+  test('plain textarea uses 16px text on iOS', () => {
+    render(<CommentInput onSubmit={vi.fn()} />);
+
+    expect(getTextarea()).toHaveClass('text-body', 'ios:text-base');
+  });
+
+  test('mentions textarea inherits 16px text on iOS from its wrapper', () => {
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={vi.fn()} />);
+
+    const wrapper = getTextarea().closest('.ios\\:text-base');
+    expect(wrapper).not.toBeNull();
+    expect(wrapper).toHaveClass('text-body');
+  });
+});
+
+// jsdom has no layout, so the input and dialog rects are stubbed and the inline
+// style is what is asserted. The numbers below follow from the input's top: the
+// list's bottom edge sits 4px above it, and the list never reaches the top 72px,
+// where the site and dialog headers paint over it.
+describe('CommentInput mention list placement', () => {
+  const stubTop = (element: Element, top: number, bottom = top + 30) =>
+    vi.spyOn(element, 'getBoundingClientRect').mockReturnValue({ top, bottom } as DOMRect);
+  const mentionSearch = vi.fn(async () => [{ id: 'u1', displayName: 'Neil' }]);
+
+  const openList = async () => {
+    fireEvent.change(getTextarea(), { target: { value: '@ne', selectionStart: 3, selectionEnd: 3 } });
+    // react-mentions runs the query from the select event a real keystroke also fires.
+    fireEvent.select(getTextarea());
+    const name = await screen.findByText('Neil');
+    return name.closest('.overflow-y-auto') as HTMLElement;
+  };
+
+  beforeEach(() => {
+    screenSize.isSmallScreen = true;
+  });
+
+  afterEach(() => {
+    screenSize.isSmallScreen = false;
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  test('on a small screen the list is anchored from the input top, not from 100vh', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 400);
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />);
+
+    const { style } = await openList();
+
+    expect(style.position).toBe('fixed');
+    expect(style.top).toBe('396px');
+    expect(style.transform).toBe('translateY(-100%)');
+    expect(style.bottom).toBe('');
+    expect(style.cssText).not.toContain('vh');
+  });
+
+  test('inside a dialog the anchor is converted to the dialog coordinates, without a portal', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 500);
+    const { container } = render(
+      <div data-slot="dialog-content">
+        <CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />
+      </div>
+    );
+    const dialog = container.querySelector('[data-slot="dialog-content"]') as HTMLElement;
+    stubTop(dialog, 100);
+
+    const list = await openList();
+
+    expect(list.style.top).toBe('396px');
+    expect(dialog).toContainElement(list);
+  });
+
+  test('with room above the input the list keeps its full height', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 500);
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />);
+
+    const { style } = await openList();
+
+    expect(style.maxHeight).toBe('min(14rem, 424px)');
+  });
+
+  test('with little room above the input the list opens below it, clear of the text', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 170);
+    vi.stubGlobal('visualViewport', { offsetTop: 0, height: 500 });
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />);
+
+    const { style } = await openList();
+
+    expect(style.top).toBe('204px');
+    expect(style.transform).toBe('');
+    expect(style.maxHeight).toBe('min(14rem, 292px)');
+  });
+
+  test('below the input, the list height stops at the keyboard inside a dialog too', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 120);
+    vi.stubGlobal('visualViewport', { offsetTop: 40, height: 300 });
+    const { container } = render(
+      <div data-slot="dialog-content">
+        <CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />
+      </div>
+    );
+    stubTop(container.querySelector('[data-slot="dialog-content"]') as HTMLElement, 20, 800);
+
+    const { style } = await openList();
+
+    expect(style.top).toBe('134px');
+    expect(style.maxHeight).toBe('min(14rem, 182px)');
+  });
+
+  test.each([
+    [220, '216px', 'translateY(-100%)'],
+    [219, '253px', ''],
+  ])('with the input at %ipx the list needs 144px above it to open there', async (top, listTop, transform) => {
+    stubTop(HTMLTextAreaElement.prototype, top);
+    vi.stubGlobal('visualViewport', { offsetTop: 0, height: 844 });
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />);
+
+    const { style } = await openList();
+
+    expect(style.top).toBe(listTop);
+    expect(style.transform).toBe(transform);
+  });
+
+  test('a tall input with the keyboard up leaves more room above, so the list stays there', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 180, 300);
+    vi.stubGlobal('visualViewport', { offsetTop: 0, height: 300 });
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />);
+
+    const { style } = await openList();
+
+    expect(style.top).toBe('176px');
+    expect(style.transform).toBe('translateY(-100%)');
+    expect(style.maxHeight).toBe('min(14rem, 104px)');
+  });
+
+  test('room above is measured from the visible area when iOS has panned the page', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 300, 332);
+    vi.stubGlobal('visualViewport', { offsetTop: 250, height: 332 });
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />);
+
+    const { style } = await openList();
+
+    expect(style.top).toBe('336px');
+    expect(style.transform).toBe('');
+    expect(style.maxHeight).toBe('min(14rem, 242px)');
+  });
+
+  test('below the input, a short dialog limits the list height so it is not clipped', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 422);
+    vi.stubGlobal('visualViewport', { offsetTop: 0, height: 844 });
+    const { container } = render(
+      <div data-slot="dialog-content">
+        <CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />
+      </div>
+    );
+    stubTop(container.querySelector('[data-slot="dialog-content"]') as HTMLElement, 272, 572);
+
+    const { style } = await openList();
+
+    expect(style.top).toBe('184px');
+    expect(style.maxHeight).toBe('min(14rem, 112px)');
+  });
+
+  test('on a small screen the list wrapper sits above the z-10 links in a post', async () => {
+    stubTop(HTMLTextAreaElement.prototype, 400);
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />);
+
+    const list = await openList();
+
+    expect(list.parentElement?.style.zIndex).toBe('30');
+  });
+
+  test('from 640px up the list has no inline positioning', async () => {
+    screenSize.isSmallScreen = false;
+    render(<CommentInput onSubmit={vi.fn()} mentionSearch={mentionSearch} />);
+
+    const list = await openList();
+
+    expect(list.getAttribute('style')).toBeNull();
+    expect(list).toHaveClass('max-h-72', 'w-72');
+    expect(list.parentElement?.style.zIndex).toBe('1');
   });
 });

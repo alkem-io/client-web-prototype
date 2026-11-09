@@ -29,7 +29,9 @@ The three that are easiest to break by accident:
 **How work runs here:** Jeroen is the designer, not a developer. Catch up with
 production (`npm run sync:crd`) when a piece of work starts, start a branch before
 editing anything — exploratory work included — commit as you go, push only when he
-wants someone to see it, and never merge to `main` unless he says it is ready. He
+wants someone to see it, and never merge to `main` unless he says it is ready.
+Every time `main` changes, update the live site with `vercel deploy --prod` from
+`Resources/prototype` (on `main`, never a branch). He
 does not run git commands, and jargon in anything he reads is a defect.
 
 Exploratory work makes a **visual artifact** first — a real committed file under
