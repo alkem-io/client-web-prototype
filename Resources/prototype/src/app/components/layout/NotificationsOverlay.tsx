@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import {
   Bell,
@@ -8,6 +8,7 @@ import {
   Check,
   CheckCheck,
   Clock,
+  Megaphone,
   Settings,
   X
 } from "lucide-react";
@@ -19,9 +20,14 @@ import { useNotifications } from "@/app/contexts/NotificationsContext";
 import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
 import { SpaceActivityPanel } from "@/app/components/layout/SpaceActivityPanel";
 import { SPACE_CHANGES } from "@/app/data/activity-data";
+import {
+  LEAD_UPDATE_NOTIFICATIONS,
+  LEAD_UPDATE_SPACE,
+  leadUpdateHref,
+} from "@/app/data/leadUpdates";
 import { toast } from "sonner";
 
-type NotificationType = "comment" | "invite" | "mention" | "system";
+type NotificationType = "comment" | "invite" | "mention" | "system" | "update";
 
 interface Notification {
   id: string;
@@ -33,9 +39,26 @@ interface Notification {
   read: boolean;
   type: NotificationType;
   space?: string;
+  /** Set on lead-update notifications — clicking opens this update on the space. */
+  updateId?: string;
 }
 
-const NOTIFICATIONS: Notification[] = [
+/* Lead-update notifications (client-web#10321) sit at the top. Clicking one
+   takes you to the space with that update open — including an older update,
+   to prove the notification opens *its* update, not whatever is newest. */
+const LEAD_NOTIFICATIONS: Notification[] = LEAD_UPDATE_NOTIFICATIONS.map(n => ({
+  id: n.id,
+  author: n.author,
+  avatar: n.avatar,
+  action: "posted an update in",
+  target: LEAD_UPDATE_SPACE.name,
+  time: n.time,
+  read: !n.unread,
+  type: "update",
+  updateId: n.updateId,
+}));
+
+const BASE_NOTIFICATIONS: Notification[] = [
   {
     id: "1",
     author: "Sarah Chen",
@@ -112,15 +135,19 @@ const NOTIFICATIONS: Notification[] = [
   },
 ];
 
+const NOTIFICATIONS: Notification[] = [...LEAD_NOTIFICATIONS, ...BASE_NOTIFICATIONS];
+
 const TYPE_ICON: Record<NotificationType, React.ReactNode> = {
   comment: <MessageSquare className="w-3 h-3" />,
   invite: <UserPlus className="w-3 h-3" />,
   mention: <Check className="w-3 h-3" />,
-  system: <Bell className="w-3 h-3" />
+  system: <Bell className="w-3 h-3" />,
+  update: <Megaphone className="w-3 h-3" />
 };
 
 export function NotificationsOverlay() {
   const { isOpen, initialTab, closeNotifications } = useNotifications();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
   const [filter, setFilter] = useState<NotificationType | "all">("all");
   const [tab, setTab] = useState<"notifications" | "activity">(initialTab);
@@ -161,6 +188,20 @@ export function NotificationsOverlay() {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: !n.read } : n))
     );
+  };
+
+  // A lead-update notification opens its update on the space; everything else
+  // just toggles read, as before.
+  const handleNotificationClick = (n: Notification) => {
+    if (n.updateId) {
+      setNotifications((prev) =>
+        prev.map((x) => (x.id === n.id ? { ...x, read: true } : x))
+      );
+      closeNotifications();
+      navigate(leadUpdateHref(n.updateId));
+      return;
+    }
+    toggleRead(n.id);
   };
 
   // Escape key
@@ -313,6 +354,7 @@ export function NotificationsOverlay() {
               {(
                 [
                   { key: "all", label: "All" },
+                  { key: "update", label: "Updates" },
                   { key: "comment", label: "Comments" },
                   { key: "invite", label: "Invitations" },
                   { key: "mention", label: "Mentions" },
@@ -345,7 +387,7 @@ export function NotificationsOverlay() {
                       !n.read && "bg-primary/5 hover:bg-primary/10"
                     )}
                     style={{ borderBottom: "1px solid var(--border)" }}
-                    onClick={() => toggleRead(n.id)}
+                    onClick={() => handleNotificationClick(n)}
                   >
                     {/* Avatar + type badge */}
                     <div className="relative shrink-0 self-start">
