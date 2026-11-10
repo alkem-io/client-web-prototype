@@ -238,6 +238,32 @@ by capping bubbles at 80% of the thread (`80cqw`).
 
 ---
 
+## 6. Share dialog's link row overflows on a phone
+
+**Severity:** visible on every share dialog on a narrow screen. Found
+2026-11-09 against the pinned CRD in `src/crd/PROVENANCE.md`.
+
+In `src/crd/components/common/ShareDialog.tsx` the link row is
+`flex items-center gap-2` holding an `<Input className="flex-1 font-mono …">`
+and a `shrink-0` Copy button. The input has `flex-1` but no `min-w-0`, so it
+cannot shrink below its intrinsic min-content width (a text input's default is
+roughly 20 characters wide). The dialog itself is capped at
+`max-w-[calc(100%-2rem)]`, so on a phone the row is wider than the dialog: the
+long URL plus the Copy button overflow to the right and the Copy button is
+clipped off the screen.
+
+**Fix:** add `min-w-0` to the `Input` (or to the row wrapper) so `flex-1` can
+actually shrink it. This is the standard flexbox min-content fix — the same
+one that keeps the URL truncating inside the field instead of pushing the row
+wide.
+
+The prototype cannot work around this (it lives in read-only `src/crd`). The
+prototype's own `ShareQrCode` addition below the link was made phone-safe
+separately (it stacks under the `sm` breakpoint); this row is the remaining
+clip.
+
+---
+
 ## Impact on this prototype
 
 The prototype uses production's `cn()` unmodified, so it inherits bug #2 until

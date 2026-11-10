@@ -27,6 +27,7 @@ import {
   Settings,
   Users,
 } from 'lucide-react';
+import { ShareButton } from '@/crd/components/common/ShareButton';
 import { ForumBanner } from '@/crd/components/forum/ForumBanner';
 import { ForumCategoryNav } from '@/crd/components/forum/ForumCategoryNav';
 import { ForumDiscussionDetail } from '@/crd/components/forum/ForumDiscussionDetail';
@@ -43,6 +44,7 @@ import { Input } from '@/crd/primitives/input';
 import { Textarea } from '@/crd/primitives/textarea';
 import { cn } from '@/crd/lib/utils';
 import { CommentsPanel } from '@/app/components/comment/CommentsPanel';
+import { ShareQrCode } from '@/ahead/ShareQrCode';
 import { toDiscussionDetail, toDiscussionListItem } from '@/app/mappers/forum';
 
 interface ForumDiscussion {
@@ -1211,6 +1213,17 @@ export default function ForumPage() {
               backLabel={t('detail.back', { defaultValue: 'See all discussions' })}
               onBack={() => setSelectedId(null)}
               shareLabel={t('detail.share', { defaultValue: 'Share' })}
+              // Production's share button and dialog, with the QR code (ahead of
+              // production, alkemio#2222) in the space the dialog leaves below the link.
+              shareSlot={
+                <ShareButton
+                  url={`/forum/${selected.id}`}
+                  tooltip={t('detail.share', { defaultValue: 'Share' })}
+                  dialogTitle={t('detail.share', { defaultValue: 'Share' })}
+                >
+                  <ShareQrCode url={`/forum/${selected.id}`} title={selected.title} />
+                </ShareButton>
+              }
               editLabel={t('detail.edit', { defaultValue: 'Edit' })}
               deleteLabel={t('detail.delete', { defaultValue: 'Delete' })}
               // Production's comment system, same as every other comment
