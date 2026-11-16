@@ -30,9 +30,6 @@ import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 import { ENGLISH_CARD_LABELS, InitiativeCard } from "@/app/components/databank/InitiativeCard";
 import type { DatabankInitiative } from "@/app/data/databank-data";
-import { ActivityDotSlots, afterNameSlot } from "@/app/components/shared/ActivityDotSlots";
-import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { subspaceContainer } from "@/app/data/activity-data";
 import type { MockRichSubspace } from "@/app/mappers/spaceCard";
 
 
@@ -865,17 +862,9 @@ function LeadUpdate() {
   );
 }
 
-/** A subspace card in the feed, with the new-activity pulse at the end of its name. */
+/** A subspace card in the feed. */
 function FeedSubspaceCard({ subspace }: { subspace: MockRichSubspace }) {
-  const { hasContainerActivity } = useActivityIndicators();
-  const slots = hasContainerActivity(subspaceContainer(subspace.slug))
-    ? [afterNameSlot(subspace.slug, `${subspace.name} has new activity`, (root) => [...root.querySelectorAll("h3")])]
-    : [];
-  return (
-    <ActivityDotSlots slots={slots}>
-      <InitiativeCard initiative={toRichCard(subspace)} labels={ENGLISH_CARD_LABELS} />
-    </ActivityDotSlots>
-  );
+  return <InitiativeCard initiative={toRichCard(subspace)} labels={ENGLISH_CARD_LABELS} />;
 }
 
 const toRichCard = (subspace: MockRichSubspace): DatabankInitiative => {

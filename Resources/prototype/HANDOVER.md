@@ -35,7 +35,6 @@ copies:
 These are places the prototype is **ahead** of production. They stay.
 
 - Hover cards on people, organisations and virtual contributors
-- Activity dots showing what's new
 - Emoji reactions on individual contributions
 - Forms as a callout type
 - Memo signing
@@ -85,7 +84,7 @@ had to remove:
    we can't add a reaction row from outside. The post card already has this —
    the contribution cards need the same.
 2. **A slot for a badge next to a name**, on space cards, sidebar rows and tabs.
-   This is what the "new activity" dot needs.
+   This is what the "new activity" dot needs (that dot now lives on the `recent-activity` branch, not on main).
 3. **A way to hang a hover card on the contributor collection** — either "let us
    supply the card" or just an "on hover" callback. Production's card has caught
    up on content (skills, join date, website, messaging); the one thing it can't

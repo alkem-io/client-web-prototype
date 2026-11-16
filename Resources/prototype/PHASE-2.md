@@ -16,6 +16,10 @@ already set.
 
 ## 1. Activity indicators (the dot / pulse)
 
+**Moved off `main` on 2026-11-16** (Jeroen's call). The dot, the "Recent
+activity" tab in notifications and the settings switch now live only on the
+branch `recent-activity`. The notes below describe that branch.
+
 **What:** a small animated dot beside a space, tab or post name showing new
 activity since the viewer's last visit. Spec `014-new-activity-indicators`.
 Driven by `ActivityIndicatorsContext` + `ActivityDot`, both still in the repo.

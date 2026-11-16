@@ -505,7 +505,6 @@ export default function SubspacePage() {
                     tabs={info.callouts}
                     activeTab={activeCallout}
                     onTabChange={setActiveCallout}
-                  activityOwner={activeSlug}
                 />
               </div>
             </div>

@@ -39,12 +39,10 @@ have it. That comment is what development reads.
 | `ProfileHoverCard` | Hovering a person shows bio, skills and location without leaving the page — wherever a person appears: avatars, names, comment and post authors, chat, lists, sentences like "Simone Rietmeijer on Thu". Needs a way to give a hover card to the components that show a contributor (`CommentItem`, `ChatMessageBubble`, `ContributorCard`, `PostCard`, `ActivityItem`, …), e.g. a `renderContributor` slot. Until then a stand-in shows them across the whole app (`app/components/shared/ContributorHoverLayer`, not part of the ask) |
 | `OrgHoverCard` | The same for organisations |
 | `VCHoverCard` | The same for virtual contributors |
-| `ActivityDot` | A small animated dot marking what is new since your last visit, right after the name: My Spaces rows, Recent Spaces cards, space tabs, space and subspace cards, post cards. Needs an optional `nameSuffix` slot on `SidebarResourceItem`, `CompactSpaceCard`, `SpaceNavigationTabs`' `TabItem`, `SpaceCard`, `ExpandedSpaceCard` and `PostCard`. Until then a stand-in places it (`app/components/shared/ActivityDotSlots`, not part of the ask) |
 | `TruncatedPostDescription` | Collapsed posts cut cleanly at 3 lines — no fade over text or images; a hero image crops to 160px, later images wait for "Read more", an image-only post crops like a hero. Needs a `descriptionSlot` on `PostCard` (or the behaviour in `ExpandableMarkdown`) |
 | `ThreeColumnContributionGrid` | A callout's contributions three across on wide screens instead of two, cards closer to thumbnail size. Collapsed, it shows the first row in full plus a clean cut through the middle of the second, so it is clear there is more; production clips at a fixed 220px, which leaves a thin strip that reads as a mistake. The button says how many are hidden ("+3 more"), not the total. Needs a `columns` prop on `ContributionGrid` (and `ContributionsPreviewSkeleton`), and the collapse measured from the first row |
 | `BandedResponseCards` | Memo, whiteboard and document responses without the blue title fade (product#2207): a label strip in the platform background colour, with a thin line above it, holds the author's profile picture, the title and the author, so the label reads apart from the preview; memo previews are compact, with dark headings and grey body text like a post response, and cut cleanly with no fade; cards are a fixed 200px so the collapsed grid never cuts off the label; the hover wash stays and sits under the strip. Post responses, which have no preview, get the same label at the top: picture, title, then "author · date" in grey. Links and files become the same 200px card in the same grid instead of a list: a plain link icon or the coloured file type as the picture, the label strip giving the title with the address or file type ("PDF") in grey, "Open Link" (a new string) or "Download" on hover. No profile picture, file size or site icon on these: links do not carry them, so they would need server work, and they are parked until after the server move. The ask is to change `ContributionMemoCard`, `ContributionWhiteboardCard`, `ContributionDocumentCard` and `ContributionPostCard` themselves, and to show links as these cards. A name check cannot see this graduate: after each sync, check whether production's cards still use `bg-gradient-to-t` |
 | `TitleFirstPostHeader` | Posts in the feed lead with what they are about: the title on top beside the author's picture, "author · time" subtle underneath, the same order as the label on response cards. Needs a header layout option on `PostCard` (or this as its default). Until then a stand-in places it (`app/components/shared/TitleFirstHeaderStandIn`, not part of the ask) |
-| `NewActivitySettingsSection` | A person controls the new-activity dots from their notification settings: dots on or off, and mark everything as read, with undo. Sits beneath production's `UserNotificationsTabView`. Needs a place for it in that view, or a section of its own |
 | `ShareQrCode` | A QR code in the share dialog (alkemio#2222): small beside Copy QR code, Download image and Show larger; clicking it fills the dialog for a room to scan. Navy rounded squares, Alkemio logo in the centre; the download is a PNG named after the item; a reminder that only people with access can open it, hidden for public items. Needs nothing structural: `ShareDialog` already renders `children`. The ask is to render it in every share dialog, pass the item's access, and add its strings to `crd-common`. Shown on forum discussions, the post menu and the space and subspace share icons |
 | `DigitalSigningSettingsSection` | A person links their Cleverbase account for digital signing, which memo signing depends on. Sits beneath production's `UserSecurityTabView`. Needs a place for it in that view, or a section of its own |
 
@@ -75,7 +73,6 @@ possible. Only what production cannot do yet stays ours. This replaces the earli
 
 | What | Where it sits | Ask for production |
 |---|---|---|
-| New-activity dot settings | Beneath Notifications (`NewActivitySettingsSection`) | A place for it in `UserNotificationsTabView` |
 | Cleverbase digital signing | Beneath Security (`DigitalSigningSettingsSection`) | A place for it in `UserSecurityTabView` |
 | Form builder and applications review for proposing a subspace | Beneath the space Subspaces tab | A place for it in `SpaceSettingsSubspacesView` |
 | "Start collapsed" for the sidebar | Beneath the space Layout tab | A setting in `SpaceSettingsLayoutView` |
@@ -143,9 +140,5 @@ Kept as a record, so it is clear the process works:
 
 Graduating costs something each time, and that cost is the next upstream ask:
 
-- `ExpandedSpaceCard` has no activity indicator, so subspace cards lost their
-  `ActivityDot`. Back since 2026-10-06 through a stand-in
-  (`app/components/shared/ActivityDotSlots`); what it
-  still needs upstream is somewhere to go on CRD's cards.
 - `ContributorCollection` renders its own cards with no slot, so adopting it
   costs the hover cards. Same shape of ask: a slot, or an `onContributorHover`.

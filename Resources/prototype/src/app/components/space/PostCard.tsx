@@ -32,17 +32,11 @@
  *     `descriptionSlot`. See the component's header.
  *
  * PHASE 1 REMOVALS — recorded in PHASE-2.md:
- *   · the activity dot beside the title (§1 — CRD renders the title, no slot)
- *     — back since 2026-10-06 through `@/app/components/shared/ActivityDotSlots`; hovering the
- *     card for a moment marks the post as seen, as before
  *   · `onDeleteMediaGalleryImage` (§4 — CRD's `MediaGalleryFeedGrid` has no
  *     per-thumbnail delete). The prop is still accepted so the five callers
  *     compile; it is simply not forwarded.
  */
-import { type ReactNode, useEffect, useRef } from 'react';
-import { type ActivityDotSlot, ActivityDotSlots, afterNameSlot } from '@/app/components/shared/ActivityDotSlots';
-import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
-import { postItem } from '@/app/data/activity-data';
+import type { ReactNode } from 'react';
 import { ReferencesAndTagsStrip } from '@/crd/components/callout/ReferencesAndTagsStrip';
 import {
   PostCard as CrdPostCard,
@@ -117,31 +111,6 @@ export function PostCard({
   onDeleteMediaGalleryImage: _onDeleteMediaGalleryImage,
   ...rest
 }: PostCardProps) {
-  const { hasItemActivity, markItemSeen } = useActivityIndicators();
-  const activityId = postItem(post.id);
-  const hasActivity = hasItemActivity(activityId);
-  const activitySlots: ActivityDotSlot[] = hasActivity
-    ? // The post title only — a form box inside the card has a heading of the same style.
-      [afterNameSlot('title', 'New', root => [...root.querySelectorAll('h3.text-subsection-title')].slice(0, 1))]
-    : [];
-
-  // Hovering is deliberate attention; scrolling past is not. The short delay
-  // stops a cursor sweeping across the feed from clearing everything it crosses.
-  const hoverTimer = useRef<number | null>(null);
-  const cancelHover = () => {
-    if (hoverTimer.current !== null) window.clearTimeout(hoverTimer.current);
-    hoverTimer.current = null;
-  };
-  const startHover = () => {
-    if (!hasActivity || hoverTimer.current !== null) return;
-    hoverTimer.current = window.setTimeout(() => {
-      hoverTimer.current = null;
-      markItemSeen(activityId);
-    }, 400);
-  };
-  // biome-ignore lint/correctness/useExhaustiveDependencies: clear the timer on unmount only
-  useEffect(() => cancelHover, []);
-
   const ownsDescription =
     !FRAMING_PREVIEW_TYPES.has(post.type) && (!!post.snippet || !!post.embeddedImages?.length);
 
@@ -154,13 +123,8 @@ export function PostCard({
   };
 
   return (
-    <ActivityDotSlots
-      slots={activitySlots}
-      onPointerEnter={startHover}
-      onPointerLeave={cancelHover}
-      // A block, so the feed's gap between cards (a margin) still applies.
-      wrapperClassName="block"
-    >
+    // A block, so the feed's gap between cards (a margin) still applies.
+    <div>
       <TitleFirstHeaderStandIn
         enabled={titleFirst}
         author={post.author}
@@ -208,6 +172,6 @@ export function PostCard({
           }
         />
       </TitleFirstHeaderStandIn>
-    </ActivityDotSlots>
+    </div>
   );
 }

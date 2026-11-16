@@ -17,15 +17,11 @@ import { Badge } from "@/crd/primitives/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { cn } from "@/crd/lib/utils";
 import { useNotifications } from "@/app/contexts/NotificationsContext";
-import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { SpaceActivityPanel } from "@/app/components/layout/SpaceActivityPanel";
-import { SPACE_CHANGES } from "@/app/data/activity-data";
 import {
   LEAD_UPDATE_NOTIFICATIONS,
   LEAD_UPDATE_SPACE,
   leadUpdateHref,
 } from "@/app/data/leadUpdates";
-import { toast } from "sonner";
 
 type NotificationType = "comment" | "invite" | "mention" | "system" | "update";
 
@@ -146,21 +142,12 @@ const TYPE_ICON: Record<NotificationType, React.ReactNode> = {
 };
 
 export function NotificationsOverlay() {
-  const { isOpen, initialTab, closeNotifications } = useNotifications();
+  const { isOpen, closeNotifications } = useNotifications();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
   const [filter, setFilter] = useState<NotificationType | "all">("all");
-  const [tab, setTab] = useState<"notifications" | "activity">(initialTab);
-  const activity = useActivityIndicators();
-
-  useEffect(() => {
-    if (isOpen) setTab(initialTab);
-  }, [isOpen, initialTab]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
-  const newChangeCount = SPACE_CHANGES.filter((c) =>
-    activity.hasContainerActivity(c.containerId)
-  ).length;
 
   const filtered = notifications.filter((n) => {
     if (filter !== "all" && n.type !== filter) return false;
@@ -169,19 +156,6 @@ export function NotificationsOverlay() {
 
   const markAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
-
-  // Clears the same state the dots read from, so the two can't drift apart.
-  // Reports the number of listed changes rather than the raw container count —
-  // the user sees rows, not the containers underneath them.
-  const markAllActivityRead = () => {
-    const listed = newChangeCount;
-    const { cleared, undo } = activity.markAllRead();
-    if (cleared === 0) return;
-    toast(`${listed} update${listed === 1 ? "" : "s"} marked as read`, {
-      duration: 6000,
-      action: { label: "Undo", onClick: undo }
-    });
   };
 
   const toggleRead = (id: string) => {
@@ -267,13 +241,9 @@ export function NotificationsOverlay() {
                 <div>
                   <h2 className="text-subsection-title">Notifications</h2>
                   <p className="text-body text-muted-foreground">
-                    {tab === "notifications"
-                      ? unreadCount > 0
-                        ? `${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
-                        : "You're all caught up"
-                      : newChangeCount > 0
-                        ? `${newChangeCount} update${newChangeCount > 1 ? "s" : ""} in your spaces`
-                        : "No new activity in your spaces"}
+                    {unreadCount > 0
+                      ? `${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
+                      : "You're all caught up"}
                   </p>
                 </div>
               </div>
@@ -281,8 +251,8 @@ export function NotificationsOverlay() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={tab === "notifications" ? markAllRead : markAllActivityRead}
-                  disabled={tab === "notifications" ? unreadCount === 0 : newChangeCount === 0}
+                  onClick={markAllRead}
+                  disabled={unreadCount === 0}
                 >
                   <CheckCheck className="w-4 h-4 mr-1.5" />
                   Mark all read
@@ -303,49 +273,6 @@ export function NotificationsOverlay() {
               </div>
             </div>
 
-            {/* Tabs — notifications concern you; activity concerns your spaces */}
-            <div
-              className="shrink-0 flex items-end gap-1 px-5 md:px-6"
-              style={{ borderBottom: "1px solid var(--border)" }}
-            >
-              {(
-                [
-                  { key: "notifications", label: "Notifications", count: unreadCount },
-                  // No count: activity is an ambient signal, not a queue to empty.
-                  { key: "activity", label: "Recent activity", count: 0 },
-                ] as const
-              ).map((t) => (
-                <button
-                  key={t.key}
-                  onClick={() => setTab(t.key)}
-                  aria-current={tab === t.key}
-                  className={cn(
-                    "px-4 py-3 -mb-px border-b-2 transition-colors text-control inline-flex items-center gap-2",
-                    tab === t.key
-                      ? "border-primary text-foreground font-semibold"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {t.label}
-                  {t.count > 0 && (
-                    <span
-                      className="rounded-full text-badge font-bold px-1.5"
-                      style={{
-                        background: tab === t.key ? "var(--primary)" : "var(--secondary)",
-                        color: tab === t.key ? "var(--primary-foreground)" : "var(--muted-foreground)"
-                      }}
-                    >
-                      {t.count}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {tab === "activity" ? (
-              <SpaceActivityPanel onNavigate={closeNotifications} />
-            ) : (
-              <>
             {/* Filter Bar */}
             <div
               className="shrink-0 flex items-center gap-2 px-5 md:px-6 py-3 overflow-x-auto"
@@ -456,8 +383,6 @@ export function NotificationsOverlay() {
                 </div>
               )}
             </div>
-              </>
-            )}
             </div>
           </motion.div>
         </>

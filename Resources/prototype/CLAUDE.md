@@ -217,8 +217,7 @@ Two things this does *not* mean:
   decision, with the upstream ask that would unblock it. "Noticed and held" is a
   valid outcome. "Not noticed" is the one to prevent.
 - **Graduation usually costs something**, and that cost is the next thing to ask
-  production for. `ExpandedSpaceCard` has nowhere to put an `ActivityDot`. Write
-  the ask down in `src/ahead/README.md` rather than quietly accepting the loss.
+  production for. Write the ask down in `src/ahead/README.md` rather than quietly accepting the loss.
 
 **Settings follow production** (Jeroen's decision, 2026-11-06): space, subspace,
 profile and organisation settings use production's screens wherever possible, and

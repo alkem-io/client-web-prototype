@@ -21,9 +21,6 @@ import { CreateSubspaceButton } from "@/crd/components/space/sidebar/CreateSubsp
 import { InviteButton } from "@/crd/components/space/sidebar/InviteButton";
 import { PostIndexButton } from "@/crd/components/space/sidebar/PostIndexButton";
 import { SearchField } from "@/crd/forms/SearchField";
-import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { ActivityDot } from "@/ahead/ActivityDot";
-import { spaceOrSubspaceIds } from "@/app/data/activity-data";
 import { SubspaceApplicationDialog } from "@/app/components/dialogs/SubspaceApplicationDialog";
 import type { ApplicationFormConfig } from "@/app/components/dialogs/SubspaceApplicationDialog";
 import {
@@ -687,7 +684,6 @@ export function SubspaceQuickLinks() {
   const [sortOpen, setSortOpen] = useState(false);
   const location = useLocation();
   const subspaces = TAB_INDEX.workspaces.slice(0, 4);
-  const { hasContainerActivity } = useActivityIndicators();
 
   // Build base path: current space or subspace path + /subspaces/
   const basePath = location.pathname.replace(/\/$/, "");
@@ -754,7 +750,6 @@ export function SubspaceQuickLinks() {
         <div className="flex flex-col gap-0.5">
           {sortedSubspaces.map((s, i) => {
             const slug = s.title.toLowerCase().replace(/\s+/g, "-");
-            const hasActivity = spaceOrSubspaceIds(slug).some(hasContainerActivity);
             return (
               <a
                 key={s.title}
@@ -767,9 +762,6 @@ export function SubspaceQuickLinks() {
                   className="w-8 h-8 rounded-lg shrink-0 object-cover"
                 />
                 <span className="text-foreground/85 truncate">{s.title}</span>
-                {hasActivity && (
-                  <ActivityDot className="ml-auto mr-1" label={`${s.title} has new activity`} />
-                )}
               </a>
             );
           })}
