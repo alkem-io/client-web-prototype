@@ -1,133 +1,186 @@
 <title>About Box Without Leads</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<!-- Published as a Claude artifact: https://claude.ai/artifact/UN1KmehWxz4GRvK9Ag6f2d. Exploration: leads move out of the About/intention box into their own sidebar widget; the box keeps its height and shows more of the description. Edit here and republish to the same link. -->
+<!-- Published as a Claude artifact: https://claude.ai/artifact/UN1KmehWxz4GRvK9Ag6f2d. Exploration: leads move out of the About/intention box into their own sidebar widget; the box keeps its height and shows more of the description. Dark = production's InfoBlock, light = the prototype's box. Edit here and republish to the same link. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: a review board. Three space sidebars side by side, today first, at real width (210px). Alkemio tokens. */
+/* Layout: a review board. Each option is a full Alkemio space page (banner, title, tabs, sidebar + feed) stacked top to bottom. Alkemio tokens. */
 :root {
   --board: #eef1f4; --ink: #1d384a; --ink-soft: #5b6b7c; --rule: #d6dde4;
-  --tag: #1d384a; --tag-fg: #ffffff; --hl: #2563eb; --hl-soft: rgba(37,99,235,0.08);
+  --tag: #1d384a; --tag-fg: #ffffff;
   --background: #fcfdfe; --foreground: #1d384a; --card: #ffffff; --muted: #f1f5f9;
   --muted-foreground: #64748b; --border: #e2e8f0; --primary: #1d384a; --primary-fg: #ffffff;
-  --av-j: #2c7a6f; --av-e: #8a4f6d;
+  --info: #1d384a; --info-fg: #ffffff;
+  --banner-a: #2f5d78; --banner-b: #6d9bb3; --banner-c: #c9dbe5;
+  --av-j: #2c7a6f; --av-e: #8a4f6d; --av-d: #7a5c99;
+  --sub-1: #3d6b4f; --sub-2: #9a6a2a; --sub-3: #2f5d78; --sub-4: #8a4f6d;
   --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e; --tag: #e3eaf0; --tag-fg: #0f171e;
-  --hl: #7aa7ff; --hl-soft: rgba(122,167,255,0.12);
   --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
-  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-fg: #131d26; color-scheme: dark } }
+  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-fg: #131d26;
+  --info: #2a4a60; --info-fg: #ffffff;
+  --banner-a: #1d3f54; --banner-b: #3c6a83; --banner-c: #5d8aa1; color-scheme: dark } }
 :root[data-theme="dark"] {
   --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e; --tag: #e3eaf0; --tag-fg: #0f171e;
-  --hl: #7aa7ff; --hl-soft: rgba(122,167,255,0.12);
   --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
-  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-fg: #131d26; color-scheme: dark }
+  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-fg: #131d26;
+  --info: #2a4a60; --info-fg: #ffffff;
+  --banner-a: #1d3f54; --banner-b: #3c6a83; --banner-c: #5d8aa1; color-scheme: dark }
 
 * { box-sizing: border-box; }
 body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 14px; margin: 0; }
-.wrap { max-width: 1040px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.015em; margin: 0 0 28px; text-wrap: balance; }
-.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; align-items: start; }
-.col { display: grid; gap: 12px; min-width: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 36px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 40px; }
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
+.switch { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 3px; gap: 2px; }
+.switch button { font: inherit; font-size: 13px; font-weight: 500; border: 0; background: transparent; color: var(--ink-soft); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.switch button[aria-pressed="true"] { background: var(--ink); color: var(--board); }
+.switch button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.opt { display: grid; gap: 12px; min-width: 0; }
 .when { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--tag); color: var(--tag-fg); }
 .when.soft { background: transparent; color: var(--ink-soft); border: 1px solid var(--rule); }
-.cap { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+.scroll { overflow-x: auto; border-radius: 12px; border: 1px solid var(--rule); }
 
-/* sidebar replica */
-.screen { background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px 20px; }
-.side { width: 210px; max-width: 100%; margin: 0 auto; display: grid; gap: 8px; }
+/* ---------- the Alkemio page ---------- */
+.page { width: 1100px; background: var(--background); color: var(--foreground); padding: 0 28px 28px; }
+.banner { height: 116px; border-radius: 0 0 8px 8px; background: linear-gradient(115deg, var(--banner-a) 0%, var(--banner-b) 60%, var(--banner-c) 100%); position: relative; }
+.chip-l, .chip-r { position: absolute; top: 12px; height: 40px; border-radius: 6px; background: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 10px; padding: 0 12px; font-size: 12.5px; color: #1d384a; }
+.chip-l { left: 12px; } .chip-r { right: 12px; gap: 16px; }
+.logo { width: 28px; height: 28px; border-radius: 6px; background: #13b6c7; }
+.dot { width: 14px; height: 14px; border-radius: 999px; border: 1.5px solid #5b6b7c; }
+.title { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; margin: 18px 0 4px; }
+.tagline { color: var(--muted-foreground); margin: 0; }
+.tabs { display: flex; align-items: flex-end; gap: 4px; margin-top: 28px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.tabs span { padding: 12px 20px; color: var(--muted-foreground); }
+.tabs span.on { color: var(--foreground); font-weight: 600; border: 1px solid var(--border); border-bottom-color: var(--background); border-radius: 6px 6px 0 0; margin-bottom: -1px; background: var(--background); }
+.tabs .icons { margin-left: auto; display: flex; gap: 4px; padding-bottom: 8px; }
+.tabs .icons i { width: 26px; height: 26px; border-radius: 4px; background: var(--muted); border: 1px solid var(--border); }
+.body { display: grid; grid-template-columns: 210px 1fr; gap: 24px; margin-top: 24px; align-items: start; }
+
+/* sidebar */
+.side { display: grid; gap: 8px; }
 .tabdesc { font-size: 14px; line-height: 1.6; color: color-mix(in srgb, var(--foreground) 85%, transparent); margin: 0 0 6px; }
-.box { border: 1px solid var(--border); background: var(--card); border-radius: 8px; padding: 12px 12px 18px; display: grid; gap: 10px; }
-.about { font-size: 14px; line-height: 1.62; color: color-mix(in srgb, var(--foreground) 85%, transparent); margin: 0; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
-.clamp6 { -webkit-line-clamp: 6; }
-.clamp12 { -webkit-line-clamp: 12; }
-.more { font-size: 12px; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; }
-.hr { border-top: 1px solid var(--border); }
-.label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-foreground); display: flex; align-items: center; gap: 4px; }
-.leads { display: grid; gap: 4px; }
-.lead { display: flex; align-items: center; gap: 10px; padding-block: 4px; font-size: 14px; }
-.av { width: 28px; height: 28px; border-radius: 999px; flex-shrink: 0; display: grid; place-items: center; color: #fff; font-size: 10px; font-weight: 600; }
+.clamp { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; margin: 0; }
+/* dark = production InfoBlock */
+.info { border-radius: 8px; padding: 20px; display: grid; gap: 8px; }
+.dark .info { background: var(--info); color: var(--info-fg); }
+.dark .info p { font-size: 14px; line-height: 1.6; }
+.dark .info .more { font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.light .info { background: var(--card); border: 1px solid var(--border); padding: 12px 12px 18px; gap: 10px; }
+.light .info p { font-size: 14px; line-height: 1.62; color: color-mix(in srgb, var(--foreground) 85%, transparent); }
+.light .info .more { font-size: 12px; }
+.sep { border-top: 1px solid rgba(255,255,255,0.15); margin-top: 4px; padding-top: 4px; }
+.light .sep { border-top-color: var(--border); }
+.label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+.dark .info .label { opacity: 0.6; }
+.light .label, .plain .label { color: var(--muted-foreground); }
+.leads { display: grid; gap: 10px; }
+.lead { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.av { width: 32px; height: 32px; border-radius: 999px; flex-shrink: 0; display: grid; place-items: center; color: #fff; font-size: 10.5px; font-weight: 600; }
+.dark .info .av { border: 2px solid rgba(255,255,255,0.25); }
 .av.j { background: var(--av-j); } .av.e { background: var(--av-e); }
-.btn { height: 36px; border-radius: 4px; display: grid; place-items: center; font-size: 14px; font-weight: 500; border: 1px solid var(--border); background: var(--card); }
+.nm { font-size: 14px; display: grid; min-width: 0; }
+.dark .info .nm b { font-weight: 600; }
+.nm b { font-weight: 500; }
+.nm small { font-size: 12px; opacity: 0.7; }
+.plain { display: grid; gap: 10px; padding: 6px 0 4px; }
+.btn { height: 36px; border-radius: 4px; display: grid; place-items: center; font-size: 12px; font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase; border: 1px solid var(--border); background: var(--card); }
 .btn.pri { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
-.search { height: 38px; border: 1px solid var(--border); border-radius: 6px; padding: 0 12px; display: flex; align-items: center; color: var(--muted-foreground); font-size: 14px; margin-top: 4px; }
-.new { outline: 2px dashed var(--hl); outline-offset: 4px; border-radius: 8px; background-color: var(--hl-soft); }
-.box.new { background: var(--card); }
-.plain { padding: 4px 0 2px; display: grid; gap: 8px; }
+.search { height: 38px; border: 1px solid var(--border); border-radius: 6px; padding: 0 12px; display: flex; align-items: center; color: var(--muted-foreground); margin-top: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; font-size: 12.5px; color: var(--muted-foreground); }
+.subs { display: grid; gap: 8px; margin-top: 4px; }
+.sub { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.sub i { width: 32px; height: 32px; border-radius: 4px; }
+
+/* feed */
+.feed { display: grid; gap: 16px; min-width: 0; }
+.card { border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 18px 20px; display: grid; gap: 10px; }
+.pinned { background: var(--muted); }
+.meta { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--muted-foreground); }
+.av.d { background: var(--av-d); width: 36px; height: 36px; }
+.card h3 { margin: 0; font-size: 18px; font-weight: 600; }
+.card p { margin: 0; line-height: 1.6; color: color-mix(in srgb, var(--foreground) 80%, transparent); }
+.ghost { height: 150px; border-radius: 8px; background: linear-gradient(120deg, var(--muted), var(--border)); }
 </style>
 
 <div class="wrap">
-  <h1>Leads get their own widget; the About box shows more</h1>
-
-  <div class="cols">
-    <!-- Today -->
-    <div class="col">
-      <span class="when soft">Today</span>
-      <div class="screen"><div class="side">
-        <p class="tabdesc">Activity and updates from members of this space.</p>
-        <div class="box">
-          <p class="about clamp6" data-about></p>
-          <span class="more">Learn more ↗</span>
-          <div class="hr"></div>
-          <span class="label">Leads</span>
-          <div class="leads" data-leads></div>
-        </div>
-        <div class="btn pri">+ Add Post</div>
-        <div class="btn">+ Create Subspace</div>
-        <div class="search">Search posts…</div>
-      </div></div>
-    </div>
-
-    <!-- Option 1: plain list, like Subspaces -->
-    <div class="col">
-      <span class="when">Option 1</span>
-      <div class="screen"><div class="side">
-        <p class="tabdesc">Activity and updates from members of this space.</p>
-        <div class="box new">
-          <p class="about clamp12" data-about></p>
-          <span class="more">Learn more ↗</span>
-        </div>
-        <div class="plain new">
-          <span class="label">Leads ⌄</span>
-          <div class="leads" data-leads></div>
-        </div>
-        <div class="btn pri">+ Add Post</div>
-        <div class="btn">+ Create Subspace</div>
-        <div class="search">Search posts…</div>
-      </div></div>
-      <p class="cap">Leads as a plain list, like Subspaces</p>
-    </div>
-
-    <!-- Option 2: own card -->
-    <div class="col">
-      <span class="when">Option 2</span>
-      <div class="screen"><div class="side">
-        <p class="tabdesc">Activity and updates from members of this space.</p>
-        <div class="box new">
-          <p class="about clamp12" data-about></p>
-          <span class="more">Learn more ↗</span>
-        </div>
-        <div class="box new">
-          <span class="label">Leads</span>
-          <div class="leads" data-leads></div>
-        </div>
-        <div class="btn pri">+ Add Post</div>
-        <div class="btn">+ Create Subspace</div>
-        <div class="search">Search posts…</div>
-      </div></div>
-      <p class="cap">Leads in their own box</p>
+  <div class="top">
+    <h1>Leads get their own widget, so the About box shows more</h1>
+    <div class="switch" role="group" aria-label="About box style">
+      <button id="sw-dark" type="button" aria-pressed="true" data-mode="dark">Dark box (production)</button>
+      <button id="sw-light" type="button" aria-pressed="false" data-mode="light">White box (prototype)</button>
     </div>
   </div>
+
+  <section class="opt"><span class="when soft">Today</span><div class="scroll"><div class="page" data-variant="today"></div></div></section>
+  <section class="opt"><span class="when">Option 1 · leads as a plain list</span><div class="scroll"><div class="page" data-variant="plain"></div></div></section>
+  <section class="opt"><span class="when">Option 2 · leads in their own box</span><div class="scroll"><div class="page" data-variant="box"></div></div></section>
 </div>
 
 <script>
 const ABOUT = "The place for all field builders on steward-ownership to learn, connect, discuss and collaborate. We bring together founders, investors, advisors and researchers who want companies to stay independent and purpose-driven for the long term. Here you will find practical guides, legal templates, case studies from companies that made the switch, and open questions we are still working through together. Every month we host a community call, and each subspace digs into one topic in depth.";
-const LEADS = [["j","JN","Jeroen Nijkamp"],["e","EM","Elena Martinez"]];
-document.querySelectorAll("[data-about]").forEach(p => p.textContent = ABOUT);
-document.querySelectorAll("[data-leads]").forEach(box => {
-  box.innerHTML = LEADS.map(([c,i,n]) => `<div class="lead"><span class="av ${c}">${i}</span><span>${n}</span></div>`).join("");
-});
+const LEADS = [["j","JN","Jeroen Nijkamp","Utrecht, NL"],["e","EM","Elena Martinez","Barcelona, ES"]];
+// lines of description shown: today vs. with the leads moved out
+const LINES = { dark: { today: 3, moved: 9 }, light: { today: 6, moved: 12 } };
+
+const leadsHTML = (loc) => `<div class="leads">${LEADS.map(([c,i,n,l]) =>
+  `<div class="lead"><span class="av ${c}">${i}</span><span class="nm"><b>${n}</b>${loc ? `<small>${l}</small>` : ""}</span></div>`).join("")}</div>`;
+
+function sidebar(variant, mode) {
+  const lines = variant === "today" ? LINES[mode].today : LINES[mode].moved;
+  const more = mode === "dark" ? "Read more" : "Learn more ↗";
+  const leadsInside = variant === "today"
+    ? `<div class="sep"></div><span class="label">Leads</span>${leadsHTML(mode === "dark")}` : "";
+  let leadsWidget = "";
+  if (variant === "plain") leadsWidget = `<div class="plain"><span class="label">Leads ⌄</span>${leadsHTML(false)}</div>`;
+  if (variant === "box") leadsWidget = `<div class="info"><span class="label">Leads</span>${leadsHTML(mode === "dark")}</div>`;
+  return `<aside class="side">
+    <p class="tabdesc">Activity and updates from members of this space.</p>
+    <div class="info"><p class="clamp" style="-webkit-line-clamp:${lines}">${ABOUT}</p><span class="more">${more}</span>${leadsInside}</div>
+    ${leadsWidget}
+    <div class="btn pri">+ Add post</div>
+    <div class="btn">+ Create subspace</div>
+    <div class="search">Search posts…</div>
+    <div class="chips"><span>Updates</span><span>Events</span><span>Ideas</span><span>+38</span></div>
+    <span class="label" style="color:var(--muted-foreground);margin-top:6px">Subspaces ⌄</span>
+    <div class="subs">
+      <div class="sub"><i style="background:var(--sub-1)"></i>Legal templates</div>
+      <div class="sub"><i style="background:var(--sub-2)"></i>Financing models</div>
+      <div class="sub"><i style="background:var(--sub-3)"></i>Case studies</div>
+      <div class="sub"><i style="background:var(--sub-4)"></i>Research circle</div>
+    </div>
+  </aside>`;
+}
+
+function page(variant, mode) {
+  return `
+  <div class="banner"><div class="chip-l"><span class="logo"></span>Steward-Ownership</div><div class="chip-r"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+  <div class="title">Steward-Ownership Field Builder Community</div>
+  <p class="tagline">The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.</p>
+  <div class="tabs"><span class="on">Home</span><span>Community</span><span>Subspaces</span><span>Knowledge Base</span><span class="icons"><i></i><i></i><i></i><i></i><i></i></span></div>
+  <div class="body ${mode}">
+    ${sidebar(variant, mode)}
+    <div class="feed">
+      <div class="card pinned"><div class="meta"><span class="av e" style="width:28px;height:28px">EM</span>Pinned by Elena Martinez · Lead · 3 days ago</div>
+        <p>Welcome to the Q2 sprint! We're focusing on stakeholder alignment and finalising the policy proposal. Please flag any blockers in this week's check-in post.</p></div>
+      <div class="card"><div class="meta"><span class="av d">DK</span>David Kim · 5 hours ago</div>
+        <h3>Three subspaces open for new contributors</h3>
+        <p>We're opening up three connected workstreams to new contributors this quarter. Here's what each one is about, and who it's for.</p>
+        <div class="ghost"></div></div>
+    </div>
+  </div>`;
+}
+
+let mode = "dark";
+function render() {
+  document.querySelectorAll(".page").forEach(p => p.innerHTML = page(p.dataset.variant, mode));
+  document.querySelectorAll(".switch button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+}
+document.querySelectorAll(".switch button").forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; render(); }));
+render();
 </script>
