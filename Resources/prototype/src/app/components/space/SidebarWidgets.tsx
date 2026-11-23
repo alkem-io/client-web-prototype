@@ -55,10 +55,14 @@ export function normalizeConfig(
   });
 
   const storedOrder = Array.isArray(raw.order) ? (raw.order as string[]) : [];
-  const order = [
-    ...storedOrder.filter((k) => allKeys.includes(k)),
-    ...allKeys.filter((k) => !storedOrder.includes(k)),
-  ];
+  // Keys added since the config was saved go in right after the widget they
+  // follow in the defaults, not at the bottom.
+  const order = storedOrder.filter((k) => allKeys.includes(k));
+  allKeys.forEach((k, i) => {
+    if (order.includes(k)) return;
+    const prev = allKeys.slice(0, i).reverse().find((p) => order.includes(p));
+    order.splice(prev ? order.indexOf(prev) + 1 : 0, 0, k);
+  });
 
   return { order, enabled };
 }
@@ -81,8 +85,14 @@ export const SPACE_WIDGET_DEFS: SidebarWidgetDef[] = [
   {
     key: "intent",
     icon: Target,
-    label: "Intention & Leads",
-    hint: "States why the space exists and who is leading it. Useful on tabs where newcomers land.",
+    label: "About",
+    hint: "States why the space exists, in the space's own words. Useful on tabs where newcomers land.",
+  },
+  {
+    key: "leads",
+    icon: Users,
+    label: "Leads",
+    hint: "Who is leading this space, with their location. Hover a name for their profile.",
   },
   {
     key: "post",

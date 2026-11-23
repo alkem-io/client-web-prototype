@@ -13,6 +13,7 @@ import {
 import { Plus, Mail, UserPlus, Search, List, FileText, X, Calendar, ChevronDown, Target, ExternalLink, ArrowUpDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { cn } from "@/crd/lib/utils";
+import { AboutBlock, LeadsList, type SidebarLead } from "@/ahead/SplitInfoBlock";
 import { useSpaceFilters } from "@/app/components/space/FilterContext";
 import { SpaceSidebar as CrdSpaceSidebar } from "@/crd/components/space/SpaceSidebar";
 import { CollapsibleTagList } from "@/crd/components/common/CollapsibleTagList";
@@ -323,8 +324,15 @@ export function SpaceSidebar({ spaceSlug, variant = "home", activeTabDescription
     intent:
       variant === "home" ? (
         <div className="mb-2">
-          <IntentLeadsBox />
+          <AboutBlock description={SPACE_ABOUT} />
         </div>
+      ) : null,
+    leads:
+      variant === "home" ? (
+        <>
+          <LeadsList leads={SIDEBAR_LEADS} />
+          <div className="mb-2" />
+        </>
       ) : null,
     post: <CreatePostButton onClick={() => window.dispatchEvent(new Event("open-add-post-modal"))} />,
     addUser: variant === "community" ? <InviteButton onClick={() => {}} /> : null,
@@ -582,94 +590,23 @@ function UpcomingEvents() {
   );
 }
 
-function IntentLeadsBox() {
-  return (
-    <div className="rounded-lg border border-border bg-white p-3 pb-5 flex flex-col gap-3">
-      <div className="flex flex-col gap-2">
-        <p className="text-body text-foreground/85 leading-relaxed">
-          A place to try and play around with various Alkemio features, to gain a better understanding of the platform, its flows and experience.
-        </p>
-        <button
-          onClick={() => window.dispatchEvent(new CustomEvent("open-about-dialog"))}
-          className="flex items-center gap-1 text-caption transition-colors hover:opacity-80 self-start"
-          style={{ color: "var(--primary)" }}
-        >
-          Learn more
-          <ExternalLink className="w-3 h-3" />
-        </button>
-      </div>
-      <div className="border-t border-border" />
-      <div className="flex flex-col gap-1.5">
-        <span className="text-caption text-muted-foreground uppercase tracking-wider">
-          Leads
-        </span>
-        <div className="flex flex-col gap-1">
-          {SIDEBAR_LEADS.map((lead) => (
-            <button
-              key={lead.name}
-              className="flex items-center gap-2.5 py-1 rounded-md text-body hover:bg-muted/50 transition-colors text-left"
-            >
-              <Avatar className="w-7 h-7 shrink-0">
-                <AvatarImage src={lead.avatar} alt={lead.name} />
-                <AvatarFallback className="text-[10px]">{lead.initials}</AvatarFallback>
-              </Avatar>
-              <span className="text-foreground/85 truncate">{lead.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+const SPACE_ABOUT =
+  "The place for all field builders on steward-ownership to learn, connect, discuss and collaborate. We bring together founders, investors, advisors and researchers who want companies to stay independent and purpose-driven for the long term. Here you will find practical guides, legal templates, case studies from companies that made the switch, and open questions we are still working through together. Every month we host a community call, and each subspace digs into one topic in depth. New here? Introduce yourself in the Community tab and tell us what brought you to steward-ownership.";
 
-const SIDEBAR_LEADS = [
+const SIDEBAR_LEADS: SidebarLead[] = [
   {
     name: "Jeroen Nijkamp",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
-    initials: "JN"
+    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+    initials: "JN",
+    location: "Utrecht, NL"
   },
   {
     name: "Elena Martinez",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
-    initials: "EM"
+    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
+    initials: "EM",
+    location: "Barcelona, ES"
   },
 ];
-
-function LeadsSection() {
-  const [collapsed, setCollapsed] = useState(false);
-
-  return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center gap-1 hover:text-foreground transition-colors"
-        >
-          <span className="text-caption text-muted-foreground uppercase tracking-wider">
-            Leads
-          </span>
-          <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", collapsed && "-rotate-90")} />
-        </button>
-      </div>
-      {!collapsed && (
-        <div className="flex flex-col gap-1">
-          {SIDEBAR_LEADS.map((lead) => (
-            <button
-              key={lead.name}
-              className="flex items-center gap-2.5 py-1.5 rounded-md text-body hover:bg-muted/50 transition-colors text-left"
-            >
-              <Avatar className="w-7 h-7 shrink-0">
-                <AvatarImage src={lead.avatar} alt={lead.name} />
-                <AvatarFallback className="text-[10px]">{lead.initials}</AvatarFallback>
-              </Avatar>
-              <span className="text-foreground/85 truncate">{lead.name}</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export const SUBSPACE_AVATARS = [
   "https://images.unsplash.com/photo-1509391366360-2e959784a276?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=80",
