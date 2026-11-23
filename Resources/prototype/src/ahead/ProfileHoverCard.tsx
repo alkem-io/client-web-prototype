@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/app/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/crd/primitives/hover-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/crd/primitives/avatar";
 import { MapPin, MessageCircle } from "lucide-react";
 import { cn } from "@/crd/lib/utils";

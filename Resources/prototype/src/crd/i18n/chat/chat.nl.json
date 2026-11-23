@@ -7,8 +7,12 @@
   "panel": {
     "title": "Chat",
     "settings": "Meldingsinstellingen",
+    "muteSound": "Chatgeluid dempen",
+    "unmuteSound": "Chatgeluid aanzetten",
+    "soundToggleError": "We konden de instelling voor het chatgeluid niet opslaan. Probeer het opnieuw.",
     "expand": "Chat vergroten",
-    "collapse": "Chat verkleinen"
+    "collapse": "Chat verkleinen",
+    "reconnecting": "Opnieuw verbinden… Nieuwe berichten kunnen vertraagd zijn."
   },
   "actions": {
     "cancel": "Annuleren"
@@ -80,6 +84,7 @@
   "thread": {
     "back": "Terug naar gesprekken",
     "loading": "Berichten laden",
+    "jumpToLatest": "Naar de nieuwste berichten",
     "addReaction": "Reactie toevoegen",
     "options": "Chatopties"
   },
@@ -114,6 +119,8 @@
     "joinVideo": "Deelnemen met video",
     "joinAudio": "Alleen met audio deelnemen",
     "joinedOnThisDevice": "Al deelgenomen op dit apparaat",
+    "preparing": "Gesprek wordt voorbereid… Het start zo meteen.",
+    "dropped": "Kon het gesprek niet starten. Probeer het opnieuw.",
     "overlayLabel": "Gesprek",
     "close": "Gesprek sluiten",
     "license": "Opensourcelicentie",
