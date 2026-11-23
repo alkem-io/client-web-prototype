@@ -87,6 +87,10 @@ h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.015em; margin: 0; tex
 .dark .info .nm b { font-weight: 600; }
 .nm b { font-weight: 500; }
 .nm small { font-size: 12px; opacity: 0.7; }
+/* chosen: leads always in a white box, whatever the About box is */
+.leadsbox { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: grid; gap: 10px; }
+.leadsbox .label { color: var(--muted-foreground); }
+.leadsbox .nm small { color: var(--muted-foreground); opacity: 1; }
 .plain { display: grid; gap: 10px; padding: 6px 0 4px; }
 .btn { height: 36px; border-radius: 4px; display: grid; place-items: center; font-size: 12px; font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase; border: 1px solid var(--border); background: var(--card); }
 .btn.pri { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
@@ -119,7 +123,7 @@ h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.015em; margin: 0; tex
 
   <section class="opt"><span class="when soft">Today</span><div class="scroll"><div class="page" data-variant="today"></div></div></section>
   <section class="opt"><span class="when">Option 1 · leads as a plain list</span><div class="scroll"><div class="page" data-variant="plain"></div></div></section>
-  <section class="opt"><span class="when">Option 2 · leads in their own box</span><div class="scroll"><div class="page" data-variant="box"></div></div></section>
+  <section class="opt"><span class="when">Option 2 · leads in their own white box ✓</span><div class="scroll"><div class="page" data-variant="box"></div></div></section>
 </div>
 
 <script>
@@ -138,7 +142,7 @@ function sidebar(variant, mode) {
     ? `<div class="sep"></div><span class="label">Leads</span>${leadsHTML(mode === "dark")}` : "";
   let leadsWidget = "";
   if (variant === "plain") leadsWidget = `<div class="plain"><span class="label">Leads ⌄</span>${leadsHTML(false)}</div>`;
-  if (variant === "box") leadsWidget = `<div class="info"><span class="label">Leads</span>${leadsHTML(mode === "dark")}</div>`;
+  if (variant === "box") leadsWidget = `<div class="leadsbox"><span class="label">Leads</span>${leadsHTML(true)}</div>`;
   return `<aside class="side">
     <p class="tabdesc">Activity and updates from members of this space.</p>
     <div class="info"><p class="clamp" style="-webkit-line-clamp:${lines}">${ABOUT}</p><span class="more">${more}</span>${leadsInside}</div>
