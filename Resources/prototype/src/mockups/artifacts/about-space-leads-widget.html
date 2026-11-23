@@ -1,0 +1,133 @@
+<title>About Box Without Leads</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- Published as a Claude artifact: https://claude.ai/artifact/UN1KmehWxz4GRvK9Ag6f2d. Exploration: leads move out of the About/intention box into their own sidebar widget; the box keeps its height and shows more of the description. Edit here and republish to the same link. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a review board. Three space sidebars side by side, today first, at real width (210px). Alkemio tokens. */
+:root {
+  --board: #eef1f4; --ink: #1d384a; --ink-soft: #5b6b7c; --rule: #d6dde4;
+  --tag: #1d384a; --tag-fg: #ffffff; --hl: #2563eb; --hl-soft: rgba(37,99,235,0.08);
+  --background: #fcfdfe; --foreground: #1d384a; --card: #ffffff; --muted: #f1f5f9;
+  --muted-foreground: #64748b; --border: #e2e8f0; --primary: #1d384a; --primary-fg: #ffffff;
+  --av-j: #2c7a6f; --av-e: #8a4f6d;
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e; --tag: #e3eaf0; --tag-fg: #0f171e;
+  --hl: #7aa7ff; --hl-soft: rgba(122,167,255,0.12);
+  --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-fg: #131d26; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e; --tag: #e3eaf0; --tag-fg: #0f171e;
+  --hl: #7aa7ff; --hl-soft: rgba(122,167,255,0.12);
+  --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-fg: #131d26; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 14px; margin: 0; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.015em; margin: 0 0 28px; text-wrap: balance; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; align-items: start; }
+.col { display: grid; gap: 12px; min-width: 0; }
+.when { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--tag); color: var(--tag-fg); }
+.when.soft { background: transparent; color: var(--ink-soft); border: 1px solid var(--rule); }
+.cap { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+
+/* sidebar replica */
+.screen { background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px 20px; }
+.side { width: 210px; max-width: 100%; margin: 0 auto; display: grid; gap: 8px; }
+.tabdesc { font-size: 14px; line-height: 1.6; color: color-mix(in srgb, var(--foreground) 85%, transparent); margin: 0 0 6px; }
+.box { border: 1px solid var(--border); background: var(--card); border-radius: 8px; padding: 12px 12px 18px; display: grid; gap: 10px; }
+.about { font-size: 14px; line-height: 1.62; color: color-mix(in srgb, var(--foreground) 85%, transparent); margin: 0; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp6 { -webkit-line-clamp: 6; }
+.clamp12 { -webkit-line-clamp: 12; }
+.more { font-size: 12px; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; }
+.hr { border-top: 1px solid var(--border); }
+.label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-foreground); display: flex; align-items: center; gap: 4px; }
+.leads { display: grid; gap: 4px; }
+.lead { display: flex; align-items: center; gap: 10px; padding-block: 4px; font-size: 14px; }
+.av { width: 28px; height: 28px; border-radius: 999px; flex-shrink: 0; display: grid; place-items: center; color: #fff; font-size: 10px; font-weight: 600; }
+.av.j { background: var(--av-j); } .av.e { background: var(--av-e); }
+.btn { height: 36px; border-radius: 4px; display: grid; place-items: center; font-size: 14px; font-weight: 500; border: 1px solid var(--border); background: var(--card); }
+.btn.pri { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+.search { height: 38px; border: 1px solid var(--border); border-radius: 6px; padding: 0 12px; display: flex; align-items: center; color: var(--muted-foreground); font-size: 14px; margin-top: 4px; }
+.new { outline: 2px dashed var(--hl); outline-offset: 4px; border-radius: 8px; background-color: var(--hl-soft); }
+.box.new { background: var(--card); }
+.plain { padding: 4px 0 2px; display: grid; gap: 8px; }
+</style>
+
+<div class="wrap">
+  <h1>Leads get their own widget; the About box shows more</h1>
+
+  <div class="cols">
+    <!-- Today -->
+    <div class="col">
+      <span class="when soft">Today</span>
+      <div class="screen"><div class="side">
+        <p class="tabdesc">Activity and updates from members of this space.</p>
+        <div class="box">
+          <p class="about clamp6" data-about></p>
+          <span class="more">Learn more ↗</span>
+          <div class="hr"></div>
+          <span class="label">Leads</span>
+          <div class="leads" data-leads></div>
+        </div>
+        <div class="btn pri">+ Add Post</div>
+        <div class="btn">+ Create Subspace</div>
+        <div class="search">Search posts…</div>
+      </div></div>
+    </div>
+
+    <!-- Option 1: plain list, like Subspaces -->
+    <div class="col">
+      <span class="when">Option 1</span>
+      <div class="screen"><div class="side">
+        <p class="tabdesc">Activity and updates from members of this space.</p>
+        <div class="box new">
+          <p class="about clamp12" data-about></p>
+          <span class="more">Learn more ↗</span>
+        </div>
+        <div class="plain new">
+          <span class="label">Leads ⌄</span>
+          <div class="leads" data-leads></div>
+        </div>
+        <div class="btn pri">+ Add Post</div>
+        <div class="btn">+ Create Subspace</div>
+        <div class="search">Search posts…</div>
+      </div></div>
+      <p class="cap">Leads as a plain list, like Subspaces</p>
+    </div>
+
+    <!-- Option 2: own card -->
+    <div class="col">
+      <span class="when">Option 2</span>
+      <div class="screen"><div class="side">
+        <p class="tabdesc">Activity and updates from members of this space.</p>
+        <div class="box new">
+          <p class="about clamp12" data-about></p>
+          <span class="more">Learn more ↗</span>
+        </div>
+        <div class="box new">
+          <span class="label">Leads</span>
+          <div class="leads" data-leads></div>
+        </div>
+        <div class="btn pri">+ Add Post</div>
+        <div class="btn">+ Create Subspace</div>
+        <div class="search">Search posts…</div>
+      </div></div>
+      <p class="cap">Leads in their own box</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const ABOUT = "The place for all field builders on steward-ownership to learn, connect, discuss and collaborate. We bring together founders, investors, advisors and researchers who want companies to stay independent and purpose-driven for the long term. Here you will find practical guides, legal templates, case studies from companies that made the switch, and open questions we are still working through together. Every month we host a community call, and each subspace digs into one topic in depth.";
+const LEADS = [["j","JN","Jeroen Nijkamp"],["e","EM","Elena Martinez"]];
+document.querySelectorAll("[data-about]").forEach(p => p.textContent = ABOUT);
+document.querySelectorAll("[data-leads]").forEach(box => {
+  box.innerHTML = LEADS.map(([c,i,n]) => `<div class="lead"><span class="av ${c}">${i}</span><span>${n}</span></div>`).join("");
+});
+</script>
