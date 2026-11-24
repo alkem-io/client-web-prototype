@@ -32,6 +32,9 @@ import { GroupSettingsDialog } from '@/crd/components/chat/GroupSettingsDialog';
 import { ConfirmationDialog } from '@/crd/components/dialogs/ConfirmationDialog';
 import { FloatingChatLauncher } from '@/crd/components/chat/FloatingChatLauncher';
 import { ChatPanel } from '@/crd/components/chat/ChatPanel';
+import { ChatSettingsMenu } from '@/crd/components/chat/ChatSettingsMenu';
+import { PresenceIndicator } from '@/crd/components/chat/PresenceIndicator';
+import { SetStatusDialog } from '@/crd/components/chat/SetStatusDialog';
 import type { ChatMessage } from '@/crd/components/chat/types';
 import { CONVERSATIONS, MESSAGES, USERS } from '@/app/components/messaging/messagingData';
 import { toChatListItem, toChatMessage, toChatThreadHeader } from '@/app/mappers/chat';
@@ -71,6 +74,9 @@ export function MessagesOverlay() {
   const [renamed, setRenamed] = useState<Record<string, string>>({});
   const [memberIds, setMemberIds] = useState<Record<string, string[]>>({});
   const [memberSearch, setMemberSearch] = useState('');
+  const [pinnedIds, setPinnedIds] = useState<string[]>([]);
+  const [ownStatus, setOwnStatus] = useState('');
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
 
   // The prototype's own edits to the fixtures: renamed groups, added or removed
   // people, groups you left.
@@ -86,7 +92,13 @@ export function MessagesOverlay() {
     [leftIds, renamed, memberIds]
   );
 
-  const conversations = useMemo(() => chats.map(toChatListItem), [chats]);
+  // Pinned conversations first, as production orders them; otherwise the order stays.
+  const conversations = useMemo(() => {
+    const items = chats.map(c => ({ ...toChatListItem(c), userPinned: pinnedIds.includes(c.id) }));
+    return [...items.filter(i => i.userPinned), ...items.filter(i => !i.userPinned)];
+  }, [chats, pinnedIds]);
+  const togglePin = (id: string) =>
+    setPinnedIds(prev => (prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]));
   const unreadCount = useMemo(
     () => conversations.reduce((total, c) => total + c.unreadCount, 0),
     [conversations]
@@ -94,7 +106,12 @@ export function MessagesOverlay() {
   const selected = chats.find(c => c.id === selectedId) ?? null;
   const selectedItem = conversations.find(c => c.id === selectedId);
   const isGroup = selectedItem?.isGroup ?? false;
-  const groupMembers = (selected?.members ?? []).map(m => ({ id: m.id, name: m.name, avatarUrl: m.avatar }));
+  const groupMembers = (selected?.members ?? []).map(m => ({
+    id: m.id,
+    name: m.name,
+    avatarUrl: m.avatar,
+    presence: m.status,
+  }));
 
   const messages = useMemo<ChatMessage[]>(() => {
     if (!selectedId) return [];
@@ -138,14 +155,17 @@ export function MessagesOverlay() {
   };
 
   const titleAvatar = selectedItem ? (
-    <ConversationAvatar
-      size="sm"
-      displayName={selectedItem.displayName}
-      avatarUrl={selectedItem.avatarUrl}
-      isGroup={selectedItem.isGroup}
-      isGuidance={selectedItem.isGuidance}
-      memberAvatars={selectedItem.memberAvatars}
-    />
+    <span className="relative flex shrink-0">
+      <ConversationAvatar
+        size="sm"
+        displayName={selectedItem.displayName}
+        avatarUrl={selectedItem.avatarUrl}
+        isGroup={selectedItem.isGroup}
+        isGuidance={selectedItem.isGuidance}
+        memberAvatars={selectedItem.memberAvatars}
+      />
+      <PresenceIndicator presence={selectedItem.presence} />
+    </span>
   ) : undefined;
 
   const searchResults = useMemo(() => {
@@ -185,15 +205,33 @@ export function MessagesOverlay() {
         onBack={selected ? () => setSelectedId(null) : undefined}
         backLabel={t('thread.back')}
         // The gear is about chat in general, so it shows in the list only.
-        onGoToSettings={
-          selected
-            ? undefined
-            : () => {
+        settingsMenu={
+          selected ? undefined : (
+            <ChatSettingsMenu
+              label={t('panel.settings')}
+              statusLabel={ownStatus ? t('status.change') : t('status.set')}
+              onEditStatus={() => setStatusDialogOpen(true)}
+              notificationSettingsLabel={t('panel.settings')}
+              onOpenNotificationSettings={() => {
                 close();
                 navigate(NOTIFICATION_SETTINGS_URL);
-              }
+              }}
+            />
+          )
         }
-        settingsLabel={t('panel.settings')}
+        // Your own status, under the title of the list.
+        subtitle={
+          !selected && ownStatus ? (
+            <button
+              type="button"
+              onClick={() => setStatusDialogOpen(true)}
+              aria-label={t('status.edit', { status: ownStatus })}
+              className="min-w-0 truncate rounded-sm text-left hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {ownStatus}
+            </button>
+          ) : undefined
+        }
         expandLabel={t('panel.expand')}
         collapseLabel={t('panel.collapse')}
         titleAvatar={titleAvatar}
@@ -229,9 +267,17 @@ export function MessagesOverlay() {
             isLoading={false}
             onSelectConversation={setSelectedId}
             onNewMessage={() => {}}
+            onTogglePin={togglePin}
           />
         )}
       </ChatPanel>
+
+      <SetStatusDialog
+        open={statusDialogOpen}
+        onOpenChange={setStatusDialogOpen}
+        statusMessage={ownStatus}
+        onSave={setOwnStatus}
+      />
 
       {selected && isGroup && (
         <>

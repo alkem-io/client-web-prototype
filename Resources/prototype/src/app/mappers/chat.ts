@@ -4,7 +4,7 @@ import type {
   ChatThreadHeader,
   GroupMember,
 } from '@/crd/components/chat/types';
-import type { Conversation, Message, UserInfo } from '@/app/components/messaging/messagingData';
+import { type Conversation, type Message, type UserInfo, USERS } from '@/app/components/messaging/messagingData';
 
 /**
  * Messaging fixtures → the data types CRD's chat components export.
@@ -21,6 +21,9 @@ import type { Conversation, Message, UserInfo } from '@/app/components/messaging
  *  - reactions: `reacted` → `hasReacted`
  *  - `initials` is dropped — CRD derives its own from the display name
  *
+ * Presence on message authors is left out on purpose: production then opens its
+ * own card on the avatar, on top of our profile hover card (`@/ahead/ProfileHoverCard`).
+ *
  * Not mapped: `muted`, `isEdited`, `replyTo` and attachments. CRD's chat has no
  * field for any of them — see PHASE-2.md §12.
  */
@@ -29,7 +32,12 @@ const toMember = (user: UserInfo): GroupMember => ({
   id: user.id,
   name: user.name,
   avatarUrl: user.avatar,
+  presence: user.status,
 });
+
+/** A 1:1 conversation is named after the other person, which is how the fixtures identify them. */
+const counterpartPresence = (conversation: Conversation) =>
+  Object.values(USERS).find(u => u.name === conversation.name)?.status;
 
 export function toChatListItem(conversation: Conversation): ChatListItem {
   const isGroup = conversation.type !== 'dm';
@@ -47,6 +55,7 @@ export function toChatListItem(conversation: Conversation): ChatListItem {
       : conversation.lastMessage,
     lastMessageTimestamp: conversation.timeLabel,
     unreadCount: conversation.unread,
+    presence: isGroup ? undefined : counterpartPresence(conversation),
   };
 }
 
