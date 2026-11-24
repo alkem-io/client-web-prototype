@@ -66,6 +66,10 @@ interface AboutThisSpaceDialogProps {
   isAdmin?: boolean;
   /** Space slug for settings navigation */
   spaceSlug?: string;
+  /** Replaces the mock space's own name, tagline and description. */
+  about?: { name: string; tagline: string; description: string };
+  /** "Who can see what", for members and admins (`@/ahead/WhoCanRead`). */
+  whoCanSeeSlot?: React.ReactNode;
 }
 
 /* ─── Mock data ──────────────────────────────────────────── */
@@ -154,7 +158,9 @@ export function AboutThisSpaceDialog({
   open,
   onOpenChange,
   isAdmin = true,
-  spaceSlug = "default-space"
+  spaceSlug = "default-space",
+  about = SPACE_DATA,
+  whoCanSeeSlot
 }: AboutThisSpaceDialogProps) {
   const navigate = useNavigate();
   const [guidelinesOpen, setGuidelinesOpen] = useState(false);
@@ -191,10 +197,10 @@ export function AboutThisSpaceDialog({
                   className="text-section-title"
                   style={{ color: "var(--foreground)" }}
                 >
-                  {SPACE_DATA.name}
+                  {about.name}
                 </DialogTitle>
                 <DialogDescription className="mt-1 italic text-body text-muted-foreground">
-                  {SPACE_DATA.tagline}
+                  {about.tagline}
                 </DialogDescription>
               </div>
               <DialogClose className="rounded-full p-2 hover:bg-muted transition-colors shrink-0 -mt-1 -mr-2">
@@ -248,7 +254,7 @@ export function AboutThisSpaceDialog({
                       color: "rgba(255,255,255,0.9)"
                     }}
                   >
-                    {SPACE_DATA.description}
+                    {about.description}
                   </p>
 
                   {/* Meta row: location + members */}
@@ -336,6 +342,9 @@ export function AboutThisSpaceDialog({
                   </div>
                 </div>
               </div>
+
+              {/* ── Who can see what — members and admins only ── */}
+              {whoCanSeeSlot}
 
               {/* ── Why section ── */}
               <ContextSection
@@ -661,7 +670,7 @@ export function AboutThisSpaceDialog({
             </DialogClose>
           </div>
           <DialogDescription className="sr-only">
-            Full community guidelines for {SPACE_DATA.name}.
+            Full community guidelines for {about.name}.
           </DialogDescription>
           <ScrollArea className="flex-1 overflow-y-auto">
             <div

@@ -1,5 +1,7 @@
 import { Fragment, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
+import { PrivateLockIcon, WhoCanReadListIcon } from "@/ahead/WhoCanRead";
+import { audienceFor, demoSpace, useIsMember } from "@/app/data/spaceAccess";
 import { ReadMoreText } from "@/app/components/ui/ReadMoreText";
 import { Button } from "@/crd/primitives/button";
 import { Input } from "@/crd/primitives/input";
@@ -683,7 +685,12 @@ export function SubspaceQuickLinks() {
   const [sortMode, setSortMode] = useState<'az' | 'za' | 'newest' | 'oldest'>('az');
   const [sortOpen, setSortOpen] = useState(false);
   const location = useLocation();
-  const subspaces = TAB_INDEX.workspaces.slice(0, 4);
+  const { spaceSlug = "", subspaceSlug } = useParams();
+  const isMember = useIsMember();
+  const demo = subspaceSlug ? undefined : demoSpace(spaceSlug);
+  const subspaces: Array<{ title: string; slug?: string; color?: string; initials?: string }> = demo
+    ? demo.subspaces.map((s) => ({ title: s.name, slug: s.slug, color: s.color, initials: s.initials }))
+    : TAB_INDEX.workspaces.slice(0, 4);
 
   // Build base path: current space or subspace path + /subspaces/
   const basePath = location.pathname.replace(/\/$/, "");
@@ -749,19 +756,35 @@ export function SubspaceQuickLinks() {
       {!collapsed && (
         <div className="flex flex-col gap-0.5">
           {sortedSubspaces.map((s, i) => {
-            const slug = s.title.toLowerCase().replace(/\s+/g, "-");
+            const slug = s.slug ?? s.title.toLowerCase().replace(/\s+/g, "-");
+            const audience = audienceFor([spaceSlug, ...(subspaceSlug ? [subspaceSlug] : []), slug]);
             return (
               <a
                 key={s.title}
                 href={subspacesBase + slug}
                 className="flex items-center gap-2.5 py-1.5 rounded-md text-body hover:bg-muted/50 transition-colors text-left no-underline"
               >
-                <img
-                  src={SUBSPACE_AVATARS[i % SUBSPACE_AVATARS.length]}
-                  alt={s.title}
-                  className="w-8 h-8 rounded-lg shrink-0 object-cover"
-                />
-                <span className="text-foreground/85 truncate">{s.title}</span>
+                {s.color ? (
+                  <span
+                    aria-hidden="true"
+                    className="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center text-badge text-white"
+                    style={{ background: s.color }}
+                  >
+                    {s.initials}
+                  </span>
+                ) : (
+                  <img
+                    src={SUBSPACE_AVATARS[i % SUBSPACE_AVATARS.length]}
+                    alt={s.title}
+                    className="w-8 h-8 rounded-lg shrink-0 object-cover"
+                  />
+                )}
+                <span className="text-foreground/85 truncate flex-1 min-w-0">{s.title}</span>
+                {isMember ? (
+                  <WhoCanReadListIcon audience={audience} />
+                ) : (
+                  audience.kind === "private" && <PrivateLockIcon />
+                )}
               </a>
             );
           })}
