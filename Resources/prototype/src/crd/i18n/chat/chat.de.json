@@ -9,7 +9,6 @@
     "settings": "Benachrichtigungseinstellungen",
     "muteSound": "Chat-Ton stummschalten",
     "unmuteSound": "Chat-Ton einschalten",
-    "soundToggleError": "Die Einstellung für den Chat-Ton konnte nicht gespeichert werden. Bitte versuche es erneut.",
     "expand": "Chat vergrößern",
     "collapse": "Chat verkleinern",
     "reconnecting": "Verbindung wird wiederhergestellt… Neue Nachrichten können verzögert ankommen."
@@ -63,7 +62,12 @@
     "loading": "Unterhaltungen werden geladen",
     "draft": "Entwurf:",
     "attachmentPreview_one": "{{count}} Anhang",
-    "attachmentPreview_other": "{{count}} Anhänge"
+    "attachmentPreview_other": "{{count}} Anhänge",
+    "pin": "Anheften",
+    "unpin": "Lösen",
+    "pinned": "Angeheftet",
+    "rowOptions": "Optionen für {{name}}",
+    "pinError": "Anheften konnte nicht aktualisiert werden. Bitte versuche es erneut."
   },
   "guidance": {
     "beta": "Beta",
@@ -135,5 +139,22 @@
     "listBadge": "Anruf aktiv",
     "callingYou": "{{name}} ruft dich an",
     "groupCall": "Anruf in {{name}}"
+  },
+  "presence": {
+    "online": "Online",
+    "away": "Abwesend",
+    "offline": "Offline",
+    "busy": "Im Gespräch"
+  },
+  "status": {
+    "set": "Status festlegen",
+    "change": "Status bearbeiten",
+    "label": "Dein Status",
+    "placeholder": "Was machst du gerade?",
+    "edit": "Deinen Status bearbeiten: {{status}}",
+    "save": "Status speichern",
+    "clear": "Status löschen",
+    "hint": "Personen, mit denen du chattest, sehen ihn an deinem Avatar.",
+    "saveError": "Dein Status konnte nicht gespeichert werden. Bitte versuche es erneut."
   }
 }
