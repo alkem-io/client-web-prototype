@@ -28,7 +28,6 @@ h2 { font-size: 20px; line-height: 1.3; font-weight: 600; }
 figure { margin: 0; display: grid; gap: 10px; }
 figcaption { display: flex; gap: 8px; align-items: baseline; min-height: 24px; font-size: 14px; color: var(--ink-soft); }
 figcaption b { color: var(--ink); font-weight: 600; }
-figcaption .pick { color: var(--pick); font-weight: 600; }
 figcaption button { margin-left: auto; text-decoration: underline; text-underline-offset: 3px; }
 .scroll { overflow-x: auto; }
 
@@ -57,17 +56,13 @@ svg.i { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentCo
 .btn.outline { background: var(--background); border-color: var(--border); color: var(--foreground); }
 .btn.ghost { border-color: transparent; }
 .btn.sm { height: 36px; }
-.btn:focus-visible, .sw:focus-visible, .inl:focus-visible, .lnk:focus-visible, .back:focus-visible, .head:focus-visible { outline: 3px solid rgba(29, 56, 74, 0.45); outline-offset: 2px; }
+.btn:focus-visible, .sw:focus-visible, .lnk:focus-visible, .back:focus-visible, .head:focus-visible { outline: 3px solid rgba(29, 56, 74, 0.45); outline-offset: 2px; }
 .pair { display: flex; flex-wrap: wrap; gap: 8px; }
 .pair .btn { flex: 1 1 calc(50% - 4px); min-width: max-content; }
 .sheet { background: var(--card); border-top: 1px solid var(--border); border-radius: 16px 16px 0 0; box-shadow: 0 -8px 24px -6px rgba(15, 23, 42, 0.18); padding: 16px 16px 34px; display: flex; flex-direction: column; gap: 12px; }
 .sheet.titled { padding-top: 4px; gap: 4px; }
 .sheet.titled .pair { margin-top: 8px; }
-.sheet.below { gap: 4px; }
-.sheet.below .pair { margin-top: 8px; }
 .sheet .titlerow { display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
-.inl { font-weight: 500; text-decoration: underline; text-underline-offset: 3px; position: relative; }
-.inl::after { content: ""; position: absolute; inset: -11px -8px; }
 .sheet .titlerow .btn { margin-right: -16px; }
 .sheet h3, .tall h3 { font-size: 16px; line-height: 1.5; font-weight: 600; }
 .err { display: flex; gap: 8px; align-items: flex-start; color: #b91c1c; font-size: 14px; line-height: 1.5; padding: 10px 12px; border: 1px solid rgba(220, 38, 38, 0.3); background: rgba(220, 38, 38, 0.05); border-radius: 6px; margin-top: 8px; }
@@ -152,9 +147,7 @@ const I = {
 };
 const ic = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${I[n]}</svg>`;
 const T = {
-  en: { title: 'Cookies', short: 'We use necessary cookies. With your permission, we also measure page speed and app usage. That is off unless you accept.',
-    full: 'We use necessary cookies to keep you signed in and secure, and we report errors so we can fix them. With your permission, we also measure page speed and app usage to find slow pages. This is off unless you accept, and you can change it any time in Cookie settings.',
-    all: 'Accept all', nec: 'Only necessary', set: 'Settings' },
+  en: { title: 'Cookies', short: 'We use necessary cookies. With your permission, we also measure page speed and app usage. That is off unless you accept.', all: 'Accept all', nec: 'Only necessary', set: 'Settings' },
   de: { title: 'Cookies', short: 'Wir verwenden notwendige Cookies. Mit Ihrer Erlaubnis messen wir auch die Seitengeschwindigkeit und die App-Nutzung. Das ist aus, solange Sie nicht zustimmen.', all: 'Alle akzeptieren', nec: 'Nur notwendige', set: 'Einstellungen' },
   bg: { title: 'Бисквитки', short: 'Използваме необходими бисквитки. С ваше разрешение измерваме и скоростта на страниците и използването на приложението. Изключено е, докато не приемете.', all: 'Приемане на всички', nec: 'Само необходимите', set: 'Настройки' }
 };
@@ -166,13 +159,11 @@ const nav = `<div class="navbar">${ic('menu')}</div>`;
 const status = '<div class="status">9:41</div>';
 
 function banner(s) {
-  const t = T[s.lang || 'en'], k = s.style;
-  const pair = `<div class="pair"><button class="btn ${k}" type="button" data-a="all">${t.all}</button><button class="btn ${k}" type="button" data-a="nec">${t.nec}</button></div>`;
+  const t = T[s.lang || 'en'];
+  const pair = `<div class="pair"><button class="btn solid" type="button" data-a="all">${t.all}</button><button class="btn solid" type="button" data-a="nec">${t.nec}</button></div>`;
   const err = s.view === 'error' ? `<div class="err" role="alert">${ic('alert')}<span>We couldn’t save your cookie settings. Your browser may be blocking cookies for this site.</span></div>` : '';
   const set = `<button class="btn ghost" type="button" data-a="settings">${t.set}</button>`;
-  if (s.kind === 'titled') return `<div class="sheet titled" role="region" aria-label="Cookies"><div class="titlerow"><h3>${t.title}</h3>${set}</div><p>${t.short}</p>${err}${pair}</div>`;
-  if (s.kind === 'inline') return `<div class="sheet" role="region" aria-label="Cookies"><p>${t.short} <button class="inl" type="button" data-a="settings">${t.set}</button></p>${err}${pair}</div>`;
-  return `<div class="sheet below" role="region" aria-label="Cookies"><p>${s.kind === 'full' ? t.full : t.short}</p>${err}${pair}${set}</div>`;
+  return `<div class="sheet titled" role="region" aria-label="Cookies"><div class="titlerow"><h3>${t.title}</h3>${set}</div><p>${t.short}</p>${err}${pair}</div>`;
 }
 function home(s) {
   let o = status + '<div class="home-bg"></div>';
@@ -213,11 +204,9 @@ function phone(row, cap, screen, init, fixed) {
   document.getElementById(row).append(f);
   live(f.querySelector('.screen'), screen, init, f.querySelector('button'));
 }
-const pick = { kind: 'titled', style: 'solid', view: 'banner' };
+const pick = { view: 'banner' };
 phone('r1', '<b>Today</b>', 'home', { kind: 'today' });
-phone('r1', '<b>A</b> Settings on top <span class="pick">My pick</span>', 'home', pick);
-phone('r1', '<b>B</b> Settings in the text', 'home', { kind: 'inline', style: 'outline', view: 'banner' });
-phone('r1', '<b>C</b> Ticket’s full text', 'home', { kind: 'full', style: 'outline', view: 'banner' });
+phone('r1', '<b>New</b>', 'home', pick);
 const step = t => document.getElementById('rf').insertAdjacentHTML('beforeend', `<div class="step">${ic('right')}<span>${t}</span></div>`);
 phone('rf', '<b>Banner</b>', 'home', pick);
 step('Settings');
