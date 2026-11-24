@@ -38,8 +38,12 @@ figcaption button { margin-left: auto; text-decoration: underline; text-underlin
 .status { position: absolute; inset: 0 0 auto; height: 44px; background: #fff; z-index: 5; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; }
 .home-bg { position: absolute; inset: 44px 0 0; background: var(--homeimg) top / 390px auto no-repeat; }
 .navbar { position: absolute; inset-inline: 0; height: 57px; background: var(--background); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; padding-inline: 18px; color: var(--muted-foreground); z-index: 2; }
+#rf { gap: 16px; align-items: center; }
+.step { display: grid; gap: 6px; justify-items: center; width: 108px; font-size: 13px; font-weight: 500; line-height: 1.35; text-align: center; color: var(--ink); }
+.step svg.i { width: 28px; height: 28px; color: var(--pick); }
+@media (max-width: 1260px) { #rf { flex-direction: column; align-items: flex-start; } .step { width: 325px; } .step svg.i { transform: rotate(90deg); } }
 #r2 { gap: 28px 20px; }
-#r2 .phone { zoom: 0.665; }
+
 .s-body ~ .toast { bottom: 28px; }
 .homebar { position: absolute; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #1d384a; z-index: 30; pointer-events: none; }
 .deck { position: absolute; inset: auto 0 0; z-index: 3; display: flex; flex-direction: column; }
@@ -74,20 +78,20 @@ svg.i { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentCo
 .today .btn { height: 36px; }
 .tall { position: absolute; inset: auto 0 0; z-index: 20; background: var(--card); border-radius: 16px 16px 0 0; box-shadow: 0 -8px 24px -6px rgba(15,23,42,.25); display: flex; flex-direction: column; max-height: 76%; }
 .tall .bar { width: 36px; height: 4px; border-radius: 2px; background: #cbd5e1; margin: 8px auto 0; flex-shrink: 0; }
-.tall .titlerow { display: flex; align-items: center; min-height: 48px; padding-inline: 4px 16px; flex-shrink: 0; }
+.tall .titlerow { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding-inline: 16px 4px; flex-shrink: 0; }
 .back { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 4px; }
 .back svg { width: 20px; height: 20px; }
 .tall .body { padding: 0 16px; overflow-y: auto; min-height: 0; }
 .tall .foot { padding: 12px 16px 34px; border-top: 1px solid var(--border); flex-shrink: 0; }
 .tall .foot .btn { width: 100%; }
-.opt { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-block: 14px; border-bottom: 1px solid var(--border); }
+.opt { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; border-bottom: 1px solid var(--border); }
 .opt > div { min-width: 0; }
 .opt .n { font-weight: 500; line-height: 1.5; }
 .opt .d { font-size: 12px; line-height: 1.5; color: var(--muted-foreground); margin-top: 2px; }
 .locked { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
 .sw:disabled { opacity: 0.5; cursor: not-allowed; }
 .always { font-size: 12px; line-height: 1.5; color: var(--muted-foreground); white-space: nowrap; }
-.sw { position: relative; width: 32px; height: 18.4px; border-radius: 999px; background: rgba(100,116,139,.25); flex-shrink: 0; margin-top: 2px; }
+.sw { position: relative; width: 32px; height: 18.4px; border-radius: 999px; background: rgba(100,116,139,.25); flex-shrink: 0; }
 .sw::before { content: ""; position: absolute; inset: -13px -6px; }
 .sw::after { content: ""; position: absolute; top: 1px; left: 1px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .15s; }
 .sw[aria-checked="true"] { background: var(--primary); }
@@ -124,6 +128,7 @@ svg.i { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentCo
 <div class="wrap">
   <h1>Cookie banner, mobile</h1>
   <section class="row"><h2>Banner</h2><div class="screens" id="r1"></div></section>
+  <section class="row"><h2>Flow</h2><div class="screens flow" id="rf"></div></section>
   <section class="row"><h2>States</h2><div class="screens" id="r2"></div></section>
   <section class="row"><h2>Profile › Settings › Security</h2><div class="screens" id="r3"></div>
     <figure><figcaption><b>Desktop</b></figcaption><div class="scroll" tabindex="0" role="region" aria-label="Desktop security settings"><div class="desk" id="desk"></div></div></figure>
@@ -140,7 +145,7 @@ svg.i { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentCo
 <script>
 const I = {
   cookie: '<path d="M11 17h.01M12 12h.01M16 16h.01M16 3h.01M21 4h.01M21 8h.01M7 14h.01M9 8h.01"/><path d="M11.496 2c.324-.016.558.292.529.615a4 4 0 0 0 4.235 4.368.713.713 0 0 1 .758.757 4 4 0 0 0 4.366 4.237c.323-.03.63.204.614.527a10 10 0 0 1-2.915 6.566A1 1 0 1 1 4.93 4.918 10 10 0 0 1 11.496 2"/>',
-  up: '<path d="m18 15-6-6-6 6"/>', left: '<path d="m15 18-6-6 6-6"/>', menu: '<path d="M4 5h16M4 12h16M4 19h16"/>',
+  up: '<path d="m18 15-6-6-6 6"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', right: '<path d="M5 12h14M12 5l7 7-7 7"/>', menu: '<path d="M4 5h16M4 12h16M4 19h16"/>',
   ok: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>', alert: '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>',
   info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>', ext: '<path d="M7 7h10v10M7 17 17 7"/>',
   shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4M12 16h.01"/>'
@@ -154,16 +159,16 @@ const T = {
   bg: { title: 'Бисквитки', short: 'Използваме необходими бисквитки. С ваше разрешение измерваме и скоростта на страниците и използването на приложението. Изключено е, докато не приемете.', all: 'Приемане на всички', nec: 'Само необходимите', set: 'Настройки' }
 };
 const links = `<div class="links"><a class="lnk" href="#" data-a="noop">Cookie policy ${ic('ext')}</a><a class="lnk" href="#" data-a="noop">Privacy policy ${ic('ext')}</a></div>`;
-const opts = on => `<div class="opt"><div><p class="n">Necessary</p><p class="d">Keeps you signed in and secure, reports errors so we can fix them, and remembers this choice.</p></div><div class="locked"><button class="sw" type="button" role="switch" aria-label="Necessary, always on" aria-checked="true" disabled></button><span class="always">Always on</span></div></div>
+const opts = on => `<div class="opt"><div><p class="n">Necessary</p><p class="d">Keeps you signed in and secure, reports errors so we can fix them, and remembers your cookie settings.</p></div><div class="locked"><button class="sw" type="button" role="switch" aria-label="Necessary, always on" aria-checked="true" disabled></button><span class="always">Always on</span></div></div>
   <div class="opt"><div><p class="n">Analytics</p><p class="d">Measures page speed and app usage. Off unless you turn it on.</p></div><button class="sw" type="button" role="switch" aria-label="Analytics" aria-checked="${on}" data-a="toggle"></button></div>`;
-const toast = `<div class="toast" role="status">${ic('ok')}<span>Your cookie choice is saved.</span></div>`;
+const toast = `<div class="toast" role="status">${ic('ok')}<span>Cookie settings saved.</span></div>`;
 const nav = `<div class="navbar">${ic('menu')}</div>`;
 const status = '<div class="status">9:41</div>';
 
 function banner(s) {
   const t = T[s.lang || 'en'], k = s.style;
   const pair = `<div class="pair"><button class="btn ${k}" type="button" data-a="all">${t.all}</button><button class="btn ${k}" type="button" data-a="nec">${t.nec}</button></div>`;
-  const err = s.view === 'error' ? `<div class="err" role="alert">${ic('alert')}<span>We couldn’t save your choice. Your browser may be blocking cookies for this site.</span></div>` : '';
+  const err = s.view === 'error' ? `<div class="err" role="alert">${ic('alert')}<span>We couldn’t save your cookie settings. Your browser may be blocking cookies for this site.</span></div>` : '';
   const set = `<button class="btn ghost" type="button" data-a="settings">${t.set}</button>`;
   if (s.kind === 'titled') return `<div class="sheet titled" role="region" aria-label="Cookies"><div class="titlerow"><h3>${t.title}</h3>${set}</div><p>${t.short}</p>${err}${pair}</div>`;
   if (s.kind === 'inline') return `<div class="sheet" role="region" aria-label="Cookies"><p>${t.short} <button class="inl" type="button" data-a="settings">${t.set}</button></p>${err}${pair}</div>`;
@@ -174,7 +179,7 @@ function home(s) {
   if (s.kind === 'today') return o + `<div class="deck"><div class="today"><p>By clicking "Accept All Cookies", you agree to the storing of cookies on your device to enhance site navigation and analyse site usage.</p><div class="btns"><span class="btn outline">settings</span><span class="btn solid">Accept All Cookies</span></div></div></div><div class="homebar"></div>`;
   if (s.view === 'saved') return o + `<div class="deck">${nav}</div>` + toast + '<div class="homebar"></div>';
   o += `<div class="deck">${nav}${banner(s)}</div>`;
-  if (s.view === 'settings') o += `<div class="tall" role="dialog" aria-label="Cookie settings"><div class="bar"></div><div class="titlerow"><button class="back" type="button" aria-label="Back" data-a="back">${ic('left')}</button><h3>Cookie settings</h3></div><div class="body">${opts(!!s.on)}${links}</div><div class="foot"><button class="btn solid" type="button" data-a="nec">Save choice</button></div></div>`;
+  if (s.view === 'settings') o += `<div class="tall" role="dialog" aria-label="Cookie settings"><div class="bar"></div><div class="titlerow"><h3>Cookie settings</h3><button class="back" type="button" aria-label="Close" data-a="back">${ic('x')}</button></div><div class="body">${opts(!!s.on)}${links}</div><div class="foot"><button class="btn solid" type="button" data-a="nec">Save settings</button></div></div>`;
   return o + '<div class="homebar"></div>';
 }
 const sec = s => `<div class="sec"><div class="head"><span class="tile orange">${ic('cookie')}</span><span class="t"><b>Cookie settings</b><span>What Alkemio may store and measure on this device.</span></span>${ic('up')}</div><div class="in">${opts(!!s.on)}${links}</div></div>`;
@@ -213,8 +218,12 @@ phone('r1', '<b>Today</b>', 'home', { kind: 'today' });
 phone('r1', '<b>A</b> Settings on top <span class="pick">My pick</span>', 'home', pick);
 phone('r1', '<b>B</b> Settings in the text', 'home', { kind: 'inline', style: 'outline', view: 'banner' });
 phone('r1', '<b>C</b> Ticket’s full text', 'home', { kind: 'full', style: 'outline', view: 'banner' });
-phone('r2', '<b>Settings</b>', 'home', { ...pick, view: 'settings' });
-phone('r2', '<b>Choice saved</b>', 'home', { ...pick, view: 'saved' });
+const step = t => document.getElementById('rf').insertAdjacentHTML('beforeend', `<div class="step">${ic('right')}<span>${t}</span></div>`);
+phone('rf', '<b>Banner</b>', 'home', pick);
+step('Settings');
+phone('rf', '<b>Cookie settings</b>', 'home', { ...pick, view: 'settings' });
+step('Save settings');
+phone('rf', '<b>Done</b> banner gone', 'home', { ...pick, view: 'saved' });
 phone('r2', '<b>Save failed</b>', 'home', { ...pick, view: 'error' });
 phone('r2', '<b>German</b>', 'home', { ...pick, lang: 'de' });
 phone('r2', '<b>Bulgarian</b> buttons stack', 'home', { ...pick, lang: 'bg' });
