@@ -52,6 +52,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/crd/primitives/select";
+import { ContributorPicker, type CommunityContributor } from "@/app/components/space/ContributorPicker";
 
 /** Our response-type ids ↔ production's chip ids. */
 const RESPONSE_TO_CHIP: Record<string, ResponseTypeChipId> = {
@@ -60,6 +61,33 @@ const RESPONSE_TO_CHIP: Record<string, ResponseTypeChipId> = {
 const CHIP_TO_RESPONSE: Record<ResponseTypeChipId, "links" | "posts" | "memos" | "whiteboards" | "documents"> = {
   link: "links", post: "posts", memo: "memos", whiteboard: "whiteboards", document: "documents",
 };
+
+/**
+ * Stand-in for this space's community — the only people the manual contributor
+ * picker lists. Leads first, then members; a few organizations and a virtual
+ * contributor. Mirrors the data in the exploration artifact.
+ */
+const SPACE_COMMUNITY: CommunityContributor[] = [
+  { id: "sanne", name: "Sanne Vermeer", kind: "user", role: "lead", location: "Utrecht" },
+  { id: "nadia", name: "Nadia Haddad", kind: "user", role: "lead", location: "Rotterdam" },
+  { id: "tomasz", name: "Tomasz Kowalski", kind: "user", role: "lead", location: "Gdańsk" },
+  { id: "luca", name: "Luca Bertani", kind: "user", role: "member", location: "Bologna" },
+  { id: "ines", name: "Ines Duarte", kind: "user", role: "member", location: "Lisbon" },
+  { id: "marek", name: "Marek Nowak", kind: "user", role: "member", location: "Kraków" },
+  { id: "anouk", name: "Anouk de Boer", kind: "user", role: "member", location: "Utrecht" },
+  { id: "bram", name: "Bram Jansen", kind: "user", role: "member", location: "Amersfoort" },
+  { id: "chloe", name: "Chloé Martin", kind: "user", role: "member", location: "Lyon" },
+  { id: "daan", name: "Daan Visser", kind: "user", role: "member", location: "Utrecht" },
+  { id: "eva", name: "Eva Lindqvist", kind: "user", role: "member", location: "Uppsala" },
+  { id: "femke", name: "Femke Smit", kind: "user", role: "member", location: "Zwolle" },
+  { id: "jonas", name: "Jonas Weber", kind: "user", role: "member", location: "Freiburg" },
+  { id: "lotte", name: "Lotte Mulder", kind: "user", role: "member", location: "Delft" },
+  { id: "pieter", name: "Pieter Bakker", kind: "user", role: "member", location: "The Hague" },
+  { id: "gem-utrecht", name: "Gemeente Utrecht", kind: "org", role: "lead" },
+  { id: "waterschap", name: "Waterschap Rivierenland", kind: "org", role: "member" },
+  { id: "tudelft", name: "TU Delft", kind: "org", role: "member" },
+  { id: "guide", name: "Space Guide", kind: "vc", role: "member" },
+];
 
 interface AddPostModalProps {
   open: boolean;
@@ -178,7 +206,8 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
   const [contributorTypes, setContributorTypes] = useState<Set<string>>(new Set(['people', 'organizations', 'virtualContributors']));
   const [contributorDefaultType, setContributorDefaultType] = useState<string>('people');
   const [contributorDefaultDisplay, setContributorDefaultDisplay] = useState<'list' | 'map'>('list');
-  const [contributorSearch, setContributorSearch] = useState("");
+  // Manually selected contributors — pre-pick two so the chip row shows on open.
+  const [contributorSelected, setContributorSelected] = useState<string[]>(['sanne', 'ines']);
 
   // Subspaces
   const [subspaceManualSelection, setSubspaceManualSelection] = useState(true);
@@ -560,15 +589,11 @@ export function AddPostModal({ open, onOpenChange }: AddPostModalProps) {
                       <p className="text-caption text-muted-foreground">
                         Shows only the contributors you select.
                       </p>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                          value={contributorSearch}
-                          onChange={e => setContributorSearch(e.target.value)}
-                          placeholder="Search members..."
-                          className="pl-9 h-10 bg-background"
-                        />
-                      </div>
+                      <ContributorPicker
+                        community={SPACE_COMMUNITY}
+                        value={contributorSelected}
+                        onChange={setContributorSelected}
+                      />
 
                       {/* Default Display */}
                       <div className="space-y-2">
