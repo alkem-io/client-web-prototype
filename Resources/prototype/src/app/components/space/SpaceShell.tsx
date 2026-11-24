@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { WhoCanReadAboutSection, WhoCanReadWelcomeDialog } from "@/ahead/WhoCanRead";
+import { audienceFor, demoSpace, useFirstVisit, useIsMember } from "@/app/data/spaceAccess";
 import { useParams, useLocation, useSearchParams, Outlet, Link } from "react-router";
 import { SPACE_TITLE, SpaceHeader } from "./SpaceHeader";
 import { ItemShareDialog } from "@/app/components/shared/ItemShareDialog";
@@ -34,6 +36,16 @@ export function SpaceShell() {
   const variant = (parseInt(searchParams.get("v") || "1") || 1) as 1 | 2 | 3 | 4 | 5;
   const [activeTabDescription, setActiveTabDescription] = useState("Activity and updates from members of this space.");
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [whoCanSeeOpen, setWhoCanSeeOpen] = useState(false);
+  // About starts folded; only the header badge opens it with the section unfolded.
+  const openAbout = (withWhoCanSee = false) => {
+    setWhoCanSeeOpen(withWhoCanSee);
+    setAboutOpen(true);
+  };
+  const demo = demoSpace(slug);
+  const audience = audienceFor([slug]);
+  const isMember = useIsMember();
+  const [firstVisit, markSeen] = useFirstVisit([slug]);
   const [shareOpen, setShareOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(searchParams.get("welcome") === "true");
   // Mobile responsive strategy: ?m=1..5 (0 = default/hidden)
@@ -81,7 +93,7 @@ export function SpaceShell() {
   // CRD's action-icon vocabulary; replaces the hand-rolled icon row below.
   const headerActions: HeaderActionIconsData = {
     showInfo: true,
-    onInfoClick: () => setAboutOpen(true),
+    onInfoClick: () => openAbout(),
     showActivity: true,
     showVideoCall: true,
     showShare: true,
@@ -95,7 +107,7 @@ export function SpaceShell() {
       <IconButton
         tooltipLabel="About this Space"
         className="w-7 h-7"
-        onClick={() => setAboutOpen(true)}
+        onClick={() => openAbout()}
         style={{
           background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
           color: "var(--muted-foreground)"
@@ -157,7 +169,15 @@ export function SpaceShell() {
   const scaledContainer = { maxWidth: 1536, margin: "0 auto", width: "100%" };
 
   const header = (
-    <SpaceHeader spaceSlug={slug} variant={variant} onInfoClick={() => setAboutOpen(true)} actionButtons={actionIcons} />
+    <SpaceHeader
+      spaceSlug={slug}
+      spaceName={demo?.name}
+      tagline={demo?.tagline}
+      variant={variant}
+      onInfoClick={() => openAbout()}
+      onWhoCanReadClick={() => openAbout(true)}
+      actionButtons={actionIcons}
+    />
   );
   const tabs = (
     <SpaceNavigationTabs
@@ -270,9 +290,25 @@ export function SpaceShell() {
         </div>
       </div>
       )}
-      <AboutThisSpaceDialog open={aboutOpen} onOpenChange={setAboutOpen} spaceSlug={slug} />
-      <ItemShareDialog open={shareOpen} onOpenChange={setShareOpen} url={`/space/${slug}`} itemTitle={SPACE_TITLE} />
+      <AboutThisSpaceDialog
+        open={aboutOpen}
+        onOpenChange={setAboutOpen}
+        spaceSlug={slug}
+        about={demo}
+        whoCanSeeSlot={
+          isMember && <WhoCanReadAboutSection audience={audience} open={whoCanSeeOpen} onOpenChange={setWhoCanSeeOpen} />
+        }
+      />
+      <ItemShareDialog open={shareOpen} onOpenChange={setShareOpen} url={`/space/${slug}`} itemTitle={demo?.name ?? SPACE_TITLE} />
       <WelcomeSpaceDialog open={welcomeOpen} onOpenChange={setWelcomeOpen} spaceName={slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} />
+
+      {/* Waits its turn behind the dialog for setting up a space you just created. */}
+      <WhoCanReadWelcomeDialog
+        open={firstVisit && !welcomeOpen}
+        onOpenChange={(open) => !open && markSeen()}
+        spaceName={demo?.name ?? SPACE_TITLE}
+        audience={audience}
+      />
 
       {/* Footer */}
 

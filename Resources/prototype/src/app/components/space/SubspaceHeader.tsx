@@ -15,8 +15,9 @@
  * Banner: CRD takes the L0 root's banner for subspaces (a subspace has no
  * settable page banner), which is what `imageUrl` already carried here.
  */
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { ItemShareDialog } from '@/app/components/shared/ItemShareDialog';
+import { HeaderBadgeStandIn } from '@/app/components/shared/WhoCanReadStandIns';
 import { SubspaceHeader as CrdSubspaceHeader } from '@/crd/components/space/SubspaceHeader';
 import { resolveBannerShape } from '@/app/mappers/spaceBanner';
 import type { HeaderActionIconsData } from '@/crd/components/space/HeaderActionIcons';
@@ -39,6 +40,8 @@ type SubspaceHeaderProps = {
   memberCount?: number;
   onCommunityClick?: () => void;
   onInfoClick?: () => void;
+  /** Sits next to the name. */
+  badge?: ReactNode;
   actionButtons?: React.ReactNode;
   /** Prototype-only layout study (`?v=`); no longer changes rendering. PHASE-2.md §5. */
   variant?: 1 | 2 | 3 | 4 | 5;
@@ -52,6 +55,7 @@ export function SubspaceHeader({
   imageUrl,
   avatarColor,
   onInfoClick,
+  badge,
 }: SubspaceHeaderProps) {
   // A subspace inherits the L0 root's banner, so it must take the same shape —
   // otherwise it renders at the raw image ratio and towers over the space page.
@@ -68,15 +72,17 @@ export function SubspaceHeader({
 
   return (
     <>
-      <CrdSubspaceHeader
-        title={title}
-        tagline={description}
-        bannerUrl={banner.url}
-        bannerAspectRatio={banner.ratio}
-        color={avatarColor ?? 'var(--primary)'}
-        actions={actions}
-        overlayHeader={true}
-      />
+      <HeaderBadgeStandIn badge={badge}>
+        <CrdSubspaceHeader
+          title={title}
+          tagline={description}
+          bannerUrl={banner.url}
+          bannerAspectRatio={banner.ratio}
+          color={avatarColor ?? 'var(--primary)'}
+          actions={actions}
+          overlayHeader={true}
+        />
+      </HeaderBadgeStandIn>
       <ItemShareDialog
         open={shareOpen}
         onOpenChange={setShareOpen}

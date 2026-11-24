@@ -6,6 +6,8 @@ import {
 } from "@/crd/components/space/SubspaceSidebar";
 import type { ParentSpaceStackItem } from "@/crd/components/space/ParentSpaceStack";
 import { CreatePostButton } from "@/crd/components/space/sidebar/CreatePostButton";
+import { SubspaceListIconsStandIn } from "@/app/components/shared/WhoCanReadStandIns";
+import { audienceFor, useIsMember } from "@/app/data/spaceAccess";
 import { SubspaceCommunityDialog } from "@/app/components/space/SubspaceCommunityDialog";
 import type { MockSpaceCard } from "@/app/mappers/spaceCard";
 
@@ -133,6 +135,7 @@ export function SubspaceSidebar({
   const navigate = useNavigate();
   const { spaceSlug, subspaceSlug } = useParams<{ spaceSlug: string; subspaceSlug: string }>();
   const [communityOpen, setCommunityOpen] = useState(false);
+  const isMember = useIsMember();
 
   // Outermost first, so the stack reads grandparent → parent.
   const parentSpaces: ParentSpaceStackItem[] = [
@@ -153,6 +156,17 @@ export function SubspaceSidebar({
 
   const base = `/space/${spaceSlug}/subspaces/${subspaceSlug}`;
 
+  // Members get the icon that says who can read; visitors keep production's lock.
+  const subspaceHref = (slug: string) => `${base}/subspaces/${slug}`;
+  const audiences = isMember
+    ? Object.fromEntries(
+        SUB_SUBSPACES.map(sub => [
+          subspaceHref(sub.slug),
+          audienceFor([spaceSlug ?? '', subspaceSlug ?? '', sub.slug]),
+        ])
+      )
+    : undefined;
+
   const handleQuickAction = (id: SubspaceQuickActionId) => {
     if (id === 'community') return setCommunityOpen(true);
     if (id === 'subspaces') return navigate(`${base}/subspaces`);
@@ -161,61 +175,63 @@ export function SubspaceSidebar({
 
   return (
     <>
-      <CrdSubspaceSidebar
-        // Production's default for a subspace — what its sidebar showed before
-        // the widgets became configurable.
-        widgets={[
-          'intent',
-          'about',
-          'createPost',
-          'community',
-          'events',
-          'activity',
-          'index',
-          'subspaceLinks',
-          'virtualContributors',
-          'updates',
-        ]}
-        activityEnabled={true}
-        className={className}
-        collapsed={isCollapsed}
-        onToggleCollapse={onToggleCollapse}
-        description={SUBSPACE_DESCRIPTION}
-        leads={[
-          {
-            id: 'lead-1',
-            name: SUBSPACE_LEAD.name,
-            avatarUrl: SUBSPACE_LEAD.avatar,
-            initials: SUBSPACE_LEAD.initials,
-            href: `/user/${SUBSPACE_LEAD.name.toLowerCase().replace(/ /g, '-')}`,
-            location: SUBSPACE_LEAD.location,
-            type: 'person',
-          },
-        ]}
-        virtualContributor={{
-          id: 'vc-1',
-          name: VIRTUAL_CONTRIBUTOR.name,
-          avatarUrl: VIRTUAL_CONTRIBUTOR.avatar,
-          initials: VIRTUAL_CONTRIBUTOR.name.slice(0, 2).toUpperCase(),
-          description: VIRTUAL_CONTRIBUTOR.description,
-          href: '/vc/design-advisor',
-        }}
-        parentSpaces={parentSpaces}
-        subspaces={SUB_SUBSPACES.map(sub => ({
-          name: sub.name,
-          initials: sub.initials,
-          href: `${base}/subspaces/${sub.slug}`,
-          avatarUrl: sub.bannerImage,
-          isPrivate: sub.isPrivate,
-        }))}
-        onSubspaceClick={href => navigate(href)}
-        onShowAllSubspaces={() => navigate(`${base}/subspaces`)}
-        onAboutClick={() => setCommunityOpen(true)}
-        onQuickActionClick={handleQuickAction}
-        actionsSlot={
-          <CreatePostButton onClick={() => window.dispatchEvent(new Event('open-add-post-modal'))} />
-        }
-      />
+      <SubspaceListIconsStandIn audiences={audiences}>
+        <CrdSubspaceSidebar
+          // Production's default for a subspace — what its sidebar showed before
+          // the widgets became configurable.
+          widgets={[
+            'intent',
+            'about',
+            'createPost',
+            'community',
+            'events',
+            'activity',
+            'index',
+            'subspaceLinks',
+            'virtualContributors',
+            'updates',
+          ]}
+          activityEnabled={true}
+          className={className}
+          collapsed={isCollapsed}
+          onToggleCollapse={onToggleCollapse}
+          description={SUBSPACE_DESCRIPTION}
+          leads={[
+            {
+              id: 'lead-1',
+              name: SUBSPACE_LEAD.name,
+              avatarUrl: SUBSPACE_LEAD.avatar,
+              initials: SUBSPACE_LEAD.initials,
+              href: `/user/${SUBSPACE_LEAD.name.toLowerCase().replace(/ /g, '-')}`,
+              location: SUBSPACE_LEAD.location,
+              type: 'person',
+            },
+          ]}
+          virtualContributor={{
+            id: 'vc-1',
+            name: VIRTUAL_CONTRIBUTOR.name,
+            avatarUrl: VIRTUAL_CONTRIBUTOR.avatar,
+            initials: VIRTUAL_CONTRIBUTOR.name.slice(0, 2).toUpperCase(),
+            description: VIRTUAL_CONTRIBUTOR.description,
+            href: '/vc/design-advisor',
+          }}
+          parentSpaces={parentSpaces}
+          subspaces={SUB_SUBSPACES.map(sub => ({
+            name: sub.name,
+            initials: sub.initials,
+            href: subspaceHref(sub.slug),
+            avatarUrl: sub.bannerImage,
+            isPrivate: !isMember && sub.isPrivate,
+          }))}
+          onSubspaceClick={href => navigate(href)}
+          onShowAllSubspaces={() => navigate(`${base}/subspaces`)}
+          onAboutClick={() => setCommunityOpen(true)}
+          onQuickActionClick={handleQuickAction}
+          actionsSlot={
+            <CreatePostButton onClick={() => window.dispatchEvent(new Event('open-add-post-modal'))} />
+          }
+        />
+      </SubspaceListIconsStandIn>
 
       <SubspaceCommunityDialog open={communityOpen} onOpenChange={setCommunityOpen} />
     </>
