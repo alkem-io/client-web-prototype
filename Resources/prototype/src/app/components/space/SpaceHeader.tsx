@@ -15,7 +15,10 @@
  * still reads as shorter.
  */
 import { useMemo, useState } from 'react';
+import { WhoCanReadBadge } from '@/ahead/WhoCanRead';
 import { ItemShareDialog } from '@/app/components/shared/ItemShareDialog';
+import { HeaderBadgeStandIn } from '@/app/components/shared/WhoCanReadStandIns';
+import { audienceFor, useIsMember } from '@/app/data/spaceAccess';
 import { SpaceHeader as CrdSpaceHeader } from '@/crd/components/space/SpaceHeader';
 import type { HeaderActionIconsData } from '@/crd/components/space/HeaderActionIcons';
 import { resolveBannerShape } from '@/app/mappers/spaceBanner';
@@ -41,6 +44,9 @@ const SPACE_TAGLINE =
 type SpaceHeaderProps = {
   spaceSlug: string;
   spaceName?: string;
+  tagline?: string;
+  /** Opens About at "Who can see what". Without it there is no badge. */
+  onWhoCanReadClick?: () => void;
   /** Prototype-only layout study — accepted so existing call sites keep working,
    *  but no longer changes rendering. See PHASE-2.md §5. */
   variant?: 1 | 2 | 3 | 4 | 5;
@@ -48,7 +54,8 @@ type SpaceHeaderProps = {
   actionButtons?: React.ReactNode;
 };
 
-export function SpaceHeader({ spaceSlug, spaceName, onInfoClick }: SpaceHeaderProps) {
+export function SpaceHeader({ spaceSlug, spaceName, tagline, onInfoClick, onWhoCanReadClick }: SpaceHeaderProps) {
+  const isMember = useIsMember();
   const banner = useMemo(() => resolveBannerShape(BANNER_IMAGE), []);
   const [shareOpen, setShareOpen] = useState(false);
 
@@ -63,14 +70,23 @@ export function SpaceHeader({ spaceSlug, spaceName, onInfoClick }: SpaceHeaderPr
 
   return (
     <>
-      <CrdSpaceHeader
-        title={spaceName ?? SPACE_TITLE}
-        tagline={SPACE_TAGLINE}
-        bannerUrl={banner.url}
-        bannerAspectRatio={banner.ratio}
-        actions={actions}
-        overlayHeader={true}
-      />
+      <HeaderBadgeStandIn
+        badge={
+          isMember &&
+          onWhoCanReadClick && (
+            <WhoCanReadBadge audience={audienceFor([spaceSlug])} onWhatDoesThisMean={onWhoCanReadClick} />
+          )
+        }
+      >
+        <CrdSpaceHeader
+          title={spaceName ?? SPACE_TITLE}
+          tagline={tagline ?? SPACE_TAGLINE}
+          bannerUrl={banner.url}
+          bannerAspectRatio={banner.ratio}
+          actions={actions}
+          overlayHeader={true}
+        />
+      </HeaderBadgeStandIn>
       <ItemShareDialog
         open={shareOpen}
         onOpenChange={setShareOpen}

@@ -1,5 +1,6 @@
 import { useLocation, useParams } from "react-router";
 import React from "react";
+import { demoSpace, demoSubspace } from "@/app/data/spaceAccess";
 import AlkemioSymbolSquare from "@/imports/AlkemioSymbolSquare";
 import { ALL_TEMPLATES, TEMPLATE_PACKS } from "@/app/data/template-data";
 
@@ -43,7 +44,7 @@ const SETTINGS_TAB_NAMES: Record<string, string> = {
 };
 
 function slugToName(slug: string): string {
-  return SPACE_MAP[slug]?.name ?? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  return demoSpace(slug)?.name ?? SPACE_MAP[slug]?.name ?? slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 /**
@@ -287,7 +288,7 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
     const subspaceSlug = params.subspaceSlug;
     if (subspaceSlug && path.includes(`/subspaces/${subspaceSlug}/settings`)) {
       const subInfo = SUBSPACE_MAP[subspaceSlug];
-      const subspaceName = subInfo?.name ?? subspaceSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      const subspaceName = demoSubspace(spaceSlug, subspaceSlug)?.name ?? subInfo?.name ?? subspaceSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       const subspaceHref = `${spaceHref}/subspaces/${subspaceSlug}`;
       const subspaceSegment: BreadcrumbSegment = {
         label: subspaceName,
@@ -315,7 +316,7 @@ export function useBreadcrumbs(): BreadcrumbSegment[] {
     // Subspace page: /space/:spaceSlug/subspaces/:subspaceSlug
     if (subspaceSlug) {
       const subInfo = SUBSPACE_MAP[subspaceSlug];
-      const subspaceName = subInfo?.name ?? subspaceSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      const subspaceName = demoSubspace(spaceSlug, subspaceSlug)?.name ?? subInfo?.name ?? subspaceSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
       return [
         spaceSegment,
         {

@@ -9,6 +9,8 @@ import {
   TooltipTrigger
 } from "@/crd/primitives/tooltip";
 import { Button } from "@/crd/primitives/button";
+import { WhoCanReadAboutSection, WhoCanReadBadge, WhoCanReadWelcomeDialog } from "@/ahead/WhoCanRead";
+import { audienceFor, demoSpace, demoSubspace, useFirstVisit, useIsMember } from "@/app/data/spaceAccess";
 import { SubspaceHeader } from "@/app/components/space/SubspaceHeader";
 import { SubspaceSidebar } from "@/app/components/space/SubspaceSidebar";
 import { cn } from "@/crd/lib/utils";
@@ -93,6 +95,15 @@ const SUBSPACE_MAP: Record<string, SubspaceInfo> = {
     ]
   }
 };
+
+// Zuidplein 2030's subspaces (see @/app/data/spaceAccess). The ids are the
+// phases the mock posts below belong to.
+const DEMO_CALLOUTS: CalloutTab[] = [
+  { id: "strategy", label: "Intake", description: "What is asked for, and by whom." },
+  { id: "municipal", label: "Deliberation", description: "Weighing the options together." },
+  { id: "policy", label: "Vote", description: "Choosing between the proposals." },
+  { id: "stakeholders", label: "Decision", description: "What was decided, and why." },
+];
 
 // Fallback for unrecognized slugs
 const DEFAULT_SUBSPACE: SubspaceInfo = {
@@ -313,7 +324,18 @@ export default function SubspacePage() {
   const variant = (parseInt(searchParams.get("v") || "1") || 1) as 1 | 2 | 3 | 4 | 5;
 
   const activeSlug = subSubspaceSlug || subspaceSlug;
-  const info = SUBSPACE_MAP[activeSlug] || {
+  const demoParent = demoSpace(spaceSlug);
+  const demo = subSubspaceSlug ? undefined : demoSubspace(spaceSlug, subspaceSlug);
+  const info: SubspaceInfo = demo ? {
+    ...SUBSPACE_MAP["renewable-energy-transition"],
+    title: demo.name,
+    description: demo.tagline,
+    parentName: demoParent?.name ?? "",
+    initials: demo.initials,
+    avatarColor: demo.color,
+    avatarImage: undefined,
+    callouts: DEMO_CALLOUTS
+  } : SUBSPACE_MAP[activeSlug] || {
     ...DEFAULT_SUBSPACE,
     title: activeSlug
       .replace(/-/g, " ")
@@ -325,6 +347,16 @@ export default function SubspacePage() {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCommunityDialogOpen, setIsCommunityDialogOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [whoCanSeeOpen, setWhoCanSeeOpen] = useState(false);
+  // About starts folded; only the header badge opens it with the section unfolded.
+  const openAbout = (withWhoCanSee = false) => {
+    setWhoCanSeeOpen(withWhoCanSee);
+    setIsAboutOpen(true);
+  };
+  const accessPath = [spaceSlug, subspaceSlug, ...(subSubspaceSlug ? [subSubspaceSlug] : [])];
+  const audience = audienceFor(accessPath);
+  const isMember = useIsMember();
+  const [firstVisit, markSeen] = useFirstVisit(accessPath);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [kanbanDialogPost, setKanbanDialogPost] = useState<(typeof SUBSPACE_POSTS)[number] | null>(null);
 
@@ -361,11 +393,12 @@ export default function SubspacePage() {
         parentBannerImage={PARENT_SPACE_BANNER}
         memberCount={info.memberCount}
         onCommunityClick={() => setIsCommunityDialogOpen(true)}
-        onInfoClick={() => setIsAboutOpen(true)}
+        onInfoClick={() => openAbout()}
+        badge={isMember && <WhoCanReadBadge audience={audience} onWhatDoesThisMean={() => openAbout(true)} />}
         actionButtons={
           <div className="flex items-center gap-0.5">
             <button
-              onClick={() => setIsAboutOpen(true)}
+              onClick={() => openAbout()}
               className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
               style={{
                 background: "color-mix(in srgb, var(--foreground) 8%, transparent)",
@@ -426,19 +459,19 @@ export default function SubspacePage() {
               onToggleCollapse={() =>
                 setIsSidebarCollapsed(!isSidebarCollapsed)
               }
-              parentSpaceName={subSubspaceSlug ? info.parentName : "The Sandbox"}
-              parentSpaceInitials={subSubspaceSlug ? info.parentInitials : "S"}
+              parentSpaceName={subSubspaceSlug ? demoSubspace(spaceSlug, subspaceSlug)?.name ?? info.parentName : demoParent?.name ?? "The Sandbox"}
+              parentSpaceInitials={subSubspaceSlug ? info.parentInitials : demoParent ? "Z2" : "S"}
               parentSpaceBanner={subSubspaceSlug
                 ? "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80"
                 : "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400"}
               parentSpaceDescription={subSubspaceSlug
                 ? "Developing strategies for municipal energy transition to 100% renewables by 2030."
-                : "The place for all field builders on steward-ownership to learn, connect, discuss and collaborate."}
+                : demoParent?.tagline ?? "The place for all field builders on steward-ownership to learn, connect, discuss and collaborate."}
               parentSpaceHref={subSubspaceSlug
                 ? `/space/${spaceSlug}/subspaces/${subspaceSlug}`
                 : `/space/${spaceSlug}`}
-              grandparentSpaceName={subSubspaceSlug ? "The Sandbox" : undefined}
-              grandparentSpaceInitials={subSubspaceSlug ? "S" : undefined}
+              grandparentSpaceName={subSubspaceSlug ? demoParent?.name ?? "The Sandbox" : undefined}
+              grandparentSpaceInitials={subSubspaceSlug ? (demoParent ? "Z2" : "S") : undefined}
               grandparentSpaceBanner={subSubspaceSlug
                 ? "https://images.unsplash.com/photo-1690191863988-f685cddde463?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400"
                 : undefined}
@@ -492,7 +525,7 @@ export default function SubspacePage() {
                       <HeaderActionIcons
                         actions={{
                           showInfo: true,
-                          onInfoClick: () => setIsAboutOpen(true),
+                          onInfoClick: () => openAbout(),
                           showActivity: true,
                           showVideoCall: true,
                           showShare: true,
@@ -595,6 +628,16 @@ export default function SubspacePage() {
         open={isAboutOpen}
         onOpenChange={setIsAboutOpen}
         spaceSlug={`${spaceSlug}/subspaces/${subspaceSlug}`}
+        about={demo && { name: demo.name, tagline: demo.tagline, description: demo.tagline }}
+        whoCanSeeSlot={
+          isMember && <WhoCanReadAboutSection audience={audience} open={whoCanSeeOpen} onOpenChange={setWhoCanSeeOpen} />
+        }
+      />
+      <WhoCanReadWelcomeDialog
+        open={firstVisit}
+        onOpenChange={(open) => !open && markSeen()}
+        spaceName={info.title}
+        audience={audience}
       />
 
       {/* Kanban Post Dialog */}
