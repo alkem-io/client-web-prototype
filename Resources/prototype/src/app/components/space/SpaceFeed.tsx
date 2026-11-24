@@ -1,6 +1,16 @@
 import { usePostMenu } from "@/app/components/space/PostMenu";
 import { useState, useEffect, type ReactNode } from "react";
+import { useSearchParams } from "react-router";
+import { toast } from "sonner";
 import { SpaceFeed as CrdSpaceFeed } from "@/crd/components/space/SpaceFeed";
+import { CommunityUpdatesDialog } from "@/crd/components/space/CommunityUpdatesDialog";
+import { SpaceUpdateDialog } from "@/app/components/space/SpaceUpdateDialog";
+import {
+  LEAD_UPDATES,
+  LEAD_UPDATE_SPACE,
+  leadUpdateById,
+  leadUpdateHref,
+} from "@/app/data/leadUpdates";
 import { Button } from "@/crd/primitives/button";
 import { Plus, Pin, ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { PostCard, type PostCardData } from "./PostCard";
@@ -20,9 +30,6 @@ import { TaskBoardPreview } from "@/app/components/contribution/TaskBoard";
 import { useMediaGalleryMockUpload, MOCK_CURRENT_USER } from "@/app/components/mediaGallery/useMediaGalleryMockUpload";
 import { ENGLISH_CARD_LABELS, InitiativeCard } from "@/app/components/databank/InitiativeCard";
 import type { DatabankInitiative } from "@/app/data/databank-data";
-import { ActivityDotSlots, afterNameSlot } from "@/app/components/shared/ActivityDotSlots";
-import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { subspaceContainer } from "@/app/data/activity-data";
 import type { MockRichSubspace } from "@/app/mappers/spaceCard";
 
 
@@ -342,6 +349,38 @@ export function SpaceFeed() {
     return stored !== null ? stored === 'true' : false;
   });
   const { searchValue, activeTags } = useSpaceFilters();
+
+  /* Lead updates (client-web#10321). A notification carries ?update=<id>; we
+     open that exact update in a dialog on top of the space. The URL holds the
+     open update, so every update has its own link and Back closes it. */
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openUpdateId = searchParams.get("update");
+  const openUpdate = leadUpdateById(openUpdateId);
+  const [seeAllUpdatesOpen, setSeeAllUpdatesOpen] = useState(false);
+
+  const showUpdate = (id: string) =>
+    setSearchParams(
+      prev => {
+        const next = new URLSearchParams(prev);
+        next.set("update", id);
+        return next;
+      },
+      { replace: true }
+    );
+  const closeUpdate = () =>
+    setSearchParams(
+      prev => {
+        const next = new URLSearchParams(prev);
+        next.delete("update");
+        return next;
+      },
+      { replace: true }
+    );
+  const copyUpdateLink = (id: string) => {
+    const link = `alkem.io${leadUpdateHref(id)}`;
+    navigator.clipboard?.writeText(`https://${link}`).catch(() => {});
+    toast("Link copied", { description: link });
+  };
 
   const { fileInputRef, openAddDialog, handleFilesSelected, deleteImage } = useMediaGalleryMockUpload({
     posts,
@@ -765,6 +804,28 @@ export function SpaceFeed() {
         author={selectedDocAuthor}
       />
 
+      {/* A single lead update, reached from its notification (?update=<id>). */}
+      <SpaceUpdateDialog
+        open={!!openUpdate}
+        onOpenChange={(open) => !open && closeUpdate()}
+        updates={LEAD_UPDATES}
+        currentId={openUpdateId}
+        onNavigate={showUpdate}
+        onSeeAll={() => {
+          closeUpdate();
+          setSeeAllUpdatesOpen(true);
+        }}
+        onCopyLink={copyUpdateLink}
+        spaceName={LEAD_UPDATE_SPACE.name}
+      />
+
+      {/* Production's full list — "See all updates" from the single view. */}
+      <CommunityUpdatesDialog
+        open={seeAllUpdatesOpen}
+        onOpenChange={setSeeAllUpdatesOpen}
+        updates={LEAD_UPDATES}
+      />
+
     </div>
   );
 }
@@ -801,17 +862,9 @@ function LeadUpdate() {
   );
 }
 
-/** A subspace card in the feed, with the new-activity pulse at the end of its name. */
+/** A subspace card in the feed. */
 function FeedSubspaceCard({ subspace }: { subspace: MockRichSubspace }) {
-  const { hasContainerActivity } = useActivityIndicators();
-  const slots = hasContainerActivity(subspaceContainer(subspace.slug))
-    ? [afterNameSlot(subspace.slug, `${subspace.name} has new activity`, (root) => [...root.querySelectorAll("h3")])]
-    : [];
-  return (
-    <ActivityDotSlots slots={slots}>
-      <InitiativeCard initiative={toRichCard(subspace)} labels={ENGLISH_CARD_LABELS} />
-    </ActivityDotSlots>
-  );
+  return <InitiativeCard initiative={toRichCard(subspace)} labels={ENGLISH_CARD_LABELS} />;
 }
 
 const toRichCard = (subspace: MockRichSubspace): DatabankInitiative => {

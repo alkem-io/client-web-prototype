@@ -1,0 +1,811 @@
+<title>Reaching Lead Updates</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- Exploration for client-web#10321. Edit here and republish to the same link. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a review board, like the earlier concept pages. A clickable Alkemio
+   window sits in the middle; the two options are switched from the sticky bar,
+   and the notes underneath say what each one does. Product parts use CRD tokens. */
+:root {
+  /* board */
+  --board: #eef1f4;
+  --ink: #1d384a;
+  --ink-soft: #5b6b7c;
+  --rule: #d6dde4;
+  --note-tag: #1d384a;
+  --note-tag-fg: #ffffff;
+  --highlight: #2563eb;
+  --highlight-soft: rgba(37, 99, 235, 0.10);
+  --rec: #0f7a52;
+  --rec-soft: rgba(15, 122, 82, 0.10);
+  /* product (CRD) */
+  --background: #fcfdfe;
+  --foreground: #1d384a;
+  --card: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --primary: #1d384a;
+  --primary-fg: #ffffff;
+  --primary-tint: rgba(29, 56, 74, 0.05);
+  --primary-tint-2: rgba(29, 56, 74, 0.10);
+  --pin-ring: rgba(29, 56, 74, 0.20);
+  --danger: #dc2626;
+  --scrim: rgba(15, 23, 42, 0.45);
+  --chrome: #e4e9ee;
+  --chrome-field: #f8fafc;
+  --banner-a: #2f5d78;
+  --banner-b: #6d9bb3;
+  --banner-c: #c9dbe5;
+  --sub-a: #3d6b4f;
+  --sub-b: #8db39a;
+  --av-elena: #8a4f6d;
+  --av-jeroen: #2c7a6f;
+  --av-david: #7a5c99;
+  --av-amara: #9a6a2a;
+  --toast: #1d384a;
+  --toast-fg: #ffffff;
+  --shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.22), 0 2px 6px rgba(15, 23, 42, 0.07);
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+    --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+    --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+    --rec: #5fd0a2; --rec-soft: rgba(95, 208, 162, 0.12);
+    --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+    --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-fg: #131d26;
+    --primary-tint: rgba(227, 234, 240, 0.05); --primary-tint-2: rgba(227, 234, 240, 0.10); --pin-ring: rgba(227, 234, 240, 0.22);
+    --danger: #f87171; --scrim: rgba(0, 0, 0, 0.6); --chrome: #1b2630; --chrome-field: #0f171e;
+    --banner-a: #1d3f54; --banner-b: #3c6a83; --banner-c: #5d8aa1; --sub-a: #234332; --sub-b: #4f7a60;
+    --toast: #e3eaf0; --toast-fg: #131d26;
+    --shadow: 0 10px 30px -8px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+  --note-tag: #e3eaf0; --note-tag-fg: #0f171e;
+  --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+  --rec: #5fd0a2; --rec-soft: rgba(95, 208, 162, 0.12);
+  --background: #131d26; --foreground: #e3eaf0; --card: #18242f; --muted: #22303c;
+  --muted-foreground: #94a3b8; --border: #2b3a48; --primary: #e3eaf0; --primary-fg: #131d26;
+  --primary-tint: rgba(227, 234, 240, 0.05); --primary-tint-2: rgba(227, 234, 240, 0.10); --pin-ring: rgba(227, 234, 240, 0.22);
+  --danger: #f87171; --scrim: rgba(0, 0, 0, 0.6); --chrome: #1b2630; --chrome-field: #0f171e;
+  --banner-a: #1d3f54; --banner-b: #3c6a83; --banner-c: #5d8aa1; --sub-a: #234332; --sub-b: #4f7a60;
+  --toast: #e3eaf0; --toast-fg: #131d26;
+  --shadow: 0 10px 30px -8px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--board); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+button:focus-visible, [tabindex]:focus-visible, a:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+
+/* ---------- intro ---------- */
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.intro { display: grid; gap: 14px; max-width: 74ch; }
+.intro h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
+.intro p { color: var(--ink-soft); font-size: 16px; }
+.intro b { color: var(--ink); font-weight: 600; }
+.try { display: grid; gap: 6px; margin: 4px 0 0; padding-left: 20px; color: var(--ink-soft); font-size: 14.5px; }
+.try b { color: var(--ink); font-weight: 600; }
+
+/* ---------- switcher ---------- */
+.switcher { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin-top: 28px; padding-block: 12px; background: var(--board); border-bottom: 1px solid var(--rule); }
+.switcher-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.switcher-label { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); margin-right: 2px; }
+.sw-btn { font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
+.sw-btn:hover { border-color: var(--ink-soft); }
+.sw-btn[aria-pressed="true"] { background: var(--ink); color: var(--board); border-color: var(--ink); }
+.sw-btn .k { font-family: var(--mono); font-size: 12px; opacity: 0.75; }
+.sw-gap { width: 1px; height: 22px; background: var(--rule); margin-inline: 4px; }
+.switch-note { flex-basis: 100%; font-size: 13.5px; color: var(--ink-soft); }
+.switch-note b { color: var(--ink); font-weight: 600; }
+
+/* ---------- browser window ---------- */
+.stage { margin-top: 28px; }
+.browser { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--rule); box-shadow: var(--shadow); background: var(--background); }
+.chrome { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--chrome); border-bottom: 1px solid var(--rule); }
+.dots { display: flex; gap: 6px; padding-inline: 4px 6px; }
+.dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--rule); }
+.nav-btn { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--ink); cursor: pointer; font-size: 15px; }
+.nav-btn:hover:not(:disabled) { background: var(--chrome-field); }
+.nav-btn:disabled { opacity: 0.35; cursor: default; }
+.url { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 30px; padding-inline: 12px; border-radius: 999px; background: var(--chrome-field); font-family: var(--mono); font-size: 12.5px; color: var(--ink-soft); overflow: hidden; white-space: nowrap; }
+.url .host { color: var(--ink); }
+.url .q { color: var(--highlight); font-weight: 500; transition: background-color 0.6s; border-radius: 3px; }
+.url .q.flash { background: var(--highlight-soft); }
+.url-txt { overflow: hidden; text-overflow: ellipsis; }
+
+.viewport { position: relative; height: 740px; }
+.scroller { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; color: var(--foreground); font-size: 14px; }
+
+/* ---------- app top bar ---------- */
+.topbar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: var(--card); border-bottom: 1px solid var(--border); }
+.logo { width: 30px; height: 30px; border-radius: 7px; background: var(--primary); color: var(--primary-fg); display: grid; place-items: center; font-weight: 700; font-size: 14px; border: 0; cursor: pointer; }
+.crumbs { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 13px; color: var(--muted-foreground); }
+.crumbs button { border: 0; background: none; padding: 2px 4px; border-radius: 4px; cursor: pointer; color: var(--muted-foreground); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 22ch; }
+.crumbs button:hover { color: var(--foreground); background: var(--muted); }
+.crumbs .cur { color: var(--foreground); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar .spacer { flex: 1; }
+.icon-btn { position: relative; width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; border: 0; background: transparent; color: var(--muted-foreground); cursor: pointer; font-size: 17px; }
+.icon-btn:hover, .icon-btn[aria-expanded="true"] { background: var(--muted); color: var(--foreground); }
+.badge { position: absolute; top: 3px; right: 2px; min-width: 16px; height: 16px; padding-inline: 4px; border-radius: 999px; background: var(--danger); color: #fff; font-size: 10px; font-weight: 600; line-height: 16px; text-align: center; border: 2px solid var(--card); box-sizing: content-box; }
+.me { width: 30px; height: 30px; }
+
+/* ---------- avatars ---------- */
+.av { display: inline-grid; place-items: center; border-radius: 50%; color: #fff; font-weight: 600; flex-shrink: 0; border: 1px solid var(--border); }
+.av-28 { width: 28px; height: 28px; font-size: 11px; }
+.av-36 { width: 36px; height: 36px; font-size: 12.5px; }
+.av-40 { width: 40px; height: 40px; font-size: 13px; }
+
+/* ---------- notifications panel ---------- */
+.notif { position: absolute; z-index: 30; top: 52px; right: 12px; width: min(380px, calc(100% - 24px)); background: var(--card); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; color: var(--foreground); font-size: 14px; }
+.notif-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.notif-head h3 { font-size: 15px; font-weight: 600; }
+.notif-head span { font-size: 12px; color: var(--muted-foreground); }
+.n-item { display: flex; gap: 12px; width: 100%; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--border); background: transparent; text-align: left; cursor: pointer; }
+.n-item:last-child { border-bottom: 0; }
+.n-item:hover { background: var(--muted); }
+.n-item.unread { background: var(--primary-tint); }
+.n-item.unread:hover { background: var(--primary-tint-2); }
+.n-av { position: relative; }
+.n-av .type { position: absolute; right: -4px; bottom: -4px; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); color: var(--primary-fg); display: grid; place-items: center; font-size: 10px; border: 2px solid var(--card); }
+.n-body { flex: 1; min-width: 0; display: grid; gap: 3px; }
+.n-title { line-height: 1.4; }
+.n-title .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-right: 6px; vertical-align: middle; }
+.n-item.unread .n-title { font-weight: 600; }
+.n-desc { color: var(--muted-foreground); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.n-time { font-size: 12px; color: var(--muted-foreground); white-space: nowrap; }
+
+/* ---------- page: dashboard ---------- */
+.page { padding: 24px 24px 48px; }
+.dash h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+.dash > p { color: var(--muted-foreground); margin-top: 4px; }
+.space-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 16px; margin-top: 20px; }
+.space-card { display: grid; text-align: left; padding: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--card); cursor: pointer; }
+.space-card:hover { border-color: var(--muted-foreground); }
+.space-card .img { height: 92px; }
+.space-card .txt { padding: 12px 14px 14px; display: grid; gap: 2px; }
+.space-card b { font-weight: 600; font-size: 14px; }
+.space-card span { font-size: 12.5px; color: var(--muted-foreground); }
+.dash-hint { margin-top: 28px; padding: 14px 16px; border: 1px dashed var(--border); border-radius: 10px; color: var(--muted-foreground); font-size: 13.5px; display: flex; gap: 10px; align-items: center; }
+
+.ban-space { background: linear-gradient(120deg, var(--banner-a), var(--banner-b) 60%, var(--banner-c)); }
+.ban-sub { background: linear-gradient(120deg, var(--sub-a), var(--sub-b)); }
+.ban-other { background: linear-gradient(120deg, #7a5c99, #b7a2cf); }
+
+/* ---------- page: space ---------- */
+.banner { height: 120px; border-radius: 10px; }
+.sp-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 8px 16px; margin-top: 16px; }
+.sp-head h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.2; }
+.sp-head p { color: var(--muted-foreground); margin-top: 4px; }
+.sp-kicker { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); }
+.tabs { display: flex; gap: 2px; margin-top: 18px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.tabs span { padding: 9px 16px; font-size: 14px; color: var(--muted-foreground); white-space: nowrap; }
+.tabs span.on { color: var(--foreground); font-weight: 600; border: 1px solid var(--border); border-bottom-color: var(--background); border-radius: 8px 8px 0 0; margin-bottom: -1px; background: var(--background); }
+.cols { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; margin-top: 20px; align-items: start; }
+.side { display: grid; gap: 12px; min-width: 0; }
+.side-desc { font-size: 13.5px; color: var(--muted-foreground); }
+.box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+.box-label { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground); display: flex; align-items: center; gap: 6px; }
+.lead-row { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+.btn-post { display: flex; align-items: center; justify-content: center; gap: 6px; height: 34px; border-radius: 6px; border: 0; background: var(--primary); color: var(--primary-fg); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.02em; }
+
+/* production's sidebar Updates box, made clickable */
+.upd-preview { display: grid; gap: 8px; text-align: left; padding: 8px; margin: -8px; border: 0; border-radius: 8px; background: transparent; cursor: pointer; }
+.upd-preview:hover { background: var(--muted); }
+.author-line { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.author-line .who { display: grid; min-width: 0; line-height: 1.3; }
+.author-line .who b { font-weight: 600; font-size: 13.5px; }
+.author-line .who span { font-size: 12px; color: var(--muted-foreground); }
+.clamp3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: var(--muted-foreground); font-size: 13.5px; }
+.link-btn { justify-self: start; border: 0; background: none; padding: 0; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.02em; color: var(--foreground); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border); }
+.link-btn:hover { text-decoration-color: currentColor; }
+
+/* pinned lead update card (prototype design) */
+.pinned { display: flex; gap: 12px; width: 100%; text-align: left; padding: 16px; border-radius: 10px; border: 1px solid var(--pin-ring); background: linear-gradient(90deg, var(--primary-tint), transparent); cursor: pointer; color: var(--foreground); }
+.pinned:hover { background: linear-gradient(90deg, var(--primary-tint-2), var(--primary-tint)); }
+.pinned .p-body { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.p-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; }
+.p-meta .by { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+.p-meta .when { margin-left: auto; color: var(--muted-foreground); white-space: nowrap; }
+.p-new { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--primary); color: var(--primary-fg); }
+.p-text { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.6; }
+.p-foot { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; color: var(--muted-foreground); }
+.p-foot .read { color: var(--foreground); font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+
+.feed { display: grid; gap: 16px; min-width: 0; }
+.post { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; display: grid; gap: 10px; min-width: 0; }
+.post h4 { margin: 0; font-size: 16.5px; font-weight: 600; }
+.post p { color: var(--muted-foreground); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tags span { font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 999px; background: var(--muted); }
+.sub-card { display: grid; grid-template-columns: 120px minmax(0, 1fr); text-align: left; padding: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--card); cursor: pointer; }
+.sub-card:hover { border-color: var(--muted-foreground); }
+.sub-card .txt { padding: 12px 14px; display: grid; gap: 3px; }
+.sub-card b { font-weight: 600; }
+.sub-card span { font-size: 12.5px; color: var(--muted-foreground); }
+
+/* ---------- dialogs ---------- */
+.overlay { position: absolute; inset: 0; z-index: 40; background: var(--scrim); display: grid; place-items: center; padding: 20px; animation: fade 0.15s ease-out; }
+.dialog { width: min(640px, 100%); max-height: 100%; display: flex; flex-direction: column; background: var(--card); color: var(--foreground); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; animation: pop 0.18s ease-out; }
+.d-head { display: flex; align-items: flex-start; gap: 12px; padding: 18px 20px 14px; border-bottom: 1px solid var(--border); }
+.d-head .t { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.d-head h3 { font-size: 18px; font-weight: 600; }
+.d-head .sub { font-size: 12.5px; color: var(--muted-foreground); }
+.d-close { width: 30px; height: 30px; border-radius: 6px; border: 0; background: transparent; color: var(--muted-foreground); display: grid; place-items: center; cursor: pointer; font-size: 16px; }
+.d-close:hover { background: var(--muted); color: var(--foreground); }
+.d-scroll { overflow-y: auto; padding: 8px 20px 20px; scroll-behavior: smooth; }
+.u-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.u-item { display: grid; gap: 10px; padding: 18px 12px; margin-inline: -12px; border-bottom: 1px solid var(--border); border-radius: 8px; transition: background-color 1.4s ease-out; }
+.u-item:last-child { border-bottom: 0; }
+.u-item.hl { background: var(--highlight-soft); transition: none; }
+.u-item.hl-soft { background: var(--primary-tint); }
+.u-row { display: flex; align-items: center; gap: 8px; }
+.u-row .author-line { flex: 1; }
+.u-chip { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--highlight-soft); color: var(--highlight); white-space: nowrap; }
+.u-body { display: grid; gap: 8px; font-size: 14px; line-height: 1.65; max-width: 62ch; }
+.copy { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding-inline: 8px; border-radius: 6px; border: 0; background: transparent; color: var(--muted-foreground); font-size: 12px; cursor: pointer; white-space: nowrap; }
+.copy:hover { background: var(--muted); color: var(--foreground); }
+.d-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--border); }
+.d-foot .spacer { flex: 1; }
+.btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding-inline: 12px; border-radius: 6px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.02em; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--foreground); }
+.btn:hover:not(:disabled) { background: var(--muted); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn.primary { background: var(--primary); color: var(--primary-fg); border-color: var(--primary); }
+.btn.primary:hover { opacity: 0.9; background: var(--primary); }
+.pos { font-size: 12px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+
+/* toast */
+.toast { position: absolute; z-index: 50; left: 50%; bottom: 18px; transform: translateX(-50%); max-width: calc(100% - 32px); padding: 9px 14px; border-radius: 8px; background: var(--toast); color: var(--toast-fg); font-size: 13px; box-shadow: var(--shadow); display: flex; gap: 8px; align-items: center; animation: pop 0.18s ease-out; }
+.toast code { font-family: var(--mono); font-size: 12px; opacity: 0.85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* click hints */
+.hints .hot { outline: 2px dashed var(--highlight); outline-offset: 3px; animation: hint 1.6s ease-in-out infinite; }
+@keyframes hint { 50% { outline-color: transparent; } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: translateY(6px) scale(0.98); } }
+.toast { animation-name: toastin; }
+@keyframes toastin { from { opacity: 0; transform: translate(-50%, 6px); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* ---------- notes ---------- */
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 20px; margin-top: 40px; }
+.note { display: grid; gap: 10px; align-content: start; padding: 20px 22px; border: 1px solid var(--rule); border-radius: 10px; min-width: 0; transition: border-color 0.2s, background-color 0.2s; }
+.note.on { border-color: var(--ink); background: var(--highlight-soft); }
+.tag { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--note-tag); color: var(--note-tag-fg); }
+.note h2 { font-size: 19px; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
+.note p, .note li { color: var(--ink-soft); font-size: 14.5px; }
+.note ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; }
+.note b { color: var(--ink); font-weight: 600; }
+.both { margin-top: 20px; padding: 20px 22px; border-top: 1px solid var(--rule); display: grid; gap: 10px; }
+.both h2 { font-size: 17px; font-weight: 600; }
+.both ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-soft); font-size: 14.5px; max-width: 80ch; }
+.both b { color: var(--ink); font-weight: 600; }
+.both .open-q { color: var(--ink); }
+
+@media (max-width: 760px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .side { order: 2; }
+  .viewport { height: 640px; }
+  .page { padding: 16px 16px 40px; }
+  .banner { height: 80px; }
+  .sp-head h2 { font-size: 21px; }
+  .crumbs button { max-width: 12ch; }
+  .dots { display: none; }
+  .sub-card { grid-template-columns: 72px minmax(0, 1fr); }
+  .overlay { padding: 10px; }
+}
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">client-web #10321 · exploration</span>
+    <h1>Getting to an update from the lead</h1>
+    <p>Today a notification about a lead's update drops you on the space home page, and the update itself can't be opened on its own. This mockup puts the <b>pinned update</b> at the top of the feed, keeps production's <b>Updates box</b> in the sidebar, and makes the notification open the update it is about. Everything inside the window can be clicked.</p>
+    <ol class="try">
+      <li>Open the <b>bell</b> and click a notification. The third one is about an <b>older</b> update, not the latest.</li>
+      <li>Click the <b>pinned update</b> or the <b>Updates box</b> in the sidebar.</li>
+      <li>Switch between <b>option A</b> and <b>option B</b> above the window to compare what opens.</li>
+      <li>Watch the <b>address bar</b>: each update gets its own link. Use <b>Copy link</b> and the <b>back arrow</b>.</li>
+    </ol>
+  </header>
+
+  <nav class="switcher" aria-label="Choose an option">
+    <div class="switcher-inner">
+      <span class="switcher-label">Opens to</span>
+      <button class="sw-btn" type="button" id="var-a" data-variant="A" aria-pressed="true"><span class="k">A</span> All updates, scrolled to it</button>
+      <button class="sw-btn" type="button" id="var-b" data-variant="B" aria-pressed="false"><span class="k">B</span> Just that update</button>
+      <span class="sw-gap" aria-hidden="true"></span>
+      <button class="sw-btn" type="button" id="toggle-hints" aria-pressed="false">Show what's clickable</button>
+      <button class="sw-btn" type="button" id="reset">Start over</button>
+      <p class="switch-note" id="switch-note"></p>
+    </div>
+  </nav>
+
+  <div class="stage">
+    <div class="browser" id="browser">
+      <div class="chrome">
+        <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <button class="nav-btn" type="button" id="back" aria-label="Back">
+          <svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="url" id="url" aria-live="polite"></div>
+      </div>
+      <div class="viewport" id="viewport">
+        <div class="scroller" id="scroller"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="notes" aria-label="The two options">
+    <article class="note" id="note-A">
+      <span class="tag">Option A</span>
+      <h2>All updates, scrolled to the one you clicked</h2>
+      <p>The ticket's suggestion. Production's existing Updates window opens, scrolls to the update and highlights it for a moment.</p>
+      <ul>
+        <li><b>Reuses what's there.</b> The same window "See all updates" opens today, with one new trick: it can open on a given update.</li>
+        <li><b>Context for free.</b> Newer and older updates are right there to scroll through.</li>
+        <li><b>Weaker on a long list.</b> With many updates, the highlight is the only thing saying which one you came for.</li>
+      </ul>
+    </article>
+    <article class="note" id="note-B">
+      <span class="tag">Option B</span>
+      <h2>Just that update, with a way to the rest</h2>
+      <p>A window with only the update you clicked. Newer and older steps through the others, and "See all updates" opens the full list.</p>
+      <ul>
+        <li><b>No doubt what you're looking at.</b> One update, full text, nothing else competing.</li>
+        <li><b>Feels like a page of its own.</b> That fits a link someone sends you.</li>
+        <li><b>One more thing to build.</b> A second window next to the list, and two ways to read the same updates.</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="both" aria-labelledby="both-h">
+    <h2 id="both-h">The same in both options</h2>
+    <ul>
+      <li><b>The notification opens the update it is about,</b> on the right space or subspace, even when newer updates have been posted since.</li>
+      <li><b>The pinned update and the sidebar preview can be clicked.</b> Both open the full update, not just the cut-off preview.</li>
+      <li><b>Every update has its own link,</b> like <code>?update=…</code> at the end of the space address. Copy link puts it on the clipboard; opening it lands on the same view.</li>
+      <li><b>Closing the window</b> takes the link back to the plain space address, and back in the browser goes to where you were before.</li>
+      <li><b>"New" on the pinned card</b> disappears once you've opened that update.</li>
+      <li class="open-q"><b>To decide later:</b> whether the sidebar Updates box stays once the pinned card exists. Here they show the same latest update twice.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  const NOW = new Date(2026, 9, 19, 11, 0);
+  const at = (mo, d, h, m) => new Date(2026, mo, d, h, m);
+
+  const PEOPLE = {
+    elena: { name: 'Elena Rodriguez', ini: 'ER', av: '--av-elena' },
+    jeroen: { name: 'Jeroen Nijkamp', ini: 'JN', av: '--av-jeroen' },
+    david: { name: 'David Kim', ini: 'DK', av: '--av-david' },
+    amara: { name: 'Amara Okafor', ini: 'AO', av: '--av-amara' },
+  };
+
+  const SPACES = {
+    space: {
+      name: 'Steward-Ownership Field Builder Community',
+      short: 'Steward-Ownership',
+      tagline: 'The place for all field builders on steward-ownership to learn, connect, discuss and collaborate.',
+      path: '/steward-ownership',
+      banner: 'ban-space',
+      leads: ['jeroen', 'elena'],
+      updates: [
+        { id: 'q2-sprint', by: 'elena', at: at(9, 16, 10, 12), body: [
+          "Welcome to the Q2 sprint! We're focusing on stakeholder alignment and finalising the policy proposal.",
+          'Please review the updated timeline in the Knowledge Base and flag any blockers in this week\'s check-in post. The draft goes to the advisory group on 6 November, so anything that needs changing should be in by the 31st.',
+          'Thanks to everyone who joined last week\'s call. The recording is in the Knowledge Base under "Sprint calls".'
+        ] },
+        { id: 'office-hours', by: 'jeroen', at: at(9, 5, 9, 30), body: [
+          'Office hours are moving from Tuesday to Thursday, 15:00 to 16:00 CET, starting this week.',
+          'Same link as before. Bring anything: questions about the platform, a post you want feedback on, or an idea for a subspace.'
+        ] },
+        { id: 'members-120', by: 'elena', at: at(8, 18, 14, 5), body: [
+          'We passed 120 members this week. Thank you all for bringing people in.',
+          'If you are new: say hello in the Community tab and tell us which part of steward-ownership you work on.'
+        ] },
+        { id: 'welcome', by: 'elena', at: at(7, 21, 11, 0), body: [
+          'Welcome to the Steward-Ownership Field Builder Community. This space is for sharing what works, finding each other, and building the field together.',
+          'Start with the Knowledge Base for the basics, then join a subspace that matches your work.'
+        ] },
+      ],
+    },
+    sub: {
+      name: 'Energy Transition Roadmaps',
+      short: 'Energy Roadmaps',
+      tagline: 'Turning climate commitments into municipal energy roadmaps.',
+      path: '/steward-ownership/energy-roadmaps',
+      banner: 'ban-sub',
+      leads: ['jeroen'],
+      updates: [
+        { id: 'draft-roadmap', by: 'jeroen', at: at(9, 18, 16, 45), body: [
+          'The draft roadmap is ready for comments. It covers grid upgrades, community-owned solar and district heating for the three pilot towns.',
+          'Leave your comments on the whiteboard in the Roadmap tab by Friday. On Monday we pick the two pilots we take forward.'
+        ] },
+        { id: 'kickoff', by: 'jeroen', at: at(9, 2, 10, 0), body: [
+          'Kick-off is on 9 October at 14:00. We will agree on the scope and split into working groups.',
+          'The agenda is pinned in the Home tab.'
+        ] },
+      ],
+    },
+  };
+
+  const NOTIFS = [
+    { id: 'n1', space: 'sub', update: 'draft-roadmap', unread: true },
+    { id: 'n2', space: 'space', update: 'q2-sprint', unread: true },
+    { id: 'n3', space: 'space', update: 'office-hours', unread: false },
+  ];
+
+  /* ---------- formatting ---------- */
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const fmtDate = d => {
+    const h = d.getHours(), m = String(d.getMinutes()).padStart(2, '0');
+    return MON[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ', ' + ((h % 12) || 12) + ':' + m + ' ' + (h < 12 ? 'AM' : 'PM');
+  };
+  const ago = d => {
+    const days = Math.floor((NOW - d) / 86400000);
+    if (days < 1) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 14) return days + ' days ago';
+    if (days < 60) return Math.round(days / 7) + ' weeks ago';
+    return Math.round(days / 30) + ' months ago';
+  };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const av = (key, size) => {
+    const p = PEOPLE[key];
+    return '<span class="av av-' + size + '" style="background:var(' + p.av + ')" aria-hidden="true">' + p.ini + '</span>';
+  };
+  const authorLine = u => '<div class="author-line">' + av(u.by, 28) +
+    '<div class="who"><b>' + esc(PEOPLE[u.by].name) + '</b><span>' + fmtDate(u.at) + '</span></div></div>';
+  const ICON = {
+    megaphone: '<svg class="i" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>',
+    pin: '<svg class="i" viewBox="0 0 24 24"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>',
+    bell: '<svg class="i" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+    search: '<svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+    chat: '<svg class="i" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+    x: '<svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+    link: '<svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+    right: '<svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+    chevL: '<svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>',
+    chevR: '<svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>',
+    list: '<svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+    plus: '<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  };
+
+  /* ---------- state ---------- */
+  const fresh = () => ({
+    screen: 'dashboard',          // dashboard | space | sub
+    dialog: null,                 // { kind: 'list' | 'single', id: string | null, from: 'notification' | 'page' }
+    notifOpen: false,
+    notifs: NOTIFS.map(n => ({ ...n })),
+    seen: {},
+    history: [],
+    toast: null,
+  });
+  let S = fresh();
+  let variant = 'A';
+  let hints = false;
+  let toastTimer = null;
+
+  const $ = id => document.getElementById(id);
+  const scroller = $('scroller');
+  const viewport = $('viewport');
+
+  const pushHistory = () => S.history.push({ screen: S.screen, dialog: S.dialog ? { ...S.dialog } : null });
+  const spaceOf = () => (S.screen === 'space' || S.screen === 'sub') ? SPACES[S.screen] : null;
+
+  function openUpdate(spaceKey, id, from) {
+    pushHistory();
+    S.screen = spaceKey;
+    S.notifOpen = false;
+    S.dialog = { kind: variant === 'A' ? 'list' : 'single', id, from };
+    S.seen[spaceKey + ':' + id] = true;
+    render({ scrollTo: true, flashUrl: true, resetPage: true });
+  }
+  function openAll() {
+    pushHistory();
+    S.dialog = { kind: 'list', id: null, from: 'page' };
+    render({ flashUrl: true });
+  }
+  function closeDialog() {
+    pushHistory();
+    S.dialog = null;
+    render();
+  }
+  function go(screen) {
+    if (S.screen === screen && !S.dialog) { S.notifOpen = false; render(); return; }
+    pushHistory();
+    S.screen = screen; S.dialog = null; S.notifOpen = false;
+    render({ resetPage: true });
+  }
+  function back() {
+    const prev = S.history.pop();
+    if (!prev) return;
+    const screenChanged = prev.screen !== S.screen;
+    S.screen = prev.screen; S.dialog = prev.dialog; S.notifOpen = false;
+    render({ scrollTo: !!(S.dialog && S.dialog.id), resetPage: screenChanged });
+  }
+  function urlFor() {
+    const sp = spaceOf();
+    const path = sp ? sp.path : '/home';
+    if (!S.dialog) return { path, q: '' };
+    if (S.dialog.kind === 'list' && !S.dialog.id) return { path, q: '?updates=all' };
+    return { path, q: '?update=' + S.dialog.id };
+  }
+  function linkFor(spaceKey, id) { return 'alkem.io' + SPACES[spaceKey].path + '?update=' + id; }
+  function copyLink(spaceKey, id) {
+    const link = linkFor(spaceKey, id);
+    try {
+      const p = navigator.clipboard && navigator.clipboard.writeText('https://' + link);
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) { /* the toast still shows the link */ }
+    showToast('Link copied', link);
+  }
+  function showToast(text, code) {
+    S.toast = { text, code };
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { S.toast = null; renderToast(); }, 2600);
+    renderToast();
+  }
+
+  /* ---------- render ---------- */
+  function renderUrl(flash) {
+    const u = urlFor();
+    $('url').innerHTML = '<span class="url-txt"><span class="host">alkem.io</span>' + esc(u.path) +
+      (u.q ? '<span class="q' + (flash ? ' flash' : '') + '">' + esc(u.q) + '</span>' : '') + '</span>';
+    if (flash) setTimeout(() => { const q = $('url').querySelector('.q'); if (q) q.classList.remove('flash'); }, 900);
+    $('back').disabled = S.history.length === 0;
+  }
+
+  function topbar() {
+    const unread = S.notifs.filter(n => n.unread).length;
+    let crumbs = '<span class="cur">Dashboard</span>';
+    if (S.screen === 'space') crumbs = '<span class="cur">' + esc(SPACES.space.name) + '</span>';
+    if (S.screen === 'sub') crumbs = '<button type="button" data-go="space">' + esc(SPACES.space.short) + '</button><span aria-hidden="true">/</span><span class="cur">' + esc(SPACES.sub.name) + '</span>';
+    return '<div class="topbar">' +
+      '<button class="logo" type="button" data-go="dashboard" aria-label="Dashboard">a</button>' +
+      '<div class="crumbs">' + crumbs + '</div><span class="spacer"></span>' +
+      '<span class="icon-btn" aria-hidden="true">' + ICON.search + '</span>' +
+      '<span class="icon-btn" aria-hidden="true">' + ICON.chat + '</span>' +
+      '<button class="icon-btn hot" type="button" id="bell" aria-label="Notifications" aria-expanded="' + S.notifOpen + '">' + ICON.bell +
+        (unread ? '<span class="badge">' + unread + '</span>' : '') + '</button>' +
+      '<span class="av me" style="background:var(--av-jeroen)" aria-hidden="true">JN</span>' +
+    '</div>';
+  }
+
+  function notifPanel() {
+    if (!S.notifOpen) return '';
+    const items = S.notifs.map(n => {
+      const sp = SPACES[n.space];
+      const u = sp.updates.find(x => x.id === n.update);
+      return '<button type="button" class="n-item hot' + (n.unread ? ' unread' : '') + '" data-notif="' + n.id + '">' +
+        '<span class="n-av">' + av(u.by, 40) + '<span class="type">' + ICON.megaphone + '</span></span>' +
+        '<span class="n-body"><span class="n-title">' + (n.unread ? '<span class="dot" aria-hidden="true"></span>' : '') +
+          esc(PEOPLE[u.by].name) + ' posted an update in ' + esc(sp.name) + '</span>' +
+          '<span class="n-desc">' + esc(u.body[0]) + '</span></span>' +
+        '<span class="n-time">' + ago(u.at) + '</span></button>';
+    }).join('');
+    return '<div class="notif" role="dialog" aria-label="Notifications"><div class="notif-head"><h3>Notifications</h3><span>Updates from leads</span></div>' + items + '</div>';
+  }
+
+  function dashboard() {
+    return '<div class="page dash"><h2>Welcome back, Jeroen</h2><p>Your spaces</p>' +
+      '<div class="space-grid">' +
+        '<button type="button" class="space-card" data-go="space"><span class="img ban-space"></span><span class="txt"><b>' + esc(SPACES.space.name) + '</b><span>134 members</span></span></button>' +
+        '<button type="button" class="space-card" data-go="sub"><span class="img ban-sub"></span><span class="txt"><b>' + esc(SPACES.sub.name) + '</b><span>Subspace of ' + esc(SPACES.space.short) + '</span></span></button>' +
+        '<div class="space-card" style="cursor:default"><span class="img ban-other"></span><span class="txt"><b>Innovation Lab</b><span>48 members</span></span></div>' +
+      '</div>' +
+      '<p class="dash-hint">' + ICON.bell + '<span>Start from the bell at the top right. You have two unread updates from leads.</span></p>' +
+    '</div>';
+  }
+
+  function spacePage(key) {
+    const sp = SPACES[key];
+    const latest = sp.updates[0];
+    const isNew = !S.seen[key + ':' + latest.id];
+    const leads = sp.leads.map(k => '<div class="lead-row">' + av(k, 28) + '<span>' + esc(PEOPLE[k].name) + '</span></div>').join('');
+    const pinned =
+      '<button type="button" class="pinned hot" data-open="' + key + ':' + latest.id + '" aria-label="Open the pinned update from ' + esc(PEOPLE[latest.by].name) + '">' +
+        av(latest.by, 36) +
+        '<span class="p-body">' +
+          '<span class="p-meta"><span class="by">' + ICON.pin + 'Pinned by ' + esc(PEOPLE[latest.by].name) + ' · Lead</span>' +
+            (isNew ? '<span class="p-new">New</span>' : '') +
+            '<span class="when">' + ago(latest.at) + '</span></span>' +
+          '<span class="p-text">' + esc(latest.body.join(' ')) + '</span>' +
+          '<span class="p-foot"><span class="read">Read the full update ' + ICON.right + '</span>' +
+            (sp.updates.length > 1 ? '<span>' + (sp.updates.length - 1) + ' earlier update' + (sp.updates.length > 2 ? 's' : '') + '</span>' : '') + '</span>' +
+        '</span>' +
+      '</button>';
+    const updatesBox =
+      '<div class="box"><span class="box-label">' + ICON.megaphone + 'Updates</span>' +
+        '<button type="button" class="upd-preview hot" data-open="' + key + ':' + latest.id + '" aria-label="Open the latest update">' +
+          authorLine(latest) + '<span class="clamp3">' + esc(latest.body.join(' ')) + '</span></button>' +
+        '<button type="button" class="link-btn hot" data-all="1">See all updates</button>' +
+      '</div>';
+    const feed = key === 'space'
+      ? '<article class="post"><div class="author-line">' + av('david', 36) + '<div class="who"><b>David Kim</b><span>5 hours ago · Post</span></div></div>' +
+          '<h4>Three subspaces open for new contributors</h4>' +
+          '<p>We\'re opening up three connected workstreams to new contributors this quarter. If you\'re working on the practical side of the urban energy and climate transition, here\'s what each one is about and who it\'s for.</p>' +
+          '<div class="tags"><span>Community</span><span>Updates</span></div>' +
+          '<button type="button" class="sub-card" data-go="sub"><span class="ban-sub"></span><span class="txt"><b>' + esc(SPACES.sub.name) + '</b><span>' + esc(SPACES.sub.tagline) + '</span></span></button>' +
+        '</article>' +
+        '<article class="post"><div class="author-line">' + av('amara', 36) + '<div class="who"><b>Amara Okafor</b><span>2 days ago · Post</span></div></div>' +
+          '<h4>Reading list: steward-ownership in practice</h4>' +
+          '<p>Five case studies from companies that made the switch, with what went well and what they would do differently.</p>' +
+          '<div class="tags"><span>Resource</span></div></article>'
+      : '<article class="post"><div class="author-line">' + av('amara', 36) + '<div class="who"><b>Amara Okafor</b><span>4 hours ago · Whiteboard</span></div></div>' +
+          '<h4>Roadmap: pilot towns</h4><p>Add your comments on the three pilot towns. Sticky notes on the right side, please.</p>' +
+          '<div class="tags"><span>Roadmap</span></div></article>';
+    const head = key === 'sub'
+      ? '<div class="sp-head"><div><span class="sp-kicker">Subspace of ' + esc(SPACES.space.short) + '</span><h2>' + esc(sp.name) + '</h2><p>' + esc(sp.tagline) + '</p></div></div>'
+      : '<div class="sp-head"><div><h2>' + esc(sp.name) + '</h2><p>' + esc(sp.tagline) + '</p></div></div>';
+    const tabs = key === 'sub' ? ['Home', 'Roadmap', 'Community'] : ['Home', 'Community', 'Subspaces', 'Knowledge Base'];
+    return '<div class="page">' +
+      '<div class="banner ' + sp.banner + '"></div>' + head +
+      '<div class="tabs">' + tabs.map((t, i) => '<span' + (i === 0 ? ' class="on"' : '') + '>' + t + '</span>').join('') + '</div>' +
+      '<div class="cols">' +
+        '<aside class="side"><p class="side-desc">Activity and updates from members of this ' + (key === 'sub' ? 'subspace' : 'space') + '.</p>' +
+          '<div class="box"><span class="box-label">Leads</span>' + leads + '</div>' +
+          updatesBox +
+          '<span class="btn-post">' + ICON.plus + 'Post</span>' +
+        '</aside>' +
+        '<div class="feed">' + pinned + feed + '</div>' +
+      '</div></div>';
+  }
+
+  function dialog() {
+    const sp = spaceOf();
+    if (!S.dialog || !sp) return '';
+    const key = S.screen;
+    const d = S.dialog;
+    const closeBtn = '<button type="button" class="d-close" data-close="1" aria-label="Close">' + ICON.x + '</button>';
+    const copyBtn = id => '<button type="button" class="copy hot" data-copy="' + key + ':' + id + '">' + ICON.link + 'Copy link</button>';
+
+    if (d.kind === 'list') {
+      const items = sp.updates.map(u => {
+        const target = d.id === u.id;
+        const chip = target ? '<span class="u-chip">' + (d.from === 'notification' ? 'From your notification' : 'You opened this one') + '</span>' : '';
+        return '<li class="u-item' + (target ? ' hl' : '') + '" id="u-' + u.id + '">' +
+          '<div class="u-row">' + authorLine(u) + chip + copyBtn(u.id) + '</div>' +
+          '<div class="u-body">' + u.body.map(p => '<p>' + esc(p) + '</p>').join('') + '</div></li>';
+      }).join('');
+      return '<div class="overlay" data-scrim="1"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="d-title">' +
+        '<div class="d-head"><div class="t"><h3 id="d-title">Updates</h3><span class="sub">' + esc(sp.name) + ' · ' + sp.updates.length + ' updates from the leads</span></div>' + closeBtn + '</div>' +
+        '<div class="d-scroll" id="d-scroll"><ul class="u-list">' + items + '</ul></div></div></div>';
+    }
+
+    const idx = sp.updates.findIndex(u => u.id === d.id);
+    const u = sp.updates[idx];
+    return '<div class="overlay" data-scrim="1"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="d-title">' +
+      '<div class="d-head"><div class="t"><h3 id="d-title">Update</h3><span class="sub">' + esc(sp.name) + '</span></div>' + closeBtn + '</div>' +
+      '<div class="d-scroll"><div class="u-item" style="border:0">' +
+        '<div class="u-row">' + authorLine(u) + copyBtn(u.id) + '</div>' +
+        '<div class="u-body">' + u.body.map(p => '<p>' + esc(p) + '</p>').join('') + '</div></div></div>' +
+      '<div class="d-foot">' +
+        '<button type="button" class="btn hot" data-step="-1"' + (idx === 0 ? ' disabled' : '') + '>' + ICON.chevL + 'Newer</button>' +
+        '<span class="pos">' + (idx + 1) + ' of ' + sp.updates.length + '</span>' +
+        '<button type="button" class="btn hot" data-step="1"' + (idx === sp.updates.length - 1 ? ' disabled' : '') + '>Older' + ICON.chevR + '</button>' +
+        '<span class="spacer"></span>' +
+        '<button type="button" class="btn primary hot" data-all="1">' + ICON.list + 'See all updates</button>' +
+      '</div></div></div>';
+  }
+
+  function renderToast() {
+    const old = viewport.querySelector('.toast');
+    if (old) old.remove();
+    if (!S.toast) return;
+    const t = document.createElement('div');
+    t.className = 'toast'; t.setAttribute('role', 'status');
+    t.innerHTML = ICON.link + '<span>' + esc(S.toast.text) + '</span><code>' + esc(S.toast.code) + '</code>';
+    viewport.appendChild(t);
+  }
+
+  function render(opts) {
+    opts = opts || {};
+    const keepScroll = scroller.scrollTop;
+    const page = S.screen === 'dashboard' ? dashboard() : spacePage(S.screen);
+    scroller.innerHTML = topbar() + page;
+    scroller.scrollTop = opts.resetPage ? 0 : keepScroll;
+
+    viewport.querySelectorAll('.notif, .overlay').forEach(el => el.remove());
+    viewport.insertAdjacentHTML('beforeend', notifPanel() + dialog());
+    renderUrl(!!opts.flashUrl);
+    renderToast();
+    $('browser').classList.toggle('hints', hints);
+
+    if (opts.scrollTo && S.dialog && S.dialog.kind === 'list' && S.dialog.id) {
+      const box = $('d-scroll');
+      const item = $('u-' + S.dialog.id);
+      if (box && item) {
+        box.style.scrollBehavior = 'auto';
+        box.scrollTop = 0;
+        requestAnimationFrame(() => {
+          box.style.scrollBehavior = '';
+          box.scrollTop = Math.max(0, item.offsetTop - 8);
+          setTimeout(() => { item.classList.remove('hl'); item.classList.add('hl-soft'); }, 1600);
+        });
+      }
+    }
+    const dlg = viewport.querySelector('.dialog');
+    if (dlg) { const c = dlg.querySelector('[data-close]'); if (c) c.focus({ preventScroll: true }); }
+  }
+
+  function renderNote() {
+    $('switch-note').innerHTML = variant === 'A'
+      ? '<b>Option A:</b> clicking an update opens the full list of updates, scrolled to that one and highlighted.'
+      : '<b>Option B:</b> clicking an update opens only that update, with newer and older buttons and a way to the full list.';
+    $('note-A').classList.toggle('on', variant === 'A');
+    $('note-B').classList.toggle('on', variant === 'B');
+    document.querySelectorAll('[data-variant]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === variant)));
+  }
+
+  /* ---------- events ---------- */
+  $('viewport').addEventListener('click', e => {
+    const t = e.target.closest('button, [data-scrim]');
+    if (!t) { if (S.notifOpen) { S.notifOpen = false; render(); } return; }
+    if (t.id === 'bell') { S.notifOpen = !S.notifOpen; render(); return; }
+    if (t.dataset.notif) {
+      const n = S.notifs.find(x => x.id === t.dataset.notif);
+      n.unread = false;
+      openUpdate(n.space, n.update, 'notification');
+      return;
+    }
+    if (t.dataset.go) { go(t.dataset.go); return; }
+    if (t.dataset.open) { const [k, id] = t.dataset.open.split(':'); openUpdate(k, id, 'page'); return; }
+    if (t.dataset.all) { openAll(); return; }
+    if (t.dataset.copy) { const [k, id] = t.dataset.copy.split(':'); copyLink(k, id); return; }
+    if (t.dataset.close) { closeDialog(); return; }
+    if (t.dataset.step) {
+      const sp = spaceOf();
+      const idx = sp.updates.findIndex(u => u.id === S.dialog.id) + Number(t.dataset.step);
+      if (idx < 0 || idx >= sp.updates.length) return;
+      pushHistory();
+      S.dialog = { ...S.dialog, id: sp.updates[idx].id };
+      S.seen[S.screen + ':' + S.dialog.id] = true;
+      render({ flashUrl: true });
+      return;
+    }
+    if (t.dataset.scrim && e.target === t) { closeDialog(); return; }
+    if (S.notifOpen && !t.closest('.notif')) { S.notifOpen = false; render(); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (S.dialog) closeDialog();
+    else if (S.notifOpen) { S.notifOpen = false; render(); }
+  });
+  $('back').addEventListener('click', back);
+  document.querySelectorAll('[data-variant]').forEach(b => b.addEventListener('click', () => {
+    variant = b.dataset.variant;
+    try { localStorage.setItem('lead-updates-variant', variant); } catch (err) { /* fine without */ }
+    if (S.dialog && S.dialog.id) S.dialog = { ...S.dialog, kind: variant === 'A' ? 'list' : 'single' };
+    renderNote();
+    render({ scrollTo: true });
+  }));
+  $('toggle-hints').addEventListener('click', e => {
+    hints = !hints;
+    e.currentTarget.setAttribute('aria-pressed', String(hints));
+    $('browser').classList.toggle('hints', hints);
+  });
+  $('reset').addEventListener('click', () => { S = fresh(); render({ resetPage: true }); });
+
+  try { const v = localStorage.getItem('lead-updates-variant'); if (v === 'A' || v === 'B') variant = v; } catch (err) { /* fine without */ }
+  renderNote();
+  render();
+})();
+</script>

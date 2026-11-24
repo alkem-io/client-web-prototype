@@ -25,7 +25,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger
-} from "@/app/components/ui/hover-card";
+} from "@/crd/primitives/hover-card";
 import { cn } from "@/crd/lib/utils";
 import { CLEVERBASE_DOCS_URL } from "./signingData";
 

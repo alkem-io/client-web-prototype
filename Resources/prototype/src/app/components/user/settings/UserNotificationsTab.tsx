@@ -2,7 +2,6 @@ import { Bot, Building2, Globe, Layers, type LucideIcon, ShieldCheck, User, Volu
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { demoDelay, type LooseT, useDemoState } from "@/app/components/shared/useDemoState";
-import { NewActivitySettingsSection } from "@/ahead/NewActivitySettingsSection";
 import type { SettingsSectionIconColor } from "@/crd/components/common/SettingsSection";
 import {
   type ChannelType,
@@ -139,7 +138,6 @@ export function UserNotificationsTab() {
         }
         onToggleSound={(property, next) => setSounds({ ...sounds, [property]: next })}
       />
-      <NewActivitySettingsSection />
     </div>
   );
 }

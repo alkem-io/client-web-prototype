@@ -1,0 +1,815 @@
+<title>Whiteboard Toolbar</title>
+<!-- Published as a Claude artifact: https://claude.ai/artifact/41LU6ezm9QF7JqXUZvKGxF (product#1998). Edit here and republish to the same link. -->
+<!-- Exploration for alkem-io/product#1998. Interactive: three directions for the whiteboard toolbar,
+     two ways a grouped button can open, and the facilitator tools seen by a host or a participant.
+     The toolbar fragments copy Excalidraw's stock look, which is what production ships today. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Layout: a review board. Controls on a sticky strip, one live whiteboard in the middle,
+   notes beneath. Board chrome uses Alkemio's navy/slate; the toolbar copies Excalidraw. */
+:root {
+  /* board */
+  --board: #eef1f4;
+  --ink: #1d384a;
+  --ink-soft: #5b6b7c;
+  --rule: #d6dde4;
+  --tag: #1d384a;
+  --tag-fg: #ffffff;
+  --highlight: #2563eb;
+  --highlight-soft: rgba(37, 99, 235, 0.10);
+  /* whiteboard (Excalidraw stock) */
+  --canvas: #ffffff;
+  --canvas-dot: #dfe3ea;
+  --island: #ffffff;
+  --island-border: #ebebf0;
+  --tool-ink: #1b1b1f;
+  --tool-hover: #f1f0ff;
+  --tool-selected: #e0dfff;
+  --tool-selected-ink: #030064;
+  --tool-key: #8c8c99;
+  --facil: #fff4dc;
+  --facil-ink: #8a5300;
+  --hint: #9aa0a8;
+  --sketch: #1e1e1e;
+  --sticky-1: #ffec99;
+  --sticky-2: #b2f2bb;
+  --sticky-3: #a5d8ff;
+  --warn: #e8590c;
+  --critical: #e03131;
+  --shadow: 0 0 0 1px var(--island-border), 0 4px 14px -4px rgba(15, 23, 42, 0.18);
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --hand: 'Caveat', 'Comic Sans MS', cursive;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+    --tag: #e3eaf0; --tag-fg: #0f171e; --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+    --canvas: #121212; --canvas-dot: #2a2d33; --island: #232329; --island-border: #34343c;
+    --tool-ink: #e3e3e8; --tool-hover: #2e2d39; --tool-selected: #403e6a; --tool-selected-ink: #e0dfff; --tool-key: #8a8a98;
+    --facil: #3a2e14; --facil-ink: #ffd27a; --hint: #6c727c; --sketch: #e0e0e0;
+    --sticky-1: #5c4f12; --sticky-2: #22502a; --sticky-3: #1d4766;
+    --shadow: 0 0 0 1px var(--island-border), 0 4px 14px -4px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #24323e;
+  --tag: #e3eaf0; --tag-fg: #0f171e; --highlight: #7aa7ff; --highlight-soft: rgba(122, 167, 255, 0.14);
+  --canvas: #121212; --canvas-dot: #2a2d33; --island: #232329; --island-border: #34343c;
+  --tool-ink: #e3e3e8; --tool-hover: #2e2d39; --tool-selected: #403e6a; --tool-selected-ink: #e0dfff; --tool-key: #8a8a98;
+  --facil: #3a2e14; --facil-ink: #ffd27a; --hint: #6c727c; --sketch: #e0e0e0;
+  --sticky-1: #5c4f12; --sticky-2: #22502a; --sticky-3: #1d4766;
+  --shadow: 0 0 0 1px var(--island-border), 0 4px 14px -4px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+button:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+svg.i { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- intro ---------- */
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.eyebrow a { color: inherit; }
+.intro { display: grid; gap: 14px; max-width: 72ch; }
+.intro h1 { font-size: clamp(28px, 4.2vw, 40px); line-height: 1.12; font-weight: 700; letter-spacing: -0.02em; }
+.intro p { color: var(--ink-soft); font-size: 16px; }
+
+/* ---------- section rows ---------- */
+.row { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 40px; padding-block: 40px; border-bottom: 1px solid var(--rule); }
+.note { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.when { justify-self: start; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--tag); color: var(--tag-fg); }
+.note h2 { font-size: 20px; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
+.note p, .note li { color: var(--ink-soft); font-size: 14.5px; }
+.note ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.note b { color: var(--ink); font-weight: 600; }
+.stage { min-width: 0; display: grid; gap: 14px; align-content: start; }
+
+/* ---------- control strip ---------- */
+.controls { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 30; margin-top: 28px; padding-block: 12px; background: var(--board); border-bottom: 1px solid var(--rule); display: grid; gap: 10px; }
+.ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.pill { font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink); cursor: pointer; }
+.pill:hover { border-color: var(--ink-soft); }
+.pill[aria-pressed="true"] { background: var(--ink); color: var(--board); border-color: var(--ink); }
+.pill .k { font-family: var(--mono); font-size: 11.5px; opacity: 0.7; }
+
+/* ---------- whiteboard ---------- */
+.wb { position: relative; height: 560px; border-radius: 12px; overflow: hidden; border: 1px solid var(--rule);
+  background-color: var(--canvas);
+  background-image: radial-gradient(var(--canvas-dot) 1.2px, transparent 1.2px);
+  background-size: 22px 22px; user-select: none; }
+.wb[data-cursor="hand"] { cursor: grab; }
+.wb[data-cursor="react"] { cursor: crosshair; }
+.wb[data-cursor="draw"] { cursor: crosshair; }
+.wb-top { position: absolute; inset-inline: 0; top: 14px; display: grid; justify-items: center; gap: 8px; z-index: 5; padding-inline: 12px; pointer-events: none; }
+.wb-top > * { pointer-events: auto; }
+.bars { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.hint { font-size: 12.5px; color: var(--hint); text-align: center; pointer-events: none !important; }
+.status { position: absolute; left: 14px; bottom: 12px; z-index: 4; font-family: var(--mono); font-size: 12px; color: var(--hint); }
+.status b { color: var(--tool-ink); font-weight: 500; }
+
+.island { background: var(--island); border-radius: 10px; box-shadow: var(--shadow); padding: 4px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px; position: relative; max-width: 100%; }
+.island.facil { background: var(--island); }
+.island-label { position: absolute; top: -9px; left: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--facil-ink); background: var(--facil); padding: 0 6px; border-radius: 4px; line-height: 16px; }
+.divider { width: 1px; height: 22px; background: var(--island-border); margin-inline: 4px; }
+.group-tint { display: flex; align-items: center; gap: 2px; background: var(--facil); border-radius: 8px; padding: 2px; }
+
+.tool { position: relative; width: 38px; height: 38px; border-radius: 8px; border: 0; background: transparent; color: var(--tool-ink); display: grid; place-items: center; cursor: pointer; }
+.tool:hover { background: var(--tool-hover); }
+.tool[aria-pressed="true"] { background: var(--tool-selected); color: var(--tool-selected-ink); }
+.tool[disabled] { opacity: 0.35; cursor: not-allowed; }
+.tool[disabled]:hover { background: transparent; }
+.tool .num { position: absolute; right: 4px; bottom: 2px; font-size: 9.5px; line-height: 1; color: var(--tool-key); font-family: var(--font); }
+.tool[aria-pressed="true"] .num { color: var(--tool-selected-ink); }
+.tool .caret { position: absolute; right: 1px; bottom: 1px; width: 7px; height: 7px; border-right: 1.5px solid var(--tool-key); border-bottom: 1.5px solid var(--tool-key); border-bottom-right-radius: 2px; }
+.tool.hasnum .caret { right: 1px; top: 3px; bottom: auto; border-bottom: 0; border-top: 1.5px solid var(--tool-key); border-top-right-radius: 2px; border-bottom-right-radius: 0; }
+.tool .emoji { font-size: 17px; line-height: 1; }
+.tool.live { width: auto; padding-inline: 8px; gap: 6px; display: inline-flex; font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+/* grouped button: same 38px as every other tool; the corner arrow opens the list */
+.split { position: relative; }
+.split .chev { position: absolute; top: 0; right: 0; bottom: 0; width: 15px; padding: 3px 0 0; border: 0; border-radius: 0 8px 8px 0; background: transparent; color: var(--tool-key); display: grid; justify-items: center; align-content: start; cursor: pointer; }
+.split .chev:hover, .split .chev[aria-expanded="true"] { background: color-mix(in srgb, var(--tool-selected-ink) 10%, transparent); color: var(--tool-ink); }
+.split.on .chev:hover, .split.on .chev[aria-expanded="true"] { background: color-mix(in srgb, var(--tool-selected-ink) 14%, transparent); }
+.split .chev svg.i { width: 9px; height: 9px; stroke-width: 3; }
+.split.on .chev { color: var(--tool-selected-ink); }
+
+/* popovers */
+.pop { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 20; background: var(--island); border-radius: 10px; box-shadow: var(--shadow); padding: 6px; min-width: 200px; color: var(--tool-ink); text-align: left; }
+.pop.start { left: 0; transform: none; }
+.pop.end { left: auto; right: 0; transform: none; }
+.menu-item { width: 100%; display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 6px; border: 0; background: transparent; cursor: pointer; font-size: 13.5px; text-align: left; }
+.menu-item:hover { background: var(--tool-hover); }
+.menu-item[aria-checked="true"] { background: var(--tool-selected); color: var(--tool-selected-ink); }
+.menu-item .sc { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--tool-key); }
+.menu-item .badge { margin-left: auto; font-size: 10.5px; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: var(--tool-selected); color: var(--tool-selected-ink); }
+.menu-item.buried { outline: 2px dashed var(--warn); outline-offset: -2px; }
+.menu-head { font-size: 12px; font-weight: 600; color: var(--tool-key); padding: 8px 8px 4px; }
+.menu-sep { height: 1px; background: var(--island-border); margin: 4px 2px; }
+.tray { display: grid; grid-template-columns: repeat(3, 44px); gap: 4px; min-width: 0; }
+.tray .tool { width: 44px; height: 44px; }
+.tray-cap { grid-column: 1 / -1; font-size: 12px; color: var(--tool-key); padding: 2px 4px 0; }
+.emoji-grid { display: grid; grid-template-columns: repeat(5, 36px); gap: 2px; min-width: 0; }
+.emoji-btn { width: 36px; height: 36px; border: 0; border-radius: 6px; background: transparent; font-size: 19px; cursor: pointer; }
+.emoji-btn:hover { background: var(--tool-hover); }
+.timer-pop { display: grid; gap: 10px; min-width: 230px; padding: 10px; }
+.timer-pop h4 { margin: 0; font-size: 13.5px; font-weight: 600; }
+.presets { display: flex; gap: 6px; flex-wrap: wrap; }
+.preset { border: 1px solid var(--island-border); background: transparent; border-radius: 6px; padding: 5px 10px; font-family: var(--mono); font-size: 12.5px; cursor: pointer; }
+.preset:hover { background: var(--tool-hover); }
+.preset[aria-pressed="true"] { background: var(--tool-selected); color: var(--tool-selected-ink); border-color: transparent; }
+.start-btn { border: 0; border-radius: 6px; padding: 8px 12px; background: var(--tool-selected-ink); color: var(--island); font-weight: 600; font-size: 13px; cursor: pointer; }
+.pop-note { font-size: 12px; color: var(--tool-key); }
+
+/* timer pill on the canvas */
+.timers { position: absolute; top: 14px; right: 14px; display: grid; gap: 6px; z-index: 6; }
+.timer-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--island); box-shadow: var(--shadow); border-radius: 999px; padding: 5px 6px 5px 12px; font-family: var(--mono); font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--tool-ink); }
+.timer-pill.warning { color: var(--warn); }
+.timer-pill.critical { color: var(--critical); }
+.timer-pill small { font-family: var(--font); font-size: 11.5px; color: var(--tool-key); font-weight: 400; }
+.timer-pill button { width: 24px; height: 24px; border-radius: 999px; border: 0; background: var(--tool-hover); cursor: pointer; display: grid; place-items: center; }
+.timer-pill button svg.i { width: 12px; height: 12px; }
+
+/* bottom dock (direction C) */
+.dock { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; gap: 2px; background: var(--island); border-radius: 999px; box-shadow: var(--shadow); padding: 4px 6px; }
+.dock .emoji-btn { border-radius: 999px; width: 40px; height: 40px; font-size: 21px; }
+.dock .divider { height: 24px; }
+.dock .tool { border-radius: 999px; }
+.dock .more-emoji { width: 32px; height: 32px; border-radius: 999px; border: 0; background: transparent; color: var(--tool-key); display: grid; place-items: center; cursor: pointer; }
+.dock .more-emoji:hover { background: var(--tool-hover); }
+.dock .pop { top: auto; bottom: calc(100% + 8px); }
+
+.dock .group-tint { border-radius: 999px; }
+.dock-facil { position: absolute; right: 14px; bottom: 16px; z-index: 5; }
+.dock-facil .tool { border-radius: 999px; }
+.dock-facil .pop { top: auto; bottom: calc(100% + 8px); }
+.laser-dot { position: absolute; z-index: 8; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #ff2d2d; box-shadow: 0 0 8px 2px rgba(255, 45, 45, 0.55); pointer-events: none; animation: laserfade 0.7s linear forwards; }
+@keyframes laserfade { to { opacity: 0; transform: scale(0.3); } }
+.wb[data-cursor="laser"] { cursor: crosshair; }
+@media (max-width: 860px) { .dock-facil { bottom: 76px; } }
+
+/* sketch content on the canvas */
+.sketch { position: absolute; font-family: var(--hand); color: var(--sketch); pointer-events: none; }
+.sticky { position: absolute; width: 132px; min-height: 92px; padding: 10px 12px; font-family: var(--hand); font-size: 20px; line-height: 1.1; color: var(--sketch); border: 1.6px solid var(--sketch); border-radius: 3px; transform: rotate(var(--r, 0deg)); pointer-events: none; }
+.float { position: absolute; z-index: 7; font-size: 30px; pointer-events: none; animation: rise 1.8s ease-out forwards; }
+@keyframes rise { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); } 15% { opacity: 1; transform: translate(-50%, -60%) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -260%) scale(1); } }
+.placed { position: absolute; z-index: 3; transform: translate(-50%, -50%); pointer-events: none; color: var(--sketch); }
+.placed svg { width: 64px; height: 44px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+@media (prefers-reduced-motion: reduce) { .float { animation-duration: 0.01s; } }
+
+/* today's toolbar */
+.today { background: var(--canvas); border: 1px solid var(--rule); border-radius: 12px; padding: 22px 14px 18px; display: grid; justify-items: center; gap: 10px; position: relative; min-height: 120px; }
+.callouts { display: flex; flex-wrap: wrap; gap: 8px; }
+.callout { font-size: 13px; padding: 4px 10px; border-radius: 6px; background: var(--highlight-soft); color: var(--ink); }
+.callout.warn { background: color-mix(in srgb, var(--warn) 14%, transparent); }
+
+/* notes under the board */
+.notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.card { background: var(--canvas); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card h3 { font-size: 15px; font-weight: 600; }
+.keys { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; margin: 0; }
+.keys dt { font-family: var(--mono); font-size: 12.5px; color: var(--ink-soft); min-width: 22px; text-align: right; padding-top: 1px; }
+.keys dd { margin: 0; }
+.keys dd small { color: var(--ink-soft); font-size: 12.5px; }
+.card ul { margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14px; color: var(--ink-soft); }
+.card ul b { color: var(--ink); font-weight: 600; }
+
+/* comparison table */
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; background: var(--canvas); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.5px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+th { font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+
+.qs { margin: 0; padding-left: 20px; display: grid; gap: 10px; font-size: 14.5px; max-width: 75ch; }
+.qs li::marker { color: var(--ink-soft); font-family: var(--mono); font-size: 12.5px; }
+.qs b { font-weight: 600; }
+.qs span { color: var(--ink-soft); }
+
+@media (max-width: 860px) {
+  .row { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .notes { grid-template-columns: minmax(0, 1fr); }
+  .wb { height: 620px; }
+  .wb-top { top: 10px; }
+}
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">Design request · <a href="https://github.com/alkem-io/product/issues/1998">alkem-io/product #1998</a> · exploration, round 3</span>
+    <h1>Whiteboard Toolbar</h1>
+    <p>The most-used tools should be one click away, and reachable with number keys. Below is today's toolbar, then the chosen direction on a live whiteboard. Try the tools, press the number keys, start a timer, send a reaction.</p>
+    <p><b style="color:var(--ink)">Round 3:</b> direction A with Figma-style grouped buttons, at the same size as the other tools. Frame moves into "more tools". Every whiteboard user gets the same toolbar.</p>
+  </header>
+
+  <!-- ===== Today ===== -->
+  <section class="row" aria-labelledby="today-h">
+    <div class="note">
+      <span class="when">Today</span>
+      <h2 id="today-h">Ten numbered tools, and the timer is buried</h2>
+      <ul>
+        <li>Numbers run <b>1 to 0</b>: four of them are shapes and lines.</li>
+        <li>Reactions and the laser pointer already sit outside the menu, but <b>only once someone else joins</b> the board.</li>
+        <li>The <b>countdown timer</b> lives under "more tools", fourth from the bottom, between emoji and "Generate". Open it to see.</li>
+        <li>Anyone can start a timer, and several can run at once, one per person.</li>
+      </ul>
+    </div>
+    <div class="stage">
+      <div class="today">
+        <div class="bars" id="today-bar"></div>
+        <p class="hint">To move canvas, hold mouse wheel or spacebar while dragging, or use the hand tool</p>
+      </div>
+      <div class="callouts">
+        <span class="callout">Shapes: rectangle 2, diamond 3, ellipse 4</span>
+        <span class="callout">Lines: arrow 5, line 6</span>
+        <span class="callout warn">Timer: 2 clicks deep, no shortcut</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Playground ===== -->
+  <section class="row" aria-labelledby="dir-h" style="border-bottom:0; padding-bottom: 20px;">
+    <div class="note">
+      <span class="when" id="dir-tag">Direction A</span>
+      <h2 id="dir-h"></h2>
+      <p id="dir-sum"></p>
+      <p id="group-sum"></p>
+    </div>
+    <div class="stage">
+      <div class="wb" id="wb" aria-label="Whiteboard">
+        <div class="wb-top">
+          <div class="bars" id="bars"></div>
+          <p class="hint" id="hint"></p>
+        </div>
+        <div class="timers" id="timers" aria-live="polite"></div>
+        <div id="dock-slot"></div>
+        <div class="status" id="status"></div>
+
+        <!-- workshop content, decorative -->
+        <div class="sketch" style="left:7%; top:150px; font-size:30px; font-weight:700;">Kick-off: what slows us down?</div>
+        <div class="sticky" style="left:7%; top:205px; background:var(--sticky-1); --r:-2deg;">Too many tools to find things in</div>
+        <div class="sticky" style="left:calc(7% + 150px); top:215px; background:var(--sticky-2); --r:1.5deg;">Meetings without a clear timebox</div>
+        <div class="sticky" style="left:calc(7% + 300px); top:200px; background:var(--sticky-3); --r:-1deg;">Quiet people don't get heard</div>
+        <svg class="sketch" style="left:calc(7% + 455px); top:240px; width:120px; height:40px;" viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 22 C 40 10, 80 30, 110 18"/><path d="M100 10 L111 18 L99 25"/></svg>
+        <div class="sketch" style="left:calc(7% + 585px); top:228px; font-size:24px;">Vote with 👍</div>
+      </div>
+      <div class="notes">
+        <div class="card">
+          <h3>What sits on 1 to 9</h3>
+          <dl class="keys" id="keymap"></dl>
+        </div>
+        <div class="card">
+          <h3>What moves, and the trade-off</h3>
+          <ul id="tradeoffs"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Others ===== -->
+  <section class="row" aria-labelledby="others-h">
+    <div class="note">
+      <span class="when">Reference</span>
+      <h2 id="others-h">How other whiteboards group tools</h2>
+      <p>The brief asks whether a grouped button is a menu, or a button that changes what it does. The tools we get compared to do both, and keep the timer and reactions away from the drawing tools.</p>
+    </div>
+    <div class="stage">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Tool</th><th>Shapes</th><th>Lines and arrows</th><th>Timer and reactions</th></tr></thead>
+          <tbody>
+            <tr><td>Figma</td><td>One button that shows the <b>last shape you used</b>. Click it to draw that shape again; the small arrow opens the list.</td><td>In the same shape list, each with its own key.</td><td>Not a whiteboard; no session tools.</td></tr>
+            <tr><td>FigJam</td><td>A <b>tray</b> slides out with a grid of shapes. The button itself stays the same.</td><td>Connector is its own tool next to shapes.</td><td>Timer and music in the top bar, apart from drawing. Stamps and emotes in the main toolbar.</td></tr>
+            <tr><td>Miro</td><td>"Shapes and lines" is one button that opens a <b>panel</b>; the most recent picks are pinned to the top of it.</td><td>Inside the same panel.</td><td>Timer, voting and reactions in a separate <b>collaboration bar</b>, top right.</td></tr>
+            <tr><td>Zoom</td><td>n/a</td><td>n/a</td><td>Reactions in the <b>centre</b> of the meeting bar, one click each. This is what the facilitator feedback points to.</td></tr>
+            <tr><td>Excalidraw (today)</td><td>Each shape is its own button.</td><td>Each its own button.</td><td>Timer in "more tools". Reactions and laser in their own buttons, collaborating only.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Questions ===== -->
+  <section class="row" aria-labelledby="q-h" style="border-bottom:0;">
+    <div class="note">
+      <span class="when">Open</span>
+      <h2 id="q-h">Questions for the next round</h2>
+    </div>
+    <div class="stage">
+      <ol class="qs">
+        <li><b>What goes on key 9?</b> <span>With frame in "more tools", the bar has eight numbered tools. Key 9 could stay free, go to frame after all, or open reactions.</span></li>
+        <li><b>Which shapes go in the group?</b> <span>Rectangle, ellipse and diamond. Diamond is the one the brief calls rarely used; it could leave for "more tools".</span></li>
+        <li><b>One timer per board, or one per person?</b> <span>Today everyone can start their own, and they stack up in the corner. One shared timer that anyone can start or stop is easier to follow in a workshop.</span></li>
+        <li><b>Show the timer and reactions box when you are alone on the board?</b> <span>Today reactions only appear once a second person joins. This round shows the box whenever you can edit, so a facilitator preparing a session can find it.</span></li>
+      </ol>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  /* ---------- icons (lucide, 24 grid) ---------- */
+  const P = {
+    lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.3"/>',
+    hand: '<path d="M18 11V6a2 2 0 0 0-4 0v1"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>',
+    select: '<path d="M4.04 4.69a.5.5 0 0 1 .65-.65l16 6.5a.5.5 0 0 1-.06.95l-6.12 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.12a.5.5 0 0 1-.95.06z"/>',
+    lasso: '<path d="M7 22a5 5 0 0 1-2-4"/><path d="M3.3 14A6.8 6.8 0 0 1 2 10c0-4.4 4.5-8 10-8s10 3.6 10 8-4.5 8-10 8a12 12 0 0 1-5-1"/><circle cx="5" cy="16" r="2"/>',
+    rect: '<rect x="3.5" y="5" width="17" height="14" rx="1.5"/>',
+    diamond: '<path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/>',
+    ellipse: '<circle cx="12" cy="12" r="9"/>',
+    arrow: '<path d="M4 12h16"/><path d="m14 6 6 6-6 6"/>',
+    line: '<path d="M4 12h16"/>',
+    draw: '<path d="M21.17 6.81a1 1 0 0 0-3.98-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/>',
+    text: '<path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>',
+    eraser: '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
+    frame: '<path d="M22 6H2"/><path d="M22 18H2"/><path d="M6 2v20"/><path d="M18 2v20"/>',
+    laser: '<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>',
+    timer: '<path d="M10 2h4"/><path d="M12 14l3-3"/><circle cx="12" cy="14" r="8"/>',
+    react: '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>',
+    more: '<path d="M8.3 10a.7.7 0 0 1-.63-1.08L11.4 3a.7.7 0 0 1 1.2-.04L16.3 8.9a.7.7 0 0 1-.57 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
+    embed: '<path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/>',
+    smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/>',
+    sparkles: '<path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.13a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.13 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.13a.5.5 0 0 1-.96 0z"/>',
+    chev: '<path d="m6 9 6 6 6-6"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  };
+  const icon = (n) => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
+
+  /* ---------- tools ---------- */
+  const T = {
+    hand: { name: 'Hand', icon: 'hand', sc: 'H' },
+    select: { name: 'Select', icon: 'select', sc: 'V' },
+    rect: { name: 'Rectangle', icon: 'rect', sc: 'R' },
+    diamond: { name: 'Diamond', icon: 'diamond', sc: 'D' },
+    ellipse: { name: 'Ellipse', icon: 'ellipse', sc: 'O' },
+    arrow: { name: 'Arrow', icon: 'arrow', sc: 'A' },
+    line: { name: 'Line', icon: 'line', sc: 'L' },
+    draw: { name: 'Draw', icon: 'draw', sc: 'P' },
+    text: { name: 'Text', icon: 'text', sc: 'T' },
+    image: { name: 'Image', icon: 'image', sc: '' },
+    eraser: { name: 'Eraser', icon: 'eraser', sc: 'E' },
+    frame: { name: 'Frame', icon: 'frame', sc: 'F' },
+    laser: { name: 'Laser pointer', icon: 'laser', sc: 'K' },
+    embed: { name: 'Web embed', icon: 'embed', sc: '' },
+    lasso: { name: 'Lasso selection', icon: 'lasso', sc: '' },
+  };
+  const GROUPS = {
+    shapes: { name: 'Shapes', items: ['rect', 'ellipse', 'diamond'] },
+    lines: { name: 'Arrows and lines', items: ['arrow', 'line'] },
+  };
+  const EMOJIS = ['👍', '👏', '😂', '❤️', '🎉', '🔥', '😮', '😢', '👀', '💯'];
+  const DOCK_EMOJIS = ['👍', '👏', '❤️', '🎉', '😮'];
+
+  /* A slot is: a tool id, {group}, 'div', or a facilitator item ('timer' | 'react'). */
+  const DIRS = {
+    A: {
+      label: 'A · Facilitator island',
+      title: 'Eight tools on the bar, timer and reactions beside it',
+      sum: 'Shapes and lines fold into one button each. Frame moves to the top of "more tools"; the laser pointer joins the bar on key 8. The timer and reactions get their own small box next to the toolbar, shown to everyone who can edit the board, not only once someone else has joined.',
+      main: ['lock', 'div', 'hand', 'select', { group: 'shapes' }, { group: 'lines' }, 'draw', 'text', 'image', 'eraser', 'laser', 'div', 'moremenu'],
+      facil: ['timer', 'react'],
+      facilPlace: 'island',
+      keys: ['select', 'shapes', 'lines', 'draw', 'text', 'image', 'eraser', 'laser'],
+      more: ['frame', 'embed', 'lasso', 'emoji', 'gen'],
+      trade: [
+        '<b>Into the bar:</b> the laser pointer, on key 8.',
+        '<b>Into "more tools":</b> frame, as the first item.',
+        '<b>Next to the bar:</b> the countdown timer (from "more tools") and reactions, in one box.',
+        '<b>Grouped:</b> diamond, ellipse and line are one click into a group.',
+        '<b>Open:</b> key 9 is free. See the questions below.',
+      ],
+    },
+  };
+
+  /* ---------- state ---------- */
+  const S = {
+    dir: 'A', groupMode: 'split',
+    tool: 'select', last: { shapes: 'rect', lines: 'arrow' },
+    open: null, reactEmoji: null, timerMins: 5,
+    timers: [], // { by, left, mine }
+  };
+  const pressed = (b) => (b ? 'true' : 'false');
+  const canTimer = () => true;
+  function setTool(id) {
+    S.tool = id; S.reactEmoji = null; S.open = null;
+    Object.entries(GROUPS).forEach(([gid, g]) => { if (g.items.includes(id)) S.last[gid] = id; });
+    render();
+  }
+
+  /* ---------- builders ---------- */
+  const el = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+  const keyOf = (slot) => { const d = DIRS[S.dir]; const i = d.keys.indexOf(slot); return i < 0 ? null : i + 1; };
+
+  function toolBtn(id, num, extra = '') {
+    const t = T[id];
+    const tip = `${t.name}${t.sc ? ' — ' + t.sc : ''}${num ? ' or ' + num : ''}`;
+    return el(`<button type="button" class="tool${num ? ' hasnum' : ''}" data-tool="${id}" aria-pressed="${pressed(S.tool === id)}" title="${tip}" aria-label="${t.name}">${icon(t.icon)}${num ? `<span class="num">${num}</span>` : ''}${extra}</button>`);
+  }
+
+  function groupBtn(gid) {
+    const g = GROUPS[gid]; const num = keyOf(gid);
+    const active = g.items.includes(S.tool);
+    const shown = S.last[gid];
+    const isOpen = S.open === gid;
+    const wrap = el(`<div style="position:relative"></div>`);
+    if (S.groupMode === 'split') {
+      const split = el(`<div class="split${active ? ' on' : ''}"></div>`);
+      const main = toolBtn(shown, num);
+      main.setAttribute('aria-pressed', pressed(active));
+      main.title = `${T[shown].name} — ${num}. Press ${num} again for the next ${gid === 'shapes' ? 'shape' : 'line'}`;
+      main.addEventListener('click', (e) => { if (active) { e.stopPropagation(); S.open = isOpen ? null : gid; render(); } else setTool(shown); });
+      const chev = el(`<button type="button" class="chev" aria-label="More ${g.name.toLowerCase()}" aria-expanded="${pressed(isOpen)}">${icon('chev')}</button>`);
+      chev.addEventListener('click', (e) => { e.stopPropagation(); S.open = isOpen ? null : gid; render(); });
+      split.append(main, chev); wrap.append(split);
+      if (isOpen) {
+        const pop = el(`<div class="pop start" role="menu"></div>`);
+        g.items.forEach((id) => {
+          const it = el(`<button type="button" class="menu-item" role="menuitemradio" aria-checked="${pressed(S.tool === id)}">${icon(T[id].icon)}${T[id].name}<span class="sc">${T[id].sc}</span></button>`);
+          it.addEventListener('click', () => setTool(id));
+          pop.append(it);
+        });
+        pop.append(el(`<div class="menu-sep"></div>`), el(`<p class="pop-note" style="padding:4px 8px 2px">The button keeps the one you pick. Press ${num} again to step through without opening this list.</p>`));
+        wrap.append(pop);
+      }
+    } else {
+      const b = toolBtn(shown, num, '<span class="caret"></span>');
+      b.setAttribute('aria-pressed', pressed(active || isOpen));
+      b.setAttribute('aria-expanded', pressed(isOpen));
+      b.title = `${g.name} — ${num}`;
+      b.innerHTML = icon(active ? T[S.tool].icon : (gid === 'shapes' ? 'more' : 'arrow')) + `<span class="num">${num}</span><span class="caret"></span>`;
+      b.addEventListener('click', (e) => { e.stopPropagation(); S.open = isOpen ? null : gid; render(); });
+      wrap.append(b);
+      if (isOpen) {
+        const pop = el(`<div class="pop start" role="menu" style="min-width:0"><div class="tray"><span class="tray-cap">${g.name}</span></div></div>`);
+        const tray = pop.querySelector('.tray');
+        g.items.forEach((id) => {
+          const it = toolBtn(id, null); it.title = `${T[id].name} — ${T[id].sc}`;
+          it.addEventListener('click', () => setTool(id));
+          tray.append(it);
+        });
+        wrap.append(pop);
+      }
+    }
+    return wrap;
+  }
+
+  function moreMenu(list) {
+    const isOpen = S.open === 'more';
+    const wrap = el(`<div style="position:relative"></div>`);
+    const b = el(`<button type="button" class="tool" aria-label="More tools" title="More tools" aria-expanded="${pressed(isOpen)}" aria-pressed="${pressed(isOpen)}">${icon('more')}</button>`);
+    b.addEventListener('click', (e) => { e.stopPropagation(); S.open = isOpen ? null : 'more'; render(); });
+    wrap.append(b);
+    if (isOpen) {
+      const pop = el(`<div class="pop end" role="menu"></div>`);
+      const row = (ic, name, extra = '', cls = '') => el(`<button type="button" class="menu-item ${cls}" role="menuitem">${icon(ic)}${name}${extra}</button>`);
+      list.forEach((k) => {
+        let it;
+        if (k === 'emoji') it = row('smile', 'Emoji');
+        else if (k === 'react') it = row('react', 'Emoji reactions', '<span class="sc">›</span>');
+        else if (k === 'timer') it = row('timer', 'Countdown timer', '<span class="sc">›</span>', 'buried');
+        else if (k === 'gen') { pop.append(el(`<div class="menu-head">Generate</div>`), row('sparkles', 'Text to diagram', '<span class="badge">AI</span>'), row('embed', 'Mermaid to Excalidraw'), row('sparkles', 'Wireframe to code', '<span class="badge">AI</span>')); return; }
+        else it = row(T[k].icon, T[k].name, T[k].sc ? `<span class="sc">${T[k].sc}</span>` : '');
+        if (T[k]) it.addEventListener('click', () => setTool(k));
+        else it.addEventListener('click', () => { S.open = null; render(); });
+        pop.append(it);
+      });
+      wrap.append(pop);
+    }
+    return wrap;
+  }
+
+  function timerBtn(num, opts = {}) {
+    const isOpen = S.open === 'timer';
+    const mine = S.timers.find((t) => t.mine);
+    const allowed = canTimer();
+    const wrap = el(`<div style="position:relative"></div>`);
+    let label = icon('timer');
+    if (opts.live && S.timers[0]) label += `<span>${fmt(S.timers[0].left)}</span>`;
+    const b = el(`<button type="button" class="tool${num ? ' hasnum' : ''}${opts.live && S.timers[0] ? ' live' : ''}" aria-label="Countdown timer" aria-expanded="${pressed(isOpen)}" aria-pressed="${pressed(isOpen || !!mine)}" ${allowed ? '' : 'disabled'} title="${allowed ? 'Countdown timer' + (num ? ' — ' + num : '') : 'Only facilitators can start a timer'}">${label}${num ? `<span class="num">${num}</span>` : ''}</button>`);
+    b.addEventListener('click', (e) => { e.stopPropagation(); S.open = isOpen ? null : 'timer'; render(); });
+    wrap.append(b);
+    if (isOpen && allowed) wrap.append(timerPop(opts.up));
+    return wrap;
+  }
+
+  function timerPop(up) {
+    const pop = el(`<div class="pop end timer-pop" role="dialog" aria-label="Start a countdown"${up ? ' style="top:auto;bottom:calc(100% + 8px)"' : ''}>
+      <h4>Countdown for everyone on this board</h4>
+      <div class="presets"></div>
+      <button type="button" class="start-btn">Start ${S.timerMins} min</button>
+      <p class="pop-note">Everyone on the board sees it.</p>
+    </div>`);
+    pop.addEventListener('click', (e) => e.stopPropagation());
+    const pr = pop.querySelector('.presets');
+    [1, 3, 5, 10, 15].forEach((m) => {
+      const p = el(`<button type="button" class="preset" aria-pressed="${pressed(S.timerMins === m)}">${m} min</button>`);
+      p.addEventListener('click', () => { S.timerMins = m; render(); });
+      pr.append(p);
+    });
+    pop.querySelector('.start-btn').addEventListener('click', () => {
+      S.timers = S.timers.filter((t) => !t.mine);
+      S.timers.unshift({ by: 'You', left: S.timerMins * 60, mine: true });
+      S.open = null; render();
+    });
+    return pop;
+  }
+
+  function reactBtn(num, pos = 'end') {
+    const isOpen = S.open === 'react';
+    const wrap = el(`<div style="position:relative"></div>`);
+    const inner = S.reactEmoji ? `<span class="emoji">${S.reactEmoji}</span>` : icon('react');
+    const b = el(`<button type="button" class="tool${num ? ' hasnum' : ''}" aria-label="Emoji reactions" aria-pressed="${pressed(!!S.reactEmoji || isOpen)}" title="Emoji reactions${num ? ' — ' + num : ''}">${inner}${num ? `<span class="num">${num}</span>` : ''}</button>`);
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (S.reactEmoji) { S.reactEmoji = null; S.open = null; } else { S.open = isOpen ? null : 'react'; }
+      render();
+    });
+    wrap.append(b);
+    if (isOpen) wrap.append(emojiPop(pos));
+    return wrap;
+  }
+
+  function emojiPop(pos, list = EMOJIS, onPick) {
+    const pop = el(`<div class="pop ${pos}" role="menu"><div class="emoji-grid"></div><p class="pop-note" style="padding:6px 4px 0">Pick one, then click the board to place it. Esc to stop.</p></div>`);
+    pop.addEventListener('click', (e) => e.stopPropagation());
+    const g = pop.querySelector('.emoji-grid');
+    list.forEach((em) => {
+      const b = el(`<button type="button" class="emoji-btn" aria-label="React ${em}">${em}</button>`);
+      b.addEventListener('click', () => { if (onPick) onPick(em); else { S.reactEmoji = em; S.tool = 'react'; } S.open = null; render(); });
+      g.append(b);
+    });
+    return pop;
+  }
+
+  function buildMain(container, d) {
+    const island = el(`<div class="island" role="toolbar" aria-label="Whiteboard tools"></div>`);
+    d.main.forEach((slot) => {
+      if (slot === 'div') island.append(el(`<div class="divider"></div>`));
+      else if (slot === 'lock') island.append(el(`<button type="button" class="tool" aria-label="Lock selected elements" title="Lock selected elements">${icon('lock')}</button>`));
+      else if (slot === 'moremenu') island.append(moreMenu(d.more));
+      else if (slot === 'facilgroup') {
+        const g = el(`<div class="group-tint" role="group" aria-label="Facilitator tools"></div>`);
+        d.facil.forEach((f) => g.append(f === 'timer' ? timerBtn(keyOf('timer')) : reactBtn(keyOf('react'))));
+        island.append(g);
+      } else if (typeof slot === 'object') island.append(groupBtn(slot.group));
+      else { const b = toolBtn(slot, keyOf(slot)); b.addEventListener('click', () => setTool(slot)); island.append(b); }
+    });
+    container.append(island);
+    if (d.facilPlace === 'island') {
+      const f = el(`<div class="island facil" role="toolbar" aria-label="Timer and reactions"></div>`);
+      d.facil.forEach((x) => f.append(x === 'timer' ? timerBtn(null) : reactBtn(null)));
+      container.append(f);
+    }
+  }
+
+  function laserBtn(num) {
+    const b = toolBtn('laser', num);
+    b.addEventListener('click', (e) => { e.stopPropagation(); setTool(S.tool === 'laser' ? 'select' : 'laser'); });
+    return b;
+  }
+  function buildDock(slot, d) {
+    slot.innerHTML = '';
+    if (d.facilPlace !== 'dock') return;
+    const dock = el(`<div class="dock" role="toolbar" aria-label="Reactions and session tools"></div>`);
+    const facilItem = (x) => x === 'laser' ? laserBtn(keyOf('laser')) : timerBtn(keyOf('timer'), { live: true, up: true });
+    (d.dock || ['emojis']).forEach((part) => {
+      if (part === 'div') dock.append(el(`<div class="divider"></div>`));
+      else if (part === 'laser' || part === 'timer') dock.append(facilItem(part));
+      else if (part === 'facilgroup') {
+        const g = el(`<div class="group-tint" role="group" aria-label="Facilitator tools"></div>`);
+        g.append(facilItem('laser'), facilItem('timer'));
+        dock.append(g);
+      } else if (part === 'emojis') {
+        DOCK_EMOJIS.forEach((em) => {
+          const b = el(`<button type="button" class="emoji-btn" aria-label="React ${em}" title="React ${em}">${em}</button>`);
+          b.addEventListener('click', (e) => { e.stopPropagation(); floatFromDock(em, b); });
+          dock.append(b);
+        });
+        const isOpen = S.open === 'dockmore';
+        const mw = el(`<div style="position:relative"></div>`);
+        const m = el(`<button type="button" class="more-emoji" aria-label="More reactions" aria-expanded="${pressed(isOpen)}">${icon('plus')}</button>`);
+        m.addEventListener('click', (e) => { e.stopPropagation(); S.open = isOpen ? null : 'dockmore'; render(); });
+        mw.append(m);
+        if (isOpen) {
+          const pop = emojiPop('', EMOJIS.filter((x) => !DOCK_EMOJIS.includes(x)), (em) => floatFromDock(em, m));
+          pop.style.left = '50%';
+          pop.querySelector('.pop-note').textContent = 'One click sends it.';
+          mw.append(pop);
+        }
+        dock.append(mw);
+      }
+    });
+    slot.append(dock);
+    if (d.dockFacil) {
+      const f = el(`<div class="island dock-facil" role="toolbar" aria-label="Facilitator tools"><span class="island-label">Facilitator</span></div>`);
+      d.dockFacil.forEach((x) => f.append(facilItem(x)));
+      slot.append(f);
+    }
+  }
+
+  /* ---------- canvas interactions ---------- */
+  const wb = document.getElementById('wb');
+  function floatAt(em, x, y) {
+    const f = el(`<div class="float" style="left:${x}px; top:${y}px">${em}</div>`);
+    wb.append(f); setTimeout(() => f.remove(), 1900);
+  }
+  function floatFromDock(em, btn) {
+    const r = btn.getBoundingClientRect(); const w = wb.getBoundingClientRect();
+    for (let i = 0; i < 3; i++) setTimeout(() => floatAt(em, r.left - w.left + r.width / 2 + (Math.random() * 40 - 20), r.top - w.top - 10), i * 140);
+  }
+  const SHAPE_SVG = {
+    rect: '<rect x="2" y="2" width="60" height="40" rx="3"/>',
+    ellipse: '<ellipse cx="32" cy="22" rx="30" ry="20"/>',
+    diamond: '<path d="M32 2 L62 22 L32 42 L2 22 Z"/>',
+    arrow: '<path d="M2 22 H60"/><path d="M50 12 L61 22 L50 32"/>',
+    line: '<path d="M2 22 H62"/>',
+    frame: '<rect x="2" y="2" width="60" height="40" stroke-dasharray="4 3"/>',
+  };
+  wb.addEventListener('click', (e) => {
+    if (e.target.closest('.island, .dock, .timers, .pop')) return;
+    if (S.open) { S.open = null; render(); return; }
+    const w = wb.getBoundingClientRect(); const x = e.clientX - w.left; const y = e.clientY - w.top;
+    if (S.reactEmoji) { floatAt(S.reactEmoji, x, y); return; }
+    if (SHAPE_SVG[S.tool]) {
+      const p = el(`<div class="placed" style="left:${x}px; top:${y}px"><svg viewBox="0 0 64 44">${SHAPE_SVG[S.tool]}</svg></div>`);
+      wb.append(p);
+    }
+  });
+  document.addEventListener('click', (e) => { if (S.open && !e.target.closest('.pop, .island, .dock')) { S.open = null; render(); } });
+  wb.addEventListener('pointermove', (e) => {
+    if (S.tool !== 'laser' || e.target.closest('.island, .dock, .pop')) return;
+    const w = wb.getBoundingClientRect();
+    const d = el(`<div class="laser-dot" style="left:${e.clientX - w.left}px; top:${e.clientY - w.top}px"></div>`);
+    wb.append(d); setTimeout(() => d.remove(), 720);
+  });
+
+  /* ---------- keyboard ---------- */
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || /input|textarea|select/i.test(e.target.tagName)) return;
+    const d = DIRS[S.dir];
+    if (e.key === 'Escape') { S.open = null; S.reactEmoji = null; if (S.tool === 'react') S.tool = 'select'; render(); return; }
+    if (/^[1-9]$/.test(e.key)) {
+      const slot = d.keys[+e.key - 1];
+      if (!slot) return;
+      if (GROUPS[slot]) {
+        const g = GROUPS[slot];
+        if (g.items.includes(S.tool)) { const n = g.items[(g.items.indexOf(S.tool) + 1) % g.items.length]; S.tool = n; S.last[slot] = n; }
+        else S.tool = S.last[slot];
+        S.open = null;
+      } else if (slot === 'timer') { if (canTimer()) S.open = S.open === 'timer' ? null : 'timer'; }
+      else if (slot === 'react') { S.open = S.open === 'react' ? null : 'react'; }
+      else { S.tool = slot; S.open = null; }
+      flash(e.key); render(); e.preventDefault(); return;
+    }
+    const byLetter = Object.entries(T).find(([id, t]) => t.sc && t.sc.toLowerCase() === e.key.toLowerCase());
+    if (byLetter) {
+      const id = byLetter[0];
+      Object.entries(GROUPS).forEach(([gid, g]) => { if (g.items.includes(id)) S.last[gid] = id; });
+      S.tool = id; S.reactEmoji = null; S.open = null; render();
+    }
+  });
+  let lastKey = null;
+  function flash(k) { lastKey = k; setTimeout(() => { if (lastKey === k) { lastKey = null; renderStatus(); } }, 1200); }
+
+  /* ---------- timers ---------- */
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  setInterval(() => {
+    if (!S.timers.length) return;
+    S.timers.forEach((t) => (t.left = Math.max(0, t.left - 1)));
+    S.timers = S.timers.filter((t) => t.left > 0);
+    renderTimers();
+    if (DIRS[S.dir].facilPlace === 'dock') { const live = document.querySelector('.dock .tool.live span'); if (live && S.timers[0]) live.textContent = fmt(S.timers[0].left); else if (!S.timers[0] || live == null) render(); }
+  }, 1000);
+  function renderTimers() {
+    const host = document.getElementById('timers'); host.innerHTML = '';
+    if (DIRS[S.dir].facilPlace === 'dock') return; // the dock shows it
+    S.timers.forEach((t) => {
+      const cls = t.left <= 5 ? 'critical' : t.left <= 60 ? 'warning' : '';
+      const canStop = t.mine;
+      const p = el(`<div class="timer-pill ${cls}">${icon('timer')}<span>${fmt(t.left)}</span><small>${t.mine ? 'your timer' : t.by}</small>${canStop ? `<button type="button" aria-label="Stop timer">${icon('x')}</button>` : '<span style="width:6px"></span>'}</div>`);
+      const stop = p.querySelector('button');
+      if (stop) stop.addEventListener('click', (e) => { e.stopPropagation(); S.timers = S.timers.filter((x) => x !== t); render(); });
+      host.append(p);
+    });
+  }
+
+  /* ---------- render ---------- */
+  function renderStatus() {
+    const d = DIRS[S.dir];
+    const name = S.reactEmoji ? `Reaction ${S.reactEmoji}, click the board` : (T[S.tool] ? T[S.tool].name : 'Select');
+    document.getElementById('status').innerHTML = `Tool: <b>${name}</b>${lastKey ? ` · pressed <b>${lastKey}</b>` : ''}`;
+  }
+  function render() {
+    const d = DIRS[S.dir];
+    document.getElementById('dir-tag').textContent = 'Chosen direction';
+    document.getElementById('dir-h').textContent = d.title;
+    document.getElementById('dir-sum').textContent = d.sum;
+    document.getElementById('group-sum').textContent = S.groupMode === 'split'
+      ? 'Grouped buttons are the same size as every other tool. The button shows the last shape you used; click it to draw that again. Click it again, or anywhere on its right edge, to open the rest. Press 2 again to step to the next shape.'
+      : 'Grouped buttons: clicking opens a tray of options. The button keeps a fixed icon until you pick something from it.';
+    const bars = document.getElementById('bars'); bars.innerHTML = ''; buildMain(bars, d);
+    buildDock(document.getElementById('dock-slot'), d);
+    document.getElementById('hint').textContent = S.reactEmoji ? 'Click anywhere on the board to react. Esc to stop.' : (S.tool === 'laser' ? 'Move over the board to point. Everyone sees the trail.' : SHAPE_SVG[S.tool] ? `Click the board to place a ${T[S.tool].name.toLowerCase()}.` : 'Press 1 to 8 to switch tools. Try pressing 2 a few times.');
+    wb.dataset.cursor = S.reactEmoji ? 'react' : S.tool === 'laser' ? 'laser' : S.tool === 'hand' ? 'hand' : SHAPE_SVG[S.tool] ? 'draw' : '';
+    // key map
+    const km = document.getElementById('keymap'); km.innerHTML = '';
+    d.keys.forEach((k, i) => {
+      let label;
+      if (GROUPS[k]) label = `${GROUPS[k].name} <small>${GROUPS[k].items.map((x) => T[x].name.toLowerCase()).join(', ')}</small>`;
+      else if (k === 'timer') label = 'Countdown timer';
+      else if (k === 'react') label = 'Emoji reactions';
+      else if (k === 'laser' && DIRS[S.dir].facilPlace === 'dock' && DIRS[S.dir].round === 2) label = 'Laser pointer <small>in the bottom bar</small>';
+      else if (k === 'timer' && DIRS[S.dir].facilPlace === 'dock') label = 'Countdown timer <small>in the bottom bar</small>';
+      else label = T[k].name;
+      km.append(el(`<dt>${i + 1}</dt>`), el(`<dd>${label}</dd>`));
+    });
+    km.append(el(`<dt>H</dt>`), el(`<dd>Hand <small>no number, same as today</small></dd>`));
+    document.getElementById('tradeoffs').innerHTML = d.trade.map((t) => `<li>${t}</li>`).join('')
+      + `<li><b>"More tools" keeps:</b> ${d.more.map((k) => k === 'gen' ? 'the Generate options' : k === 'emoji' ? 'insert emoji' : T[k].name.toLowerCase()).join(', ')}.</li>`;
+    renderTimers(); renderStatus();
+  }
+
+  /* ---------- today's toolbar (static except the menu) ---------- */
+  function renderToday() {
+    const host = document.getElementById('today-bar'); host.innerHTML = '';
+    const island = el(`<div class="island" role="toolbar" aria-label="Today's whiteboard tools"></div>`);
+    island.append(el(`<button type="button" class="tool" aria-label="Lock">${icon('lock')}</button>`), el(`<div class="divider"></div>`));
+    const order = ['hand', 'select', 'rect', 'diamond', 'ellipse', 'arrow', 'line', 'draw', 'text', 'image', 'eraser'];
+    order.forEach((id, i) => {
+      const n = i === 0 ? null : i === 10 ? 0 : i;
+      const b = el(`<button type="button" class="tool${n !== null ? ' hasnum' : ''}" aria-pressed="${pressed(id === 'select')}" aria-label="${T[id].name}" title="${T[id].name}">${icon(T[id].icon)}${n !== null ? `<span class="num">${n}</span>` : ''}</button>`);
+      island.append(b);
+    });
+    island.append(el(`<div class="divider"></div>`));
+    const isOpen = S.open === 'today-more';
+    const mw = el(`<div style="position:relative"></div>`);
+    const mb = el(`<button type="button" class="tool" aria-label="More tools" title="More tools" aria-expanded="${pressed(isOpen)}" aria-pressed="${pressed(isOpen)}">${icon('more')}</button>`);
+    mb.addEventListener('click', (e) => { e.stopPropagation(); S.open = isOpen ? null : 'today-more'; renderToday(); });
+    mw.append(mb);
+    if (isOpen) {
+      const pop = el(`<div class="pop end" role="menu"></div>`);
+      const row = (ic, name, extra = '', cls = '') => el(`<div class="menu-item ${cls}">${icon(ic)}${name}${extra}</div>`);
+      pop.append(row('frame', 'Frame tool', '<span class="sc">F</span>'), row('embed', 'Web embed'), row('laser', 'Laser pointer', '<span class="sc">K</span>'), row('lasso', 'Lasso selection'), row('smile', 'Emoji'), row('react', 'Emoji reactions', '<span class="sc">›</span>'), row('timer', 'Countdown timer', '<span class="sc">›</span>', 'buried'),
+        el(`<div class="menu-head">Generate</div>`), row('sparkles', 'Text to diagram', '<span class="badge">AI</span>'), row('embed', 'Mermaid to Excalidraw'), row('sparkles', 'Wireframe to code', '<span class="badge">AI</span>'));
+      mw.append(pop);
+    }
+    island.append(mw);
+    host.append(island,
+      el(`<div class="island" title="Shown only while collaborating">${'<button type="button" class="tool" aria-label="Laser pointer">' + icon('laser') + '</button>'}</div>`),
+      el(`<div class="island" title="Shown only while collaborating">${'<button type="button" class="tool" aria-label="Emoji reactions">' + icon('react') + '</button>'}</div>`));
+  }
+  document.addEventListener('click', (e) => { if (S.open === 'today-more' && !e.target.closest('.today .pop')) { S.open = null; renderToday(); } });
+
+  renderToday(); render();
+})();
+</script>

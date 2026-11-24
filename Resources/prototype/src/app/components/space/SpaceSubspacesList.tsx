@@ -26,9 +26,6 @@ import { useNavigate, useParams } from 'react-router';
 import { SpaceCollection } from '@/crd/components/callout/SpaceCollection/SpaceCollection';
 import { PostCard } from '@/app/components/space/PostCard';
 import { toSpaceCard, type MockSpaceCard } from '@/app/mappers/spaceCard';
-import { ActivityDotSlots, cardNameSlot } from '@/app/components/shared/ActivityDotSlots';
-import { useActivityIndicators } from '@/app/contexts/ActivityIndicatorsContext';
-import { spaceOrSubspaceIds } from '@/app/data/activity-data';
 
 // Subspace avatar colors
 const SUBSPACE_COLORS = [
@@ -181,13 +178,6 @@ export function SpaceSubspacesList() {
     )
   );
 
-  const { hasContainerActivity } = useActivityIndicators();
-  const activitySlots = SUBSPACES.flatMap((subspace, i) =>
-    spaceOrSubspaceIds(subspace.slug).some(hasContainerActivity)
-      ? [cardNameSlot(subspace.slug, subspaces[i].name, subspaces[i].href)]
-      : []
-  );
-
   return (
     <PostCard
       post={{
@@ -201,9 +191,7 @@ export function SpaceSubspacesList() {
       }}
       reactionsEnabled={false}
     >
-      <ActivityDotSlots slots={activitySlots}>
-        <SpaceCollection subspaces={subspaces} onSubspaceClick={space => navigate(space.href)} />
-      </ActivityDotSlots>
+      <SpaceCollection subspaces={subspaces} onSubspaceClick={space => navigate(space.href)} />
     </PostCard>
   );
 }

@@ -5,9 +5,6 @@ import { Button } from "@/crd/primitives/button";
 import { MOCK_MEMBERSHIPS, MembershipItem } from "@/app/components/memberships/membershipData";
 import { ShowMoreModal } from "./ShowMoreModal";
 import { BrowseAndPinModal } from "./BrowseAndPinModal";
-import { ActivityDot } from "@/ahead/ActivityDot";
-import { useActivityIndicators } from "@/app/contexts/ActivityIndicatorsContext";
-import { spaceOrSubspaceIds } from "@/app/data/activity-data";
 
 // Mock open applications for new user flow (1 item for design)
 const MOCK_OPEN_APPLICATIONS = [
@@ -155,8 +152,6 @@ function ResponsivePlaceholderCard({ onClick }: { onClick: () => void }) {
 
 // Reusable card component (banner + footer format)
 function SpaceCardCompact({ item, onClick }: { item: MembershipItem; onClick: () => void }) {
-  const { hasContainerActivity } = useActivityIndicators();
-  const hasActivity = spaceOrSubspaceIds(item.slug).some(hasContainerActivity);
   return (
     <div
       onClick={onClick}
@@ -233,7 +228,6 @@ function SpaceCardCompact({ item, onClick }: { item: MembershipItem; onClick: ()
         >
           {item.name}
         </h3>
-        {hasActivity && <ActivityDot className="shrink-0" label={`${item.name} has new activity`} />}
       </div>
     </div>
   );
