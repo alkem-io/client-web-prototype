@@ -99,6 +99,8 @@ svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColo
 .screen { background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(15,23,42,0.05); font-size: 14px; }
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 500; line-height: 1.4; white-space: nowrap; border: 1px solid var(--border); background: transparent; color: var(--muted-foreground); }
 .badge .i { font-size: 11.5px; }
+.badge.icon-only { padding: 4px; }
+.badge.icon-only .i { font-size: 14px; }
 .badge.focus-ring { box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--highlight); }
 .tooltip { background: var(--tooltip); color: var(--tooltip-fg); border-radius: var(--radius); padding: 10px 12px; font-size: 13px; line-height: 1.45; box-shadow: var(--shadow); max-width: 320px; }
 .tooltip .more { display: block; margin-top: 6px; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
@@ -190,6 +192,15 @@ svg.i { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColo
 .about-sec.new { padding: 14px; border-radius: 8px; background: var(--highlight-soft); outline: 2px dashed var(--highlight); outline-offset: 0; }
 .about-sec.new .facts { border-top-color: transparent; }
 .about-sec.new .fact:last-child { border-bottom: 0; }
+/* collapsible: closed by default, the summary carries the badge so the answer shows even when closed */
+details.about-sec.new { padding: 0; }
+details.about-sec.new > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+details.about-sec.new > summary::-webkit-details-marker { display: none; }
+details.about-sec.new > summary h5 { flex: 1; }
+details.about-sec.new > summary .chev { color: var(--muted-foreground); font-size: 16px; transition: transform 160ms ease; }
+details.about-sec.new[open] > summary .chev { transform: rotate(180deg); }
+details.about-sec.new > summary:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; border-radius: 8px; }
+details.about-sec.new > .about-inner { padding: 0 14px 14px; }
 
 /* subspace list */
 .side { max-width: 340px; padding: 16px; }
@@ -243,6 +254,7 @@ td .badge { font-size: 11.5px; }
   <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></symbol>
   <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
@@ -256,7 +268,7 @@ td .badge { font-size: 11.5px; }
     <span class="eyebrow">Design concept · client-web #7730</span>
     <h1>Who can read what I post?</h1>
     <p>Inside a space, nothing tells members whether what they write is open to the whole internet or stays among members. This page shows every place we answer that question, in the order a member runs into them. The same sentence appears everywhere, so people learn it once.</p>
-    <p>Everything here except the subspace list is shown to members and admins only. People who aren't members see the space exactly as they do today.</p>
+    <p>Everything here is shown to members and admins only. People who aren't members see the space exactly as they do today.</p>
     <p>Use the switch below to see how the wording changes for each kind of space. The hardest case is a public subspace inside a private space. It is neither public nor private, so it gets its own label: <b>Members only</b>.</p>
   </header>
 
@@ -278,7 +290,7 @@ td .badge { font-size: 11.5px; }
       <div class="note">
         <span class="when">Always there</span>
         <h2 id="t-header">A badge next to the space name</h2>
-        <p>Shown on every tab of every space and subspace, to members and admins. Hovering, focusing or tapping it opens one sentence naming who can read what's posted here.</p>
+        <p>Shown on every tab of every space and subspace, to members and admins. Just the icon, no label, so it stays out of the way of the name. Hovering, focusing or tapping it opens one sentence naming who can read what's posted here.</p>
         <p>"What does this mean?" opens the About dialog at the new <i>Who can see what</i> section. That way the badge and About lead to each other.</p>
         <span class="status"><b>Agreed</b> · seen by members and admins</span>
       </div>
@@ -290,7 +302,7 @@ td .badge { font-size: 11.5px; }
             <div class="title-row">
               <h3 data-bind="name"></h3>
               <span class="badge-anchor">
-                <span class="badge focus-ring" data-bind="badge"></span>
+                <span class="badge icon-only focus-ring" data-bind="badgeIcon"></span>
                 <span class="tooltip" role="tooltip">
                   <span data-bind="sentence"></span>
                   <span class="more">What does this mean?</span>
@@ -345,7 +357,7 @@ td .badge { font-size: 11.5px; }
               <p class="footnote" data-bind="hidden"></p>
             </div>
             <div class="dlg-foot">
-              <span class="findagain">Find this again under <span class="badge" data-bind="badge"></span></span>
+              <span class="findagain">Find this again under <span class="badge icon-only" data-bind="badgeIcon"></span> next to the name</span>
               <span class="btn btn-primary">Got it</span>
             </div>
           </div>
@@ -359,8 +371,9 @@ td .badge { font-size: 11.5px; }
         <span class="when">When you go looking</span>
         <h2 id="t-about">A "Who can see what" section in About</h2>
         <p>Same rows as the welcome dialog: the full explanation behind the badge. Few people open About on their own, so it backs up the badge and the welcome dialog rather than replacing them.</p>
+        <p>It starts folded, so it doesn't push the rest of About down. Click it to unfold. "What does this mean?" on the header badge opens About with this section already unfolded.</p>
         <p>Only members and admins see this section. Everyone else sees About as it is today.</p>
-        <span class="status"><b>Agreed</b> · seen by members and admins</span>
+        <span class="status"><b>Agreed</b> · folded by default, seen by members and admins</span>
       </div>
       <div class="stage">
         <div class="dialog-stage">
@@ -374,8 +387,12 @@ td .badge { font-size: 11.5px; }
                 <h5>What</h5>
                 <p data-bind="tagline"></p>
               </div>
-              <div class="about-sec new">
-                <h5>Who can see what</h5>
+              <details class="about-sec new">
+                <summary>
+                  <h5>Who can see what</h5>
+                  <svg class="i chev" aria-hidden="true"><use href="#i-chevron"/></svg>
+                </summary>
+                <div class="about-inner">
                 <div class="facts">
                   <div class="fact">
                     <span class="ico" data-bind="factIcon"></span>
@@ -389,7 +406,8 @@ td .badge { font-size: 11.5px; }
                   </div>
                 </div>
                 <p class="footnote" data-bind="hidden"></p>
-              </div>
+                </div>
+              </details>
               <div class="about-sec faded">
                 <h5>Leads</h5>
                 <p>Sanne Vermeer · Tomasz Kowalski</p>
@@ -406,7 +424,7 @@ td .badge { font-size: 11.5px; }
         <span class="when">While browsing</span>
         <h2 id="t-list">The same icon in the subspace list</h2>
         <p>The sidebar already shows a lock on private subspaces. With this change it uses the same three icons and the same hover sentence as the badge, so the list and the header never disagree.</p>
-        <span class="status"><b>Agreed</b> · seen by anyone who can see the list</span>
+        <span class="status"><b>Agreed</b> · seen by members and admins</span>
       </div>
       <div class="stage">
         <div class="screen side">
@@ -548,6 +566,8 @@ td .badge { font-size: 11.5px; }
     set('sentence', esc(c.sentence));
     set('listSentence', esc(c.sentence));
     set('badge', badgeHTML(c));
+    set('badgeIcon', icon(c.icon));
+    document.querySelectorAll('[data-bind="badgeIcon"]').forEach(function (el) { el.setAttribute('aria-label', c.label); el.classList.toggle('is-private', c.privateStyle); });
     set('factIcon', icon(c.icon));
     set('listIcon', icon(c.icon));
     set('audienceShort', esc(c.short));
