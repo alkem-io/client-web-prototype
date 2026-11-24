@@ -53,8 +53,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/crd/primitives/toolti
  *  - Who exactly can see in without being a member (the footnote).
  *  - Whether profiles really are members-only: a space setting controls
  *    whether non-members see the member list.
- *  - The wording below the second level, which the design does not cover. Here
- *    "Members only" names the subspace and the nearest private space above it.
  */
 
 export type SpaceAccess = {
