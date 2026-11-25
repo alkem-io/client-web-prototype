@@ -2,13 +2,14 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <!-- Published as a Claude artifact: https://claude.ai/artifact/LVUvEfhbuwZ654BaSAbshP. Edit here and republish to the same link.
      Exploration, not built. The warm direction was chosen on 2026-11-25; the calm one is in this file's history.
+     One message covers planned and unexpected, because a static page cannot tell which it is.
      Static only for now (Bobby): text and a status link, no return time. The version with times is parked in
      maintenance-page-with-times.html. The copyright year fills itself in, so it turns 2027 on 1 January. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: two columns, one per situation, desktop above phone.
+/* Layout: two columns, one per drawing with the same message, desktop above phone.
    Screens are drawn at true size (1120 or 390 wide) and scaled to fit. They are light only, like production. */
 :root {
   --board: #e9eef2; --ink: #1d384a; --ink-soft: #55677a; --rule: #cfd8e0; --chrome: #ffffff; --chrome-line: #d6dde4;
@@ -67,7 +68,7 @@ figcaption { font-size: 13px; font-weight: 500; color: var(--ink-soft); }
 .B .split { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }
 .B .left { display: flex; flex-direction: column; justify-content: space-between; padding: 36px 48px; min-width: 0; }
 .B .mid { display: grid; gap: 22px; }
-.B .ttl { font-size: 40px; line-height: 1.08; }
+.B .ttl { font-size: 38px; line-height: 1.08; }
 .B .body { font-size: 16px; }
 .B .acts { display: flex; flex-wrap: wrap; gap: 8px; }
 .B .right { background: var(--brand-wash); position: relative; overflow: hidden; }
@@ -96,7 +97,7 @@ figcaption { font-size: 13px; font-weight: 500; color: var(--ink-soft); }
       <button type="button" id="lang-nl" data-lang="nl" aria-pressed="false">Nederlands</button>
     </div>
   </div>
-  <div class="cols"><div id="col-planned" class="dir"></div><div id="col-down" class="dir"></div></div>
+  <div class="cols"><div id="col-boxes" class="dir"></div><div id="col-plug" class="dir"></div></div>
 </div>
 
 <script>
@@ -106,13 +107,14 @@ const GLOBE = '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"
 
 const T = {
   en: { name: 'English', status: 'View status page', help: 'Questions? We’re happy to help:',
-    planned: ['We’re moving a few boxes', 'Alkemio is offline for planned maintenance. Our apologies for the inconvenience! We’re working hard to get everything back in place as soon as possible.', 'Curious how it’s going? Take a peek at our status page.'],
-    down: ['Oops, something came loose', 'Alkemio is down at the moment, and we’re really sorry about that. We’re working hard to get everything up and running again as soon as possible.', 'Curious how it’s going? Take a peek at our status page.'],
-    cap: { planned: 'Planned', down: 'Unexpected' } },
+    title: 'Sorry, Alkemio is offline right now',
+    text: 'This can be because of planned maintenance or an unexpected problem. Either way, we’re working hard to restore the service as soon as possible. Our apologies for the inconvenience.',
+    peek: 'You can follow the latest on our status page.' },
   nl: { name: 'Nederlands', status: 'Bekijk statuspagina', help: 'Vragen? We helpen je graag:',
-    planned: ['We verhuizen een paar dozen', 'Alkemio is offline voor gepland onderhoud. Onze excuses voor het ongemak! We werken hard om alles zo snel mogelijk weer op z’n plek te krijgen.', 'Benieuwd hoe het gaat? Neem een kijkje op onze statuspagina.'],
-    down: ['Oeps, er is iets losgeschoten', 'Alkemio ligt er op dit moment uit, en dat spijt ons. We werken hard om alles zo snel mogelijk weer aan de praat te krijgen.', 'Benieuwd hoe het gaat? Neem een kijkje op onze statuspagina.'],
-    cap: { planned: 'Gepland', down: 'Onverwacht' } } };
+    title: 'Sorry, Alkemio is op dit moment offline',
+    text: 'Dat kan komen door gepland onderhoud of een onverwacht probleem. Hoe dan ook, we werken hard om alles zo snel mogelijk weer beschikbaar te maken. Onze excuses voor het ongemak.',
+    peek: 'Op onze statuspagina lees je het laatste nieuws.' } };
+const CAP = { boxes: '1. Boxes', plug: '2. Plug' };
 const MAIL = 'support@alkem.io';
 const YEAR = new Date().getFullYear();
 
@@ -130,33 +132,33 @@ const MOVE = `<svg viewBox="0 0 560 700" preserveAspectRatio="xMidYMid meet" ari
   <g transform="translate(286 486) scale(.95)">${LOGO.replace('<svg ', '<svg width="54" height="52" x="-14" y="0" ').replace('viewBox', 'style="position:static" viewBox')}</g>
   <path d="M96 190h26l26 372" fill="none" stroke="#1d384a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><rect x="128" y="560" width="344" height="11" rx="5.5" fill="#1d384a"/>
   <g fill="#1d384a"><circle cx="186" cy="588" r="21"/><circle cx="414" cy="588" r="21"/></g><g fill="#bfeaf1"><circle cx="186" cy="588" r="8"/><circle cx="414" cy="588" r="8"/></g></svg>`;
-/* Unexpected: the plug is out. */
+/* The plug is out: reads as maintenance and as an outage. */
 const PLUG = `<svg class="plug" viewBox="0 0 560 700" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
   <circle cx="290" cy="345" r="235" fill="#bfeaf1"/>
   <path d="M-800 520H-20C90 520 60 345 150 345h26" fill="none" stroke="#1d384a" stroke-width="13" stroke-linecap="round"/>
   <path d="M1400 180H580C470 180 500 345 420 345h-16" fill="none" stroke="#1d384a" stroke-width="13" stroke-linecap="round"/>
   <g class="bob"><path d="M174 300h34a40 40 0 0 1 40 40v10a40 40 0 0 1-40 40h-34z" fill="#09bcd4"/><rect x="246" y="316" width="32" height="11" rx="4" fill="#1d384a"/><rect x="246" y="363" width="32" height="11" rx="4" fill="#1d384a"/></g>
   <path d="M410 292h-40a44 44 0 0 0-44 44v18a44 44 0 0 0 44 44h40z" fill="#1d384a"/><rect x="326" y="316" width="26" height="11" rx="4" fill="#bfeaf1"/><rect x="326" y="363" width="26" height="11" rx="4" fill="#bfeaf1"/>
-  <g stroke="#f59e0b" stroke-width="7" stroke-linecap="round"><path d="M302 284v-30M282 292l-16-22M322 292l16-22M302 408v30M282 400l-16 22M322 400l16 22"/></g></svg>`;
+  <g stroke="#ffffff" stroke-width="7" stroke-linecap="round"><path d="M302 284v-30M282 292l-16-22M322 292l16-22M302 408v30M282 400l-16 22M322 400l16 22"/></g></svg>`;
 
 let lang = 'en';
 const brand = cls => `<div class="brand ${cls || ''}">${LOGO}<span>ALKEMIO</span></div>`;
-function parts(state) {
-  const t = T[lang], [title, text, peek] = t[state];
-  return { t, title, text, peek,
+function parts() {
+  const t = T[lang];
+  return { ...t,
     acts: `<div class="acts"><span class="btn p">${t.status}${EXT}</span></div>`,
     help: `<div class="help">${t.help} <b>${MAIL}</b></div>`,
     foot: cls => `<div class="foot ${cls || ''}"><span>© ${YEAR} Alkemio B.V.</span><span>${GLOBE}${t.name}</span></div>` };
 }
 function screen(state) {
-  const p = parts(state);
-  return `<div class="scr B"><div class="split"><div class="left">${brand()}<div class="mid"><div class="ttl">${p.title}</div><div class="body">${p.text}</div><div class="body">${p.peek}</div>${p.acts}${p.help}</div>${p.foot()}</div><div class="right">${brand('mbrand')}${state === 'down' ? PLUG : MOVE}</div></div>${p.foot('mfoot')}</div>`;
+  const p = parts();
+  return `<div class="scr B"><div class="split"><div class="left">${brand()}<div class="mid"><div class="ttl">${p.title}</div><div class="body">${p.text}</div><div class="body">${p.peek}</div>${p.acts}${p.help}</div>${p.foot()}</div><div class="right">${brand('mbrand')}${state === 'plug' ? PLUG : MOVE}</div></div>${p.foot('mfoot')}</div>`;
 }
-const desk = s => `<figure><figcaption>${T[lang].cap[s]}</figcaption><div class="frame"><div class="bar"><i></i><i></i><i></i><span>alkem.io</span></div><div class="fit d">${screen(s)}</div></div></figure>`;
-const mob = s => `<figure class="phone"><figcaption>${T[lang].cap[s]}</figcaption><div class="frame"><div class="fit m">${screen(s)}</div></div></figure>`;
+const desk = s => `<figure><figcaption>${CAP[s]}</figcaption><div class="frame"><div class="bar"><i></i><i></i><i></i><span>alkem.io</span></div><div class="fit d">${screen(s)}</div></div></figure>`;
+const mob = s => `<figure class="phone"><figcaption>${CAP[s]}</figcaption><div class="frame"><div class="fit m">${screen(s)}</div></div></figure>`;
 function fit() { document.querySelectorAll('.fit').forEach(f => { f.firstElementChild.style.transform = `scale(${f.clientWidth / (f.classList.contains('d') ? 1120 : 390)})`; }); }
 function draw() {
-  for (const s of ['planned', 'down']) document.getElementById('col-' + s).innerHTML = desk(s) + mob(s);
+  for (const s of ['boxes', 'plug']) document.getElementById('col-' + s).innerHTML = desk(s) + mob(s);
   document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
   fit();
 }
