@@ -204,21 +204,21 @@ export function MessagesOverlay() {
         // The back arrow only exists inside a thread — it returns to the list.
         onBack={selected ? () => setSelectedId(null) : undefined}
         backLabel={t('thread.back')}
-        // The gear is about chat in general, so it shows in the list only.
-        settingsMenu={
-          selected ? undefined : (
-            <ChatSettingsMenu
-              label={t('panel.settings')}
-              statusLabel={ownStatus ? t('status.change') : t('status.set')}
-              onEditStatus={() => setStatusDialogOpen(true)}
-              notificationSettingsLabel={t('panel.settings')}
-              onOpenNotificationSettings={() => {
-                close();
-                navigate(NOTIFICATION_SETTINGS_URL);
-              }}
-            />
-          )
-        }
+        // The gear is about chat in general; a conversation's own options are in its header menu.
+        // In a thread the panel hands the gear its expand and sound toggles.
+        settingsMenu={toggles => (
+          <ChatSettingsMenu
+            {...toggles}
+            label={t('panel.settings')}
+            statusLabel={ownStatus ? t('status.change') : t('status.set')}
+            onEditStatus={() => setStatusDialogOpen(true)}
+            notificationSettingsLabel={t('panel.settings')}
+            onOpenNotificationSettings={() => {
+              close();
+              navigate(NOTIFICATION_SETTINGS_URL);
+            }}
+          />
+        )}
         // Your own status, under the title of the list.
         subtitle={
           !selected && ownStatus ? (
@@ -234,6 +234,8 @@ export function MessagesOverlay() {
         }
         expandLabel={t('panel.expand')}
         collapseLabel={t('panel.collapse')}
+        muteSoundLabel={t('panel.muteSound')}
+        unmuteSoundLabel={t('panel.unmuteSound')}
         titleAvatar={titleAvatar}
         // Tapping a group's picture or name opens its settings.
         onTitleClick={isGroup ? () => setGroupSettingsOpen(true) : undefined}
