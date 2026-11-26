@@ -1,0 +1,168 @@
+<title>Maintenance Page</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- Published as a Claude artifact: https://claude.ai/artifact/LVUvEfhbuwZ654BaSAbshP. Edit here and republish to the same link.
+     Exploration, not built. The warm direction was chosen on 2026-11-25; the calm one is in this file's history.
+     Two separate pages, planned and unexpected: one message for both made planned work sound like a surprise (Simone).
+     Planned sounds in control; only unexpected says sorry in the title.
+     Static only for now (Bobby): text and a status link, no return time. The version with times is parked in
+     maintenance-page-with-times.html. The copyright year fills itself in, so it turns 2027 on 1 January. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: two columns, one per page, desktop above phone.
+   Screens are drawn at true size (1120 or 390 wide) and scaled to fit. They are light only, like production. */
+:root {
+  --board: #e9eef2; --ink: #1d384a; --ink-soft: #55677a; --rule: #cfd8e0; --chrome: #ffffff; --chrome-line: #d6dde4;
+  --shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.28);
+  --background: #fcfdfe; --foreground: #1d384a; --card: #ffffff; --muted: #f1f5f9; --muted-foreground: #64748b; --border: #e2e8f0;
+  --brand: #09bcd4; --brand-wash: #d9f4f8; --success: #22c55e; --warning: #f59e0b;
+  --font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #2a3946; --chrome: #1a2630; --chrome-line: #2a3946; --shadow: 0 12px 32px -12px rgba(0,0,0,.7); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --board: #0f171e; --ink: #e3eaf0; --ink-soft: #95a5b5; --rule: #2a3946; --chrome: #1a2630; --chrome-line: #2a3946; --shadow: 0 12px 32px -12px rgba(0,0,0,.7); color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--board); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+h1, h2, p { margin: 0; }
+.wrap { max-width: 1720px; margin-inline: auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); padding-block: 28px 64px; display: grid; gap: 28px; }
+.top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+.top h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.015em; }
+.lang { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--rule); border-radius: 8px; }
+.lang button { font: 500 13px var(--font); color: var(--ink-soft); background: none; border: 0; border-radius: 5px; padding: 5px 12px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--ink); color: var(--board); }
+.lang button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
+@media (max-width: 900px) { .cols { grid-template-columns: minmax(0, 1fr); gap: 56px; } }
+.dir { display: grid; gap: 24px; align-content: start; min-width: 0; }
+.dir h2 { font-size: 18px; font-weight: 600; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+figcaption { font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+.phone { max-width: 390px; }
+.frame { border: 1px solid var(--chrome-line); border-radius: 10px; overflow: hidden; background: var(--chrome); box-shadow: var(--shadow); }
+.bar { display: flex; align-items: center; gap: 6px; height: 30px; padding-inline: 12px; border-bottom: 1px solid var(--chrome-line); }
+.bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--chrome-line); }
+.bar span { margin-left: 10px; font-size: 11px; color: var(--ink-soft); }
+.phone .frame { border-radius: 22px; }
+.fit { position: relative; overflow: hidden; width: 100%; }
+.fit.d { aspect-ratio: 1120 / 700; } .fit.m { aspect-ratio: 390 / 780; }
+.scr { position: absolute; inset: 0 auto auto 0; transform-origin: 0 0; background: var(--background); color: var(--foreground); overflow: hidden; display: flex; flex-direction: column; }
+.d > .scr { width: 1120px; height: 700px; } .m > .scr { width: 390px; height: 780px; }
+
+/* ---------- shared screen parts ---------- */
+.brand { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; line-height: 1.3; }
+.brand svg { width: 28px; height: 28px; }
+.scr svg.i { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.ttl { font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; text-wrap: balance; }
+.body { font-size: 14px; line-height: 1.6; color: var(--muted-foreground); text-wrap: pretty; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding-inline: 18px; border-radius: 6px; font-size: 12px; font-weight: 500; text-transform: uppercase; white-space: nowrap; border: 1px solid var(--border); background: var(--card); }
+.btn.p { background: var(--foreground); border-color: var(--foreground); color: #fff; }
+.help { font-size: 14px; color: var(--muted-foreground); }
+.help b { font-weight: 500; color: var(--foreground); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: 14px; color: var(--muted-foreground); }
+.foot span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- split, with a drawing ---------- */
+.m > .scr .foot { padding: 16px 20px; font-size: 12px; }
+.B .split { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: 0; }
+.B .left { display: flex; flex-direction: column; justify-content: space-between; padding: 36px 48px; min-width: 0; }
+.B .mid { display: grid; gap: 22px; }
+.B .ttl { font-size: 38px; line-height: 1.08; }
+.B .body { font-size: 16px; }
+.B .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.B .right { background: var(--brand-wash); position: relative; overflow: hidden; }
+.B .right > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.m > .B .split { display: flex; flex-direction: column-reverse; }
+.m > .B .right { height: 360px; flex-shrink: 0; }
+.m > .B .right > svg { inset: -46px -30px auto 30px; width: 100%; height: 450px; }
+.m > .B .right > svg.plug { inset: -28px 0 auto 0; width: 100%; height: 430px; }
+.m > .B .left { flex: 1; padding: 24px 20px 0; justify-content: flex-start; gap: 0; }
+.m > .B .left > .brand, .m > .B .left > .foot { display: none; }
+.m > .B .mid { gap: 16px; } .m > .B .ttl { font-size: 28px; } .m > .B .body { font-size: 14px; }
+.m > .B .acts { display: grid; }
+.mbrand { position: absolute; left: 20px; top: 20px; z-index: 1; } .d .mbrand, .d .mfoot { display: none; }
+.m .mfoot { display: flex; }
+@media (prefers-reduced-motion: no-preference) {
+  .bob { animation: bob 4.5s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-7px); } }
+}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <h1>Maintenance page</h1>
+    <div class="lang" role="group" aria-label="Language of the screens">
+      <button type="button" id="lang-en" data-lang="en" aria-pressed="true">English</button>
+      <button type="button" id="lang-nl" data-lang="nl" aria-pressed="false">Nederlands</button>
+    </div>
+  </div>
+  <div class="cols"><div id="col-planned" class="dir"></div><div id="col-down" class="dir"></div></div>
+</div>
+
+<script>
+const LOGO = '<svg viewBox="0 0 63.7 61.1" aria-hidden="true"><path fill="#09BCD4" d="M63.7 0H0V61.1H63.7V0Z"/><path fill="#fff" d="M29.2 25.1C28.1 26.9 26.4 28.1 24.4 28.5H24.3C22.5 29 20.8 30.1 19.8 31.8C18.8 33.5 18.6 35.4 19 37.2C19.6 39.1 19.5 41.3 18.4 43.2C16.3 46.7 11.9 47.8 8.4 45.7C4.9 43.6 3.8 39.2 5.9 35.7C6.5 34.7 7.3 33.9 8.2 33.3C9 33 10 32.6 11 32.4C12.7 31.9 14.2 30.8 15.2 29.2C15.7 28.3 16 27.4 16.2 26.5C16.3 25.6 16.3 24.7 16.1 23.8C15.4 21.9 15.6 19.7 16.7 17.8C18.7 14.3 23.2 13.2 26.7 15.3C30.1 17.2 31.2 21.7 29.2 25.1Z"/><path fill="#fff" d="M58.9 39.8C58.9 43.8 55.7 47 51.7 47C49.6 47 47.7 46.1 46.4 44.7C45.1 43.4 43.3 42.5 41.3 42.5C39.4 42.5 37.6 43.3 36.3 44.5C35 46 33.1 47 30.9 47C26.9 47 23.7 43.8 23.7 39.8C23.7 35.9 26.9 32.6 30.9 32.6C33.1 32.6 35.1 33.6 36.4 35.2C37.7 36.4 39.4 37.1 41.2 37.1C42.2 37.1 43.1 36.9 44 36.5C44.8 36.1 45.6 35.6 46.2 35C47.5 33.5 49.5 32.5 51.6 32.5C55.7 32.6 58.9 35.8 58.9 39.8Z"/><circle fill="#fff" cx="41.6" cy="21.4" r="7.2"/></svg>';
+const EXT = '<svg class="i" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
+const GLOBE = '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg>';
+
+const T = {
+  en: { name: 'English', status: 'View status page', help: 'Questions? We’re happy to help:',
+    planned: ['Alkemio is offline for planned maintenance', 'This work keeps Alkemio running smoothly, and we’ll bring everything back online as soon as it’s done. Our apologies for the inconvenience, and thank you for your patience.', 'You can follow the progress on our status page.'],
+    down: ['Sorry, Alkemio is offline right now', 'We’ve run into an unexpected problem, and we’re working hard to restore the service as soon as possible. Our apologies for the inconvenience.', 'You can follow the latest on our status page.'],
+    cap: { planned: 'Planned', down: 'Unexpected' } },
+  nl: { name: 'Nederlands', status: 'Bekijk statuspagina', help: 'Vragen? We helpen je graag:',
+    planned: ['Alkemio is offline voor gepland onderhoud', 'Met dit onderhoud zorgen we dat Alkemio soepel blijft werken. Zodra we klaar zijn, zetten we alles weer online. Onze excuses voor het ongemak, en bedankt voor je geduld.', 'Op onze statuspagina kun je de voortgang volgen.'],
+    down: ['Sorry, Alkemio is op dit moment offline', 'We hebben te maken met een onverwacht probleem en werken hard om alles zo snel mogelijk weer beschikbaar te maken. Onze excuses voor het ongemak.', 'Op onze statuspagina lees je het laatste nieuws.'],
+    cap: { planned: 'Gepland', down: 'Onverwacht' } } };
+const MAIL = 'support@alkem.io';
+const YEAR = new Date().getFullYear();
+
+/* Moving day: boxes of posts, memos and whiteboards on a trolley. */
+const box = (x, y, w, h, icon) => `<g transform="translate(${x} ${y})"><rect width="${w}" height="${h}" rx="5" fill="#e6bd84"/><rect x="${w - 22}" width="22" height="${h}" rx="5" fill="#d7a768"/><rect x="${w / 2 - 17}" width="28" height="30" fill="#f4dcb4"/><g transform="translate(22 ${h - 52})" fill="none" stroke="#1d384a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${icon}</g></g>`;
+const ICO = { post: '<path d="M2 4h30v20H14l-8 7v-7H2z"/><path d="M9 11h16M9 17h10"/>', memo: '<path d="M5 1h17l8 8v23H5z"/><path d="M22 1v8h8M11 16h13M11 23h13"/>', board: '<path d="M1 3h34M4 3v19h28V3M18 22l-8 10M18 22l8 10M11 15l5-5 4 4 6-6"/>' };
+const MOVE = `<svg viewBox="0 0 560 700" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  <circle cx="300" cy="330" r="235" fill="#bfeaf1"/><rect x="-800" y="585" width="2200" height="200" fill="#a9e1ea"/>
+  <g><path d="M232 238c-10-38-34-52-58-56 2 30 20 54 50 60z" fill="#2f9e6b"/><path d="M240 238c0-46 22-72 52-80 6 38-14 70-44 84z" fill="#3fb57e"/><path d="M236 250c-2-44-8-70-14-96 24 16 34 52 26 96z" fill="#268a5b"/></g>
+  <g class="bob"><rect x="308" y="176" width="66" height="66" rx="3" fill="#fde68a" transform="rotate(9 341 209)"/><path d="M324 198l34 5M322 212l24 4" stroke="#b98a16" stroke-width="3" stroke-linecap="round"/></g>
+  <rect x="282" y="206" width="56" height="60" rx="3" fill="#fbcfe8" transform="rotate(-8 310 236)"/>
+  <path d="M196 248l-34 18 12 12 30-14zM384 248l36 18-12 12-30-14z" fill="#d7a768"/>
+  ${box(190, 248, 200, 110, ICO.board)}${box(160, 362, 150, 100, ICO.post)}${box(314, 362, 126, 100, ICO.memo)}
+  ${box(150, 466, 300, 94, '')}
+  <g transform="translate(286 486) scale(.95)">${LOGO.replace('<svg ', '<svg width="54" height="52" x="-14" y="0" ').replace('viewBox', 'style="position:static" viewBox')}</g>
+  <path d="M96 190h26l26 372" fill="none" stroke="#1d384a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><rect x="128" y="560" width="344" height="11" rx="5.5" fill="#1d384a"/>
+  <g fill="#1d384a"><circle cx="186" cy="588" r="21"/><circle cx="414" cy="588" r="21"/></g><g fill="#bfeaf1"><circle cx="186" cy="588" r="8"/><circle cx="414" cy="588" r="8"/></g></svg>`;
+/* Unexpected: the plug is out. */
+const PLUG = `<svg class="plug" viewBox="0 0 560 700" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  <circle cx="290" cy="345" r="235" fill="#bfeaf1"/>
+  <path d="M-800 520H-20C90 520 60 345 150 345h26" fill="none" stroke="#1d384a" stroke-width="13" stroke-linecap="round"/>
+  <path d="M1400 180H580C470 180 500 345 420 345h-16" fill="none" stroke="#1d384a" stroke-width="13" stroke-linecap="round"/>
+  <g class="bob"><path d="M174 300h34a40 40 0 0 1 40 40v10a40 40 0 0 1-40 40h-34z" fill="#09bcd4"/><rect x="246" y="316" width="32" height="11" rx="4" fill="#1d384a"/><rect x="246" y="363" width="32" height="11" rx="4" fill="#1d384a"/></g>
+  <path d="M410 292h-40a44 44 0 0 0-44 44v18a44 44 0 0 0 44 44h40z" fill="#1d384a"/><rect x="326" y="316" width="26" height="11" rx="4" fill="#bfeaf1"/><rect x="326" y="363" width="26" height="11" rx="4" fill="#bfeaf1"/>
+  <g stroke="#f59e0b" stroke-width="7" stroke-linecap="round"><path d="M302 284v-30M282 292l-16-22M322 292l16-22M302 408v30M282 400l-16 22M322 400l16 22"/></g></svg>`;
+
+let lang = 'en';
+const brand = cls => `<div class="brand ${cls || ''}">${LOGO}<span>ALKEMIO</span></div>`;
+function parts(state) {
+  const t = T[lang], [title, text, peek] = t[state];
+  return { title, text, peek,
+    acts: `<div class="acts"><span class="btn p">${t.status}${EXT}</span></div>`,
+    help: `<div class="help">${t.help} <b>${MAIL}</b></div>`,
+    foot: cls => `<div class="foot ${cls || ''}"><span>© ${YEAR} Alkemio B.V.</span><span>${GLOBE}${t.name}</span></div>` };
+}
+function screen(state) {
+  const p = parts(state);
+  return `<div class="scr B"><div class="split"><div class="left">${brand()}<div class="mid"><div class="ttl">${p.title}</div><div class="body">${p.text}</div><div class="body">${p.peek}</div>${p.acts}${p.help}</div>${p.foot()}</div><div class="right">${brand('mbrand')}${state === 'down' ? PLUG : MOVE}</div></div>${p.foot('mfoot')}</div>`;
+}
+const desk = s => `<figure><figcaption>${T[lang].cap[s]}</figcaption><div class="frame"><div class="bar"><i></i><i></i><i></i><span>alkem.io</span></div><div class="fit d">${screen(s)}</div></div></figure>`;
+const mob = s => `<figure class="phone"><figcaption>${T[lang].cap[s]}</figcaption><div class="frame"><div class="fit m">${screen(s)}</div></div></figure>`;
+function fit() { document.querySelectorAll('.fit').forEach(f => { f.firstElementChild.style.transform = `scale(${f.clientWidth / (f.classList.contains('d') ? 1120 : 390)})`; }); }
+function draw() {
+  for (const s of ['planned', 'down']) document.getElementById('col-' + s).innerHTML = desk(s) + mob(s);
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+  fit();
+}
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { lang = b.dataset.lang; draw(); }));
+addEventListener('resize', fit);
+draw();
+</script>
